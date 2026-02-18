@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fizika Interaktive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --baby-blue: #bde0fe;
+            --baby-pink: #ffc8dd;
+            --pastel-yellow: #fffffc;
+            --dark-purple: #4a4e69;
+            --accent-pink: #ffafcc;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, var(--baby-blue) 0%, var(--baby-pink) 100%);
+            color: var(--dark-purple);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .physics-gradient {
+            background: linear-gradient(135deg, var(--dark-purple) 0%, #6b708d 100%);
+        }
+
+        /* Floating Formulas Animation */
+        .formula-float {
+            position: fixed;
+            color: rgba(74, 78, 105, 0.1);
+            font-family: monospace;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 0;
+            user-select: none;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            to { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Card Styling */
+        .term-card-custom {
+            background: var(--pastel-yellow);
+            border: 3px solid white;
+            color: var(--dark-purple);
+        }
+        
+        .term-card-custom:hover {
+            background: white;
+            border-color: var(--accent-pink);
+        }
+
+        .btn-purple {
+            background: var(--dark-purple);
+            color: white;
+        }
+        
+        .btn-purple:hover {
+            background: #3a3d54;
+        }
+
+        /* Override Tailwind for custom theme */
+        .text-dark-purple { color: var(--dark-purple); }
+        .bg-baby-blue { background-color: var(--baby-blue); }
+        .bg-baby-pink { background-color: var(--baby-pink); }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

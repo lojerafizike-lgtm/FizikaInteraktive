@@ -1,0 +1,41 @@
+
+export interface PhysicsTerm {
+  name: string;
+  sym: string;
+  form: string;
+  unit: string;
+  desc: string;
+  catName?: string;
+  img?: string;
+  vid?: string;
+}
+
+export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi";
+
+export interface PhysicsData {
+  [key: string]: PhysicsTerm[];
+}
+
+export interface Simulation {
+  title: string;
+  url: string;
+  category: string;
+  icon: string;
+}
+
+export interface PhysicsGame {
+  title: string;
+  description: string;
+  materials: string[];
+  steps: string[];
+  type: 'home' | 'school';
+}
+
+export interface DigitalGame {
+  id: string;
+  title: string;
+  category: string;
+  html: string;
+  type?: 'digital' | 'school';
+  url?: string;
+}
