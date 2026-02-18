@@ -100,6 +100,172 @@ export const DIGITAL_GAMES: DigitalGame[] = [
 </html>`
   },
   {
+    id: "energy-modul",
+    title: "Energjia Fizike: Moduli 10",
+    category: "Energjia",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Energjia Fizike: Moduli 10</title>
+    <style>
+        :root { --bg: #0b0e14; --card: #161b22; --accent-pink: #d4a5b2; --accent-purple: #7c5cb2; --text-main: #e6edf3; --border: #30363d; --success: #238636; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .container { width: 850px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        canvas { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; width: 100%; height: 300px; }
+        .interface { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 25px; margin-top: 30px; }
+        .task-box { background: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 8px; border-left: 3px solid var(--accent-pink); }
+        .formula-display { display: block; margin: 15px 0; font-family: "Times New Roman"; font-size: 1.4rem; color: var(--accent-pink); background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; text-align: center; }
+        input { background: #0d1117; border: 1px solid var(--border); color: white; padding: 15px; border-radius: 6px; width: 100%; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; }
+        button { background: transparent; border: 1px solid var(--accent-pink); color: var(--accent-pink); padding: 15px; width: 100%; border-radius: 6px; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-weight: bold; }
+        button:hover { background: var(--accent-pink); color: var(--bg); }
+        #feedback { margin-top: 15px; font-size: 0.95rem; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <h1>Laboratori Virtual i Energjisë</h1>
+    <div class="container">
+        <canvas id="canvas" width="800" height="300"></canvas>
+        <div class="interface">
+            <div class="task-box">
+                <h2 id="lvl-name" style="margin:0; font-size:1.1rem;">Niveli 1</h2>
+                <p id="lvl-desc" style="color: #8b949e;"></p>
+                <div class="formula-display" id="lvl-formula"></div>
+                <p id="lvl-data" style="font-weight: bold; color: var(--accent-purple);"></p>
+            </div>
+            <div class="input-section">
+                <input type="number" id="answer" placeholder="Shëno vlerën (J)...">
+                <button onclick="check()">Verifiko Rezultatin</button>
+                <div id="feedback"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById("canvas"); const ctx = canvas.getContext("2d");
+        let level = 1; let animPos = 0; let animId;
+        const levels = [
+            { name: "Niveli 1: Energjia Potenciale Gravitacionale", desc: "Llogarit Ep për një sferë në lartësi.", formula: "E_p = m ⋅ g ⋅ h", data: "m = 5 kg | h = 8 m | g = 10 m/s²", goal: 400, type: "p" },
+            { name: "Niveli 2: Energjia Kinetike", desc: "Llogarit Ek për trupin në lëvizje.", formula: "E_k = ½ ⋅ m ⋅ v²", data: "m = 4 kg | v = 10 m/s", goal: 200, type: "k" },
+            { name: "Niveli 3: Puna dhe Energjia", desc: "Sa është lartësia (h) nëse E_p = 600 J?", formula: "h = E_p / (m ⋅ g)", data: "E_p = 600 J | m = 3 kg | g = 10 m/s²", goal: 20, type: "p" },
+            { name: "Niveli 4: Shpejtësia nga Energjia", desc: "Gjej shpejtësinë (v) duke përdorur E_k.", formula: "v = √(2E_k / m)", data: "E_k = 100 J | m = 2 kg", goal: 10, type: "k" },
+            { name: "Niveli 5: Ruajtja e Energjisë", desc: "Gjej Ep nëse Ek = 150J dhe Etot = 500J.", formula: "E_{tot} = E_k + E_p", data: "E_{tot} = 500 J | E_k = 150 J", goal: 350, type: "p" }
+        ];
+        function draw(offset = 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); const l = levels[level-1];
+            ctx.strokeStyle = "#30363d"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(50, 250); ctx.lineTo(750, 250); ctx.stroke();
+            ctx.fillStyle = "#d4a5b2";
+            if(l.type === "p") {
+                ctx.beginPath(); ctx.arc(400, 60 + offset, 15, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = "#7c5cb2"; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(400, 60 + offset); ctx.lineTo(400, 250); ctx.stroke(); ctx.setLineDash([]);
+            } else {
+                ctx.beginPath(); ctx.arc(100 + offset, 235, 15, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "rgba(212, 165, 178, 0.3)"; ctx.fillRect(80 + offset, 230, -20, 10);
+            }
+        }
+        function check() {
+            const val = parseFloat(document.getElementById("answer").value);
+            const current = levels[level-1]; const feedback = document.getElementById("feedback");
+            if(Math.abs(val - current.goal) < 0.1) { feedback.style.color = "#238636"; feedback.innerText = "Saktë! Simulimi po ekzekutohet..."; animateAction(); }
+            else { feedback.style.color = "#f85149"; feedback.innerText = "E gabuar. Kontrollo llogaritjen."; }
+        }
+        function animateAction() {
+            let start = 0; cancelAnimationFrame(animId);
+            function step() { start += 8; draw(start); if(start < 190) { animId = requestAnimationFrame(step); } else { setTimeout(() => { level = (level < 5) ? level + 1 : 1; init(); }, 800); } }
+            step();
+        }
+        function init() {
+            const l = levels[level-1];
+            document.getElementById("lvl-name").innerText = l.name; document.getElementById("lvl-desc").innerText = l.desc;
+            document.getElementById("lvl-formula").innerText = l.formula; document.getElementById("lvl-data").innerText = l.data;
+            document.getElementById("answer").value = ""; document.getElementById("feedback").innerText = "";
+            draw();
+        }
+        init();
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "zhvendosja-quiz",
+    title: "Zhvendosja",
+    category: "Kinematika",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zhvendosja</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --accent: #00ff88; --glass: rgba(255, 255, 255, 0.1); --text: #ffffff; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Poppins', sans-serif; background: #0f0c29; color: var(--text); overflow: hidden; }
+        .bg-animate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, rgba(58, 123, 213, 0.1) 0%, transparent 80%); animation: pulse 8s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
+        .container { width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .card { width: 90%; max-width: 550px; background: rgba(20, 20, 40, 0.85); backdrop-filter: blur(15px); border: 2px solid rgba(0, 210, 255, 0.3); border-radius: 30px; padding: 40px; box-shadow: 0 0 50px rgba(0,0,0,0.5); position: relative; }
+        .screen { display: none; text-align: center; }
+        .screen.active { display: block; animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 4px; color: var(--primary); text-shadow: 0 0 15px var(--primary); }
+        .btn-game { background: linear-gradient(90deg, var(--primary), var(--secondary)); border: none; border-radius: 50px; padding: 15px 40px; color: white; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); }
+        .btn-game:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--primary); }
+        .math-display { background: rgba(0,0,0,0.3); border: 2px solid var(--primary); border-radius: 15px; padding: 20px; margin: 15px 0; min-height: 50px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; }
+        .math-keyboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; }
+        .m-key { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .m-key:hover { background: var(--primary); color: #000; }
+        .option-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; margin: 10px 0; cursor: pointer; transition: 0.3s; text-align: left; }
+        .option-box:hover { border-color: var(--primary); padding-left: 25px; }
+        .correct { background: rgba(0, 255, 136, 0.2) !important; border-color: var(--accent) !important; }
+        .wrong { background: rgba(255, 0, 85, 0.2) !important; border-color: #ff0055 !important; }
+        .progress-cont { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 20px 0; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="bg-animate"></div>
+    <div class="container">
+        <div class="card">
+            <div id="start-screen" class="screen active"><h1>Kuic - Zhvendosja</h1><button class="btn-game" onclick="changeScreen('quiz-screen'); startTimer();">Fillo Misionin</button></div>
+            <div id="quiz-screen" class="screen">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem;"><span>Pikët: <span id="score">0</span></span><span id="timer">05:00</span></div>
+                <div class="progress-cont"><div class="progress-fill" id="p-fill"></div></div>
+                <div id="question-area"></div>
+                <button id="next-btn" class="btn-game" style="display: none; width: 100%;" onclick="nextQuestion()">Vazhdo</button>
+            </div>
+            <div id="result-screen" class="screen"><h1 id="res-title">Misioni u Krye!</h1><div id="res-score" style="font-size: 3rem;">0</div><button class="btn-game" onclick="location.reload()">Rinis Misionin</button></div>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            { q: "Çfarë paraqet zhvendosja (\\(S\\) ose \\(\\Delta x\\))?", type: "choice", options: ["Gjatësinë totale të rrugës", "Një madhësi skalare", "Vektor që bashkon fillimin me fundin", "Shpejtësinë mesatare"], correct: 2 },
+            { q: "Cila është formula në lëvizje të njëtrajtshme?", type: "choice", options: ["\\\\(\\\\Delta x = v_0 t + at^2/2\\\\)", "\\\\(\\\\Delta x = v \\\\cdot t\\\\)", "\\\\(v^2 = v_0^2 + 2aS\\\\)", "\\\\(h = v_0 t + gt^2\\\\)"], correct: 1 },
+            { q: "Njësia matëse e zhvendosjes në SI:", type: "choice", options: ["Sekonda", "Metër", "m/s", "Njuton"], correct: 1 },
+            { q: "Formula e zhvendosjes kur \\(v_0 = 0\\):", type: "open", answer: "S =at^2/2" },
+            { q: "Llogarit: \\(v_0=2, a=3, t=4\\). Gjej \\(\\\\Delta x\\\\).", type: "open", answer: "32" }
+        ];
+        let current = 0; let score = 0; let userMathInput = "";
+        function changeScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); if(id === 'quiz-screen') loadQuestion(); }
+        function loadQuestion() {
+            const q = questions[current]; const area = document.getElementById('question-area');
+            document.getElementById('next-btn').style.display = 'none'; document.getElementById('p-fill').style.width = \`\${(current / questions.length) * 100}%\`;
+            let html = \`<h3 style="margin-bottom:20px;">\${q.q}</h3>\`;
+            if(q.type === 'choice') { q.options.forEach((opt, i) => { html += \`<div class="option-box" onclick="checkChoice(\${i}, this)">\${opt}</div>\`; }); }
+            else { userMathInput = ""; html += \`<div class="math-display" id="m-preview">Pritet përgjigja...</div><div class="math-keyboard"><button class="m-key" onclick="press('S=')">S=</button><button class="m-key" onclick="press('v0')">v₀</button><button class="m-key" onclick="press('at^2/2')">$$\\\\frac{at^2}{2}$$</button><button class="m-key" onclick="press('DEL')">⌫</button><button class="m-key" onclick="press('7')">7</button><button class="m-key" onclick="press('8')">8</button><button class="m-key" onclick="press('9')">9</button><button class="m-key" onclick="press('4')">4</button><button class="m-key" onclick="press('5')">5</button><button class="m-key" onclick="press('6')">6</button><button class="m-key" onclick="press('1')">1</button><button class="m-key" onclick="press('2')">2</button><button class="m-key" onclick="press('3')">3</button></div>\`; setTimeout(() => { document.getElementById('next-btn').style.display = 'block'; }, 500); }
+            area.innerHTML = html; MathJax.typeset();
+        }
+        window.press = (val) => { const prev = document.getElementById('m-preview'); if(val === 'DEL') userMathInput = userMathInput.slice(0, -1); else userMathInput += val; let display = userMathInput.replace('at^2/2', '\\\\frac{at^2}{2}').replace('*', '\\\\cdot'); prev.innerHTML = \`\\\\(\${display}\\\\)\`; MathJax.typesetPromise([prev]); }
+        window.checkChoice = (idx, el) => { if(document.querySelector('.correct')) return; if(idx === questions[current].correct) { el.classList.add('correct'); score += 20; } else { el.classList.add('wrong'); } document.getElementById('score').innerText = score; document.getElementById('next-btn').style.display = 'block'; }
+        function nextQuestion() { current++; if(current < questions.length) loadQuestion(); else { changeScreen('result-screen'); document.getElementById('res-score').innerText = score; } }
+        function startTimer() { let time = 300; setInterval(() => { time--; let m = Math.floor(time/60), s = time%60; document.getElementById('timer').innerText = \`\${m}:\${s < 10 ? '0'+s : s}\`; }, 1000); }
+    </script>
+</body>
+</html>`
+  },
+  {
     id: "njutoni-levels",
     title: "Ligjet e Njutonit",
     category: "Dinamika",
@@ -171,6 +337,335 @@ export const DIGITAL_GAMES: DigitalGame[] = [
         function updateStats() { document.getElementById('lives').innerText = lives; document.getElementById('xp').innerText = xp; }
         function complete() { const keys = Object.keys(levels); const idx = keys.indexOf(currentId); if(idx < keys.length-1) { const next = keys[idx+1]; if(!unlocked.includes(next)) unlocked.push(next); } showMap(); }
         const stars = document.getElementById('stars-container'); for(let i=0; i<50; i++) { const s = document.createElement('div'); s.className = 'star'; s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%'; s.style.width = s.style.height = Math.random()*3+'px'; s.style.setProperty('--d', Math.random()*3+2+'s'); stars.appendChild(s); }
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "energy-battle-formula",
+    title: "Energy Battle: Formula Challenge",
+    category: "Energjia",
+    type: "school",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Master: Formula Battle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --blue: #00d2ff;
+            --red: #ff4757;
+            --gold: #ffcc00;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0; padding: 0; height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg); color: white; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(255,255,255,0.03); padding: 15px;
+            text-align: center; border-bottom: 2px solid var(--blue);
+        }
+        h1 { font-family: 'Orbitron'; margin: 0; color: var(--blue); text-shadow: 0 0 10px var(--blue); }
+
+        /* ARENA */
+        .arena {
+            display: flex; flex: 1; padding: 20px; gap: 20px;
+        }
+
+        .team-box {
+            flex: 1; background: var(--glass); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 30px; display: flex; flex-direction: column; padding: 20px;
+            position: relative;
+        }
+
+        .team-a { border-color: var(--blue); }
+        .team-b { border-color: var(--red); }
+
+        .score-label { font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 10px; }
+
+        /* Qendra e Pyetjeve */
+        .question-card {
+            background: white; color: #111; border-radius: 20px;
+            padding: 20px; margin-bottom: 20px; text-align: center;
+            min-height: 100px; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2rem;
+        }
+
+        /* Keyboard-et */
+        .math-kb {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px;
+        }
+
+        .key {
+            background: #222; border: 1px solid #444; color: white;
+            padding: 12px; border-radius: 8px; cursor: pointer;
+            font-family: 'Orbitron'; font-size: 0.9rem; transition: 0.2s;
+        }
+        .key:active { background: var(--blue); transform: scale(0.9); }
+        .key.special { background: #333; color: var(--gold); }
+
+        .formula-display {
+            background: #000; padding: 15px; border-radius: 10px;
+            margin-bottom: 15px; min-height: 40px; border: 1px solid #333;
+            font-size: 1.4rem; color: var(--gold); display: flex; align-items: center;
+        }
+
+        /* Butonat e Energjise */
+        .energy-selector {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;
+        }
+        .energy-btn {
+            padding: 10px; border-radius: 10px; border: none; cursor: pointer;
+            font-weight: bold; text-transform: uppercase;
+        }
+
+        /* Efektet */
+        .correct { background: #2ed573 !important; }
+        .wrong { background: #ff4757 !important; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>ENERGY BATTLE: FORMULA CHALLENGE</h1>
+    </div>
+
+    <div class="arena">
+        <div class="team-box team-a" id="box-a">
+            <div class="score-label" style="color: var(--blue);">GRUPI A: <span id="score-a">0</span></div>
+            <div id="q-a" class="question-card">Shtyp "START"</div>
+            
+            <div id="controls-a" class="hidden">
+                <div class="energy-selector">
+                    <button class="energy-btn" onclick="checkType('a', 'Ek')">Kinetike</button>
+                    <button class="energy-btn" onclick="checkType('a', 'Ep')">Potenciale</button>
+                    <button class="energy-btn" onclick="checkType('a', 'Em')">Mekanike</button>
+                </div>
+                
+                <div class="formula-display" id="display-a">Pritet formula...</div>
+                
+                <div class="math-kb">
+                    <button class="key" onclick="typeKey('a','E')">E</button>
+                    <button class="key" onclick="typeKey('a','k')">k</button>
+                    <button class="key" onclick="typeKey('a','p')">p</button>
+                    <button class="key" onclick="typeKey('a','m')">m</button>
+                    <button class="key" onclick="typeKey('a','=')">=</button>
+                    <button class="key" onclick="typeKey('a','m')">m</button>
+                    <button class="key" onclick="typeKey('a','g')">g</button>
+                    <button class="key" onclick="typeKey('a','h')">h</button>
+                    <button class="key" onclick="typeKey('a','v')">v</button>
+                    <button class="key" onclick="typeKey('a','^2')">²</button>
+                    <button class="key" onclick="typeKey('a','/')">/</button>
+                    <button class="key" onclick="typeKey('a','2')">2</button>
+                    <button class="key" onclick="typeKey('a','+')">+</button>
+                    <button class="key special" onclick="clearDisplay('a')">C</button>
+                    <button class="key special" style="grid-column: span 2; background: var(--blue);" onclick="submitFormula('a')">DËRGO</button>
+                </div>
+            </div>
+            <button id="start-a" class="key" style="background: var(--blue);" onclick="nextQuestion('a')">START MISIONIN</button>
+        </div>
+
+        <div class="team-box team-b" id="box-b">
+            <div class="score-label" style="color: var(--red);">GRUPI B: <span id="score-b">0</span></div>
+            <div id="q-b" class="question-card">Shtyp "START"</div>
+            
+            <div id="controls-b" class="hidden">
+                <div class="energy-selector">
+                    <button class="energy-btn" onclick="checkType('b', 'Ek')">Kinetike</button>
+                    <button class="energy-btn" onclick="checkType('b', 'Ep')">Potenciale</button>
+                    <button class="energy-btn" onclick="checkType('b', 'Em')">Mekanike</button>
+                </div>
+                
+                <div class="formula-display" id="display-b">Pritet formula...</div>
+                
+                <div class="math-kb">
+                    <button class="key" onclick="typeKey('b','E')">E</button>
+                    <button class="key" onclick="typeKey('b','k')">k</button>
+                    <button class="key" onclick="typeKey('b','p')">p</button>
+                    <button class="key" onclick="typeKey('b','m')">m</button>
+                    <button class="key" onclick="typeKey('b','=')">=</button>
+                    <button class="key" onclick="typeKey('b','m')">m</button>
+                    <button class="key" onclick="typeKey('b','g')">g</button>
+                    <button class="key" onclick="typeKey('b','h')">h</button>
+                    <button class="key" onclick="typeKey('b','v')">v</button>
+                    <button class="key" onclick="typeKey('b','^2')">²</button>
+                    <button class="key" onclick="typeKey('b','/')">/</button>
+                    <button class="key" onclick="typeKey('b','2')">2</button>
+                    <button class="key" onclick="typeKey('b','+')">+</button>
+                    <button class="key special" onclick="clearDisplay('b')">C</button>
+                    <button class="key special" style="grid-column: span 2; background: var(--red);" onclick="submitFormula('b')">DËRGO</button>
+                </div>
+            </div>
+            <button id="start-b" class="key" style="background: var(--red);" onclick="nextQuestion('b')">START MISIONIN</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { text: "Një makinë që po lëviz në autostradë", type: "Ek", formula: "Ek=mv^2/2" },
+            { text: "Një mollë që qëndron në degën e pemës", type: "Ep", formula: "Ep=mgh" },
+            { text: "Një aeroplan që fluturon (ka lartësi dhe shpejtësi)", type: "Em", formula: "Em=Ek+Ep" },
+            { text: "Një gur që bie nga maja e malit", type: "Em", formula: "Em=Ek+Ep" },
+            { text: "Uji i mbledhur në digën e hidrocentralit", type: "Ep", formula: "Ep=mgh" }
+        ];
+
+        let state = {
+            a: { currentQ: null, score: 0, input: "", typeChecked: false },
+            b: { currentQ: null, score: 0, input: "", typeChecked: false }
+        };
+
+        function nextQuestion(team) {
+            document.getElementById('start-' + team).classList.add('hidden');
+            document.getElementById('controls-' + team).classList.remove('hidden');
+            
+            const rand = Math.floor(Math.random() * questions.length);
+            state[team].currentQ = questions[rand];
+            state[team].typeChecked = false;
+            state[team].input = "";
+            
+            document.getElementById('q-' + team).innerText = state[team].currentQ.text;
+            document.getElementById('display-' + team).innerText = "Zgjidh llojin...";
+            document.getElementById('q-' + team).style.background = "white";
+        }
+
+        function checkType(team, type) {
+            if (state[team].currentQ.type === type) {
+                state[team].typeChecked = true;
+                document.getElementById('display-' + team).innerText = "Tani shkruaj formulën!";
+                showFeedback(team, true);
+            } else {
+                showFeedback(team, false);
+            }
+        }
+
+        function typeKey(team, key) {
+            if (!state[team].typeChecked) return;
+            state[team].input += key;
+            updateDisplay(team);
+        }
+
+        function updateDisplay(team) {
+            let val = state[team].input
+                .replace('^2', '²')
+                .replace('Ek', 'E<sub>k</sub>')
+                .replace('Ep', 'E<sub>p</sub>')
+                .replace('Em', 'E<sub>m</sub>');
+            document.getElementById('display-' + team).innerHTML = val;
+        }
+
+        function clearDisplay(team) {
+            state[team].input = "";
+            updateDisplay(team);
+        }
+
+        function submitFormula(team) {
+            if (!state[team].typeChecked) return;
+            
+            // Verifikim i thjeshtuar i formules
+            let correctF = state[team].currentQ.formula;
+            if (state[team].input === correctF || state[team].input.includes(correctF)) {
+                state[team].score += 50;
+                document.getElementById('score-' + team).innerText = state[team].score;
+                document.getElementById('q-' + team).innerText = "E SAKTË! +50 pikë";
+                document.getElementById('q-' + team).style.background = "#2ed573";
+                setTimeout(() => nextQuestion(team), 1500);
+            } else {
+                showFeedback(team, false);
+                state[team].input = "";
+                updateDisplay(team);
+            }
+        }
+
+        function showFeedback(team, isCorrect) {
+            const card = document.getElementById('q-' + team);
+            const originalColor = "white";
+            card.style.background = isCorrect ? "#2ed573" : "#ff4757";
+            setTimeout(() => {
+                if (state[team].currentQ) card.style.background = originalColor;
+            }, 500);
+        }
+
+        function showVictory(team) {
+            alert("GRUPI " + team.toUpperCase() + " FITOI!");
+            location.reload();
+        }
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "physics-battle-pro",
+    title: "Physics Battle Pro: SmartBoard Edition",
+    category: "Gjithëpërfshirëse",
+    type: "school",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Battle Pro: SmartBoard Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #050510; --blue: #00d2ff; --red: #ff0055; --gold: #ffcc00; }
+        body { margin: 0; padding: 0; height: 100vh; font-family: 'Poppins', sans-serif; background: var(--bg); color: white; overflow: hidden; touch-action: none; }
+        .game-header { text-align: center; padding: 15px; background: rgba(255,255,255,0.05); border-bottom: 2px solid rgba(255,255,255,0.1); }
+        h1 { font-family: 'Orbitron', sans-serif; margin: 0; font-size: 2rem; color: var(--gold); text-shadow: 0 0 20px var(--gold); }
+        .arena { display: flex; width: 100%; height: 85vh; padding: 20px; box-sizing: border-box; gap: 20px; }
+        .zone { flex: 1; border-radius: 40px; display: flex; flex-direction: column; align-items: center; position: relative; transition: 0.3s; border: 4px solid transparent; background: rgba(255,255,255,0.02); }
+        #zone-A { border-color: var(--blue); box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.1); }
+        #zone-B { border-color: var(--red); box-shadow: inset 0 0 30px rgba(255, 0, 85, 0.1); }
+        .zone-title { font-family: 'Orbitron'; font-size: 1.5rem; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .pool { width: 300px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 12px; background: rgba(255,255,255,0.03); border-radius: 30px; }
+        .item { padding: 18px 22px; background: white; color: #000; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; touch-action: none; user-select: none; box-shadow: 0 6px 0 #bbb; transition: 0.1s; z-index: 100; text-align: center; }
+        .slot { display: inline-block; padding: 10px 15px; margin: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; font-size: 0.9rem; color: #fff; animation: emerge 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes emerge { from { transform: scale(0) rotate(-10deg); } to { transform: scale(1) rotate(0); } }
+        #win-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        .win-box { background: linear-gradient(145deg, #1a1a2e, #0f0c29); padding: 50px; border-radius: 50px; border: 3px solid var(--gold); text-align: center; box-shadow: 0 0 100px rgba(255, 204, 0, 0.3); }
+        .winner-name { font-size: 4rem; font-family: 'Orbitron'; color: var(--gold); }
+    </style>
+</head>
+<body>
+    <div class="game-header"><h1>PHYSICS BATTLE: SMARTBOARD EDITION</h1></div>
+    <div class="arena"><div class="zone" id="zone-A"><div class="zone-title" style="color: var(--blue);">GRUPI A: SKALARE</div><div id="results-A" style="padding: 20px; display: flex; flex-wrap: wrap; justify-content: center;"></div></div><div class="pool" id="main-pool"></div><div class="zone" id="zone-B"><div class="zone-title" style="color: var(--red);">GRUPI B: VEKTORIALE</div><div id="results-B" style="padding: 20px; display: flex; flex-wrap: wrap; justify-content: center;"></div></div></div>
+    <div id="win-screen"><div class="win-box"><h2>MISIONI U KRYE!</h2><div class="winner-name" id="winner-tag">GRUPI A</div><button onclick="location.reload()" style="padding: 20px 40px; font-size: 1.2rem; font-family: 'Orbitron'; background: var(--gold); border: none; border-radius: 15px; cursor: pointer;">LUUAJ PËRSËRI</button></div></div>
+    <script>
+        const physicsData = [
+            { n: "Masa", t: "A" }, { n: "Koha", t: "A" }, { n: "Vëllimi", t: "A" }, { n: "Dendësia", t: "A" }, { n: "Energjia", t: "A" }, { n: "Shtypja", t: "A" }, { n: "Fuqia", t: "A" }, 
+            { n: "Forca", t: "B" }, { n: "Shpejtësia", t: "B" }, { n: "Zhvendosja", t: "B" }, { n: "Nxitimi", t: "B" }, { n: "Pesha", t: "B" }, { n: "Impulsi", t: "B" }, { n: "Momenti Forcës", t: "B" }
+        ];
+        let totalItems = physicsData.length, found = 0;
+        const pool = document.getElementById('main-pool');
+        physicsData.sort(() => Math.random() - 0.5).forEach((item, i) => {
+            const el = document.createElement('div'); el.className = 'item'; el.innerText = item.n; el.dataset.type = item.t; el.onpointerdown = handleDrag; pool.appendChild(el);
+        });
+        function handleDrag(e) {
+            const el = e.target; el.setPointerCapture(e.pointerId); el.style.zIndex = 1000;
+            el.onpointermove = (move) => { el.style.position = 'fixed'; el.style.left = (move.clientX - el.offsetWidth/2) + 'px'; el.style.top = (move.clientY - el.offsetHeight/2) + 'px'; };
+            el.onpointerup = (up) => { el.onpointermove = null; el.releasePointerCapture(e.pointerId); checkZone(el, up.clientX, up.clientY); };
+        }
+        function checkZone(el, x, y) {
+            const rectA = document.getElementById('zone-A').getBoundingClientRect(), rectB = document.getElementById('zone-B').getBoundingClientRect();
+            if (isOver(x, y, rectA)) { if (el.dataset.type === 'A') capture(el, 'results-A'); else bounceBack(el); }
+            else if (isOver(x, y, rectB)) { if (el.dataset.type === 'B') capture(el, 'results-B'); else bounceBack(el); }
+            else bounceBack(el);
+        }
+        function isOver(x, y, rect) { return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom; }
+        function capture(el, targetId) { const target = document.getElementById(targetId); const slot = document.createElement('div'); slot.className = 'slot'; slot.innerHTML = "🔹 " + el.innerText; target.appendChild(slot); el.remove(); found++; if (found === totalItems) announceWinner(); }
+        function bounceBack(el) { el.style.position = 'static'; el.animate([{ transform: 'translateX(-10px)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }], { duration: 200, iterations: 2 }); }
+        function announceWinner() { document.getElementById('win-screen').style.display = 'flex'; }
     </script>
 </body>
 </html>`
