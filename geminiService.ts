@@ -1,12 +1,12 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function askLibriFizikes(term: string, context: string) {
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-3.1-pro-preview',
       contents: `Përshëndetje! Ti je "Libri i Fizikës", një mësues virtual i dashur dhe shumë i ditur. 
       Shpjego në mënyrë të thjeshtë, interaktive dhe me shembuj nga jeta e përditshme termin: ${term}. 
       Përshkrimi aktual është: ${context}. 

@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { ALL_PHYSICS_DATA, SIMULATIONS, GAMES } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
@@ -26,10 +27,10 @@ const App: React.FC = () => {
     }, 900);
   };
 
-  const navigate = (page: any, data?: any) => {
-    if (page === 'category') setSelectedCategory(data);
+  const navigate = (page: 'home' | 'category' | 'details' | 'lab' | 'games', data?: CategoryName | PhysicsTerm | null) => {
+    if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
-        setSelectedTerm(data);
+        setSelectedTerm(data as PhysicsTerm);
         setChatResponse(""); 
     }
     setActivePage(page);
@@ -84,17 +85,17 @@ const App: React.FC = () => {
               <div className="particle proton" style={{ top: '20px', left: '20px', width: '25px', height: '25px', zIndex: 5 }}></div>
             </div>
             <div className="orbit orbit-1">
-              <div className="electron" style={{ '--duration': '3s' } as any}></div>
+              <div className="electron" style={{ '--duration': '3s' } as React.CSSProperties}></div>
             </div>
             <div className="orbit orbit-2">
-              <div className="electron" style={{ '--duration': '4.5s' } as any}></div>
+              <div className="electron" style={{ '--duration': '4.5s' } as React.CSSProperties}></div>
             </div>
             <div className="orbit orbit-3">
-              <div className="electron" style={{ '--duration': '2.2s' } as any}></div>
+              <div className="electron" style={{ '--duration': '2.2s' } as React.CSSProperties}></div>
             </div>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black text-[#4a4e69] tracking-tighter mb-12 animate__animated animate__fadeInUp">
+          <h1 className="text-6xl md:text-8xl font-black text-[#4a4e69] tracking-tighter mb-12 animate__animated animate__fadeInUp font-orbitron">
             Fizika<span className="text-[#ffafcc]">Interaktive</span>
           </h1>
           
@@ -110,7 +111,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fcf9ff] text-[#4a4e69] font-['Plus_Jakarta_Sans']">
+    <div className="min-h-screen bg-[#fcf9ff] text-[#4a4e69] font-sans">
       {/* Navbar */}
       <nav className="sticky top-0 z-50 px-8 py-6 bg-white/60 backdrop-blur-3xl border-b border-white/40 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -337,7 +338,11 @@ const App: React.FC = () => {
                             <button onClick={() => setSelectedDigitalGame(null)} className="px-16 py-6 bg-[#4a4e69] text-white rounded-[2.5rem] font-black text-[12px] tracking-[0.3em] hover:bg-black transition-all shadow-xl">MBYLL LOJËN</button>
                         </div>
                         <div className="w-full aspect-video rounded-[5rem] overflow-hidden border-[15px] border-[#f8fafc] bg-black shadow-inner">
-                             <iframe className="w-full h-full border-none" srcDoc={selectedDigitalGame.html} title={selectedDigitalGame.title} allowFullScreen />
+                             {selectedDigitalGame.html ? (
+                               <iframe className="w-full h-full border-none" srcDoc={selectedDigitalGame.html} title={selectedDigitalGame.title} allowFullScreen />
+                             ) : (
+                               <iframe className="w-full h-full border-none" src={selectedDigitalGame.url} title={selectedDigitalGame.title} allowFullScreen />
+                             )}
                         </div>
                     </div>
                 ) : (
@@ -421,8 +426,8 @@ const App: React.FC = () => {
                     <p className="font-black text-slate-300 uppercase tracking-[0.6em] text-[12px]">Duke kërkuar në arkiva...</p>
                   </div>
                 ) : (
-                  <div className="prose prose-slate max-w-none text-slate-600 text-3xl leading-relaxed font-medium">
-                    {chatResponse.split('\n').map((p, i) => <p key={i} className="mb-10">{p}</p>)}
+                  <div className="markdown-body prose prose-slate max-w-none text-slate-600 text-3xl leading-relaxed font-medium">
+                    <ReactMarkdown>{chatResponse}</ReactMarkdown>
                   </div>
                 )}
               </div>
