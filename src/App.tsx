@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { ALL_PHYSICS_DATA, SIMULATIONS, GAMES } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
-import { askLibriFizikes } from './geminiService';
+import { askLibriFizikes } from './aiService';
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
