@@ -7,6 +7,7 @@ export interface PhysicsTerm {
   otherUnits?: string;
   nature: 'Vektoriale' | 'Skalare';
   desc: string;
+  phetUrl?: string;
   catName?: string;
   img?: string;
   vid?: string;
