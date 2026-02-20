@@ -4,6 +4,8 @@ export interface PhysicsTerm {
   sym: string;
   form: string;
   unit: string;
+  otherUnits?: string;
+  nature: 'Vektoriale' | 'Skalare';
   desc: string;
   catName?: string;
   img?: string;

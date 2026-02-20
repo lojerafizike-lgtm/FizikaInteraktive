@@ -1,10 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
-import ReactMarkdown from 'react-markdown';
 import { ALL_PHYSICS_DATA, SIMULATIONS, GAMES } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
-import { askLibriFizikes } from './aiService';
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -16,10 +14,6 @@ const App: React.FC = () => {
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
   const [searchTerm, setSearchTerm] = useState("");
   
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatLoading, setChatLoading] = useState(false);
-  const [chatResponse, setChatResponse] = useState("");
-
   const handleStart = () => {
     setIsWarping(true);
     setTimeout(() => {
@@ -31,22 +25,11 @@ const App: React.FC = () => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
-        setChatResponse(""); 
     }
     setActivePage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleAskLibri = async () => {
-    if (!selectedTerm) return;
-    setIsChatOpen(true);
-    setChatLoading(true);
-    const response = await askLibriFizikes(selectedTerm.name, selectedTerm.desc);
-    setChatResponse(response || "");
-    setChatLoading(false);
-  };
-
-  // Logic to filter all terms based on search
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return null;
     const results: (PhysicsTerm & { category: string })[] = [];
@@ -255,32 +238,59 @@ const App: React.FC = () => {
                         <span className="px-8 py-3 bg-[#f8fafc] text-slate-400 rounded-full text-[11px] font-black uppercase tracking-[0.6em] mb-12 inline-block border border-slate-50">Kuptimi Shkencor</span>
                         <h2 className="text-8xl font-black tracking-tighter leading-[0.8] text-slate-800">{selectedTerm.name}</h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
-                        <div className="bg-[#fcfcff] p-16 rounded-[4.5rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
-                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.6em] mb-8">Simboli</p>
-                            <p className="text-9xl font-mono font-black text-[#ffafcc]">{selectedTerm.sym}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                        <div className="bg-[#fcfcff] p-12 rounded-[4rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
+                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-6">Simboli</p>
+                            <p className="text-7xl font-mono font-black text-[#ffafcc]">{selectedTerm.sym}</p>
                         </div>
-                        <div className="bg-[#fcfcff] p-16 rounded-[4.5rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
-                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.6em] mb-8">Njësia SI</p>
-                            <p className="text-8xl font-black text-slate-800">{selectedTerm.unit}</p>
+                        <div className="bg-[#fcfcff] p-12 rounded-[4rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
+                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-6">Njësia SI</p>
+                            <p className="text-6xl font-black text-slate-800">{selectedTerm.unit}</p>
+                        </div>
+                        <div className="bg-[#fcfcff] p-12 rounded-[4rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
+                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-6">Natyra</p>
+                            <p className="text-5xl font-black text-[#4a4e69]">{selectedTerm.nature}</p>
                         </div>
                     </div>
+                    
+                    {selectedTerm.otherUnits && (
+                      <div className="mb-16 bg-[#f8fafc] p-10 rounded-[3rem] border border-slate-50">
+                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-4 ml-8">Njësi të tjera</p>
+                        <p className="text-3xl font-bold text-slate-600 ml-8">{selectedTerm.otherUnits}</p>
+                      </div>
+                    )}
+
                     <div className="bg-[#4a4e69] text-white p-24 rounded-[4.5rem] mb-24 text-center shadow-2xl relative">
                         <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.8em] mb-10">Formula Kryesore</p>
                         <code className="text-6xl md:text-9xl font-mono font-black text-[#ffc8dd]">{selectedTerm.form}</code>
                     </div>
                     <div className="mb-32">
-                        <h4 className="text-base font-black text-[#ffafcc] uppercase tracking-[0.6em] mb-10">Përshkrimi</h4>
+                        <h4 className="text-base font-black text-[#ffafcc] uppercase tracking-[0.6em] mb-10">Kuptimi fizik</h4>
                         <p className="text-5xl text-slate-600/90 leading-tight font-medium tracking-tight">{selectedTerm.desc}</p>
                     </div>
-                    <div className="pt-20 border-t border-slate-100 text-center">
-                        <button 
-                            onClick={handleAskLibri}
-                            className="group w-full py-14 bg-gradient-to-r from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] text-white rounded-[5rem] font-black text-4xl shadow-2xl hover:scale-[1.03] active:scale-95 transition-all flex items-center justify-center gap-10 relative overflow-hidden"
-                        >
-                            <i className="fas fa-book-open"></i>
-                            <span className="relative z-10 uppercase tracking-widest">LIBRI I FIZIKËS (AI)</span>
-                        </button>
+
+                    {/* PhET Simulations Section */}
+                    <div className="pt-20 border-t border-slate-100">
+                        <h4 className="text-base font-black text-[#4a4e69] uppercase tracking-[0.6em] mb-12 text-center">Simulime PhET Colorado</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {SIMULATIONS.filter(sim => sim.category === selectedCategory).map((sim, i) => (
+                                <a 
+                                    key={i}
+                                    href={sim.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="bg-[#f8fafc] p-10 rounded-[3.5rem] border border-slate-100 flex items-center gap-8 hover:bg-white hover:shadow-xl transition-all group"
+                                >
+                                    <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-3xl text-[#ffafcc] group-hover:bg-[#ffafcc] group-hover:text-white transition-all">
+                                        <i className={`fas ${sim.icon}`}></i>
+                                    </div>
+                                    <div>
+                                        <p className="text-2xl font-black tracking-tight">{sim.title}</p>
+                                        <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">EKSPERIMENTO TANI</p>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -401,42 +411,6 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Chatbot Modal */}
-      {isChatOpen && (
-          <div className="fixed inset-0 bg-[#0f172a]/70 backdrop-blur-3xl z-[100] flex items-center justify-center p-8 animate__animated animate__fadeIn">
-            <div className="bg-white w-full max-w-4xl rounded-[6rem] shadow-2xl overflow-hidden animate__animated animate__zoomIn">
-              <div className="p-14 bg-gradient-to-r from-[#bde0fe] via-[#ffafcc] to-[#ffc8dd] flex items-center justify-between text-white">
-                <div className="flex items-center gap-10">
-                  <div className="w-24 h-24 bg-white/20 rounded-[2.5rem] flex items-center justify-center text-5xl shadow-lg border border-white/40">
-                    <i className="fas fa-robot animate-pulse"></i>
-                  </div>
-                  <div>
-                    <h3 className="font-black text-4xl tracking-tighter leading-none mb-2">Libri i Fizikës</h3>
-                    <p className="text-[12px] font-black uppercase tracking-[0.4em] opacity-60">Mësuesi yt Inteligjent</p>
-                  </div>
-                </div>
-                <button onClick={() => setIsChatOpen(false)} className="w-16 h-16 hover:bg-black/10 rounded-full transition-all flex items-center justify-center">
-                  <i className="fas fa-times text-3xl"></i>
-                </button>
-              </div>
-              <div className="p-24 max-h-[60vh] overflow-y-auto bg-[#fcf9ff]">
-                {chatLoading ? (
-                  <div className="flex flex-col items-center justify-center py-24 gap-10">
-                    <div className="w-20 h-20 border-8 border-[#ffafcc] border-t-transparent rounded-full animate-spin"></div>
-                    <p className="font-black text-slate-300 uppercase tracking-[0.6em] text-[12px]">Duke kërkuar në arkiva...</p>
-                  </div>
-                ) : (
-                  <div className="markdown-body prose prose-slate max-w-none text-slate-600 text-3xl leading-relaxed font-medium">
-                    <ReactMarkdown>{chatResponse}</ReactMarkdown>
-                  </div>
-                )}
-              </div>
-              <div className="p-12 border-t border-slate-50 flex justify-center bg-white">
-                <button onClick={() => setIsChatOpen(false)} className="px-20 py-6 bg-[#4a4e69] text-white rounded-[2.5rem] font-black text-sm uppercase tracking-[0.4em] hover:bg-black transition-all shadow-2xl">MBYLL BISEDËN</button>
-              </div>
-            </div>
-          </div>
-        )}
     </div>
   );
 };
