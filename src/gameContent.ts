@@ -373,5 +373,13 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     type: "school",
     html: "",
     url: "https://test-pisa.vercel.app/"
+  },
+  {
+    id: "loja-energjise",
+    title: "Loja e Energjisë",
+    category: "Energjia",
+    type: "school",
+    html: "",
+    url: "https://loja-e-energjise-8fes.vercel.app/"
   }
 ];
