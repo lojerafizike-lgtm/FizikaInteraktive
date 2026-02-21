@@ -17,7 +17,7 @@ const App: React.FC = () => {
     setIsWarping(true);
     setTimeout(() => {
       setShowSplash(false);
-    }, 900);
+    }, 800);
   };
 
   const navigate = (page: 'home' | 'category' | 'details' | 'games', data?: CategoryName | PhysicsTerm | null) => {
