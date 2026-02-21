@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Energjia Fizike: Moduli 10</title>
+    <style>
+        :root {
+            --bg: #0b0e14;
+            --card: #161b22;
+            --accent-pink: #d4a5b2; 
+            --accent-purple: #7c5cb2;
+            --text-main: #e6edf3;
+            --border: #30363d;
+            --success: #238636;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .container {
+            width: 850px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            color: var(--accent-pink);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+        }
+
+        canvas {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 100%;
+            height: 300px;
+        }
+
+        .interface {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .task-box {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-pink);
+        }
+
+        .formula-display {
+            display: block;
+            margin: 15px 0;
+            font-family: "Times New Roman", serif;
+            font-size: 1.4rem;
+            color: var(--accent-pink);
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        input {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            width: 100%;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--accent-pink);
+            color: var(--accent-pink);
+            padding: 15px;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: var(--accent-pink);
+            color: var(--bg);
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Laboratori Virtual i Energjisë</h1>
+
+    <div class="container">
+        <canvas id="canvas" width="800" height="300"></canvas>
+
+        <div class="interface">
+            <div class="task-box">
+                <h2 id="lvl-name" style="margin:0; font-size:1.1rem;">Niveli 1</h2>
+                <p id="lvl-desc" style="color: #8b949e;"></p>
+                <div class="formula-display" id="lvl-formula"></div>
+                <p id="lvl-data" style="font-weight: bold; color: var(--accent-purple);"></p>
+            </div>
+
+            <div class="input-section">
+                <input type="number" id="answer" placeholder="Shëno vlerën (J)...">
+                <button onclick="check()">Verifiko Rezultatin</button>
+                <div id="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    
+    let level = 1;
+    let animPos = 0;
+    let animId;
+
+    const levels = [
+        {
+            name: "Niveli 1: Energjia Potenciale Gravitacionale",
+            desc: "Llogarit Ep për një sferë në lartësi.",
+            formula: "E_p = m \u22c5 g \u22c5 h",
+            data: "m = 5 kg | h = 8 m | g = 10 m/s\u00b2",
+            goal: 400,
+            type: "p"
+        },
+        {
+            name: "Niveli 2: Energjia Kinetike",
+            desc: "Llogarit Ek për trupin në lëvizje.",
+            formula: "E_k = \u00bd \u22c5 m \u22c5 v\u00b2",
+            data: "m = 4 kg | v = 10 m/s",
+            goal: 200, // 0.5 * 4 * 100
+            type: "k"
+        },
+        {
+            name: "Niveli 3: Puna dhe Energjia",
+            desc: "Sa është lartësia (h) nëse E_p = 600 J?",
+            formula: "h = E_p / (m \u22c5 g)",
+            data: "E_p = 600 J | m = 3 kg | g = 10 m/s\u00b2",
+            goal: 20,
+            type: "p"
+        },
+        {
+            name: "Niveli 4: Shpejtësia nga Energjia",
+            desc: "Gjej shpejtësinë (v) duke përdorur E_k.",
+            formula: "v = \u221a(2E_k / m)",
+            data: "E_k = 100 J | m = 2 kg",
+            goal: 10, // sqrt(200/2)
+            type: "k"
+        },
+        {
+            name: "Niveli 5: Ruajtja e Energjisë",
+            desc: "Gjej Ep nëse Ek = 150J dhe Etot = 500J.",
+            formula: "E_{tot} = E_k + E_p",
+            data: "E_{tot} = 500 J | E_k = 150 J",
+            goal: 350,
+            type: "p"
+        }
+    ];
+
+    function draw(offset = 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const l = levels[level-1];
+
+        // Toka
+        ctx.strokeStyle = "#30363d";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(50, 250); ctx.lineTo(750, 250); ctx.stroke();
+
+        ctx.fillStyle = "#d4a5b2";
+        if(l.type === "p") {
+            // Animimi i rënies (Potenciale)
+            ctx.beginPath();
+            ctx.arc(400, 60 + offset, 15, 0, Math.PI*2);
+            ctx.fill();
+            // Vijë lartësie
+            ctx.strokeStyle = "#7c5cb2";
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.moveTo(400, 60 + offset); ctx.lineTo(400, 250); ctx.stroke();
+            ctx.setLineDash([]);
+        } else {
+            // Animimi i lëvizjes (Kinetike)
+            ctx.beginPath();
+            ctx.arc(100 + offset, 235, 15, 0, Math.PI*2);
+            ctx.fill();
+            // Efekti i shpejtësisë
+            ctx.fillStyle = "rgba(212, 165, 178, 0.3)";
+            ctx.fillRect(80 + offset, 230, -20, 10);
+        }
+    }
+
+    function check() {
+        const val = parseFloat(document.getElementById("answer").value);
+        const current = levels[level-1];
+        const feedback = document.getElementById("feedback");
+
+        if(Math.abs(val - current.goal) < 0.1) {
+            feedback.style.color = "#238636";
+            feedback.innerText = "Saktë! Simulimi po ekzekutohet...";
+            animateAction();
+        } else {
+            feedback.style.color = "#f85149";
+            feedback.innerText = "E gabuar. Kontrollo llogaritjen e v\u00b2 ose produktin mgh.";
+        }
+    }
+
+    function animateAction() {
+        let start = 0;
+        cancelAnimationFrame(animId);
+        function step() {
+            start += 8;
+            draw(start);
+            if(start < 190) {
+                animId = requestAnimationFrame(step);
+            } else {
+                setTimeout(() => {
+                    level = (level < 5) ? level + 1 : 1;
+                    init();
+                }, 800);
+            }
+        }
+        step();
+    }
+
+    function init() {
+        const l = levels[level-1];
+        document.getElementById("lvl-name").innerText = l.name;
+        document.getElementById("lvl-desc").innerText = l.desc;
+        document.getElementById("lvl-formula").innerText = l.formula;
+        document.getElementById("lvl-data").innerText = l.data;
+        document.getElementById("answer").value = "";
+        document.getElementById("feedback").innerText = "";
+        draw();
+    }
+
+    init();
+</script>
+</body>
+</html>

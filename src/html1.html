@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zhvendosja</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #00ff88;
+            --glass: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(135deg, #24243e, #302b63, #0f0c29);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        /* Animate Background */
+        .bg-animate {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: radial-gradient(circle at 50% 50%, rgba(58, 123, 213, 0.1) 0%, transparent 80%);
+            animation: pulse 8s infinite alternate;
+        }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
+
+        .container {
+            width: 100%; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .card {
+            width: 90%; max-width: 550px;
+            background: rgba(20, 20, 40, 0.85);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        /* Screens */
+        .screen { display: none; text-align: center; }
+        .screen.active { display: block; animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(50px) rotateX(-10deg); } to { opacity: 1; transform: translateY(0) rotateX(0); } }
+
+        /* Typography */
+        h1 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 4px; color: var(--primary); text-shadow: 0 0 15px var(--primary); }
+        
+        /* Buttons */
+        .btn-game {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none; border-radius: 50px; padding: 15px 40px;
+            color: white; font-family: 'Orbitron', sans-serif; font-weight: bold;
+            cursor: pointer; transition: 0.3s; margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+        }
+        .btn-game:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--primary); }
+
+        /* Math Keyboard & Input */
+        .math-display {
+            background: rgba(0,0,0,0.3); border: 2px solid var(--primary);
+            border-radius: 15px; padding: 20px; margin: 15px 0; min-height: 50px;
+            font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+        }
+        
+        .math-keyboard {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px;
+        }
+        .m-key {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            color: white; padding: 12px; border-radius: 10px; cursor: pointer;
+            font-weight: bold; transition: 0.2s;
+        }
+        .m-key:hover { background: var(--primary); color: #000; transform: translateY(-2px); }
+        .m-key.op { color: var(--accent); }
+
+        /* Options */
+        .option-box {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 15px; margin: 10px 0; cursor: pointer;
+            transition: 0.3s; font-weight: 500; text-align: left;
+        }
+        .option-box:hover { background: var(--glass); border-color: var(--primary); padding-left: 25px; }
+        .correct { background: rgba(0, 255, 136, 0.2) !important; border-color: var(--accent) !important; }
+        .wrong { background: rgba(255, 0, 85, 0.2) !important; border-color: #ff0055 !important; }
+
+        /* Progress Bar */
+        .progress-cont { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 20px 0; }
+        .progress-fill { height: 100%; background: var(--primary); border-radius: 10px; width: 0%; transition: 0.5s; box-shadow: 0 0 10px var(--primary); }
+
+        /* Calc */
+        .mini-calc { position: absolute; top: -100px; right: 0; background: #1a1a2e; border: 1px solid var(--primary); border-radius: 10px; padding: 10px; display: none; z-index: 100; }
+    </style>
+</head>
+<body>
+
+<div class="bg-animate"></div>
+
+<div class="container">
+    <div class="card">
+        <div id="start-screen" class="screen active">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🌌</div>
+            <h1>Kuic - Zhvendosja</h1>
+            <p style="opacity: 0.7;">Loja po të pret!</p>
+            <button class="btn-game" onclick="changeScreen('quiz-screen'); startTimer();">Fillo Misionin</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-family: 'Orbitron';">
+                <span>Pikët: <span id="score">0</span></span>
+                <span id="timer">05:00</span>
+            </div>
+            <div class="progress-cont"><div class="progress-fill" id="p-fill"></div></div>
+            
+            <div id="question-area"></div>
+            
+            <button id="next-btn" class="btn-game" style="display: none; width: 100%;" onclick="nextQuestion()">Vazhdo</button>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h1 id="res-title">Misioni u Krye!</h1>
+            <div id="res-score" style="font-size: 3rem; margin: 20px 0;">0</div>
+            <p id="res-msg"></p>
+            <button class="btn-game" onclick="location.reload()">Rinis Misionin</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "Çfarë paraqet zhvendosja (\\(S\\) ose \\(\\Delta x\\))?", type: "choice", options: ["Gjatësinë totale të rrugës", "Një madhësi skalare", "Vektor që bashkon fillimin me fundin", "Shpejtësinë mesatare"], correct: 2 },
+        { q: "Cila është formula në lëvizje të njëtrajtshme?", type: "choice", options: ["\\(\\Delta x = v_0 t + at^2/2\\)", "\\(\\Delta x = v \\cdot t\\)", "\\(v^2 = v_0^2 + 2aS\\)", "\\(h = v_0 t + gt^2\\)"], correct: 1 },
+        { q: "Njësia matëse e zhvendosjes në SI:", type: "choice", options: ["Sekonda", "Metër", "m/s", "Njuton"], correct: 1 },
+        { q: "Formula e zhvendosjes kur \\(v_0 = 0\\):", type: "open", answer: "S =at^2/2" },
+        { q: "Llogarit: \\(v_0=2, a=3, t=4\\). Gjej \\(\\Delta x\\).", type: "open", answer: "32" }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let userMathInput = "";
+
+    function changeScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'quiz-screen') loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = questions[current];
+        const area = document.getElementById('question-area');
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('p-fill').style.width = \`\${(current / questions.length) * 100}%\`;
+        
+        let html = \`<h3 style="margin-bottom:20px;">\${q.q}</h3>\`;
+        
+        if(q.type === 'choice') {
+            q.options.forEach((opt, i) => {
+                html += \`<div class="option-box" onclick="checkChoice(\${i}, this)">\${opt}</div>\`;
+            });
+        } else {
+            userMathInput = "";
+            html += \`
+                <div class="math-display" id="m-preview">Pritet përgjigja...</div>
+                <div class="math-keyboard">
+                    <button class="m-key" onclick="press('S=')">S=</button>
+                    <button class="m-key" onclick="press('v0')">v₀</button>
+                    <button class="m-key" onclick="press('at^2/2')">$$\\frac{at^2}{2}$$</button>
+                    <button class="m-key op" onclick="press('DEL')">⌫</button>
+                    <button class="m-key" onclick="press('7')">7</button><button class="m-key" onclick="press('8')">8</button><button class="m-key" onclick="press('9')">9</button><button class="m-key op" onclick="press('/')">÷</button>
+                    <button class="m-key" onclick="press('4')">4</button><button class="m-key" onclick="press('5')">5</button><button class="m-key" onclick="press('6')">6</button><button class="m-key op" onclick="press('*')">×</button>
+                    <button class="m-key" onclick="press('1')">1</button><button class="m-key" onclick="press('2')">2</button><button class="m-key" onclick="press('3')">3</button><button class="m-key op" onclick="press('+')">+</button>
+                </div>
+            \`;
+            setTimeout(() => { document.getElementById('next-btn').style.display = 'block'; }, 500);
+        }
+        
+        area.innerHTML = html;
+        MathJax.typeset();
+    }
+
+    window.press = (val) => {
+        const prev = document.getElementById('m-preview');
+        if(val === 'DEL') userMathInput = userMathInput.slice(0, -1);
+        else userMathInput += val;
+        
+        // Visualizing fractions and math nicely
+        let display = userMathInput.replace('at^2/2', '\\frac{at^2}{2}').replace('*', '\\cdot');
+        prev.innerHTML = \`\\(\${display}\\)\`;
+        MathJax.typesetPromise([prev]);
+    }
+
+    window.checkChoice = (idx, el) => {
+        if(document.querySelector('.correct')) return;
+        if(idx === questions[current].correct) {
+            el.classList.add('correct');
+            score += 20;
+        } else {
+            el.classList.add('wrong');
+        }
+        document.getElementById('score').innerText = score;
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else {
+            changeScreen('result-screen');
+            document.getElementById('res-score').innerText = score;
+            document.getElementById('res-msg').innerText = score >= 60 ? "Te Lumte!." : "Provo përsëri! Shkenca kërkon mund.";
+        }
+    }
+
+    function startTimer() {
+        let time = 300;
+        setInterval(() => {
+            time--;
+            let m = Math.floor(time/60), s = time%60;
+            document.getElementById('timer').innerText = \`\${m}:\${s < 10 ? '0'+s : s}\`;
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>

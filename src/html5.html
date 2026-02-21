@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Mësojmë Impulsin dhe Momentin</title>
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #f093fb;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-header {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .container {
+            width: 900px;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        canvas {
+            background: #020617;
+            border-radius: 15px;
+            width: 100%;
+            height: 300px;
+            border: 2px solid var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .interface {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 25px;
+        }
+
+        .level-info {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .control-panel {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 { color: var(--primary); margin-top: 0; }
+        
+        .formula-box {
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--accent);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        input {
+            background: #334155;
+            border: 2px solid var(--secondary);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <h1>🚀 Laboratori Virtual i Fizikës</h1>
+        <p>Mjeshtëro Impulsin dhe Momentin përmes sfidave</p>
+    </div>
+
+    <div class="container">
+        <canvas id="gameCanvas" width="800" height="300"></canvas>
+
+        <div class="interface">
+            <div class="level-info">
+                <h2 id="lvl-title">Niveli 1</h2>
+                <p id="lvl-desc">Përshkrimi po ngarkohet...</p>
+                <div class="formula-box" id="lvl-formula">p = m × v</div>
+                <p id="lvl-data">Të dhënat: ...</p>
+            </div>
+
+            <div class="control-panel">
+                <label style="margin-bottom: 8px;">Rezultati yt:</label>
+                <input type="number" id="user-input" placeholder="Shëno vlerën..." step="any">
+                <button onclick="checkAnswer()">Verifiko Fizikën</button>
+                <div id="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    let level = 1;
+    let animFrame = 0;
+    let isMoving = false;
+
+    const levels = [
+        {
+            title: "Niveli 1: Impulsi i Trupit",
+            desc: "Një makinë ka masën 1200kg dhe lëviz me shpejtësi 20m/s. Sa është impulsi i saj (p)?",
+            formula: "p = m \u00d7 v",
+            data: "m = 1200 kg | v = 20 m/s",
+            goal: 24000,
+            unit: "kg·m/s"
+        },
+        {
+            title: "Niveli 2: Ruajtja e Impulsit",
+            desc: "Sfera A (4kg, 6m/s) godet sferën B (2kg) që është në prehje. Pas goditjes ato lëvizin bashkë. Gjej shpejtësinë finale (V).",
+            formula: "m1v1 + m2v2 = (m1+m2)V",
+            data: "m1=4kg, v1=6 | m2=2kg, v2=0",
+            goal: 4,
+            unit: "m/s"
+        },
+        {
+            title: "Niveli 3: Momenti i Forcës",
+            desc: "Për të balancuar një levë, një forcë prej 60N vendoset 2m larg qendrës. Sa duhet të jetë forca tjetër në distancë 1.5m?",
+            formula: "F1 \u00d7 d1 = F2 \u00d7 d2",
+            data: "F1=60N, d1=2m | d2=1.5m",
+            goal: 80,
+            unit: "N"
+        },
+        {
+            title: "Niveli 4: Impulsi i Forcës (Impulsi)",
+            desc: "Një lojtar godet topin me një forcë 150N për një kohë prej 0.2 sekonda. Sa është ndryshimi i impulsit (\u0394p)?",
+            formula: "I = F \u00d7 \u0394t = \u0394p",
+            data: "F = 150 N | \u0394t = 0.2 s",
+            goal: 30,
+            unit: "kg·m/s"
+        },
+        {
+            title: "Niveli 5: Ekuilibri i Momenteve",
+            desc: "Një dërrasë 4m e gjatë ka mbështetjen në mes. Një gur 10kg është në skajin e majtë (2m). Sa kg duhet të jetë guri në distancën 1m djathtas?",
+            formula: "m1 \u00d7 d1 = m2 \u00d7 d2",
+            data: "m1=10kg, d1=2m | d2=1m",
+            goal: 20,
+            unit: "kg"
+        }
+    ];
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const l = levels[level-1];
+
+        if(level === 3 || level === 5) { // Vizatimi i Levës
+            ctx.strokeStyle = "white"; ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.moveTo(150, 200); ctx.lineTo(650, 200); ctx.stroke();
+            ctx.fillStyle = "#475569";
+            ctx.beginPath(); ctx.moveTo(400, 200); ctx.lineTo(375, 250); ctx.lineTo(425, 250); ctx.fill();
+        } else { // Vizatimi i Impulsit
+            ctx.fillStyle = "#334155";
+            ctx.fillRect(0, 250, 800, 50);
+            ctx.fillStyle = varColor();
+            ctx.beginPath();
+            ctx.arc(100 + animFrame, 230, 20, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#ef4444";
+            ctx.fillRect(750, 180, 15, 70);
+        }
+    }
+
+    function varColor() {
+        return level % 2 === 0 ? "#a855f7" : "#00f2fe";
+    }
+
+    function checkAnswer() {
+        const val = parseFloat(document.getElementById("user-input").value);
+        const current = levels[level-1];
+        const feedback = document.getElementById("feedback");
+
+        if(val === current.goal) {
+            feedback.style.color = "var(--success)";
+            feedback.innerText = "Saktë! Rezultati: " + current.goal + " " + current.unit;
+            animateSuccess();
+        } else {
+            feedback.style.color = "var(--error)";
+            feedback.innerText = "E gabuar. Rishiko formulën!";
+        }
+    }
+
+    function animateSuccess() {
+        isMoving = true;
+        let start = Date.now();
+        let timer = setInterval(() => {
+            let timePassed = Date.now() - start;
+            if (timePassed >= 1000) {
+                clearInterval(timer);
+                isMoving = false;
+                animFrame = 0;
+                nextLevel();
+            }
+            animFrame += 15;
+            draw();
+        }, 20);
+    }
+
+    function nextLevel() {
+        if(level < levels.length) {
+            level++;
+            initLevel();
+        } else {
+            alert("Urime! Ti i kalove të gjitha sfidat e fizikës!");
+            level = 1;
+            initLevel();
+        }
+    }
+
+    function initLevel() {
+        const l = levels[level-1];
+        document.getElementById("lvl-title").innerText = l.title;
+        document.getElementById("lvl-desc").innerText = l.desc;
+        document.getElementById("lvl-formula").innerText = l.formula;
+        document.getElementById("lvl-data").innerText = "Të dhënat: " + l.data;
+        document.getElementById("user-input").value = "";
+        document.getElementById("feedback").innerText = "";
+        animFrame = 0;
+        draw();
+    }
+
+    initLevel();
+</script>
+</body>
+</html>
