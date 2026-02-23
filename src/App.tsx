@@ -88,6 +88,7 @@ const App: React.FC = () => {
       case 'Energjia': return { icon: 'fa-fire-flame-curved', color: 'bg-[#ffafcc]', text: 'text-[#fb6f92]' };
       case 'Elektriciteti': return { icon: 'fa-bolt-lightning', color: 'bg-[#cdb4db]', text: 'text-[#8e7dbe]' };
       case 'Magnetizmi': return { icon: 'fa-magnet', color: 'bg-[#a2d2ff]', text: 'text-[#4895ef]' };
+      case 'Libri Interaktiv': return { icon: 'fa-book-open', color: 'bg-[#ffc8dd]', text: 'text-[#ff758f]' };
       default: return { icon: 'fa-atom', color: 'bg-slate-100', text: 'text-slate-400' };
     }
   };
@@ -322,6 +323,35 @@ const App: React.FC = () => {
                               >
                                   LUAJ LOJEN <i className="fas fa-play text-[8px]"></i>
                               </a>
+                          </div>
+                      </div>
+                    )}
+
+                    {/* Interactive Book Row */}
+                    {selectedTerm.html && (
+                      <div className="pt-12 border-t border-slate-100">
+                          <div className="bg-[#f8fafc] p-8 rounded-[3rem] border border-slate-50 flex items-center justify-between shadow-inner">
+                              <div className="flex items-center gap-6 ml-6">
+                                  <div className="w-16 h-16 bg-[#ff758f] text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                                      <i className="fas fa-book-open"></i>
+                                  </div>
+                                  <div>
+                                      <h4 className="text-2xl font-black tracking-tight">Libri Interaktiv</h4>
+                                      <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">EKSPLORO LIBRIN E PLOTË</p>
+                                  </div>
+                              </div>
+                              <button 
+                                  onClick={() => {
+                                      const newWindow = window.open('', '_blank');
+                                      if (newWindow) {
+                                        newWindow.document.write(selectedTerm.html!);
+                                        newWindow.document.close();
+                                      }
+                                  }}
+                                  className="mr-6 px-12 py-4 bg-[#ff758f] text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-[#ff4d6d] transition-all shadow-xl flex items-center gap-3"
+                              >
+                                  HAP LIBRIN <i className="fas fa-external-link-alt text-[8px]"></i>
+                              </button>
                           </div>
                       </div>
                     )}

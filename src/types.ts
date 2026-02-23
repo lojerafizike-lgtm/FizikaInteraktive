@@ -8,12 +8,13 @@ export interface PhysicsTerm {
   nature: 'Vektoriale' | 'Skalare' | '-';
   desc: string;
   phetUrl?: string;
+  html?: string;
   catName?: string;
   img?: string;
   vid?: string;
 }
 
-export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Libri Interaktive";
+export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Libri Interaktiv";
 
 export interface PhysicsData {
   [key: string]: PhysicsTerm[];
