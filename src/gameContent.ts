@@ -381,5 +381,21 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     type: "school",
     html: "",
     url: "https://loja-e-energjise-8fes.vercel.app/"
+  },
+  {
+    id: "ushtrime-fizike",
+    title: "ushtrime fizike",
+    category: "Ushtrime",
+    type: "digital",
+    url: "https://ushtrimefizike.manus.space/",
+    html: ""
+  },
+  {
+    id: "paketa-e-gjelber",
+    title: "Paketa e Gjelber",
+    category: "Mjedisi",
+    type: "school",
+    url: "https://portiergame-bjm8icrv.manus.space/",
+    html: ""
   }
 ];

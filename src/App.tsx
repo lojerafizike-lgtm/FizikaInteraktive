@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { ALL_PHYSICS_DATA, GAMES } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
+import { askAlbertEinstein } from './aiService';
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -12,7 +13,32 @@ const App: React.FC = () => {
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
   const [searchTerm, setSearchTerm] = useState("");
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai', text: string }[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isChatLoading, setIsChatLoading] = useState(false);
   
+  const handleSendMessage = async () => {
+    if (!chatInput.trim() || !selectedTerm || isChatLoading) return;
+
+    const userMsg = chatInput.trim();
+    setChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setChatInput("");
+    setIsChatLoading(true);
+
+    try {
+      const response = await askAlbertEinstein(
+        selectedTerm.name,
+        selectedTerm.desc,
+        userMsg
+      );
+      setChatMessages(prev => [...prev, { role: 'ai', text: response }]);
+    } catch {
+      setChatMessages(prev => [...prev, { role: 'ai', text: "Më vjen keq, diçka shkoi gabim. Provojeni përsëri!" }]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
   const handleStart = () => {
     setIsWarping(true);
     setTimeout(() => {
@@ -24,6 +50,7 @@ const App: React.FC = () => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
+        setChatMessages([]);
     }
     setActivePage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -298,6 +325,66 @@ const App: React.FC = () => {
                           </div>
                       </div>
                     )}
+
+                    {/* AI Chat Section */}
+                    <div className="mt-20 pt-12 border-t border-slate-100">
+                      <div className="flex items-center gap-6 mb-10">
+                        <div className="w-16 h-16 bg-[#ffafcc] text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg">
+                          <i className="fas fa-user-tie"></i>
+                        </div>
+                        <div>
+                          <h4 className="text-2xl font-black tracking-tight">Pyet Albert Einstein</h4>
+                          <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">AI CHATBOT INTERAKTIV</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-[#f8fafc] rounded-[3rem] p-8 border border-slate-50 shadow-inner">
+                        <div className="max-h-[400px] overflow-y-auto mb-8 space-y-6 px-4">
+                          {chatMessages.length === 0 && (
+                            <div className="text-center py-10">
+                              <p className="text-slate-400 italic text-xl">"Imagjinata është më e rëndësishme se dija."</p>
+                              <p className="text-slate-300 text-sm mt-2">- Albert Einstein</p>
+                            </div>
+                          )}
+                          {chatMessages.map((msg, idx) => (
+                            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-[80%] p-6 rounded-[2rem] text-xl font-medium leading-tight shadow-sm ${
+                                msg.role === 'user' 
+                                  ? 'bg-[#4a4e69] text-white rounded-tr-none' 
+                                  : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'
+                              }`}>
+                                {msg.text}
+                              </div>
+                            </div>
+                          ))}
+                          {isChatLoading && (
+                            <div className="flex justify-start">
+                              <div className="bg-white text-slate-400 p-6 rounded-[2rem] rounded-tl-none border border-slate-100 italic animate-pulse">
+                                Albert po mendon...
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="relative">
+                          <input 
+                            type="text"
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                            placeholder="Pyet diçka rreth këtij termi..."
+                            className="w-full bg-white border-4 border-white shadow-xl rounded-[2.5rem] px-10 py-6 text-xl focus:outline-none focus:border-[#ffafcc]/30 transition-all pr-24"
+                          />
+                          <button 
+                            onClick={handleSendMessage}
+                            disabled={isChatLoading || !chatInput.trim()}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-[#ffafcc] text-white rounded-full flex items-center justify-center hover:bg-[#ff8fab] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                          >
+                            <i className="fas fa-paper-plane"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                 </div>
             </div>
           </div>

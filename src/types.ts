@@ -5,7 +5,7 @@ export interface PhysicsTerm {
   form: string;
   unit: string;
   otherUnits?: string;
-  nature: 'Vektoriale' | 'Skalare';
+  nature: 'Vektoriale' | 'Skalare' | '-';
   desc: string;
   phetUrl?: string;
   catName?: string;
@@ -13,7 +13,7 @@ export interface PhysicsTerm {
   vid?: string;
 }
 
-export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi";
+export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Libri Interaktive";
 
 export interface PhysicsData {
   [key: string]: PhysicsTerm[];
