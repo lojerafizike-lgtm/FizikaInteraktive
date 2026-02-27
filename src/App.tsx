@@ -155,17 +155,17 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-8 py-16">
+      <main className="max-w-7xl mx-auto px-4 py-8 md:px-8 md:py-16">
         {/* Home: Categories & Search */}
         {activePage === 'home' && (
           <div className="animate__animated animate__fadeIn">
             <div className="max-w-4xl mb-16">
-              <h2 className="text-7xl md:text-8xl font-black mb-10 tracking-tighter leading-[0.85]">
+              <h2 className="text-4xl md:text-8xl font-black mb-10 tracking-tighter leading-[0.85]">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bde0fe] to-[#cdb4db]">"Burimi i vetëm</span> <br/> 
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#cdb4db] to-[#ffafcc]">i dijes është</span> <br/> 
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffafcc] to-[#bde0fe]">përvoja"</span>
                 <br/>
-                <span className="text-2xl md:text-3xl font-medium italic text-slate-400 block mt-10 tracking-[0.6em] uppercase opacity-50">~ Albert Einstein</span>
+                <span className="text-xl md:text-3xl font-medium italic text-slate-400 block mt-10 tracking-[0.6em] uppercase opacity-50">~ Albert Einstein</span>
               </h2>
             </div>
 
@@ -211,14 +211,14 @@ const App: React.FC = () => {
                     <div 
                       key={i} 
                       onClick={() => navigate('category', cat)}
-                      className="group relative bg-white rounded-[4rem] p-12 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 h-[420px] flex flex-col justify-between card-fusha overflow-hidden"
+                      className="group relative bg-white rounded-[2.5rem] md:rounded-[4rem] p-6 md:p-12 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-700 h-[260px] md:h-[420px] flex flex-col justify-between card-fusha overflow-hidden"
                     >
                       <div className={`absolute -right-20 -top-20 w-64 h-64 ${theme.color} opacity-10 rounded-full group-hover:scale-[3.5] transition-transform duration-1000`}></div>
-                      <div className={`w-32 h-32 ${theme.color} rounded-[2.5rem] flex items-center justify-center ${theme.text} text-7xl shadow-inner group-hover:scale-110 group-hover:rotate-12 transition-all relative z-10`}>
+                      <div className={`w-16 h-16 md:w-32 md:h-32 ${theme.color} rounded-2xl md:rounded-[2.5rem] flex items-center justify-center ${theme.text} text-3xl md:text-7xl shadow-inner group-hover:scale-110 group-hover:rotate-12 transition-all relative z-10`}>
                         <i className={`fas ${theme.icon}`}></i>
                       </div>
                       <div className="relative z-10">
-                        <h3 className="text-5xl font-black mb-4 tracking-tighter">{cat}</h3>
+                        <h3 className="text-2xl md:text-5xl font-black mb-2 md:mb-4 tracking-tighter">{cat}</h3>
                         <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Eksploro Terma</p>
                       </div>
                     </div>
@@ -235,21 +235,21 @@ const App: React.FC = () => {
             <button onClick={() => navigate('home')} className="mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
               <i className="fas fa-arrow-left"></i> Kthehu te Fushat
             </button>
-            <div className="flex items-center gap-12 mb-20">
-              <div className={`w-28 h-28 ${getCategoryTheme(selectedCategory).color} rounded-[2.5rem] flex items-center justify-center ${getCategoryTheme(selectedCategory).text} text-6xl shadow-xl`}>
+            <div className="flex items-center gap-4 md:gap-12 mb-8 md:mb-20">
+              <div className={`w-16 h-16 md:w-28 md:h-28 ${getCategoryTheme(selectedCategory).color} rounded-2xl md:rounded-[2.5rem] flex items-center justify-center ${getCategoryTheme(selectedCategory).text} text-3xl md:text-6xl shadow-xl`}>
                 <i className={`fas ${getCategoryTheme(selectedCategory).icon}`}></i>
               </div>
-              <h2 className="text-7xl font-black tracking-tighter text-slate-800">{selectedCategory}</h2>
+              <h2 className="text-3xl md:text-7xl font-black tracking-tighter text-slate-800">{selectedCategory}</h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
               {ALL_PHYSICS_DATA[selectedCategory].map((term, i) => (
                 <div 
                   key={i}
                   onClick={() => navigate('details', term)}
-                  className="bg-white p-8 rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border border-transparent hover:border-[#ffafcc]/20 group flex flex-col h-60 justify-between card-fusha"
+                  className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border border-transparent hover:border-[#ffafcc]/20 group flex flex-col h-48 md:h-60 justify-between card-fusha"
                 >
-                  <div className="text-[10px] font-black text-[#ffafcc] uppercase tracking-[0.4em]">{term.sym}</div>
-                  <h4 className="text-3xl font-black group-hover:text-[#ffafcc] transition-colors leading-none tracking-tighter">{term.name}</h4>
+                  <div className="text-[8px] md:text-[10px] font-black text-[#ffafcc] uppercase tracking-[0.4em]">{term.sym}</div>
+                  <h4 className="text-lg md:text-3xl font-black group-hover:text-[#ffafcc] transition-colors leading-none tracking-tighter">{term.name}</h4>
                   <div className="flex items-center gap-2 text-slate-300 font-black uppercase text-[9px] tracking-[0.2em] group-hover:text-slate-800 transition-colors">
                     DETAJET <i className="fas fa-arrow-right text-[7px] ml-1"></i>
                   </div>
@@ -290,6 +290,13 @@ const App: React.FC = () => {
                       <div className="mb-12 bg-[#f8fafc] p-8 rounded-[2.5rem] border border-slate-50">
                         <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-3 ml-6">Njësi të tjera</p>
                         <p className="text-2xl font-bold text-slate-600 ml-6">{selectedTerm.otherUnits}</p>
+                      </div>
+                    )}
+
+                    {selectedTerm.teTjera && (
+                      <div className="mb-12 bg-[#f8fafc] p-8 rounded-[2.5rem] border border-slate-50">
+                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-3 ml-6">Të tjera</p>
+                        <p className="text-2xl font-bold text-slate-600 ml-6">{selectedTerm.teTjera}</p>
                       </div>
                     )}
 

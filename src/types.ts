@@ -5,6 +5,7 @@ export interface PhysicsTerm {
   form: string;
   unit: string;
   otherUnits?: string;
+  teTjera?: string;
   nature: 'Vektoriale' | 'Skalare' | '-';
   desc: string;
   phetUrl?: string;
