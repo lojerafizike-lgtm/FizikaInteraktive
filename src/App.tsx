@@ -293,13 +293,6 @@ const App: React.FC = () => {
                       </div>
                     )}
 
-                    {selectedTerm.teTjera && (
-                      <div className="mb-12 bg-[#f8fafc] p-8 rounded-[2.5rem] border border-slate-50">
-                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-3 ml-6">Të tjera</p>
-                        <p className="text-2xl font-bold text-slate-600 ml-6">{selectedTerm.teTjera}</p>
-                      </div>
-                    )}
-
                     <div className="bg-[#4a4e69] text-white p-16 rounded-[3.5rem] mb-16 text-center shadow-2xl relative">
                         <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.6em] mb-6">Formula Kryesore</p>
                         <code className="text-5xl md:text-7xl font-mono font-black text-[#ffc8dd]">{selectedTerm.form}</code>
@@ -311,7 +304,7 @@ const App: React.FC = () => {
 
                     {/* Interactive Game Row */}
                     {selectedTerm.phetUrl && (
-                      <div className="pt-12 border-t border-slate-100">
+                      <div className="pt-12 border-t border-slate-100 mb-12">
                           <div className="bg-[#f8fafc] p-8 rounded-[3rem] border border-slate-50 flex items-center justify-between shadow-inner">
                               <div className="flex items-center gap-6 ml-6">
                                   <div className="w-16 h-16 bg-[#4a4e69] text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
@@ -333,6 +326,26 @@ const App: React.FC = () => {
                           </div>
                       </div>
                     )}
+
+                    {/* Të tjera Section Styled like Game Row */}
+                    <div className="pt-12 border-t border-slate-100 mb-12">
+                        <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
+                            <div className="flex items-center gap-6 mb-8">
+                                <div className="w-16 h-16 bg-[#cdb4db] text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                                    <i className="fas fa-info-circle"></i>
+                                </div>
+                                <div>
+                                    <h4 className="text-2xl font-black tracking-tight">Të tjera</h4>
+                                    <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">INFORMACION SHTESË PËR TERMIN</p>
+                                </div>
+                            </div>
+                            <div className="bg-[#fcfdfe] p-8 rounded-[2rem] border border-slate-50 shadow-inner">
+                                <p className="text-2xl font-bold text-slate-600 leading-relaxed">
+                                    {selectedTerm.teTjera || "Nuk ka informacion shtesë për këtë term."}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Interactive Book Row */}
                     {selectedTerm.html && (
