@@ -58,6 +58,16 @@ const App: React.FC = () => {
     return results;
   }, [searchTerm]);
 
+  const allTerms = useMemo(() => {
+    const terms: (PhysicsTerm & { category: string })[] = [];
+    Object.entries(ALL_PHYSICS_DATA).forEach(([cat, catTerms]) => {
+      catTerms.forEach(term => {
+        terms.push({ ...term, category: cat });
+      });
+    });
+    return terms.sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
+
   const getCategoryTheme = (cat: string) => {
     switch (cat) {
       case 'Kinematika': return { icon: 'fa-person-running', color: 'bg-[#bde0fe]', text: 'text-[#5fa8d3]' };
@@ -418,7 +428,7 @@ const App: React.FC = () => {
                             Dëshiron të mësosh më shumë? Bisedo rreth të gjitha madhësive fizike në faqen tonë.
                           </p>
                           <button 
-                            onClick={() => navigate('all-terms')}
+                            onClick={() => window.location.href = '/help'}
                             className="px-16 py-6 bg-[#ffafcc] text-white rounded-[2.5rem] font-black text-lg uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4 mx-auto"
                           >
                             VAZHDO <i className="fas fa-arrow-right text-sm"></i>
@@ -506,24 +516,27 @@ const App: React.FC = () => {
               <i className="fas fa-arrow-left"></i> Kthehu mbrapa
             </button>
             
-            <div className="w-full max-w-6xl mx-auto">
-              {/* Chatbase Section */}
-              <div className="bg-white rounded-[3rem] md:rounded-[4rem] shadow-2xl overflow-hidden border-[4px] md:border-[8px] border-white h-[600px] md:h-[800px] relative">
-                <div className="absolute inset-0 bg-slate-50 flex items-center justify-center">
-                  <div className="text-center p-8 md:p-12">
-                    <i className="fas fa-robot text-4xl md:text-6xl text-slate-200 mb-6 animate-bounce"></i>
-                    <h3 className="text-xl md:text-2xl font-black text-slate-400">Duke hapur Chatbot-in...</h3>
-                    <p className="text-sm md:text-base text-slate-300 mt-4">Nëse nuk hapet, ju lutem kontrolloni konfigurimin e Chatbase.</p>
-                  </div>
+            <div className="w-full max-w-4xl mx-auto">
+              {/* Terms List */}
+              <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-50 flex flex-col">
+                <h3 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 tracking-tighter">Të gjitha Termat</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {allTerms.map((term, i) => (
+                    <div 
+                      key={i}
+                      onClick={() => navigate('details', term)}
+                      className="p-4 md:p-6 rounded-xl md:rounded-2xl hover:bg-[#f8fafc] cursor-pointer transition-all group border border-slate-100"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">{term.category}</span>
+                          <h5 className="text-base md:text-xl font-bold group-hover:text-[#ffafcc] transition-colors">{term.name}</h5>
+                        </div>
+                        <i className="fas fa-chevron-right text-[10px] text-slate-200 group-hover:text-[#ffafcc] transition-all"></i>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <iframe
-                  src="https://www.chatbase.co/chatbot-iframe/3rF_RisF8LluAGxvtEWe6"
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  className="relative z-10"
-                  title="Albert Einstein AI Chat"
-                ></iframe>
               </div>
             </div>
           </div>
