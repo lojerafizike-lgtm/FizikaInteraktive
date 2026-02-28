@@ -6,7 +6,7 @@ interface TermDetailsTabsProps {
 }
 
 const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
-  const [activeTab, setActiveTab] = useState<'mjet' | 'video' | 'ushtrime' | 'loje'>('mjet');
+  const [activeTab, setActiveTab] = useState<'mjet' | 'video' | 'foto' | 'ushtrime' | 'loje'>('mjet');
   const [showSolutionPanel, setShowSolutionPanel] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
   
@@ -27,12 +27,13 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
         {[
           { id: 'mjet', icon: '📏', label: 'Mjet Matës', color: 'bg-[#ffc8dd] text-slate-800' },
           { id: 'video', icon: '🎥', label: 'Video', color: 'bg-[#ffafcc] text-white' },
+          { id: 'foto', icon: '🖼️', label: 'Foto', color: 'bg-[#cdb4db] text-white' },
           { id: 'ushtrime', icon: '🧠', label: 'Ushtrime', color: 'bg-[#a2d2ff] text-slate-800' },
           { id: 'loje', icon: '🎮', label: 'Lojë', color: 'bg-[#4a4e69] text-white' }
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as 'mjet' | 'video' | 'ushtrime' | 'loje')}
+            onClick={() => setActiveTab(tab.id as 'mjet' | 'video' | 'foto' | 'ushtrime' | 'loje')}
             className={`px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center gap-2 ${
               activeTab === tab.id ? `${tab.color} shadow-lg scale-105` : 'bg-slate-50 text-slate-400 hover:bg-slate-100 border border-slate-200'
             }`}
@@ -57,9 +58,44 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
         {/* 2. VIDEO */}
         {activeTab === 'video' && (
           <div className="animate__animated animate__fadeInUp text-center py-12">
-            <i className="fas fa-video text-6xl text-slate-300 mb-6"></i>
-            <h4 className="text-2xl font-black text-slate-400 mb-2">Video Shpjeguese</h4>
-            <p className="text-slate-400">Këtu do të vendoset videoja për këtë term.</p>
+            {term.vid ? (
+              <div className="max-w-2xl mx-auto">
+                <div className="aspect-video rounded-2xl overflow-hidden shadow-lg border-4 border-white mb-6 bg-slate-100">
+                  <iframe 
+                    src={term.vid} 
+                    title={`Video për ${term.name}`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <h4 className="text-2xl font-black text-slate-400 mb-2">Video Shpjeguese</h4>
+              </div>
+            ) : (
+              <>
+                <i className="fas fa-video text-6xl text-slate-300 mb-6"></i>
+                <h4 className="text-2xl font-black text-slate-400 mb-2">Video Shpjeguese</h4>
+                <p className="text-slate-400">Këtu do të vendoset videoja për këtë term.</p>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* FOTO */}
+        {activeTab === 'foto' && (
+          <div className="animate__animated animate__fadeInUp text-center py-12">
+            {term.img ? (
+              <div className="max-w-2xl mx-auto">
+                <img src={term.img} alt={term.name} className="w-full h-auto rounded-2xl shadow-lg border-4 border-white mb-6" referrerPolicy="no-referrer" />
+                <h4 className="text-2xl font-black text-slate-400 mb-2">Foto Ilustruese</h4>
+              </div>
+            ) : (
+              <>
+                <i className="fas fa-image text-6xl text-slate-300 mb-6"></i>
+                <h4 className="text-2xl font-black text-slate-400 mb-2">Foto Ilustruese</h4>
+                <p className="text-slate-400">Këtu do të vendoset fotoja për këtë term.</p>
+              </>
+            )}
           </div>
         )}
 

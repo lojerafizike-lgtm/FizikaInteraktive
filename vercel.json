@@ -2,19 +2,19 @@
   "rewrites": [
     {
       "source": "/help",
-      "destination": "https://chatbase.co/{agentId}/help"
+      "destination": "https://chatbase.co/3rF_RisF8LluAGxvtEWe6/help"
     },
     {
       "source": "/help/:path*",
-      "destination": "https://chatbase.co/{agentId}/help/:path*"
+      "destination": "https://chatbase.co/3rF_RisF8LluAGxvtEWe6/help/:path*"
     },
     {
       "source": "/__cb/:path*",
       "destination": "https://chatbase.co/__cb/:path*"
     },
     {
-      "source": "/api/chat/{agentId}/:path*",
-      "destination": "https://chatbase.co/api/chat/{agentId}/:path*"
+      "source": "/api/chat/3rF_RisF8LluAGxvtEWe6/:path*",
+      "destination": "https://chatbase.co/api/chat/3rF_RisF8LluAGxvtEWe6/:path*"
     }
   ]
 }
