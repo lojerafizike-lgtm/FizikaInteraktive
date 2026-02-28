@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { PhysicsTerm } from '../types';
+import { instrumentsData, buildSim } from '../instrumentsData';
+import '../instruments.css';
 
 interface TermDetailsTabsProps {
   term: PhysicsTerm;
@@ -47,13 +49,52 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
       <div className="relative z-10 min-h-[300px] bg-slate-50/50 rounded-[2rem] p-6 md:p-8 border-2 border-slate-100 overflow-hidden">
         
         {/* 1. MJET MATËS */}
-        {activeTab === 'mjet' && (
-          <div className="animate__animated animate__fadeInUp text-center py-12">
-            <i className="fas fa-ruler-combined text-6xl text-slate-300 mb-6"></i>
-            <h4 className="text-2xl font-black text-slate-400 mb-2">Mjet Matës</h4>
-            <p className="text-slate-400">Këtu do të vendoset mjeti matës interaktiv.</p>
-          </div>
-        )}
+        {activeTab === 'mjet' && (() => {
+          const matchedInstrument = instrumentsData.find(inst => 
+            term.name.toLowerCase().includes(inst.name.toLowerCase())
+          );
+
+          if (matchedInstrument) {
+            return (
+              <div className="animate__animated animate__fadeInUp">
+                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                  <div className="w-full md:w-1/2 flex justify-center">
+                    <div 
+                      className="w-full max-w-[300px]"
+                      dangerouslySetInnerHTML={{ __html: buildSim(matchedInstrument.simType) }}
+                    />
+                  </div>
+                  <div className="w-full md:w-1/2 text-left">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-md" style={{ background: 'linear-gradient(135deg, #ffc8dd, #ffafcc)', color: 'white' }}>
+                        {matchedInstrument.icon}
+                      </div>
+                      <div>
+                        <h4 className="text-2xl font-black text-slate-700">{matchedInstrument.instrument}</h4>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mjeti Matës</p>
+                      </div>
+                    </div>
+                    <p className="text-slate-600 leading-relaxed font-medium mb-6">
+                      {matchedInstrument.desc}
+                    </p>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm inline-block">
+                      <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">Kategoria</p>
+                      <p className="font-bold text-[#ffafcc]">{matchedInstrument.cat}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="animate__animated animate__fadeInUp text-center py-12">
+              <i className="fas fa-ruler-combined text-6xl text-slate-300 mb-6"></i>
+              <h4 className="text-2xl font-black text-slate-400 mb-2">Mjet Matës</h4>
+              <p className="text-slate-400">Nuk u gjet asnjë mjet matës specifik për këtë term.</p>
+            </div>
+          );
+        })()}
 
         {/* 2. VIDEO */}
         {activeTab === 'video' && (

@@ -1,0 +1,557 @@
+/* ===== SIMULATIONS ===== */
+.sim-container {
+  width: 100%; height: 200px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+/* RULER */
+.ruler-sim {
+  background: linear-gradient(135deg, #FFF5F8, #F5EEFF);
+  flex-direction: column; gap: 10px;
+}
+.ruler {
+  width: 85%; height: 44px;
+  background: linear-gradient(180deg, #FFFDE0 0%, #FFF3A3 100%);
+  border-radius: 6px;
+  border: 2px solid #E8D84C;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(232,216,76,0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+}
+.ruler-marks {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: flex-end; padding: 0 8px;
+}
+.ruler-mark {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+}
+.ruler-mark .line { background: #A89A20; display: block; }
+.ruler-mark .big { width: 2px; height: 20px; }
+.ruler-mark .mid { width: 1.5px; height: 14px; }
+.ruler-mark .small { width: 1px; height: 9px; }
+.ruler-mark .label {
+  font-size: 9px; font-weight: 700; color: #7A6C10;
+  position: absolute; bottom: 4px;
+}
+.ruler-object {
+  position: absolute;
+  top: -28px; left: 20%;
+  width: 45%; height: 24px;
+  background: linear-gradient(135deg, var(--pink-deep, #FF8FA3), var(--lavender, #C8A8E9));
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(255,100,130,0.4);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 10px; font-weight: 700;
+  animation: measureSlide 3s ease-in-out infinite;
+}
+@keyframes measureSlide {
+  0%,100% { left: 15%; }
+  50% { left: 35%; }
+}
+
+/* THERMOMETER */
+.thermo-sim {
+  background: linear-gradient(135deg, #FFF0F5, #F0F8FF);
+  gap: 15px;
+}
+.thermometer {
+  width: 40px;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+}
+.thermo-tube {
+  width: 18px; height: 120px;
+  background: rgba(255,255,255,0.9);
+  border: 3px solid #DDD;
+  border-radius: 30px 30px 0 0;
+  border-bottom: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 2px 0 6px rgba(0,0,0,0.05), 2px 2px 8px rgba(200,200,200,0.3);
+}
+.thermo-mercury {
+  position: absolute; bottom: 0; left: 3px; right: 3px;
+  background: linear-gradient(180deg, #FF6B9D, #FF3366);
+  border-radius: 4px 4px 0 0;
+  animation: mercuryRise 3s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(255,100,150,0.5);
+}
+@keyframes mercuryRise {
+  0%,100% { height: 40%; }
+  50% { height: 75%; }
+}
+.thermo-bulb {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, #FF6B9D, #FF3366);
+  border-radius: 50%;
+  border: 3px solid #DDD;
+  box-shadow: 0 0 12px rgba(255,100,150,0.5), 2px 2px 8px rgba(200,200,200,0.3);
+}
+.thermo-scale {
+  height: 120px; display: flex; flex-direction: column;
+  justify-content: space-between; padding: 4px 0;
+}
+.thermo-label {
+  font-size: 9px; font-weight: 700; color: var(--text, #5A4A6A);
+  display: flex; align-items: center; gap: 4px;
+}
+.thermo-label::before { content: ''; width: 8px; height: 2px; background: var(--text-light, #9A8AAA); display: block; }
+.thermo-reading {
+  text-align: center;
+  font-size: 1.2rem; font-weight: 800;
+  color: #FF3366;
+  animation: tempChange 3s ease-in-out infinite;
+}
+@keyframes tempChange {
+  0%,100% { content: ''; }
+}
+
+/* SCALE/BALANCE */
+.scale-sim {
+  background: linear-gradient(135deg, #F5EEFF, #E8F5FF);
+  flex-direction: column;
+}
+.balance-beam {
+  width: 200px; height: 6px;
+  background: linear-gradient(90deg, var(--lavender, #C8A8E9), var(--blue, #A8D8EA));
+  border-radius: 3px;
+  position: relative;
+  transform-origin: center;
+  animation: balanceTilt 3s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(200,168,233,0.4);
+}
+@keyframes balanceTilt {
+  0%,100% { transform: rotate(-15deg); }
+  50% { transform: rotate(15deg); }
+}
+.balance-pan {
+  position: absolute; bottom: 6px;
+  width: 50px; height: 6px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 3px;
+  border: 2px solid rgba(200,168,233,0.5);
+}
+.balance-pan.left { left: 10px; }
+.balance-pan.right { right: 10px; }
+.balance-pan::before {
+  content: '';
+  position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  width: 2px; height: 30px; background: rgba(200,168,233,0.5);
+}
+.balance-weight {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: white; font-weight: 700;
+}
+.balance-stand { width: 4px; height: 80px; background: linear-gradient(180deg, var(--lavender, #C8A8E9), var(--blue, #A8D8EA)); border-radius: 2px; }
+.balance-base { width: 100px; height: 10px; background: linear-gradient(90deg, var(--lavender, #C8A8E9), var(--blue, #A8D8EA)); border-radius: 5px; margin-top: -2px; box-shadow: 0 4px 12px rgba(200,168,233,0.3); }
+.balance-pivot { width: 12px; height: 12px; background: white; border: 2px solid var(--lavender, #C8A8E9); border-radius: 50%; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); box-shadow: 0 2px 6px rgba(200,168,233,0.3); }
+
+/* VOLTMETER / AMMETER */
+.meter-sim {
+  background: linear-gradient(135deg, #FFF5E0, #FFF0F5);
+}
+.analog-meter {
+  width: 160px; height: 120px;
+  background: linear-gradient(180deg, #FFFDE0, #FFF5A3);
+  border-radius: 80px 80px 20px 20px;
+  border: 3px solid #E8D84C;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(232,216,76,0.3), inset 0 1px 4px rgba(255,255,255,0.8);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; padding-bottom: 12px;
+}
+.meter-scale-arc {
+  position: absolute; top: 10px; left: 10px; right: 10px;
+  height: 90px;
+  border-radius: 50px 50px 0 0;
+  border-top: 2px solid #CCC;
+  border-left: 2px solid #CCC;
+  border-right: 2px solid #CCC;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.meter-needle {
+  position: absolute; bottom: 25px; left: 50%; 
+  width: 2.5px; height: 65px;
+  background: linear-gradient(180deg, #FF3366, rgba(255,100,130,0.3));
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(-60deg);
+  animation: needleSwing 3s ease-in-out infinite;
+  border-radius: 2px 2px 0 0;
+}
+@keyframes needleSwing {
+  0%,100% { transform: translateX(-50%) rotate(-60deg); }
+  50% { transform: translateX(-50%) rotate(60deg); }
+}
+.meter-needle::before {
+  content: '';
+  position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+  width: 10px; height: 10px;
+  background: var(--pink-deep, #FF8FA3);
+  border-radius: 50%;
+}
+.meter-labels { display: flex; justify-content: space-between; width: 90%; position: absolute; bottom: 35px; }
+.meter-label { font-size: 8px; font-weight: 700; color: #7A6C10; }
+.meter-name { font-size: 11px; font-weight: 800; color: var(--text, #5A4A6A); }
+.meter-terminals {
+  display: flex; gap: 30px; margin-top: 4px;
+}
+.terminal {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid #CCC;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 800;
+}
+.terminal.pos { background: #FFB6C1; color: #FF3366; border-color: #FF8FA3; }
+.terminal.neg { background: #A8D8EA; color: #2266AA; border-color: #7BB8DA; }
+.terminal.com { background: #888; color: white; border-color: #555; }
+
+/* MANOMETER / PRESSURE */
+.manometer-sim {
+  background: linear-gradient(135deg, #E8F5FF, #F5EEFF);
+}
+.pressure-gauge {
+  width: 140px; height: 140px;
+  background: radial-gradient(circle at 40% 40%, #FFFFFF, #F0F0F0);
+  border-radius: 50%;
+  border: 4px solid #DDD;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1), inset 0 2px 6px rgba(255,255,255,0.8), 4px 4px 15px rgba(200,168,233,0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.pressure-gauge::before {
+  content: '';
+  position: absolute;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  border: 2px solid #EEE;
+}
+.gauge-needle {
+  position: absolute; bottom: 50%; left: 50%;
+  width: 3px; height: 48px;
+  background: linear-gradient(180deg, #FF3366, rgba(255,100,130,0.2));
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(-130deg);
+  animation: gaugeRotate 3s ease-in-out infinite;
+  border-radius: 3px 3px 0 0;
+}
+@keyframes gaugeRotate {
+  0%,100% { transform: translateX(-50%) rotate(-120deg); }
+  50% { transform: translateX(-50%) rotate(60deg); }
+}
+.gauge-center {
+  position: absolute; width: 14px; height: 14px;
+  background: var(--lavender, #C8A8E9); border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(200,168,233,0.5);
+}
+.gauge-label { position: absolute; bottom: 25px; font-size: 9px; font-weight: 800; color: var(--text, #5A4A6A); }
+
+/* STOPWATCH */
+.stopwatch-sim {
+  background: linear-gradient(135deg, #FFF0F5, #E8F5FF);
+  flex-direction: column; gap: 8px;
+}
+.stopwatch {
+  width: 130px; height: 130px;
+  background: radial-gradient(circle at 35% 35%, #FFFFFF, #F5F0FF);
+  border-radius: 50%;
+  border: 5px solid var(--lavender, #C8A8E9);
+  position: relative;
+  box-shadow: 0 6px 20px rgba(200,168,233,0.4), inset 0 2px 6px rgba(255,255,255,0.9);
+  display: flex; align-items: center; justify-content: center;
+}
+.stopwatch-crown {
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 16px;
+  background: var(--lavender, #C8A8E9);
+  border-radius: 4px 4px 0 0;
+  border: 2px solid var(--lavender-light, #E8D5FF);
+}
+.stopwatch-btn {
+  position: absolute; top: -10px; right: -8px;
+  width: 22px; height: 22px;
+  background: linear-gradient(135deg, var(--pink, #FFB6C1), var(--pink-deep, #FF8FA3));
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(255,143,163,0.5);
+}
+.sw-hand {
+  position: absolute; bottom: 50%; left: 50%;
+  transform-origin: bottom center;
+  border-radius: 2px 2px 0 0;
+}
+.sw-hand.seconds {
+  width: 2px; height: 44px;
+  background: #FF3366;
+  transform: translateX(-50%) rotate(0deg);
+  animation: sweepSeconds 3s linear infinite;
+}
+.sw-hand.minutes {
+  width: 3px; height: 35px;
+  background: var(--text, #5A4A6A);
+  transform: translateX(-50%) rotate(-90deg);
+  opacity: 0.6;
+}
+@keyframes sweepSeconds { to { transform: translateX(-50%) rotate(360deg); } }
+.sw-center { position: absolute; width: 10px; height: 10px; background: var(--pink-deep, #FF8FA3); border-radius: 50%; border: 2px solid white; }
+.sw-display {
+  font-size: 1rem; font-weight: 800;
+  color: var(--lavender, #C8A8E9);
+  font-variant-numeric: tabular-nums;
+}
+.sw-display::after {
+  content: '00:00.0';
+  animation: swTime 3s linear infinite;
+}
+@keyframes swTime {
+  0% { content: '00:00.0'; }
+  10% { content: '00:00.3'; }
+  20% { content: '00:00.6'; }
+  30% { content: '00:00.9'; }
+  40% { content: '00:01.2'; }
+  50% { content: '00:01.5'; }
+  60% { content: '00:01.8'; }
+  70% { content: '00:02.1'; }
+  80% { content: '00:02.4'; }
+  90% { content: '00:02.7'; }
+  100% { content: '00:03.0'; }
+}
+
+/* DYNAMOMETER */
+.dynamo-sim {
+  background: linear-gradient(135deg, #FFF5E0, #F5EEFF);
+  flex-direction: column; gap: 5px;
+}
+.spring-scale {
+  width: 60px; position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.spring-hook-top {
+  width: 20px; height: 20px;
+  border: 3px solid var(--lavender, #C8A8E9);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+}
+.spring-body {
+  width: 44px; height: 100px;
+  background: linear-gradient(180deg, #FFF0FF, #F5E8FF);
+  border-radius: 8px;
+  border: 2.5px solid var(--lavender, #C8A8E9);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 2px 2px 10px rgba(200,168,233,0.3);
+}
+.spring-coils {
+  position: absolute; top: 10px; left: 5px; right: 5px;
+  display: flex; flex-direction: column; gap: 0;
+}
+.coil {
+  height: 8px;
+  border-top: 2px solid var(--lavender, #C8A8E9);
+  border-radius: 4px 4px 0 0;
+  margin-bottom: 2px;
+  animation: coilStretch 3s ease-in-out infinite;
+}
+@keyframes coilStretch {
+  0%,100% { margin-bottom: 2px; }
+  50% { margin-bottom: 5px; }
+}
+.spring-pointer {
+  position: absolute; right: 4px;
+  width: 16px; height: 2px; background: var(--pink-deep, #FF8FA3);
+  animation: pointerMove 3s ease-in-out infinite;
+  top: 25px;
+}
+@keyframes pointerMove {
+  0%,100% { top: 25px; }
+  50% { top: 55px; }
+}
+.spring-scale-marks {
+  position: absolute; left: 4px; top: 8px; bottom: 8px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.spring-mark { height: 1px; width: 12px; background: #AAA; }
+.spring-hook-bottom {
+  width: 14px; height: 14px;
+  border: 3px solid var(--lavender, #C8A8E9);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  animation: weightPull 3s ease-in-out infinite;
+}
+@keyframes weightPull {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+.hanging-weight {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--pink-deep, #FF8FA3), var(--lavender, #C8A8E9));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 9px; font-weight: 800;
+  box-shadow: 0 4px 12px rgba(200,100,150,0.4);
+  animation: weightPull 3s ease-in-out infinite;
+}
+
+/* MULTIMETER */
+.multi-sim {
+  background: linear-gradient(135deg, #F5F0FF, #FFF5F8);
+}
+.multimeter-body {
+  width: 140px; height: 170px;
+  background: linear-gradient(180deg, #2A2A4A, #1A1A3A);
+  border-radius: 16px;
+  border: 3px solid #4A4A7A;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 10px 8px;
+  box-shadow: 0 8px 24px rgba(30,20,60,0.4), inset 0 1px 2px rgba(255,255,255,0.05);
+}
+.multi-display {
+  width: 100%; background: #1A3A1A;
+  border-radius: 8px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #2A5A2A;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+  margin-bottom: 8px;
+}
+.multi-reading {
+  font-size: 1.4rem; font-weight: 800;
+  color: #66FF66;
+  text-shadow: 0 0 8px rgba(100,255,100,0.6);
+  font-variant-numeric: tabular-nums;
+  animation: multiRead 3s ease-in-out infinite;
+}
+@keyframes multiRead {
+  0%,100% { opacity: 1; }
+  48% { opacity: 1; }
+  50% { opacity: 0.3; }
+  52% { opacity: 1; }
+}
+.multi-dial {
+  width: 60px; height: 60px;
+  background: radial-gradient(circle at 40% 35%, #555, #222);
+  border-radius: 50%;
+  border: 3px solid #666;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  margin-bottom: 6px;
+}
+.multi-dial-marker {
+  position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  width: 3px; height: 14px;
+  background: var(--pink, #FFB6C1);
+  border-radius: 2px;
+  animation: dialTurn 4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+@keyframes dialTurn {
+  0%,100% { transform: translateX(-50%) rotate(-30deg); }
+  50% { transform: translateX(-50%) rotate(90deg); }
+}
+.multi-probes {
+  display: flex; gap: 20px;
+}
+.probe { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #888; }
+.probe.red { background: #FF4444; }
+.probe.black { background: #222; }
+.probe.com { background: #888; }
+
+/* OSCILLOSCOPE */
+.oscillo-sim {
+  background: linear-gradient(135deg, #F0F0FF, #F5EEFF);
+}
+.oscilloscope {
+  width: 160px; height: 120px;
+  background: #0A0A2A;
+  border-radius: 12px;
+  border: 3px solid var(--lavender, #C8A8E9);
+  position: relative; overflow: hidden;
+  box-shadow: 0 6px 20px rgba(100,80,200,0.3), inset 0 0 30px rgba(0,100,200,0.05);
+}
+.osc-grid { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+.osc-grid::before {
+  content: '';
+  position: absolute; top: 50%; left: 0; right: 0;
+  height: 1px; background: rgba(100,200,100,0.2);
+}
+.osc-grid::after {
+  content: '';
+  position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 1px; background: rgba(100,200,100,0.2);
+}
+.osc-wave {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+}
+.osc-label { position: absolute; bottom: 4px; right: 8px; font-size: 8px; color: rgba(100,200,100,0.6); font-weight: 700; }
+
+/* CALORIMETER */
+.calori-sim {
+  background: linear-gradient(135deg, #FFF0E0, #FFE8F0);
+}
+.calorimeter {
+  width: 90px; height: 140px;
+  position: relative; display: flex; flex-direction: column; align-items: center;
+}
+.calo-outer {
+  width: 80px; height: 110px;
+  background: linear-gradient(180deg, #E8E8E8, #D0D0D0);
+  border-radius: 8px 8px 20px 20px;
+  border: 3px solid #AAA;
+  position: relative; overflow: hidden;
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.15);
+}
+.calo-water {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(180deg, rgba(168,216,234,0.7), rgba(100,180,220,0.9));
+  height: 60%;
+  border-radius: 0 0 16px 16px;
+}
+.calo-bubbles { position: absolute; bottom: 0; left: 0; right: 0; height: 100%; }
+.heat-bubble {
+  position: absolute; bottom: 10%; border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0% { transform: translateY(0) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-80px) scale(0.3); opacity: 0; }
+}
+.calo-thermo {
+  position: absolute; right: 15px; top: 5px; bottom: 5px;
+  width: 8px;
+  background: rgba(255,255,255,0.8);
+  border: 2px solid #AAD4EA;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.calo-thermo-fill {
+  position: absolute; bottom: 0; left: 1px; right: 1px;
+  background: linear-gradient(180deg, #FF6B9D, #FF3366);
+  border-radius: 2px;
+  animation: mercuryRise 3s ease-in-out infinite;
+}
+.heat-source {
+  width: 60px; height: 18px;
+  background: linear-gradient(90deg, #FF6B35, #FF3366, #FF6B35);
+  border-radius: 4px;
+  position: absolute; bottom: 5px;
+  animation: heatGlow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(255,100,50,0.6);
+}
+@keyframes heatGlow {
+  0%,100% { box-shadow: 0 0 10px rgba(255,100,50,0.6); }
+  50% { box-shadow: 0 0 20px rgba(255,100,50,0.9); }
+}
+
+@keyframes needleSwingG {
+  0% { transform: translateX(-50%) rotate(-80deg); }
+  25% { transform: translateX(-50%) rotate(80deg); }
+  50% { transform: translateX(-50%) rotate(-80deg); }
+  75% { transform: translateX(-50%) rotate(80deg); }
+  100% { transform: translateX(-50%) rotate(-80deg); }
+}
