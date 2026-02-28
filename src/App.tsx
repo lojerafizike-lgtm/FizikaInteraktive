@@ -3,42 +3,20 @@ import React, { useState, useMemo } from 'react';
 import { ALL_PHYSICS_DATA, GAMES } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
-import { askAlbertEinstein } from './aiService';
+import ClickSpark from './components/ClickSpark';
+import TermDetailsTabs from './components/TermDetailsTabs';
+import BlurText from './components/BlurText';
+import BubbleMenu from './components/BubbleMenu';
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
-  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'all-terms'>('home');
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
   const [searchTerm, setSearchTerm] = useState("");
-  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai', text: string }[]>([]);
-  const [chatInput, setChatInput] = useState("");
-  const [isChatLoading, setIsChatLoading] = useState(false);
   
-  const handleSendMessage = async () => {
-    if (!chatInput.trim() || !selectedTerm || isChatLoading) return;
-
-    const userMsg = chatInput.trim();
-    setChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setChatInput("");
-    setIsChatLoading(true);
-
-    try {
-      const response = await askAlbertEinstein(
-        selectedTerm.name,
-        selectedTerm.desc,
-        userMsg
-      );
-      setChatMessages(prev => [...prev, { role: 'ai', text: response }]);
-    } catch {
-      setChatMessages(prev => [...prev, { role: 'ai', text: "Më vjen keq, diçka shkoi gabim. Provojeni përsëri!" }]);
-    } finally {
-      setIsChatLoading(false);
-    }
-  };
-
   const handleStart = () => {
     setIsWarping(true);
     setTimeout(() => {
@@ -46,11 +24,10 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const navigate = (page: 'home' | 'category' | 'details' | 'games', data?: CategoryName | PhysicsTerm | null) => {
+  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'all-terms', data?: CategoryName | PhysicsTerm | null) => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
-        setChatMessages([]);
     }
     setActivePage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -80,6 +57,16 @@ const App: React.FC = () => {
     });
     return results;
   }, [searchTerm]);
+
+  const allTerms = useMemo(() => {
+    const terms: (PhysicsTerm & { category: string })[] = [];
+    Object.entries(ALL_PHYSICS_DATA).forEach(([cat, catTerms]) => {
+      catTerms.forEach(term => {
+        terms.push({ ...term, category: cat });
+      });
+    });
+    return terms.sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
 
   const getCategoryTheme = (cat: string) => {
     switch (cat) {
@@ -117,9 +104,10 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black text-[#4a4e69] tracking-tighter mb-12 animate__animated animate__fadeInUp font-orbitron">
-            Fizika<span className="text-[#ffafcc]">Interaktive</span>
-          </h1>
+          <div className="flex items-center justify-center text-4xl md:text-8xl font-black tracking-tighter mb-12 font-orbitron">
+            <BlurText text="Fizika" delay={50} animateBy="letters" direction="top" className="text-[#4a4e69]" />
+            <BlurText text="Interaktive" delay={50} animateBy="letters" direction="bottom" className="text-[#ffafcc]" />
+          </div>
           
           <button 
             onClick={handleStart}
@@ -132,22 +120,68 @@ const App: React.FC = () => {
     );
   }
 
+  const mobileMenuItems = [
+    {
+      label: 'Fillimi',
+      href: '#',
+      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('home'); },
+      rotation: -8,
+      hoverStyles: { bgColor: '#4a4e69', textColor: '#ffffff' }
+    },
+    {
+      label: 'Lojërat',
+      href: '#',
+      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('games'); },
+      rotation: 8,
+      hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-[#fcf9ff] text-[#4a4e69] font-sans">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 px-8 py-6 bg-white/60 backdrop-blur-3xl border-b border-white/40 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <ClickSpark sparkColor='#ffafcc' sparkSize={12} sparkRadius={20} sparkCount={10} duration={600}>
+      <div className="min-h-screen bg-[#fcf9ff] text-[#4a4e69] font-sans">
+        {/* Mobile Bubble Menu */}
+        <div className="md:hidden">
+          <BubbleMenu
+            logo={
+              <svg viewBox="0 0 100 100" className="w-full h-full rounded-full p-1.5" style={{ background: 'linear-gradient(135deg, #4a4e69 0%, #2b2d42 100%)' }}>
+                <g stroke="#ffafcc" strokeWidth="3" fill="none">
+                  <ellipse cx="50" cy="50" rx="35" ry="12" transform="rotate(0 50 50)" />
+                  <ellipse cx="50" cy="50" rx="35" ry="12" transform="rotate(60 50 50)" />
+                  <ellipse cx="50" cy="50" rx="35" ry="12" transform="rotate(120 50 50)" />
+                </g>
+                <circle cx="50" cy="50" r="8" fill="#ffafcc" />
+                <circle cx="85" cy="50" r="4" fill="#bde0fe" />
+                <circle cx="32.5" cy="80.3" r="4" fill="#bde0fe" />
+                <circle cx="32.5" cy="19.7" r="4" fill="#bde0fe" />
+              </svg>
+            }
+            items={mobileMenuItems}
+            menuAriaLabel="Toggle navigation"
+            menuBg="#ffffff"
+            menuContentColor="#4a4e69"
+            useFixedPosition={true}
+            animationEase="back.out(1.5)"
+            animationDuration={0.5}
+            staggerDelay={0.12}
+          />
+        </div>
+
+        {/* Navbar */}
+      <nav className="hidden md:flex sticky top-0 z-40 px-8 py-6 bg-white/60 backdrop-blur-3xl border-b border-white/40 shadow-sm">
+        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
           <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate('home')}>
-            <div className="w-14 h-14 bg-gradient-to-br from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0">
               <i className="fas fa-atom text-xl"></i>
             </div>
-            <h1 className="text-2xl font-black tracking-tight">Fizika<span className="text-[#ffafcc]">Interaktive</span></h1>
+            <h1 className="text-xl lg:text-2xl font-black tracking-tight">Fizika<span className="text-[#ffafcc]">Interaktive</span></h1>
           </div>
-          <div className="flex items-center gap-6 md:gap-12">
-            <button onClick={() => navigate('home')} className="hidden md:block text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-[#ffafcc] transition-colors">Fillimi</button>
+          <div className="flex items-center gap-4 lg:gap-10">
+            <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
+            <button onClick={() => navigate('all-terms')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Të gjitha Termat</button>
             <button 
               onClick={() => navigate('games')} 
-              className="bg-[#4a4e69] text-white px-8 md:px-10 py-4 rounded-[1.8rem] text-[10px] font-black shadow-xl hover:scale-110 active:scale-95 transition-all uppercase tracking-[0.2em] flex items-center gap-3"
+              className="bg-[#4a4e69] text-white px-6 lg:px-10 py-3 lg:py-4 rounded-[1.8rem] text-xs lg:text-sm font-black shadow-xl hover:scale-110 active:scale-95 transition-all uppercase tracking-widest flex items-center gap-3 shrink-0"
             >
               <i className="fas fa-gamepad"></i> LOJËRAT
             </button>
@@ -241,17 +275,17 @@ const App: React.FC = () => {
               </div>
               <h2 className="text-3xl md:text-7xl font-black tracking-tighter text-slate-800">{selectedCategory}</h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
               {ALL_PHYSICS_DATA[selectedCategory].map((term, i) => (
                 <div 
                   key={i}
                   onClick={() => navigate('details', term)}
-                  className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border border-transparent hover:border-[#ffafcc]/20 group flex flex-col h-48 md:h-60 justify-between card-fusha"
+                  className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border border-transparent hover:border-[#ffafcc]/20 group flex flex-col h-32 md:h-60 justify-between card-fusha"
                 >
-                  <div className="text-[8px] md:text-[10px] font-black text-[#ffafcc] uppercase tracking-[0.4em]">{term.sym}</div>
-                  <h4 className="text-lg md:text-3xl font-black group-hover:text-[#ffafcc] transition-colors leading-none tracking-tighter">{term.name}</h4>
-                  <div className="flex items-center gap-2 text-slate-300 font-black uppercase text-[9px] tracking-[0.2em] group-hover:text-slate-800 transition-colors">
-                    DETAJET <i className="fas fa-arrow-right text-[7px] ml-1"></i>
+                  <div className="text-[7px] md:text-[10px] font-black text-[#ffafcc] uppercase tracking-[0.2em] md:tracking-[0.4em] truncate">{term.sym}</div>
+                  <h4 className="text-sm md:text-3xl font-black group-hover:text-[#ffafcc] transition-colors leading-tight tracking-tighter line-clamp-2">{term.name}</h4>
+                  <div className="flex items-center gap-1 md:gap-2 text-slate-300 font-black uppercase text-[7px] md:text-[9px] tracking-[0.1em] md:tracking-[0.2em] group-hover:text-slate-800 transition-colors mt-2">
+                    DETAJET <i className="fas fa-arrow-right text-[6px] md:text-[7px] ml-1"></i>
                   </div>
                 </div>
               ))}
@@ -265,61 +299,61 @@ const App: React.FC = () => {
             <button onClick={() => navigate('category', selectedCategory)} className="mb-8 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
               <i className="fas fa-arrow-left"></i> Kthehu te Lista
             </button>
-            <div className="bg-white rounded-[4rem] shadow-2xl p-12 md:p-16 border-[8px] border-white relative overflow-hidden">
+            <div className="bg-white rounded-[2rem] md:rounded-[4rem] shadow-2xl p-6 md:p-16 border-[4px] md:border-[8px] border-white relative overflow-hidden">
                 <div className="relative z-10">
-                    <div className="mb-12">
-                        <span className="px-6 py-2 bg-[#f8fafc] text-slate-400 rounded-full text-[10px] font-black uppercase tracking-[0.5em] mb-8 inline-block border border-slate-50">Kuptimi Shkencor</span>
-                        <h2 className="text-6xl font-black tracking-tighter leading-[0.8] text-slate-800">{selectedTerm.name}</h2>
+                    <div className="mb-8 md:mb-12">
+                        <span className="px-4 py-1.5 md:px-6 md:py-2 bg-[#f8fafc] text-slate-400 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] mb-4 md:mb-8 inline-block border border-slate-50">Kuptimi Shkencor</span>
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] md:leading-[0.8] text-slate-800">{selectedTerm.name}</h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                        <div className="bg-[#fcfcff] p-8 rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
-                            <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4">Simboli</p>
-                            <p className="text-6xl font-mono font-black text-[#ffafcc]">{selectedTerm.sym}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+                        <div className="bg-[#fcfcff] p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
+                            <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-2 md:mb-4">Simboli</p>
+                            <p className="text-4xl md:text-6xl font-mono font-black text-[#ffafcc]">{selectedTerm.sym}</p>
                         </div>
-                        <div className="bg-[#fcfcff] p-8 rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
-                            <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4">Njësia SI</p>
-                            <p className="text-5xl font-black text-slate-800">{selectedTerm.unit}</p>
+                        <div className="bg-[#fcfcff] p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
+                            <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-2 md:mb-4">Njësia SI</p>
+                            <p className="text-3xl md:text-5xl font-black text-slate-800">{selectedTerm.unit}</p>
                         </div>
-                        <div className="bg-[#fcfcff] p-8 rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
-                            <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-4">Natyra</p>
-                            <p className="text-4xl font-black text-[#4a4e69]">{selectedTerm.nature}</p>
+                        <div className="bg-[#fcfcff] p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
+                            <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-2 md:mb-4">Natyra</p>
+                            <p className="text-2xl md:text-4xl font-black text-[#4a4e69]">{selectedTerm.nature}</p>
                         </div>
                     </div>
                     
                     {selectedTerm.otherUnits && (
-                      <div className="mb-12 bg-[#f8fafc] p-8 rounded-[2.5rem] border border-slate-50">
-                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] mb-3 ml-6">Njësi të tjera</p>
-                        <p className="text-2xl font-bold text-slate-600 ml-6">{selectedTerm.otherUnits}</p>
+                      <div className="mb-8 md:mb-12 bg-[#f8fafc] p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border border-slate-50">
+                        <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-2 md:mb-3 ml-2 md:ml-6">Njësi të tjera</p>
+                        <p className="text-lg md:text-2xl font-bold text-slate-600 ml-2 md:ml-6">{selectedTerm.otherUnits}</p>
                       </div>
                     )}
 
-                    <div className="bg-[#4a4e69] text-white p-16 rounded-[3.5rem] mb-16 text-center shadow-2xl relative">
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.6em] mb-6">Formula Kryesore</p>
-                        <code className="text-5xl md:text-7xl font-mono font-black text-[#ffc8dd]">{selectedTerm.form}</code>
+                    <div className="bg-[#4a4e69] text-white p-8 md:p-16 rounded-3xl md:rounded-[3.5rem] mb-10 md:mb-16 text-center shadow-2xl relative">
+                        <p className="text-[8px] md:text-[10px] font-black text-white/30 uppercase tracking-[0.3em] md:tracking-[0.6em] mb-4 md:mb-6">Formula Kryesore</p>
+                        <code className="text-3xl md:text-7xl font-mono font-black text-[#ffc8dd] break-all">{selectedTerm.form}</code>
                     </div>
-                    <div className="mb-20">
-                        <h4 className="text-sm font-black text-[#ffafcc] uppercase tracking-[0.5em] mb-6">Kuptimi fizik</h4>
-                        <p className="text-3xl text-slate-600/90 leading-tight font-medium tracking-tight">{selectedTerm.desc}</p>
+                    <div className="mb-12 md:mb-20">
+                        <h4 className="text-xs md:text-sm font-black text-[#ffafcc] uppercase tracking-[0.3em] md:tracking-[0.5em] mb-4 md:mb-6">Kuptimi fizik</h4>
+                        <p className="text-xl md:text-3xl text-slate-600/90 leading-tight font-medium tracking-tight">{selectedTerm.desc}</p>
                     </div>
 
                     {/* Interactive Game Row */}
                     {selectedTerm.phetUrl && (
-                      <div className="pt-12 border-t border-slate-100 mb-12">
-                          <div className="bg-[#f8fafc] p-8 rounded-[3rem] border border-slate-50 flex items-center justify-between shadow-inner">
-                              <div className="flex items-center gap-6 ml-6">
-                                  <div className="w-16 h-16 bg-[#4a4e69] text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                      <div className="pt-8 md:pt-12 border-t border-slate-100 mb-8 md:mb-12">
+                          <div className="bg-[#f8fafc] p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-slate-50 flex flex-col md:flex-row items-center justify-between shadow-inner gap-6 md:gap-0">
+                              <div className="flex items-center gap-4 md:gap-6 md:ml-6 w-full md:w-auto">
+                                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[#4a4e69] text-white rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-2xl shadow-lg shrink-0">
                                       <i className="fas fa-gamepad"></i>
                                   </div>
                                   <div>
-                                      <h4 className="text-2xl font-black tracking-tight">Loja Interaktive</h4>
-                                      <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">EKSPERIMENTO DUKE LUAJTUR</p>
+                                      <h4 className="text-xl md:text-2xl font-black tracking-tight">Loja Interaktive</h4>
+                                      <p className="text-[7px] md:text-[9px] font-bold text-slate-300 uppercase tracking-widest">EKSPERIMENTO DUKE LUAJTUR</p>
                                   </div>
                               </div>
                               <a 
                                   href={selectedTerm.phetUrl} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="mr-6 px-12 py-4 bg-[#ffafcc] text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-[#ff8fab] transition-all shadow-xl flex items-center gap-3"
+                                  className="w-full md:w-auto md:mr-6 px-8 md:px-12 py-3 md:py-4 bg-[#ffafcc] text-white rounded-2xl md:rounded-[2rem] font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#ff8fab] transition-all shadow-xl flex items-center justify-center gap-3"
                               >
                                   LUAJ LOJEN <i className="fas fa-play text-[8px]"></i>
                               </a>
@@ -327,7 +361,7 @@ const App: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Të tjera Section Styled like Game Row */}
+                    {/* Të tjera Section with Tabs */}
                     <div className="pt-12 border-t border-slate-100 mb-12">
                         <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
                             <div className="flex items-center gap-6 mb-8">
@@ -336,28 +370,33 @@ const App: React.FC = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-2xl font-black tracking-tight">Të tjera</h4>
-                                    <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">INFORMACION SHTESË PËR TERMIN</p>
+                                    <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">INFORMACION SHTESË DHE MJETE</p>
                                 </div>
                             </div>
-                            <div className="bg-[#fcfdfe] p-8 rounded-[2rem] border border-slate-50 shadow-inner">
-                                <p className="text-2xl font-bold text-slate-600 leading-relaxed">
-                                    {selectedTerm.teTjera || "Nuk ka informacion shtesë për këtë term."}
-                                </p>
-                            </div>
+                            
+                            {selectedTerm.teTjera && (
+                              <div className="bg-[#fcfdfe] p-8 rounded-[2rem] border border-slate-50 shadow-inner mb-8">
+                                  <p className="text-2xl font-bold text-slate-600 leading-relaxed">
+                                      {selectedTerm.teTjera}
+                                  </p>
+                              </div>
+                            )}
+
+                            <TermDetailsTabs term={selectedTerm} />
                         </div>
                     </div>
 
                     {/* Interactive Book Row */}
                     {selectedTerm.html && (
-                      <div className="pt-12 border-t border-slate-100">
-                          <div className="bg-[#f8fafc] p-8 rounded-[3rem] border border-slate-50 flex items-center justify-between shadow-inner">
-                              <div className="flex items-center gap-6 ml-6">
-                                  <div className="w-16 h-16 bg-[#ff758f] text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                      <div className="pt-8 md:pt-12 border-t border-slate-100">
+                          <div className="bg-[#f8fafc] p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-slate-50 flex flex-col md:flex-row items-center justify-between shadow-inner gap-6 md:gap-0">
+                              <div className="flex items-center gap-4 md:gap-6 md:ml-6 w-full md:w-auto">
+                                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[#ff758f] text-white rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-2xl shadow-lg shrink-0">
                                       <i className="fas fa-book-open"></i>
                                   </div>
                                   <div>
-                                      <h4 className="text-2xl font-black tracking-tight">Libri Interaktiv</h4>
-                                      <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">EKSPLORO LIBRIN E PLOTË</p>
+                                      <h4 className="text-xl md:text-2xl font-black tracking-tight">Libri Interaktiv</h4>
+                                      <p className="text-[7px] md:text-[9px] font-bold text-slate-300 uppercase tracking-widest">EKSPLORO LIBRIN E PLOTË</p>
                                   </div>
                               </div>
                               <button 
@@ -368,7 +407,7 @@ const App: React.FC = () => {
                                         newWindow.document.close();
                                       }
                                   }}
-                                  className="mr-6 px-12 py-4 bg-[#ff758f] text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-[#ff4d6d] transition-all shadow-xl flex items-center gap-3"
+                                  className="w-full md:w-auto md:mr-6 px-8 md:px-12 py-3 md:py-4 bg-[#ff758f] text-white rounded-2xl md:rounded-[2rem] font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#ff4d6d] transition-all shadow-xl flex items-center justify-center gap-3"
                               >
                                   HAP LIBRIN <i className="fas fa-external-link-alt text-[8px]"></i>
                               </button>
@@ -376,61 +415,23 @@ const App: React.FC = () => {
                       </div>
                     )}
 
-                    {/* AI Chat Section */}
+                    {/* AI Chat Button Replacement */}
                     <div className="mt-20 pt-12 border-t border-slate-100">
-                      <div className="flex items-center gap-6 mb-10">
-                        <div className="w-16 h-16 bg-[#ffafcc] text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg">
-                          <i className="fas fa-user-tie"></i>
-                        </div>
-                        <div>
-                          <h4 className="text-2xl font-black tracking-tight">Pyet Albert Einstein</h4>
-                          <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">AI CHATBOT INTERAKTIV</p>
-                        </div>
-                      </div>
-
-                      <div className="bg-[#f8fafc] rounded-[3rem] p-8 border border-slate-50 shadow-inner">
-                        <div className="max-h-[400px] overflow-y-auto mb-8 space-y-6 px-4">
-                          {chatMessages.length === 0 && (
-                            <div className="text-center py-10">
-                              <p className="text-slate-400 italic text-xl">"Imagjinata është më e rëndësishme se dija."</p>
-                              <p className="text-slate-300 text-sm mt-2">- Albert Einstein</p>
-                            </div>
-                          )}
-                          {chatMessages.map((msg, idx) => (
-                            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[80%] p-6 rounded-[2rem] text-xl font-medium leading-tight shadow-sm ${
-                                msg.role === 'user' 
-                                  ? 'bg-[#4a4e69] text-white rounded-tr-none' 
-                                  : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'
-                              }`}>
-                                {msg.text}
-                              </div>
-                            </div>
-                          ))}
-                          {isChatLoading && (
-                            <div className="flex justify-start">
-                              <div className="bg-white text-slate-400 p-6 rounded-[2rem] rounded-tl-none border border-slate-100 italic animate-pulse">
-                                Albert po mendon...
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="relative">
-                          <input 
-                            type="text"
-                            value={chatInput}
-                            onChange={(e) => setChatInput(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                            placeholder="Pyet diçka rreth këtij termi..."
-                            className="w-full bg-white border-4 border-white shadow-xl rounded-[2.5rem] px-10 py-6 text-xl focus:outline-none focus:border-[#ffafcc]/30 transition-all pr-24"
-                          />
+                      <div className="bg-[#4a4e69] rounded-[3rem] p-12 text-center shadow-2xl relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#ffafcc]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div className="relative z-10">
+                          <div className="w-24 h-24 bg-[#ffafcc] text-white rounded-[2rem] flex items-center justify-center text-4xl mx-auto mb-8 shadow-xl group-hover:rotate-12 transition-transform">
+                            <i className="fas fa-robot"></i>
+                          </div>
+                          <h4 className="text-4xl font-black text-white mb-6 tracking-tighter">Pyet Albertin (AI Chat)</h4>
+                          <p className="text-slate-300 text-xl mb-10 max-w-2xl mx-auto font-medium">
+                            Dëshiron të mësosh më shumë? Bisedo me Albert Einstein rreth të gjitha termave fizikë në faqen tonë të re interaktive.
+                          </p>
                           <button 
-                            onClick={handleSendMessage}
-                            disabled={isChatLoading || !chatInput.trim()}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-[#ffafcc] text-white rounded-full flex items-center justify-center hover:bg-[#ff8fab] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                            onClick={() => navigate('all-terms')}
+                            className="px-16 py-6 bg-[#ffafcc] text-white rounded-[2.5rem] font-black text-lg uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4 mx-auto"
                           >
-                            <i className="fas fa-paper-plane"></i>
+                            HAP CHATBOT-IN <i className="fas fa-external-link-alt text-sm"></i>
                           </button>
                         </div>
                       </div>
@@ -440,73 +441,126 @@ const App: React.FC = () => {
           </div>
         )}
 
-
         {/* Games View */}
         {activePage === 'games' && (
            <div className="animate__animated animate__fadeIn">
-             <button onClick={() => navigate('home')} className="mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
+             <button onClick={() => navigate('home')} className="mb-8 md:mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
               <i className="fas fa-arrow-left"></i> Kthehu mbrapa
             </button>
-            <div className="text-center mb-24">
-                <h2 className="text-9xl font-black mb-12 tracking-tighter text-slate-800 leading-none">Sfida & Lojëra</h2>
-                <div className="flex justify-center p-4 bg-white/60 backdrop-blur-2xl rounded-[4.5rem] w-fit mx-auto border-4 border-white shadow-2xl">
-                    <button onClick={() => setGameFilter('digital')} className={`px-14 py-7 rounded-[3.5rem] font-black text-[11px] tracking-[0.4em] transition-all ${gameFilter === 'digital' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>DIGJITALE</button>
-                    <button onClick={() => setGameFilter('home')} className={`px-14 py-7 rounded-[3.5rem] font-black text-[11px] tracking-[0.4em] transition-all ${gameFilter === 'home' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>EKSPERIMENTE</button>
-                    <button onClick={() => setGameFilter('school')} className={`px-14 py-7 rounded-[3.5rem] font-black text-[11px] tracking-[0.4em] transition-all ${gameFilter === 'school' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>SHKOLLË</button>
+            <div className="text-center mb-12 md:mb-24">
+                <h2 className="text-5xl md:text-9xl font-black mb-8 md:mb-12 tracking-tighter text-slate-800 leading-none">Sfida & Lojëra</h2>
+                <div className="flex flex-row flex-wrap justify-center p-2 md:p-4 bg-white/60 backdrop-blur-2xl rounded-3xl md:rounded-[4.5rem] w-full md:w-fit mx-auto border-4 border-white shadow-2xl gap-2 md:gap-0">
+                    <button onClick={() => setGameFilter('digital')} className={`flex-1 md:flex-none px-4 py-3 md:px-14 md:py-7 rounded-2xl md:rounded-[3.5rem] font-black text-[9px] md:text-[11px] tracking-[0.2em] md:tracking-[0.4em] transition-all ${gameFilter === 'digital' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>DIGJITALE</button>
+                    <button onClick={() => setGameFilter('home')} className={`flex-1 md:flex-none px-4 py-3 md:px-14 md:py-7 rounded-2xl md:rounded-[3.5rem] font-black text-[9px] md:text-[11px] tracking-[0.2em] md:tracking-[0.4em] transition-all ${gameFilter === 'home' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>EKSPERIMENTE</button>
+                    <button onClick={() => setGameFilter('school')} className={`flex-1 md:flex-none px-4 py-3 md:px-14 md:py-7 rounded-2xl md:rounded-[3.5rem] font-black text-[9px] md:text-[11px] tracking-[0.2em] md:tracking-[0.4em] transition-all ${gameFilter === 'school' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>SHKOLLË</button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
                 {gameFilter === 'digital' ? DIGITAL_GAMES.filter(g => g.type !== 'school').map((game, i) => (
-                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-16 rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#bde0fe]/40 group h-[480px] flex flex-col justify-between card-fusha">
-                        <div className="flex items-center gap-12">
-                            <div className="w-32 h-32 bg-[#bde0fe]/20 text-slate-800 rounded-[3rem] flex items-center justify-center text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner">
+                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#bde0fe]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha">
+                        <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
+                            <div className="w-16 h-16 md:w-32 md:h-32 bg-[#bde0fe]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
                                 <i className="fas fa-gamepad"></i>
                             </div>
-                            <h4 className="text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                            <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
                         </div>
-                        <button className="w-full py-9 bg-[#f8fafc] rounded-[3rem] font-black text-[11px] uppercase tracking-[0.5em] group-hover:bg-[#ffafcc] group-hover:text-white transition-all">LUAJ TANI</button>
+                        <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ffafcc] group-hover:text-white transition-all">LUAJ TANI</button>
                     </div>
                 )) : gameFilter === 'school' ? DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
-                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-16 rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-[480px] flex flex-col justify-between card-fusha">
-                        <div className="flex items-center gap-12">
-                            <div className="w-32 h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-[3rem] flex items-center justify-center text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner">
+                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha">
+                        <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
+                            <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
                                 <i className="fas fa-chalkboard-user"></i>
                             </div>
-                            <h4 className="text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                            <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
                         </div>
-                        <button className="w-full py-9 bg-[#f8fafc] rounded-[3rem] font-black text-[11px] uppercase tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
+                        <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
                     </div>
                 )) : GAMES.filter(g => g.type === 'home').map((game, i) => (
-                    <div key={i} className="bg-white p-20 rounded-[6rem] shadow-sm border-4 border-white hover:shadow-2xl transition-all card-fusha">
-                         <div className="flex items-center gap-12 mb-16">
-                            <div className="w-32 h-32 bg-[#fdf2f8] text-[#ffafcc] rounded-[3rem] flex items-center justify-center text-6xl shadow-inner border border-white">
+                    <div key={i} className="bg-white p-6 md:p-20 rounded-3xl md:rounded-[6rem] shadow-sm border-4 border-white hover:shadow-2xl transition-all card-fusha">
+                         <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-16">
+                            <div className="w-16 h-16 md:w-32 md:h-32 bg-[#fdf2f8] text-[#ffafcc] rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-6xl shadow-inner border border-white shrink-0">
                                 <i className="fas fa-vial-circle-check"></i>
                             </div>
-                            <h4 className="text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                            <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
                         </div>
-                        <p className="text-slate-400 mb-12 text-3xl leading-relaxed font-medium italic">"{game.description}"</p>
+                        <p className="text-slate-400 mb-8 md:mb-12 text-lg md:text-3xl leading-relaxed font-medium italic">"{game.description}"</p>
                         
-                        <div className="mb-12">
-                            <h5 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-6">Materialet:</h5>
-                            <div className="flex flex-wrap gap-4">
+                        <div className="mb-8 md:mb-12">
+                            <h5 className="text-[8px] md:text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-4 md:mb-6">Materialet:</h5>
+                            <div className="flex flex-wrap gap-2 md:gap-4">
                                 {game.materials.map((m, idx) => (
-                                    <span key={idx} className="px-6 py-2 bg-[#f8fafc] text-slate-600 rounded-2xl text-sm font-bold border border-slate-50">{m}</span>
+                                    <span key={idx} className="px-3 py-1.5 md:px-6 md:py-2 bg-[#f8fafc] text-slate-600 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold border border-slate-50">{m}</span>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="space-y-8">
-                            <h5 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] mb-6">Hapat:</h5>
+                        <div className="space-y-4 md:space-y-8">
+                            <h5 className="text-[8px] md:text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-4 md:mb-6">Hapat:</h5>
                             {game.steps.map((s, idx) => (
-                                <div key={idx} className="flex gap-8 items-start">
-                                    <span className="w-10 h-10 bg-[#ffafcc] text-white rounded-[1rem] flex items-center justify-center text-sm font-black shadow-lg shrink-0">{idx+1}</span>
-                                    <p className="text-xl font-bold text-slate-600/90 leading-tight">{s}</p>
+                                <div key={idx} className="flex gap-4 md:gap-8 items-start">
+                                    <span className="w-6 h-6 md:w-10 md:h-10 bg-[#ffafcc] text-white rounded-lg md:rounded-[1rem] flex items-center justify-center text-xs md:text-sm font-black shadow-lg shrink-0">{idx+1}</span>
+                                    <p className="text-sm md:text-xl font-bold text-slate-600/90 leading-tight">{s}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 ))}
+            </div>
+          </div>
+        )}
+        {activePage === 'all-terms' && (
+          <div className="animate__animated animate__fadeIn">
+            <button onClick={() => navigate('home')} className="mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
+              <i className="fas fa-arrow-left"></i> Kthehu mbrapa
+            </button>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {/* Chatbase Sidebar/Section */}
+              <div className="lg:col-span-2 order-2 lg:order-1">
+                <div className="bg-white rounded-[3rem] md:rounded-[4rem] shadow-2xl overflow-hidden border-[4px] md:border-[8px] border-white h-[500px] md:h-[800px] relative">
+                  <div className="absolute inset-0 bg-slate-50 flex items-center justify-center">
+                    <div className="text-center p-8 md:p-12">
+                      <i className="fas fa-robot text-4xl md:text-6xl text-slate-200 mb-6 animate-bounce"></i>
+                      <h3 className="text-xl md:text-2xl font-black text-slate-400">Duke hapur Chatbot-in...</h3>
+                      <p className="text-sm md:text-base text-slate-300 mt-4">Nëse nuk hapet, ju lutem kontrolloni konfigurimin e Chatbase.</p>
+                    </div>
+                  </div>
+                  <iframe
+                    src="https://www.chatbase.co/chatbot-iframe/YOUR_AGENT_ID"
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    className="relative z-10"
+                    title="Albert Einstein AI Chat"
+                  ></iframe>
+                </div>
+              </div>
+
+              {/* Terms List Sidebar */}
+              <div className="lg:col-span-1 order-1 lg:order-2">
+                <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-50 h-[400px] md:h-[800px] flex flex-col">
+                  <h3 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 tracking-tighter">Të gjitha Termat</h3>
+                  <div className="overflow-y-auto flex-1 pr-2 md:pr-4 custom-scrollbar">
+                    {allTerms.map((term, i) => (
+                      <div 
+                        key={i}
+                        onClick={() => navigate('details', term)}
+                        className="p-4 md:p-6 rounded-xl md:rounded-2xl hover:bg-[#f8fafc] cursor-pointer transition-all group border-b border-slate-50 last:border-0"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">{term.category}</span>
+                            <h5 className="text-base md:text-xl font-bold group-hover:text-[#ffafcc] transition-colors">{term.name}</h5>
+                          </div>
+                          <i className="fas fa-chevron-right text-[10px] text-slate-200 group-hover:text-[#ffafcc] transition-all"></i>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -522,7 +576,8 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-    </div>
+      </div>
+    </ClickSpark>
   );
 };
 
