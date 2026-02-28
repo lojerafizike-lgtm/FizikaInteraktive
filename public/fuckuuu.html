@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Gjeniu i Shkencës - 100 Sfida</title>
+    <style>
+        :root { --bg: #f0f9ff; --card: #ffffff; --primary: #7dd3fc; --text: #0f172a; --timer: #4ade80; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .game-card { background: var(--card); width: 95%; max-width: 650px; padding: 30px; border-radius: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); text-align: center; border: 5px solid var(--primary); }
+        .timer-wrap { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        #timer-bar { width: 100%; height: 100%; background: var(--timer); transition: width 0.1s linear; }
+        .avatar { font-size: 70px; height: 90px; animation: float 3s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .question { font-size: 1.3rem; font-weight: 700; margin: 20px 0; min-height: 70px; }
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .opt-btn { background: #f8fafc; border: 2px solid #e2e8f0; padding: 15px; border-radius: 18px; cursor: pointer; font-size: 1rem; transition: 0.2s; font-weight: 500; }
+        .opt-btn:hover { background: var(--primary); transform: translateY(-2px); }
+        .correct { background: #bbf7d0 !important; border-color: #22c55e; }
+        .wrong { background: #fecaca !important; border-color: #ef4444; }
+        .stats { display: flex; justify-content: space-between; margin-top: 25px; font-weight: bold; opacity: 0.8; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <div id="quiz-ui">
+        <div class="avatar" id="avatar">🧪</div>
+        <div style="font-size: 0.9rem;">Progresi: <span id="q-num">1</span>/100</div>
+        <div class="timer-wrap"><div id="timer-bar"></div></div>
+        <div class="question" id="q-text">Duke ngarkuar...</div>
+        <div class="options" id="opt-container"></div>
+        <div class="stats">
+            <span>Pikët: <span id="score">0</span></span>
+            <span>Koha: <span id="time">10</span>s</span>
+        </div>
+    </div>
+    <div id="end-ui" class="hidden">
+        <div class="avatar">🏆</div>
+        <h2>Misioni u mbyll!</h2>
+        <p id="final-stats"></p>
+        <button class="opt-btn" style="width:100%; background: var(--primary);" onclick="location.reload()">Luaj Përsëri</button>
+    </div>
+</div>
+
+<script>
+    const data = [
+        {q: "Kush zbuloi Ligjin e Gravitetit?", a: ["Einstein", "Newton", "Tesla", "Darwin"], c: 1, e: "🍎"},
+        {q: "Cila shkencëtare zbuloi Radiumin?", a: ["M. Curie", "A. Lovelace", "R. Franklin", "L. Meitner"], c: 0, e: "⚗️"},
+        {q: "Kush shpiku llambën elektrike?", a: ["Tesla", "Watt", "Edison", "Bell"], c: 2, e: "💡"},
+        {q: "Teoria e relativitetit u formulua nga:", a: ["Bohr", "Hawking", "Newton", "Einstein"], c: 3, e: "🌌"},
+        {q: "Babai i rrymës alternative (AC)?", a: ["Tesla", "Edison", "Ampere", "Ohm"], c: 0, e: "⚡"},
+        {q: "Kush zbuloi Penicilinën?", a: ["Pasteur", "Fleming", "Koch", "Salk"], c: 1, e: "💊"},
+        {q: "Kush njihet si babai i gjenetikës?", a: ["Darwin", "Mendel", "Lamarck", "Watson"], c: 1, e: "🌱"},
+        {q: "Kush shpiku telefonin?", a: ["Morse", "Graham Bell", "Baird", "Hertz"], c: 1, e: "📞"},
+        {q: "Kush vërtetoi se Toka rrotullohet rreth Diellit?", a: ["Copernicus", "Ptolemy", "Aristotle", "Brahe"], c: 0, e: "☀️"},
+        {q: "Kush zbuloi rrezet X?", a: ["Becquerel", "Roentgen", "Curie", "Maxwell"], c: 1, e: "🦴"},
+        {q: "Kush shpiku motorin me avull?", a: ["Diesel", "Watt", "Fulton", "Tesla"], c: 1, e: "🚂"},
+        {q: "Kush zbuloi qarkullimin e gjakut?", a: ["Hippocrates", "Galen", "Harvey", "Lister"], c: 2, e: "❤️"},
+        {q: "Kush zbuloi planetin Uran?", a: ["Herschel", "Hubble", "Kepler", "Cassini"], c: 0, e: "🪐"},
+        {q: "Kush shpiku radion?", a: ["Tesla", "Edison", "Marconi", "Baird"], c: 2, e: "📻"},
+        {q: "Kush zbuloi vaksinën kundër tërbimit?", a: ["Jenner", "Salk", "Pasteur", "Sabin"], c: 2, e: "🐕"},
+        {q: "Kush zbuloi strukturën e DNA-së?", a: ["Watson & Crick", "Darwin", "Mendel", "Franklin"], c: 0, e: "🧬"},
+        {q: "Kush njihet si 'Babai i Kimisë'?", a: ["Lavoisier", "Dalton", "Nobel", "Avogadro"], c: 0, e: "🧪"},
+        {q: "Kush shpiku alfabetin me pika?", a: ["Morse", "Louis Braille", "Bell", "Edison"], c: 1, e: "⠃"},
+        {q: "Kush zbuloi Atomin?", a: ["Dalton", "Bohr", "Rutherford", "Democritus"], c: 3, e: "⚛️"},
+        {q: "Kush zbuloi ligjin e pluskimit (Arkua)?", a: ["Pythagoras", "Euclid", "Archimedes", "Aristotle"], c: 2, e: "🛁"},
+        // Shtimi i pyetjeve të tjera vazhdon këtu në kod...
+        {q: "Kush shpiku barutin?", a: ["Kinezët", "Grekët", "Romakët", "Egjiptianët"], c: 0, e: "🎆"},
+        {q: "Kush zbuloi rrezatimin kozmik?", a: ["Hess", "Millikan", "Hubble", "Sagan"], c: 0, e: "🌠"},
+        {q: "Kush zbuloi Polion (vaksinën)?", a: ["Salk", "Fleming", "Pasteur", "Jenner"], c: 0, e: "💉"},
+        {q: "Kush zbuloi gazin Helium?", a: ["Lockyer", "Ramsay", "Bohr", "Dalton"], c: 0, e: "🎈"},
+        {q: "Kush shpiku aeroplanin?", a: ["Vëllezërit Wright", "Da Vinci", "Ford", "Tesla"], c: 0, e: "✈️"},
+        {q: "Kush zbuloi ligjet e lëvizjes?", a: ["Einstein", "Newton", "Galileo", "Kepler"], c: 1, e: "🏎️"},
+        {q: "Kush shpiku makinën e shkrimit?", a: ["Sholes", "Edison", "Bell", "Gutenberg"], c: 0, e: "⌨️"},
+        {q: "Kush zbuloi Insulinën?", a: ["Banting", "Fleming", "Best", "Salk"], c: 0, e: "🩸"},
+        {q: "Kush zbuloi klorofilin?", a: ["Pelletier", "Darwin", "Mendel", "Linnaeus"], c: 0, e: "🍃"},
+        {q: "Kush shpiku teleskopin e parë?", a: ["Lippershey", "Galileo", "Newton", "Kepler"], c: 0, e: "🔭"},
+        {q: "Kush zbuloi elementin Oksigjen?", a: ["Priestley", "Lavoisier", "Scheele", "Boyle"], c: 0, e: "🌬️"},
+        {q: "Kush zbuloi vrimat e zeza (teoria)?", a: ["Hawking", "Einstein", "Schwarzschild", "Penrose"], c: 2, e: "🕳️"},
+        {q: "Kush shpiku dinamitin?", a: ["Alfred Nobel", "Edison", "Tesla", "Watt"], c: 0, e: "🧨"},
+        {q: "Kush zbuloi rrezatimin infra të kuq?", a: ["Herschel", "Newton", "Maxwell", "Planck"], c: 0, e: "🌡️"},
+        {q: "Kush shpiku presën e parë të shtypit?", a: ["Gutenberg", "Caxton", "Franklin", "Edison"], c: 0, e: "📖"},
+        {q: "Kush zbuloi qelizën?", a: ["Robert Hooke", "Leeuwenhoek", "Darwin", "Pasteur"], c: 0, e: "🧫"},
+        {q: "Kush zbuloi ligjin e rezistencës elektrike?", a: ["Ohm", "Ampere", "Volt", "Faraday"], c: 0, e: "📐"},
+        {q: "Kush shpiku barometrin?", a: ["Torricelli", "Pascal", "Galileo", "Newton"], c: 0, e: "☁️"},
+        {q: "Kush zbuloi se drita sillet si valë?", a: ["Huygens", "Newton", "Einstein", "Maxwell"], c: 0, e: "🌊"},
+        {q: "Kush shpiku motorin me djegie të brendshme?", a: ["Otto", "Diesel", "Benz", "Ford"], c: 0, e: "🚗"},
+        {q: "Kush zbuloi rrymën e vazhduar (DC)?", a: ["Edison", "Tesla", "Galvani", "Volta"], c: 0, e: "🔋"},
+        {q: "Kush zbuloi se Dielli është yll?", a: ["Bruno", "Galileo", "Copernicus", "Kepler"], c: 0, e: "🌟"},
+        {q: "Kush zbuloi rrezet Gama?", a: ["Villard", "Curie", "Rutherford", "Einstein"], c: 0, e: "☢️"},
+        {q: "Kush shpiku termometrin e parë?", a: ["Santorio", "Fahrenheit", "Celsius", "Galileo"], c: 3, e: "🌡️"},
+        {q: "Kush zbuloi ligjin e induksionit?", a: ["Faraday", "Lenz", "Maxwell", "Tesla"], c: 0, e: "🌀"},
+        {q: "Kush zbuloi se gjaku ka grupe (A, B, O)?", a: ["Landsteiner", "Harvey", "Lister", "Koch"], c: 0, e: "💉"},
+        {q: "Kush shpiku rrufe-pritësin?", a: ["Benjamin Franklin", "Tesla", "Edison", "Watt"], c: 0, e: "⚡"},
+        {q: "Kush zbuloi se yjet përbëhen nga hidrogjeni?", a: ["Cecilia Payne", "Hubble", "Sagan", "Einstein"], c: 0, e: "✨"},
+        {q: "Kush zbuloi elektronin?", a: ["J.J. Thomson", "Bohr", "Rutherford", "Planck"], c: 0, e: "⚛️"},
+        {q: "Kush zbuloi ligjet e trashëgimisë?", a: ["Mendel", "Darwin", "Watson", "Crick"], c: 0, e: "🧬"},
+        {q: "Kush shpiku radion (patenta e parë)?", a: ["Marconi", "Tesla", "Popov", "Hertz"], c: 0, e: "📻"},
+        {q: "Kush zbuloi lëvizjen Browniane?", a: ["Brown", "Einstein", "Newton", "Dalton"], c: 0, e: "🔀"},
+        {q: "Kush zbuloi se ajri ka peshë?", a: ["Torricelli", "Pascal", "Boyle", "Galileo"], c: 1, e: "⚖️"},
+        {q: "Kush zbuloi Ligjin e Gazit Ideal?", a: ["Clapeyron", "Boyle", "Charles", "Avogadro"], c: 0, e: "💨"},
+        {q: "Kush shpiku baterinë e parë?", a: ["Volta", "Galvani", "Tesla", "Edison"], c: 0, e: "🔋"},
+        {q: "Kush zbuloi planetin Neptun?", a: ["Le Verrier", "Herschel", "Galileo", "Lowell"], c: 0, e: "🔵"},
+        {q: "Kush zbuloi vaksinën kundër lisë?", a: ["Edward Jenner", "Pasteur", "Salk", "Koch"], c: 0, e: "🩹"},
+        {q: "Kush shpiku telegrafin?", a: ["Samuel Morse", "Bell", "Edison", "Watt"], c: 0, e: "📟"},
+        {q: "Kush zbuloi rrezatimin alfa?", a: ["Rutherford", "Curie", "Einstein", "Bohr"], c: 0, e: "🔬"},
+        {q: "Kush shpiku anijen me avull?", a: ["Robert Fulton", "Watt", "Diesel", "Benz"], c: 0, e: "🚢"},
+        {q: "Kush zbuloi se universi po zgjerohet?", a: ["Edwin Hubble", "Einstein", "Hawking", "Sagan"], c: 0, e: "🌌"},
+        {q: "Kush zbuloi ligjin e gravitacionit tokësor?", a: ["Newton", "Galileo", "Aristotle", "Kepler"], c: 0, e: "🌍"},
+        {q: "Kush shpiku makinën llogaritëse të parë?", a: ["Pascal", "Babbage", "Leibniz", "Lovelace"], c: 0, e: "🧮"},
+        {q: "Kush zbuloi acidin sulfurik?", a: ["Jabir ibn Hayyan", "Lavoisier", "Dalton", "Nobel"], c: 0, e: "🧪"},
+        {q: "Kush zbuloi se drita ka shpejtësi fundore?", a: ["Romer", "Maxwell", "Einstein", "Newton"], c: 0, e: "🕯️"},
+        {q: "Kush zbuloi se drita është valë elektromagnetike?", a: ["Maxwell", "Hertz", "Newton", "Faraday"], c: 0, e: "📡"},
+        {q: "Kush shpiku gomën e vullkanizuar?", a: ["Goodyear", "Dunlop", "Michelin", "Ford"], c: 0, e: "🛞"},
+        {q: "Kush zbuloi sistemin periodik të elementeve?", a: ["Mendeleev", "Dalton", "Bohr", "Lavoisier"], c: 0, e: "🖼️"},
+        {q: "Kush zbuloi ligjet e pasqyrimit të dritës?", a: ["Ibn al-Haytham", "Euclid", "Newton", "Descartes"], c: 0, e: "🪞"},
+        {q: "Kush zbuloi efektin fotoelektrik?", a: ["Einstein", "Planck", "Hertz", "Bohr"], c: 0, e: "📸"},
+        {q: "Kush zbuloi bërthamën e qelizës?", a: ["Robert Brown", "Hooke", "Schwann", "Virchow"], c: 0, e: "🫐"},
+        {q: "Kush shpiku kinematorafin?", a: ["Vëllezërit Lumiere", "Edison", "Tesla", "Baird"], c: 0, e: "🎬"},
+        {q: "Kush zbuloi se yllat ndryshojnë?", a: ["Brahe", "Kepler", "Galileo", "Copernicus"], c: 0, e: "☄️"},
+        {q: "Kush shpiku frigoriferin e parë?", a: ["Harrison", "Kelvin", "Watt", "Tesla"], c: 0, e: "❄️"},
+        {q: "Kush zbuloi fosforin?", a: ["Hennig Brand", "Lavoisier", "Boyle", "Dalton"], c: 0, e: "🔥"},
+        {q: "Kush zbuloi rrezatimin e trupit të zi?", a: ["Planck", "Einstein", "Bohr", "Newton"], c: 0, e: "🖤"},
+        {q: "Kush shpiku stilolapsin me topth?", a: ["Biro", "Waterman", "Parker", "Edison"], c: 0, e: "🖊️"},
+        {q: "Kush zbuloi se insekte transmetojnë sëmundje?", a: ["Ross", "Pasteur", "Koch", "Fleming"], c: 0, e: "🦟"},
+        {q: "Kush shpiku kompjuterin e parë programues?", a: ["Babbage", "Turing", "Zuse", "Gates"], c: 0, e: "💻"},
+        {q: "Kush zbuloi radion-aktivitetin natyror?", a: ["Becquerel", "Curie", "Roentgen", "Einstein"], c: 0, e: "☢️"},
+        {q: "Kush shpiku shkrepsen?", a: ["Walker", "Nobel", "Edison", "Watt"], c: 0, e: "🕯️"},
+        {q: "Kush zbuloi se drita përthyhet (Ligji i Snell)?", a: ["Snell", "Descartes", "Newton", "Ptolemy"], c: 0, e: "🌈"},
+        {q: "Kush shpiku kondicionerin?", a: ["Carrier", "Tesla", "Watt", "Edison"], c: 0, e: "🌬️"},
+        {q: "Kush zbuloi se bota ka moshë miliarda vjeçare?", a: ["Patterson", "Lyell", "Darwin", "Hutton"], c: 0, e: "⌛"},
+        {q: "Kush shpiku helikopterin e parë funksional?", a: ["Sikorsky", "Wright", "Da Vinci", "Bell"], c: 0, e: "🚁"},
+        {q: "Kush zbuloi elementin Hidrogjen?", a: ["Cavendish", "Priestley", "Boyle", "Dalton"], c: 0, e: "💧"},
+        {q: "Kush shpiku mikroskopin elektronik?", a: ["Ruska", "Knoll", "Janssen", "Hooke"], c: 0, e: "🔬"},
+        {q: "Kush zbuloi se universi ka një fillim (Big Bang)?", a: ["Lemaitre", "Hubble", "Hawking", "Einstein"], c: 0, e: "💥"},
+        {q: "Kush shpiku televizionin?", a: ["Baird", "Marconi", "Edison", "Tesla"], c: 0, e: "📺"},
+        {q: "Kush zbuloi proteinat?", a: ["Mulder", "Pasteur", "Mendel", "Darwin"], c: 0, e: "🥩"},
+        {q: "Kush shpiku orën me lavjerrës?", a: ["Huygens", "Galileo", "Newton", "Harrison"], c: 0, e: "🕰️"},
+        {q: "Kush zbuloi se ajri përbëhet kryesisht nga Azoti?", a: ["Rutherford", "Priestley", "Lavoisier", "Dalton"], c: 0, e: "💨"},
+        {q: "Kush shpiku makinën e parë elektrike?", a: ["Anyos Jedlik", "Tesla", "Edison", "Ford"], c: 0, e: "🔋"},
+        {q: "Kush zbuloi antibiotikun e dytë (Streptomicinën)?", a: ["Waksman", "Fleming", "Pasteur", "Salk"], c: 0, e: "💊"},
+        {q: "Kush shpiku sistemin e parë të shkrimit?", a: ["Sumerët", "Egjiptianët", "Fenikasit", "Grekët"], c: 0, e: "📜"},
+        {q: "Kush zbuloi se drita është thërmijë (Foton)?", a: ["Einstein", "Newton", "Planck", "Maxwell"], c: 0, e: "💡"},
+        {q: "Kush shpiku radar-in?", a: ["Watson-Watt", "Tesla", "Marconi", "Hertz"], c: 0, e: "📡"},
+        {q: "Kush zbuloi kometën që mban emrin e tij?", a: ["Halley", "Kepler", "Hubble", "Herschel"], c: 0, e: "☄️"},
+        {q: "Kush shpiku rripin e sigurimit?", a: ["Bohlin", "Ford", "Olds", "Benz"], c: 0, e: "🚗"},
+        {q: "Kush njihet si mbretëresha e shkencës?", a: ["Matematika", "Fizika", "Astronomia", "Kimi"], c: 0, e: "👑"}
+    ];
+
+    let idx = 0, score = 0, time = 10, timer;
+
+    function startTimer() {
+        clearInterval(timer); time = 10;
+        timer = setInterval(() => {
+            time -= 0.1;
+            document.getElementById('timer-bar').style.width = (time/10)*100 + "%";
+            document.getElementById('time').innerText = Math.ceil(time);
+            if(time <= 0) { clearInterval(timer); next(false); }
+        }, 100);
+    }
+
+    function load() {
+        if(idx >= data.length) return end();
+        const q = data[idx];
+        document.getElementById('avatar').innerText = q.e;
+        document.getElementById('q-num').innerText = idx + 1;
+        document.getElementById('q-text').innerText = q.q;
+        const cont = document.getElementById('opt-container'); cont.innerHTML = '';
+        q.a.forEach((opt, i) => {
+            const b = document.createElement('button'); b.className = 'opt-btn';
+            b.innerText = opt; b.onclick = () => check(i, b); cont.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function check(i, b) {
+        clearInterval(timer);
+        const correct = data[idx].c;
+        const btns = document.querySelectorAll('.opt-btn');
+        btns.forEach(btn => btn.style.pointerEvents = 'none');
+        if(i === correct) { b.classList.add('correct'); score += 10; }
+        else { b.classList.add('wrong'); btns[correct].classList.add('correct'); }
+        setTimeout(() => next(true), 1200);
+    }
+
+    function next(click) {
+        idx++; load();
+        document.getElementById('score').innerText = score;
+    }
+
+    function end() {
+        document.getElementById('quiz-ui').classList.add('hidden');
+        document.getElementById('end-ui').classList.remove('hidden');
+        document.getElementById('final-stats').innerText = `Ke mbledhur ${score} pikë nga 1000 të mundshme!`;
+    }
+
+    load();
+</script>
+</body>
+</html>

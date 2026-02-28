@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>VoltMaster Pro: 10 Nivelet e Energjisë</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a; --panel: #1e293b; --electric: #38bdf8; --neon: #22c55e; --error: #ef4444;
+        }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 360px; background: var(--panel); padding: 20px; border-right: 3px solid var(--electric); display: flex; flex-direction: column; box-shadow: 10px 0 20px rgba(0,0,0,0.5); z-index: 10; }
+        .formula-card { background: #020617; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid var(--electric); text-align: center; font-size: 1.1rem; }
+        
+        /* Lab */
+        .lab { flex: 1; position: relative; background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 35px 35px; }
+        canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+        
+        /* Elementet */
+        .component { position: absolute; background: #334155; border: 2px solid #64748b; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; min-width: 100px; }
+        .terminal { width: 22px; height: 22px; background: var(--error); border: 3px solid white; border-radius: 50%; cursor: pointer; margin: 5px; transition: 0.2s; }
+        .terminal:hover { transform: scale(1.3); }
+        .terminal.selected { background: #fbbf24; animation: pulse 1s infinite; }
+        .terminal.connected { background: var(--neon); }
+        
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.4); } }
+        
+        .bulb-icon { font-size: 45px; filter: grayscale(1); transition: 0.5s; }
+        .on { filter: grayscale(0) drop-shadow(0 0 25px #fbbf24); }
+        
+        button { background: var(--neon); color: black; border: none; padding: 15px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; background: #020617; border: 1px solid var(--electric); color: white; border-radius: 5px; font-size: 1.1rem; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2 id="lvl-title">Niveli 1</h2>
+    <p id="lvl-desc"></p>
+    <div class="formula-card" id="formula"></div>
+    <div id="quiz-area">
+        <p id="question"></p>
+        <input type="number" id="user-ans" placeholder="Përgjigja juaj...">
+        <button onclick="checkWin()">KONTROLLO QARKUN</button>
+    </div>
+    <div id="feedback" style="margin-top:15px; font-weight:bold;"></div>
+</div>
+
+<div class="lab" id="lab">
+    <canvas id="canvas"></canvas>
+    <div id="comp-layer"></div>
+</div>
+
+<script>
+    const levels = [
+        { title: "Niveli 1: Ligji i Ohmit", desc: "Lidh Baterinë me Llambën.", formula: "$$I = \\frac{V}{R}$$", q: "V=12V, R=4Ω. Sa është I?", ans: 3, wires: 2, 
+          comps: [{id: 'bat', t: ['t1','t2'], n: 'Bateri 12V', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'Llamba 4Ω', i: '💡', x: 400, y: 150}] },
+        
+        { title: "Niveli 2: Rezistenca në Seri", desc: "Lidh dy llamba në seri me baterinë.", formula: "$$R_{tot} = R_1 + R_2$$", q: "R1=5Ω, R2=7Ω. Gjej R_tot:", ans: 12, wires: 3,
+          comps: [{id: 'bat', t: ['t1','t2'], n: 'Bateri 12V', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'L1: 5Ω', i: '💡', x: 300, y: 100}, {id: 'b2', t: ['t5','t6'], n: 'L2: 7Ω', i: '💡', x: 500, y: 100}] },
+
+        { title: "Niveli 3: Tensioni në Seri", desc: "Në seri, tensioni ndahet.", formula: "$$V = V_1 + V_2$$", q: "V=20V, R1=R2. Sa volt ka L1?", ans: 10, wires: 3,
+          comps: [{id: 'bat', t: ['t1','t2'], n: 'Bateri 20V', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'L1', i: '💡', x: 300, y: 100}, {id: 'b2', t: ['t5','t6'], n: 'L2', i: '💡', x: 500, y: 100}] },
+
+        { title: "Niveli 4: Lidhja Paralel", desc: "Lidh dy llamba në paralel.", formula: "$$R_p = \\frac{R_1 \\cdot R_2}{R_1 + R_2}$$", q: "R1=6Ω, R2=3Ω. Gjej R_p:", ans: 2, wires: 4,
+          comps: [{id: 'bat', t: ['t1','t2'], n: 'Bateri', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: '6Ω', i: '💡', x: 400, y: 50}, {id: 'b2', t: ['t5','t6'], n: '3Ω', i: '💡', x: 400, y: 250}] },
+
+        { title: "Niveli 5: Ampermetri", desc: "Ampermetri lidhet gjithmonë në seri!", formula: "$$I_{matur} = I_{qarku}$$", q: "V=10V, R=2Ω. Sa Amper tregon?", ans: 5, wires: 3,
+          comps: [{id: 'bat', t: ['t1','t2'], n: '10V', i: '🔋', x: 50, y: 350}, {id: 'amp', t: ['t3','t4'], n: 'Amp', i: '📟', x: 300, y: 200}, {id: 'b1', t: ['t5','t6'], n: '2Ω', i: '💡', x: 500, y: 200}] },
+
+        { title: "Niveli 6: Voltmetri", desc: "Voltmetri lidhet në paralel!", formula: "$$V_{parallel} = V_{burimit}$$", q: "Bateria 9V. Sa tregon voltmetri?", ans: 9, wires: 4,
+          comps: [{id: 'bat', t: ['t1','t2'], n: '9V', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'Llamba', i: '💡', x: 400, y: 100}, {id: 'vol', t: ['t5','t6'], n: 'Volt', i: '📟', x: 400, y: 300}] },
+
+        { title: "Niveli 7: Fuqia Elektrike", desc: "Llogarit fuqinë (P).", formula: "$$P = V \\cdot I$$", q: "V=10V, I=2A. Sa Watt (W)?", ans: 20, wires: 2,
+          comps: [{id: 'bat', t: ['t1','t2'], n: '10V', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'Konsumatori', i: '💡', x: 400, y: 150}] },
+
+        { title: "Niveli 8: Ligji i Parë i Kirkofit", desc: "Rryma në nyje (Paralel).", formula: "$$I_{hyrje} = I_1 + I_2$$", q: "I_tot=10A, I1=4A. Sa është I2?", ans: 6, wires: 4,
+          comps: [{id: 'bat', t: ['t1','t2'], n: 'Burimi', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'Dega 1', i: '💡', x: 400, y: 50}, {id: 'b2', t: ['t5','t6'], n: 'Dega 2', i: '💡', x: 400, y: 250}] },
+
+        { title: "Niveli 9: Efikasiteti", desc: "Rënia e tensionit në fije.", formula: "$$V_{humbje} = I \\cdot R_{fije}$$", q: "I=2A, R_fije=0.5Ω. Humbja (V)?", ans: 1, wires: 2,
+          comps: [{id: 'bat', t: ['t1','t2'], n: 'Bateri', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'Llamba', i: '💡', x: 400, y: 150}] },
+
+        { title: "Niveli 10: Sfida Finale (Miks)", desc: "Lidh 3 llamba: 2 në paralel, 1 në seri.", formula: "$$R_{tot} = R_s + R_p$$", q: "Rs=4Ω, Rp=2Ω. Sa është R_tot?", ans: 6, wires: 5,
+          comps: [{id: 'bat', t: ['t1','t2'], n: '12V', i: '🔋', x: 50, y: 350}, {id: 'b1', t: ['t3','t4'], n: 'Seri', i: '💡', x: 250, y: 150}, {id: 'b2', t: ['t5','t6'], n: 'Par1', i: '💡', x: 500, y: 50}, {id: 'b3', t: ['t7','t8'], n: 'Par2', i: '💡', x: 500, y: 250}] }
+    ];
+
+    let currentLvl = 0;
+    let wires = [];
+    let selectedId = null;
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+
+    function initLevel() {
+        const lvl = levels[currentLvl];
+        document.getElementById('lvl-title').innerText = lvl.title;
+        document.getElementById('lvl-desc').innerText = lvl.desc;
+        document.getElementById('formula').innerHTML = lvl.formula;
+        document.getElementById('question').innerText = lvl.q;
+        document.getElementById('user-ans').value = "";
+        document.getElementById('feedback').innerText = "";
+        
+        wires = [];
+        selectedId = null;
+        renderComponents();
+        resize();
+        MathJax.typeset();
+    }
+
+    function renderComponents() {
+        const layer = document.getElementById('comp-layer');
+        layer.innerHTML = '';
+        levels[currentLvl].comps.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'component';
+            div.style.left = c.x + 'px';
+            div.style.top = c.y + 'px';
+            div.innerHTML = `<strong>${c.n}</strong><div class="bulb-icon"> ${c.i} </div><div style="display:flex">${c.t.map(tid => `<div class="terminal" id="${tid}" onclick="handleSelect('${tid}')"></div>`).join('')}</div>`;
+            layer.appendChild(div);
+        });
+    }
+
+    function handleSelect(id) {
+        if (!selectedId) {
+            selectedId = id;
+            document.getElementById(id).classList.add('selected');
+        } else if (selectedId !== id) {
+            wires.push({ from: selectedId, to: id });
+            document.getElementById(selectedId).classList.remove('selected');
+            document.getElementById(selectedId).classList.add('connected');
+            document.getElementById(id).classList.add('connected');
+            selectedId = null;
+            drawWires();
+        }
+    }
+
+    function drawWires() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+        wires.forEach(w => {
+            const s = document.getElementById(w.from).getBoundingClientRect();
+            const e = document.getElementById(w.to).getBoundingClientRect();
+            const lab = document.getElementById('lab').getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(s.left - lab.left + 11, s.top - lab.top + 11);
+            ctx.lineTo(e.left - lab.left + 11, e.top - lab.top + 11);
+            ctx.stroke();
+        });
+    }
+
+    function checkWin() {
+        const ans = document.getElementById('user-ans').value;
+        const lvl = levels[currentLvl];
+        if (wires.length < lvl.wires) {
+            document.getElementById('feedback').innerText = "❌ Qarku nuk është plotësuar!";
+            return;
+        }
+        if (ans == lvl.ans) {
+            document.querySelectorAll('.bulb-icon').forEach(b => b.classList.add('on'));
+            document.getElementById('feedback').innerHTML = "<span style='color:var(--neon)'>✅ SAKTË! Duke kaluar në nivelin tjetër...</span>";
+            setTimeout(() => {
+                currentLvl++;
+                if (currentLvl < levels.length) initLevel();
+                else alert("Urime! Ti je Mjeshtër i Energjisë!");
+            }, 2500);
+        } else {
+            document.getElementById('feedback').innerText = "❌ Llogaritja është gabim!";
+        }
+    }
+
+    function resize() { canvas.width = window.innerWidth - 360; canvas.height = window.innerHeight; drawWires(); }
+    window.onresize = resize;
+    initLevel();
+</script>
+
+</body>
+</html>

@@ -397,5 +397,21 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     type: "school",
     url: "https://portiergame-bjm8icrv.manus.space/",
     html: ""
+  },
+  {
+    id: "elektriciteti",
+    title: "Elektriciteti",
+    category: "Elektriciteti",
+    type: "digital",
+    url: "/asteriana.html",
+    html: ""
+  },
+  {
+    id: "gjej-shkencetarin",
+    title: "Gjej shkencetarin",
+    category: "Shkencëtarë",
+    type: "digital",
+    url: "/fuckuuu.html",
+    html: ""
   }
 ];
