@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimente Fizike</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0fb;
+    --white: #ffffff;
+    --text: #3a3058;
+    --muted: #7a6ea0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .blob { position:fixed; border-radius:50%; filter:blur(90px); opacity:0.4; pointer-events:none; z-index:0; }
+  .blob1 { width:400px;height:400px;background:#d4c0f8;top:-100px;left:-100px; }
+  .blob2 { width:350px;height:350px;background:#ffd6e8;bottom:-80px;right:-80px; }
+  .blob3 { width:300px;height:300px;background:#c0ecd8;top:40%;left:55%; }
+
+  header { position:relative;z-index:2;text-align:center;padding:2.5rem 1rem 1rem;width:100%; }
+  header h1 { font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;color:var(--text); }
+  header h1 em { font-style:normal;color:#9b7fe8; }
+  header p { color:var(--muted);font-size:.9rem;margin-top:.3rem;font-weight:600; }
+
+  .tabs {
+    display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;
+    padding:.5rem 1rem 1.2rem;position:relative;z-index:2;
+  }
+  .tab {
+    padding:.5rem 1.1rem;border-radius:999px;border:2px solid transparent;
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;
+    cursor:pointer;transition:all .2s;background:var(--white);color:var(--muted);
+  }
+  .tab:nth-child(1):hover,.tab:nth-child(1).active{background:#d4e9ff;color:#1a4a7a;border-color:#90c4f0;}
+  .tab:nth-child(2):hover,.tab:nth-child(2).active{background:#ffe5d0;color:#7a3800;border-color:#f5a878;}
+  .tab:nth-child(3):hover,.tab:nth-child(3).active{background:#d0f5e0;color:#1a5a30;border-color:#7ad898;}
+  .tab:nth-child(4):hover,.tab:nth-child(4).active{background:#ffd8ec;color:#7a1a40;border-color:#f090b8;}
+
+  .card {
+    position:relative;z-index:2;
+    background:var(--white);
+    border-radius:28px;
+    box-shadow:0 8px 48px rgba(80,60,140,0.12);
+    width:min(680px,95vw);
+    overflow:hidden;
+    margin-bottom:2rem;
+  }
+
+  .exp-titlebar {
+    display:flex;align-items:center;gap:1rem;
+    padding:1.3rem 1.8rem .9rem;
+    border-bottom:2px solid var(--bg);
+  }
+  .exp-icon {
+    width:46px;height:46px;border-radius:13px;
+    display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;
+  }
+  .exp-name { font-size:1.2rem;font-weight:900;color:var(--text); }
+  .exp-goal {
+    font-size:.75rem;font-weight:700;border-radius:999px;
+    padding:.2rem .8rem;display:inline-block;margin-top:.3rem;
+  }
+
+  /* Canvas */
+  .canvas-wrap {
+    position:relative;width:100%;height:310px;
+    background:linear-gradient(160deg,#faf8ff,#f0edf8);
+    overflow:hidden;
+  }
+  canvas { position:absolute;inset:0;width:100%;height:100%;display:block; }
+
+  /* Step floating label */
+  .step-label {
+    position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+    background:rgba(255,255,255,0.92);color:var(--text);font-weight:700;font-size:.85rem;
+    padding:.45rem 1.3rem;border-radius:999px;box-shadow:0 2px 14px rgba(80,60,140,0.13);
+    white-space:normal;pointer-events:none;width:max-content;max-width:90%;text-align:center;
+  }
+
+  /* Controls */
+  .controls {
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1rem 1.8rem 1.3rem;
+  }
+  .step-dots { display:flex;gap:.45rem;align-items:center; }
+  .dot { width:8px;height:8px;border-radius:50%;background:#ddd8ee;transition:.25s; }
+  .dot.done,.dot.current { background:var(--accent); }
+  .dot.current { width:22px;border-radius:4px; }
+
+  .btn-next {
+    display:flex;align-items:center;gap:.5rem;
+    background:var(--accent);color:var(--btn-text);border:none;
+    border-radius:999px;padding:.7rem 1.6rem;
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;
+    cursor:pointer;transition:all .2s;
+    box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  }
+  .btn-next:hover { transform:translateY(-2px);filter:brightness(1.05); }
+  .btn-reset {
+    background:none;border:2px solid #ddd8ee;color:var(--muted);
+    border-radius:999px;padding:.6rem 1.1rem;
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;
+    cursor:pointer;transition:.2s;
+  }
+  .btn-reset:hover { border-color:var(--accent);color:var(--text); }
+
+  /* Science overlay */
+  .science-panel {
+    display:none;position:absolute;inset:0;
+    background:rgba(255,255,255,0.97);
+    padding:2rem 2.5rem;
+    flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);z-index:10;
+  }
+  .science-panel.show { display:flex; }
+  @keyframes popIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+  .sci-emoji { font-size:3.2rem;margin-bottom:.8rem; }
+  .sci-title { font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:.4rem; }
+  .sci-law {
+    font-size:.78rem;font-weight:800;border-radius:999px;
+    padding:.3rem 1rem;margin-bottom:1.1rem;display:inline-block;
+  }
+  .sci-body {
+    font-size:.97rem;line-height:1.75;color:#4a4070;max-width:400px;
+  }
+  .sci-body strong { font-weight:900;color:var(--text); }
+  .btn-restart {
+    margin-top:1.5rem;background:var(--accent);color:var(--btn-text);border:none;
+    border-radius:999px;padding:.7rem 1.8rem;
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;
+    cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  }
+  .btn-restart:hover { transform:translateY(-2px); }
+
+  /* Theme per exp */
+  #app[data-exp="0"] { --accent:#7fb8ef;--btn-text:#fff; }
+  #app[data-exp="1"] { --accent:#f5a070;--btn-text:#fff; }
+  #app[data-exp="2"] { --accent:#6cce8a;--btn-text:#fff; }
+  #app[data-exp="3"] { --accent:#f080b0;--btn-text:#fff; }
+</style>
+</head>
+<body>
+<div id="app" data-exp="0">
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<header>
+  <h1>⚗ <em>Lab</em> Fizike</h1>
+  <p>Eksperimente interaktive · Klikoni hapin tjetër</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" onclick="switchExp(0)">🚀 Raketa me Balon</button>
+  <button class="tab" onclick="switchExp(1)">🏎 Energjia me Rampë</button>
+  <button class="tab" onclick="switchExp(2)">🧭 Kompasi i Thjeshtë</button>
+  <button class="tab" onclick="switchExp(3)">⚡ Elektromagneti</button>
+</nav>
+
+<div class="card">
+  <div class="exp-titlebar">
+    <div class="exp-icon" id="expIcon"></div>
+    <div>
+      <div class="exp-name" id="expName"></div>
+      <span class="exp-goal" id="expGoal"></span>
+    </div>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="mainCanvas"></canvas>
+    <div class="step-label" id="stepLabel"></div>
+    <div class="science-panel" id="sciPanel">
+      <div class="sci-emoji" id="sciEmoji"></div>
+      <div class="sci-title" id="sciTitle"></div>
+      <span class="sci-law" id="sciLaw"></span>
+      <p class="sci-body" id="sciBody"></p>
+      <button class="btn-restart" onclick="resetExp()">↺ Fillo Sërish</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="step-dots" id="stepDots"></div>
+    <div style="display:flex;gap:.6rem;align-items:center">
+      <button class="btn-reset" onclick="resetExp()">↺</button>
+      <button class="btn-next" id="btnNext" onclick="nextStep()">
+        Hapi Tjetër <span>→</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const DATA = [
+  {
+    name:"Raketa me Balon", icon:"🚀", iconBg:"#d4e9ff",
+    goal:"🎯 Ligji III i Njutonit", goalBg:"#d4e9ff", goalColor:"#1a4a7a",
+    steps:[
+      "Fute fijën nëpër kasën plastike",
+      "Lidhe fijën fort midis dy karrigeve",
+      "Fryeje balonin pa e lidhur",
+      "Ngjite balonin te kasa me shirit",
+      "Lëshoje — shiko si fluturon! 🚀"
+    ],
+    sci:{
+      emoji:"🚀", title:"Veprim & Kundërveprim",
+      law:"Ligji III i Njutonit", lawBg:"#d4e9ff", lawColor:"#1a4a7a",
+      body:"Kur ajri del nga baloni me forcë drejt <strong>prapa</strong>, forca e kundërt e njëjtë e shtyn balonin drejt <strong>para</strong>. <strong>Çdo veprim ka kundërveprim të barabartë dhe të kundërt</strong> — ky parim lëviz edhe raketat kozmike!"
+    }
+  },
+  {
+    name:"Energjia me Rampë", icon:"🏎", iconBg:"#ffe5d0",
+    goal:"🎯 Ep → Ek (Transformim Energjie)", goalBg:"#ffe5d0", goalColor:"#7a3800",
+    steps:[
+      "Vendos librin si rampë në lartësi të ulët",
+      "Lëshoje makinën nga maja e rampës",
+      "Mat sa larg shkoi me metër",
+      "Rrit lartësinë e rampës",
+      "Lëshoje sërish — krahaso distancat! 📏"
+    ],
+    sci:{
+      emoji:"⚡", title:"Transformimi i Energjisë",
+      law:"Ep = mgh  →  Ek = ½mv²", lawBg:"#ffe5d0", lawColor:"#7a3800",
+      body:"Sa më lart të jetë makina, aq më shumë <strong>energji potenciale</strong> ka (Ep = mgh). Kur lëshohet, ajo shndërrohet plotësisht në <strong>energji kinetike</strong> (Ek = ½mv²) — makina shkon më larg sepse ka shpejtësi më të madhe!"
+    }
+  },
+  {
+    name:"Kompasi i Thjeshtë", icon:"🧭", iconBg:"#d0f5e0",
+    goal:"🎯 Fusha Magnetike e Tokës", goalBg:"#d0f5e0", goalColor:"#1a5a30",
+    steps:[
+      "Fërko gjilpërën me magnet 30–40 sekonda",
+      "Vendose gjilpërën mbi copën e letrës",
+      "Lëshoje letrën me gjilpërën në ujin e tasit",
+      "Vëzhgo: gjilpëra tregon Veri–Jug! 🧭"
+    ],
+    sci:{
+      emoji:"🧭", title:"Magnetizimi & Toka",
+      law:"Fusha Magnetike e Tokës", lawBg:"#d0f5e0", lawColor:"#1a5a30",
+      body:"Duke fërkuar gjilpërën, elektronet e saj rreshtohen si magnet të vegjël. Toka vetë është një <strong>magnet gjigant</strong> — gjilpëra e magnetizuar rrotullohet gjithnjë drejt <strong>poleve Veri–Jug</strong>, njëlloj si kompasi profesional!"
+    }
+  },
+  {
+    name:"Elektromagneti", icon:"⚡", iconBg:"#ffd8ec",
+    goal:"🎯 Elektricitet + Magnetizëm", goalBg:"#ffd8ec", goalColor:"#7a1a40",
+    steps:[
+      "Mbështill telin rreth gozhdës (20–30 radhë)",
+      "Lidh skajet e telit me baterinë 1.5V",
+      "Afroje gozhdën te kapëset metalike",
+      "Shkëpute baterinë — çfarë ndodh?"
+    ],
+    sci:{
+      emoji:"🔋", title:"Elektromagnetizmi",
+      law:"Ligji i Ampèrit", lawBg:"#ffd8ec", lawColor:"#7a1a40",
+      body:"Rryma elektrike nëpër tel krijon një <strong>fushë magnetike</strong> rreth tij. Sa më shumë mbështjellë, aq më e fortë fusha. Kur hiqet bateria — <strong>pa rrymë, pa magnetizëm</strong>. Ky parim përdoret në krana industriale dhe MRI!"
+    }
+  }
+];
+
+let curExp=0, curStep=0, animId=null, t=0;
+const canvas=document.getElementById('mainCanvas');
+const ctx=canvas.getContext('2d');
+let W=0, H=0;
+
+function resize(){
+  W=canvas.parentElement.clientWidth;
+  H=canvas.parentElement.clientHeight;
+  canvas.width=W; canvas.height=H;
+}
+
+function switchExp(i){
+  curExp=i;
+  document.getElementById('app').dataset.exp=i;
+  document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('active',j===i));
+  resetExp();
+  updateHeader();
+}
+
+function updateHeader(){
+  const d=DATA[curExp];
+  const icon=document.getElementById('expIcon');
+  icon.textContent=d.icon; icon.style.background=d.iconBg;
+  document.getElementById('expName').textContent=d.name;
+  const g=document.getElementById('expGoal');
+  g.textContent=d.goal; g.style.background=d.goalBg; g.style.color=d.goalColor;
+}
+
+function updateDots(){
+  const total=DATA[curExp].steps.length;
+  const c=document.getElementById('stepDots');
+  c.innerHTML='';
+  for(let i=0;i<=total;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i<curStep?' done':'')+(i===curStep?' current':'');
+    c.appendChild(d);
+  }
+}
+
+function nextStep(){
+  const total=DATA[curExp].steps.length;
+  if(curStep<total){
+    curStep++;
+    updateDots();
+    if(curStep<total){
+      document.getElementById('stepLabel').textContent=DATA[curExp].steps[curStep];
+    } else {
+      showScience();
+    }
+  }
+}
+
+function showScience(){
+  const s=DATA[curExp].sci;
+  document.getElementById('sciEmoji').textContent=s.emoji;
+  document.getElementById('sciTitle').textContent=s.title;
+  const l=document.getElementById('sciLaw');
+  l.textContent=s.law; l.style.background=s.lawBg; l.style.color=s.lawColor;
+  document.getElementById('sciBody').innerHTML=s.body;
+  document.getElementById('sciPanel').classList.add('show');
+  document.getElementById('btnNext').style.visibility='hidden';
+}
+
+function resetExp(){
+  curStep=0;
+  document.getElementById('sciPanel').classList.remove('show');
+  document.getElementById('btnNext').style.visibility='visible';
+  document.getElementById('stepLabel').textContent=DATA[curExp].steps[0];
+  updateDots();
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  t=0; loop();
+}
+
+function loop(){
+  resize();
+  DRAWS[curExp]();
+  t++;
+  animId=requestAnimationFrame(loop);
+}
+
+// ===== DRAWING HELPERS =====
+function rr(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+function txt(s,x,y,c='#3a3058',sz=13,align='center',weight=700){
+  ctx.save();ctx.font=`${weight} ${sz}px Nunito,sans-serif`;
+  ctx.fillStyle=c;ctx.textAlign=align;ctx.fillText(s,x,y);ctx.restore();
+}
+function pill(s,x,y,bg,c,sz=11){
+  ctx.save();ctx.font=`700 ${sz}px Nunito,sans-serif`;
+  const w=ctx.measureText(s).width+22;
+  ctx.fillStyle=bg; rr(x-w/2,y-13,w,22,11); ctx.fill();
+  ctx.fillStyle=c;ctx.textAlign='center';ctx.fillText(s,x,y+4);
+  ctx.restore();
+}
+function arrowLine(x1,y1,x2,y2,color,label,side=1){
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/L,uy=dy/L;
+  ctx.fillStyle=color;ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-ux*10+uy*5,y2-uy*10-ux*5);
+  ctx.lineTo(x2-ux*10-uy*5,y2-uy*10+ux*5);
+  ctx.closePath();ctx.fill();
+  ctx.font='600 10px Nunito,sans-serif';ctx.fillStyle=color;
+  ctx.textAlign=side>0?'left':'right';
+  ctx.fillText(label,side>0?x2+5:x1-5,y1-6);
+  ctx.restore();
+}
+function balloon(x,y,r,color,light){
+  ctx.save();
+  const g=ctx.createRadialGradient(x-r*.3,y-r*.35,r*.05,x,y,r*1.2);
+  g.addColorStop(0,'white');g.addColorStop(.3,light);g.addColorStop(1,color);
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,r,r*1.25,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y+r*1.25+5,5,7,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.65)';
+  ctx.beginPath();ctx.ellipse(x-r*.25,y-r*.3,r*.2,r*.13,-.5,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+
+// ===== EXP 1: BALLOON =====
+function drawExp0(){
+  const cy=H/2;
+  if(curStep>=1){
+    ctx.strokeStyle='#c0b0e0';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(60,cy);ctx.lineTo(W-60,cy);ctx.stroke();
+    [60,W-60].forEach(x=>{ctx.fillStyle='#c8b8e8';ctx.beginPath();ctx.arc(x,cy,7,0,Math.PI*2);ctx.fill();});
+  }
+  if(curStep>=1){
+    ctx.fillStyle='#d4e9ff';rr(W/2-22,cy-10,44,20,5);ctx.fill();
+    ctx.strokeStyle='#90c4f0';ctx.lineWidth=1.5;rr(W/2-22,cy-10,44,20,5);ctx.stroke();
+    txt('kasë','',W/2+55,cy+4,'#90c4f0',10);
+  }
+  if(curStep===0){
+    balloon(W/2,cy-60,38,'#90c4f0','#d4e9ff');
+    txt('Gati të fillojmë!',W/2,cy+60,'#7a8fb0',14);
+    return;
+  }
+  if(curStep===1){balloon(W/2-120,cy-55,35,'#90c4f0','#d4e9ff');return;}
+  if(curStep===2){
+    const r=36+Math.sin(t*.08)*3;
+    balloon(W/2-110,cy-58,r,'#90c4f0','#d4e9ff');
+    for(let i=0;i<3;i++){
+      ctx.save();ctx.globalAlpha=.35-i*.08;ctx.fillStyle='#90c4f0';
+      ctx.beginPath();ctx.arc(W/2-150-i*14,cy-58,9-i*2,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+    return;
+  }
+  if(curStep===3){
+    balloon(W/2,cy-65,40,'#90c4f0','#d4e9ff');
+    ctx.fillStyle='rgba(255,220,80,.75)';ctx.fillRect(W/2-26,cy-14,52,9);
+    return;
+  }
+  if(curStep>=4){
+    const prog=Math.min(1,t/85);
+    const bx=90+(W-200)*prog;
+    for(let i=0;i<5;i++){
+      ctx.save();ctx.globalAlpha=(.45-i*.07)*(1-prog*.4);
+      ctx.fillStyle='#90c4f0';ctx.beginPath();ctx.arc(bx-55-i*18,cy-8,9-i*1.5,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+    balloon(bx,cy-55,38,'#90c4f0','#d4e9ff');
+    if(t>25){
+      arrowLine(bx-45,cy+35,bx-88,cy+35,'#f5a070','Veprim (ajër)',-1);
+      arrowLine(bx+10,cy+35,bx+55,cy+35,'#6cce8a','Kundërveprim',1);
+    }
+  }
+}
+
+// ===== EXP 2: RAMP =====
+function drawExp1(){
+  const gnd=H-52;
+  const rx=70;
+  const hArr=[65,65,90,90,130,130];
+  const h=hArr[Math.min(curStep,hArr.length-1)];
+  // ground
+  ctx.fillStyle='#ffe8d8';rr(30,gnd,W-60,10,5);ctx.fill();
+  // ramp
+  ctx.save();ctx.strokeStyle='#f5a070';ctx.lineWidth=5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(rx,gnd-h);ctx.lineTo(rx+165,gnd);ctx.stroke();
+  ctx.strokeStyle='#ffd0b0';ctx.lineWidth=2;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(rx,gnd);ctx.lineTo(rx,gnd-h);ctx.stroke();
+  ctx.setLineDash([]);ctx.restore();
+  // height label
+  if(curStep>=1){
+    txt(`h=${h}`,rx-28,gnd-h/2+5,'#f5a070',11);
+  }
+  // car position
+  if(curStep===0){
+    drawCar(rx+5,gnd-h-16,'#f5a070');
+    txt('Gati!',W/2,H-18,'#c0a880',13);
+    return;
+  }
+  const prog=Math.min(1,t/70);
+  let cx2,cy2;
+  if(prog<.5){const p=prog/.5;cx2=rx+p*165;cy2=gnd-h+p*h-16;}
+  else{const p=(prog-.5)/.5;const dist=(h/65)*130;cx2=rx+165+p*(curStep>=3?dist:18);cy2=gnd-16;}
+  drawCar(cx2,cy2,'#f5a070');
+  if(curStep>=3&&prog>=1){
+    const dist=(h/65)*130;
+    ctx.save();ctx.strokeStyle='#6cce8a';ctx.lineWidth=2;ctx.setLineDash([5,5]);
+    ctx.beginPath();ctx.moveTo(rx+165,gnd+18);ctx.lineTo(rx+165+dist,gnd+18);ctx.stroke();
+    ctx.setLineDash([]);
+    [rx+165,rx+165+dist].forEach(x=>{ctx.fillStyle='#6cce8a';ctx.beginPath();ctx.arc(x,gnd+18,4,0,Math.PI*2);ctx.fill();});
+    txt(`${Math.round(dist)} njësi`,rx+165+dist/2,gnd+32,'#3a7a50',11);ctx.restore();
+  }
+  if(curStep>=4)pill('Ep = mgh  (lart)',W*.7,H*.22,'#ffe8d8','#7a3800',11);
+  if(curStep>=5)pill('Ek = ½mv²  (poshtë)',W*.7,H*.22+26,'#d0f5e0','#1a5a30',11);
+}
+function drawCar(x,y,c){
+  ctx.save();
+  ctx.fillStyle=c;rr(x-18,y-12,36,13,4);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.6)';rr(x-10,y-20,20,10,3);ctx.fill();
+  ['#4a3a7a','#4a3a7a'].forEach((col,i)=>{
+    const wx=x+(i===0?-11:11);
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(wx,y,7,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.arc(wx,y,3,0,Math.PI*2);ctx.fill();
+  });
+  ctx.restore();
+}
+
+// ===== EXP 3: COMPASS =====
+function drawExp2(){
+  const cx=W/2,cy=H/2+5;
+  if(curStep===0){
+    drawMag(W*.72,cy-30,0);
+    drawNeedle(cx-20,cy+15,-.2,1);
+    txt('Gjilpëra & magneti gati',cx,H-18,'#7a8fb0',13);
+    return;
+  }
+  if(curStep===1){
+    const sw=Math.sin(t*.14)*.28;
+    const mx=cx+85+Math.sin(t*.14)*28;
+    drawMag(mx,cy-28,0);
+    drawNeedle(cx-20,cy+10,sw,1);
+    if(t%7<3){ctx.fillStyle='#ffd060';ctx.beginPath();ctx.arc(cx+52,cy-2,4,0,Math.PI*2);ctx.fill();}
+    pill('⚡ Fërkimi magnetizon!',cx,cy+70,'#d0f5e0','#1a5a30',12);
+    return;
+  }
+  if(curStep===2){
+    ctx.fillStyle='rgba(255,255,255,.85)';ctx.beginPath();ctx.ellipse(cx,cy,27,10,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#c0d8f8';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(cx,cy,27,10,0,0,Math.PI*2);ctx.stroke();
+    drawNeedle(cx,cy,.4,1);
+    return;
+  }
+  // bowl
+  ctx.save();
+  const bg=ctx.createRadialGradient(cx,cy,8,cx,cy,88);
+  bg.addColorStop(0,'rgba(190,225,255,.45)');bg.addColorStop(1,'rgba(140,190,255,.18)');
+  ctx.fillStyle=bg;ctx.beginPath();ctx.ellipse(cx,cy+8,88,33,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#90c4f0';ctx.lineWidth=1.8;ctx.beginPath();ctx.ellipse(cx,cy+8,88,33,0,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.ellipse(cx,cy+8,26,9,0,0,Math.PI*2);ctx.fill();
+  const target=-Math.PI/2;
+  const wobble=Math.sin(t*.04)*.06*(1-Math.min(1,t/55));
+  drawNeedle(cx,cy+8,target+wobble,1);
+  const pts=[['V',0,-50,'#f080b0'],['J',0,50,'#a090c0'],['L',-75,0,'#a090c0'],['P',75,0,'#a090c0']];
+  pts.forEach(([l,dx,dy,col])=>{ctx.save();ctx.font='bold 14px Nunito,sans-serif';ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(l,cx+dx,cy+dy+8);ctx.restore();});
+  if(curStep>=3)pill('✓ Tregon Veri–Jug!',cx,cy+80,'#d0f5e0','#1a5a30',12);
+}
+function drawMag(x,y,a){
+  ctx.save();ctx.translate(x,y);ctx.rotate(a);
+  ctx.fillStyle='#f080b0';rr(-40,-12,80,24,6);ctx.fill();
+  ctx.fillStyle='#90c4f0';rr(-40,-12,40,24,6);ctx.fill();
+  ctx.font='bold 12px Nunito,sans-serif';ctx.textAlign='center';
+  ctx.fillStyle='white';ctx.fillText('N',-20,5);ctx.fillText('S',20,5);
+  ctx.restore();
+}
+function drawNeedle(x,y,a,al){
+  ctx.save();ctx.globalAlpha=al;ctx.translate(x,y);ctx.rotate(a);
+  ctx.strokeStyle='#6cce8a';ctx.lineWidth=3.5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(-32,0);ctx.lineTo(32,0);ctx.stroke();
+  ctx.fillStyle='#f080b0';ctx.beginPath();ctx.arc(-32,0,6,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#b0a8d0';ctx.beginPath();ctx.arc(32,0,5,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+
+// ===== EXP 4: ELECTROMAGNET =====
+function drawExp3(){
+  const cx=W/2, ny=H/2-8, nx=cx-78;
+  // nail
+  ctx.fillStyle='#c8c0e0';ctx.fillRect(nx,ny-9,148,18);
+  ctx.fillStyle='#b0a8d0';ctx.beginPath();ctx.moveTo(nx+148,ny-9);ctx.lineTo(nx+168,ny);ctx.lineTo(nx+148,ny+9);ctx.closePath();ctx.fill();
+  if(curStep===0){
+    txt('Mbështill telin rreth gozhdës',cx,H-18,'#8a80a0',12);
+    // faint coil hint
+    for(let i=0;i<8;i++){ctx.save();ctx.strokeStyle='rgba(240,128,176,.3)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(nx+10+i*16,ny,6,10,Math.PI/2,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    return;
+  }
+  // coil
+  const cc=curStep>=2?'#f080b0':'rgba(240,128,176,.55)';
+  for(let i=0;i<10;i++){ctx.save();ctx.strokeStyle=cc;ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(nx+8+i*13,ny,6,10,Math.PI/2,0,Math.PI*2);ctx.stroke();ctx.restore();}
+  if(curStep===1){txt('Tel mbështjellur ✓',cx,H-18,'#8a80a0',12);return;}
+  // battery
+  const bx=cx+30,by=H-72;
+  ctx.fillStyle=curStep>=4?'#e0e0e8':'#f0e8f8';rr(bx-25,by,50,26,6);ctx.fill();
+  ctx.strokeStyle=curStep>=4?'#ccc':'#d0b8e8';ctx.lineWidth=1.5;rr(bx-25,by,50,26,6);ctx.stroke();
+  ctx.fillStyle=curStep>=4?'#ccc':'#c8b0e0';ctx.fillRect(bx-29,by+8,4,10);
+  ctx.fillStyle=curStep>=4?'#ccc':'#f080b0';ctx.fillRect(bx+25,by+9,5,8);
+  ctx.font='700 11px Nunito,sans-serif';ctx.fillStyle=curStep>=4?'#aaa':'#7a3058';ctx.textAlign='center';
+  ctx.fillText(curStep>=4?'⊘ Off':'1.5V',bx,by+17);
+  if(curStep>=2&&curStep<4){
+    // animated wire
+    ctx.save();ctx.strokeStyle='rgba(240,128,176,.55)';ctx.lineWidth=2;ctx.setLineDash([5,5]);
+    ctx.lineDashOffset=-(t*.7);
+    ctx.beginPath();ctx.moveTo(bx+25,by+13);ctx.lineTo(bx+90,by+13);ctx.lineTo(bx+90,ny);ctx.lineTo(nx+135,ny);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx-25,by+13);ctx.lineTo(bx-90,by+13);ctx.lineTo(bx-90,ny);ctx.lineTo(nx,ny);ctx.stroke();
+    ctx.setLineDash([]);ctx.restore();
+    // field rings
+    for(let i=1;i<=3;i++){ctx.save();ctx.globalAlpha=.18+Math.sin(t*.05+i)*.08;ctx.strokeStyle='#c8b0e8';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(cx-5,ny,i*26,i*11,0,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    pill('⚡ Fusha magnetike aktive!',cx-5,ny-48,'#ffd8ec','#7a1a40',11);
+  }
+  // clips
+  if(curStep===3){
+    for(let i=0;i<4;i++){const px=nx+160+(i%2)*20,py=ny+18+Math.floor(i/2)*18;drawClip(px,py,true);}
+    pill('Kapëset tërhiqen! 🧲',nx+175,ny+68,'#ffd8ec','#7a1a40',11);
+  }
+  if(curStep>=4){
+    for(let i=0;i<4;i++){
+      const fallY=Math.min(H-28,ny+22+(t*1.3)+i*9);
+      drawClip(cx-28+i*18,fallY,false);
+    }
+    pill('Pa bateri = Pa magnet!',cx,ny-38,'#d0f5e0','#1a5a30',11);
+  }
+}
+function drawClip(x,y,active){
+  ctx.save();ctx.strokeStyle=active?'#f080b0':'#b0a8c8';ctx.lineWidth=2;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+22,y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+10);ctx.lineTo(x+20,y+10);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x+6,y);ctx.lineTo(x+6,y+7);ctx.lineTo(x+20,y+7);ctx.stroke();
+  ctx.restore();
+}
+
+const DRAWS=[drawExp0,drawExp1,drawExp2,drawExp3];
+
+// Init
+const urlParams = new URLSearchParams(window.location.search);
+const expParam = urlParams.get('exp');
+if (expParam !== null) {
+  const expIndex = parseInt(expParam, 10);
+  if (!isNaN(expIndex) && expIndex >= 0 && expIndex < DATA.length) {
+    curExp = expIndex;
+    document.getElementById('app').dataset.exp = curExp;
+    document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('active',j===curExp));
+    // Hide tabs and header to show only the specific experiment
+    const tabsEl = document.querySelector('.tabs');
+    if (tabsEl) tabsEl.style.display = 'none';
+    const headerEl = document.querySelector('header');
+    if (headerEl) headerEl.style.display = 'none';
+    
+    // Adjust card styles for better mobile fit in iframe
+    const appEl = document.getElementById('app');
+    if (appEl) {
+      appEl.style.width = '100%';
+      appEl.style.height = '100vh';
+      appEl.style.display = 'flex';
+      appEl.style.flexDirection = 'column';
+    }
+    const cardEl = document.querySelector('.card');
+    if (cardEl) {
+      cardEl.style.width = '100%';
+      cardEl.style.height = '100%';
+      cardEl.style.margin = '0';
+      cardEl.style.borderRadius = '0';
+      cardEl.style.boxShadow = 'none';
+      cardEl.style.display = 'flex';
+      cardEl.style.flexDirection = 'column';
+    }
+    const canvasWrap = document.querySelector('.canvas-wrap');
+    if (canvasWrap) {
+      canvasWrap.style.flex = '1';
+      canvasWrap.style.height = 'auto';
+    }
+    document.body.style.padding = '0';
+    document.body.style.margin = '0';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+updateHeader();
+resetExp();
+window.addEventListener('resize',()=>{resize();});
+</script>
+</body>
+</html>

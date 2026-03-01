@@ -502,6 +502,19 @@ const App: React.FC = () => {
                                 </div>
                             ))}
                         </div>
+                        {game.url && (
+                            <div className="mt-8 md:mt-12">
+                                <div className="relative w-full h-[400px] rounded-2xl md:rounded-[2rem] overflow-hidden border-4 border-slate-100 mb-4 shadow-inner">
+                                    <iframe src={game.url} className="w-full h-full border-none" title={game.title}></iframe>
+                                </div>
+                                <button 
+                                    onClick={() => window.open(game.url, '_blank')}
+                                    className="w-full py-4 md:py-6 bg-[#ffafcc] text-white rounded-xl md:rounded-[2rem] font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#ff758f] transition-all shadow-xl flex items-center justify-center gap-3"
+                                >
+                                    HAP FULL SCREEN <i className="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

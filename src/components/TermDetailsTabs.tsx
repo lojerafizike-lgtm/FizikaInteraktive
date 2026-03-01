@@ -15,24 +15,35 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
   // Track the current term to reset state when it changes without using useEffect
   const [currentTermName, setCurrentTermName] = useState(term.name);
 
+  const matchedInstrument = instrumentsData.find(inst => 
+    term.name.toLowerCase().includes(inst.name.toLowerCase())
+  );
+
+  const availableTabs = [
+    ...(matchedInstrument ? [{ id: 'mjet', icon: '📏', label: 'Mjet Matës', color: 'bg-[#ffc8dd] text-slate-800' }] : []),
+    { id: 'video', icon: '🎥', label: 'Video', color: 'bg-[#ffafcc] text-white' },
+    { id: 'foto', icon: '🖼️', label: 'Foto', color: 'bg-[#cdb4db] text-white' },
+    { id: 'ushtrime', icon: '🧠', label: 'Ushtrime', color: 'bg-[#a2d2ff] text-slate-800' },
+    { id: 'loje', icon: '🎮', label: 'Lojë', color: 'bg-[#4a4e69] text-white' }
+  ];
+
   if (term.name !== currentTermName) {
     setCurrentTermName(term.name);
-    setActiveTab('mjet');
+    setActiveTab(matchedInstrument ? 'mjet' : 'video');
     setShowSolutionPanel(false);
     setShowSteps(false);
+  }
+
+  // Ensure activeTab is valid if matchedInstrument changes (e.g., on first load)
+  if (activeTab === 'mjet' && !matchedInstrument) {
+    setActiveTab('video');
   }
 
   return (
     <div className="mt-8 relative">
       {/* Tabs */}
       <div className="flex flex-wrap gap-4 justify-center mb-10 relative z-10">
-        {[
-          { id: 'mjet', icon: '📏', label: 'Mjet Matës', color: 'bg-[#ffc8dd] text-slate-800' },
-          { id: 'video', icon: '🎥', label: 'Video', color: 'bg-[#ffafcc] text-white' },
-          { id: 'foto', icon: '🖼️', label: 'Foto', color: 'bg-[#cdb4db] text-white' },
-          { id: 'ushtrime', icon: '🧠', label: 'Ushtrime', color: 'bg-[#a2d2ff] text-slate-800' },
-          { id: 'loje', icon: '🎮', label: 'Lojë', color: 'bg-[#4a4e69] text-white' }
-        ].map((tab) => (
+        {availableTabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as 'mjet' | 'video' | 'foto' | 'ushtrime' | 'loje')}
@@ -58,11 +69,32 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
             return (
               <div className="animate__animated animate__fadeInUp">
                 <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                  <div className="w-full md:w-1/2 flex justify-center">
+                  <div className="w-full md:w-1/2 flex flex-col justify-center items-center gap-4">
                     <div 
-                      className="w-full max-w-[300px]"
+                      className="w-full max-w-[300px] bg-white p-4 rounded-2xl shadow-inner border-2 border-slate-100"
                       dangerouslySetInnerHTML={{ __html: buildSim(matchedInstrument.simType) }}
                     />
+                    <button 
+                      onClick={() => {
+                        const modal = document.createElement('div');
+                        modal.className = 'fixed inset-0 z-[9999] bg-slate-900/90 flex items-center justify-center p-4 backdrop-blur-sm';
+                        modal.innerHTML = `
+                          <div class="bg-white rounded-[2rem] p-8 w-full max-w-4xl relative flex flex-col items-center justify-center min-h-[50vh] shadow-2xl">
+                            <button class="absolute top-6 right-6 w-12 h-12 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-xl hover:bg-red-50 hover:text-red-500 transition-colors" onclick="this.parentElement.parentElement.remove()">
+                              <i class="fas fa-times"></i>
+                            </button>
+                            <h2 class="text-3xl font-black text-slate-800 mb-8">${matchedInstrument.instrument}</h2>
+                            <div class="w-full max-w-2xl transform scale-125 md:scale-150 origin-top mt-12">
+                              ${buildSim(matchedInstrument.simType)}
+                            </div>
+                          </div>
+                        `;
+                        document.body.appendChild(modal);
+                      }}
+                      className="px-6 py-3 bg-[#ffc8dd] text-slate-800 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#ffafcc] hover:text-white transition-all shadow-md flex items-center gap-2"
+                    >
+                      HAP FULL SCREEN <i className="fas fa-expand"></i>
+                    </button>
                   </div>
                   <div className="w-full md:w-1/2 text-left">
                     <div className="flex items-center gap-4 mb-4">

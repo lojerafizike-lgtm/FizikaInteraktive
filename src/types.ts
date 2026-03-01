@@ -34,6 +34,7 @@ export interface PhysicsGame {
   materials: string[];
   steps: string[];
   type: 'home' | 'school';
+  url?: string;
 }
 
 export interface DigitalGame {

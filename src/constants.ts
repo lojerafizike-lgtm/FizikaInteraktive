@@ -84,28 +84,32 @@ export const GAMES: PhysicsGame[] = [
     description: "Të demonstrohet Ligji i Tretë i Njutonit (Veprim – Kundërveprim).",
     materials: ["1 balon", "Fije e gjatë (2–3 m)", "Kasë plastike", "Shirit ngjitës"],
     steps: ["Fute fijën nëpër kasë.", "Lidhe fijën fort midis dy pikave (p.sh. dy karrige).", "Fryje balonin pa e lidhur.", "Ngjite balonin te kasa me shirit.", "Lësho balonin."],
-    type: 'home'
+    type: 'home',
+    url: '/eksperimente.html?exp=0'
   },
   {
     title: "Energjia me Rampë",
     description: "Të vëzhgohet transformimi i energjisë potenciale në energji kinetike.",
     materials: ["Një dërrasë ose libër i madh (si rampë)", "Makine lodër ose top", "Metër"],
     steps: ["Vendos librin në një lartësi të caktuar.", "Lësho makinën nga maja e rampës.", "Mat sa larg shkon.", "Rrit lartësinë dhe përsërite."],
-    type: 'home'
+    type: 'home',
+    url: '/eksperimente.html?exp=1'
   },
   {
     title: "Kompasi i Thjeshtë",
     description: "Të vëzhgohet fusha magnetike e Tokës.",
     materials: ["Gjilpërë", "Magnet", "Tas me ujë", "Copë e vogël letre ose tapë"],
     steps: ["Fërko gjilpërën me magnet në një drejtim për 30–40 sekonda.", "Vendose gjilpërën mbi copën e letrës ose tapës.", "Vendose me kujdes in ujë.", "Vëzhgo drejtimin që merr gjilpëra."],
-    type: 'home'
+    type: 'home',
+    url: '/eksperimente.html?exp=2'
   },
   {
     title: "Ndërtimi i një Elektromagneti",
     description: "Të kuptohet lidhja midis elektricitetit dhe magnetizmit.",
     materials: ["Gozhdë metalike", "Tel bakri i izoluar", "Bateri 1.5V", "Kapëse letrash metalike"],
     steps: ["Mbështill telin rreth gozhdës disa herë.", "Lidh skajet e telit me baterinë.", "Afroje gozhdën te kapëset metalike.", "Shkëpute baterinë dhe vëzhgo ndryshimin."],
-    type: 'home'
+    type: 'home',
+    url: '/eksperimente.html?exp=3'
   }
 ];
 
