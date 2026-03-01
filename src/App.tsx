@@ -553,13 +553,180 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="mt-80 py-40 bg-white border-t border-slate-100 text-center">
-        <div className="flex flex-col items-center gap-14 opacity-20">
-            <div className="relative">
-              <i className="fas fa-atom text-6xl animate-spin-slow"></i>
-              <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black uppercase tracking-[1.2em] translate-y-20 text-slate-800">Fizika</div>
+      <footer className="bg-white text-slate-600 py-16 md:py-24 mt-32 rounded-t-[3rem] md:rounded-t-[5rem] border-t-8 border-[#ffafcc] relative overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#ffc8dd] rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse"></div>
+          <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-[#a2d2ff] rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-[#cdb4db] rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-pulse" style={{animationDelay: '4s'}}></div>
+        </div>
+
+        {/* Animated Mechanical Illustration (Bottom Left) */}
+        <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] pointer-events-none z-0 opacity-60">
+          {/* Outer dashed ring */}
+          <div className="absolute inset-0 border-[12px] border-dashed border-[#ffc8dd] rounded-full animate-[spin_40s_linear_infinite] opacity-50"></div>
+          {/* Inner solid ring */}
+          <div className="absolute inset-12 border-[4px] border-[#cdb4db] rounded-full opacity-30"></div>
+          {/* Big Gear */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#ffafcc] animate-[spin_20s_linear_infinite]">
+            <i className="fas fa-cog text-[16rem]"></i>
+          </div>
+          {/* Medium Gear */}
+          <div className="absolute top-[15%] left-[65%] text-[#a2d2ff] animate-[spin_15s_linear_infinite_reverse]">
+            <i className="fas fa-cog text-[8rem]"></i>
+          </div>
+          {/* Small Gear */}
+          <div className="absolute top-[70%] left-[75%] text-[#cdb4db] animate-[spin_10s_linear_infinite]">
+            <i className="fas fa-cog text-[5rem]"></i>
+          </div>
+          {/* Circuit lines */}
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
+             <path d="M 200 200 L 320 80 L 400 80" fill="none" stroke="#a2d2ff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="opacity-60" />
+             <circle cx="390" cy="80" r="6" fill="#a2d2ff" />
+             <path d="M 200 200 L 300 300 L 380 300" fill="none" stroke="#cdb4db" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="opacity-60" />
+             <circle cx="370" cy="300" r="6" fill="#cdb4db" />
+             <path d="M 200 200 L 250 100 L 300 50" fill="none" stroke="#ffafcc" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="opacity-60" />
+             <circle cx="295" cy="55" r="6" fill="#ffafcc" />
+          </svg>
+        </div>
+
+        <div className="container mx-auto px-6 md:px-12 max-w-7xl relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 mb-16">
+            {/* Col 1: Brand & Socials */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-3xl font-black text-slate-800 mb-2 tracking-tighter flex items-center gap-3">
+                  <i className="fas fa-atom text-[#ffafcc] animate-spin-slow"></i> Fizika<span className="text-[#ffafcc]">.</span>
+                </h2>
+                <p className="text-[#a2d2ff] font-bold tracking-widest text-xs uppercase mb-4">Edukimi Interaktiv 2026</p>
+                <p className="text-sm font-medium flex items-start gap-3 text-slate-500 leading-relaxed">
+                  <span className="text-xl">🎓</span>
+                  <span>Website i ndërtuar nga nxënës për nxënës<br/><strong className="text-slate-700 mt-1 block">Gjimnazi "Hydajet Lezha", Lezhë</strong></span>
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><i className="fas fa-mobile-screen text-[#ffafcc]"></i> Na Ndiq</h3>
+                <div className="space-y-3">
+                  <a href="https://tiktok.com/@Fizika.Interaktive" target="_blank" rel="noreferrer" className="flex items-center justify-between group p-3 rounded-2xl bg-white hover:bg-[#fff0f5] border border-slate-100 hover:border-[#ffafcc] shadow-sm transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center group-hover:bg-[#ffafcc] group-hover:text-white transition-colors">
+                        <i className="fab fa-tiktok text-sm"></i>
+                      </div>
+                      <span className="font-bold text-sm text-slate-600 group-hover:text-[#ffafcc] transition-colors">@Fizika.Interaktive</span>
+                    </div>
+                    <i className="fas fa-arrow-right text-slate-300 group-hover:text-[#ffafcc] group-hover:-rotate-45 transition-all"></i>
+                  </a>
+                  <a href="https://instagram.com/Fizika_Interaktive" target="_blank" rel="noreferrer" className="flex items-center justify-between group p-3 rounded-2xl bg-white hover:bg-[#f8f5ff] border border-slate-100 hover:border-[#cdb4db] shadow-sm transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center group-hover:bg-[#cdb4db] group-hover:text-white transition-colors">
+                        <i className="fab fa-instagram text-sm"></i>
+                      </div>
+                      <span className="font-bold text-sm text-slate-600 group-hover:text-[#cdb4db] transition-colors">@Fizika_Interaktive</span>
+                    </div>
+                    <i className="fas fa-arrow-right text-slate-300 group-hover:text-[#cdb4db] group-hover:-rotate-45 transition-all"></i>
+                  </a>
+                </div>
+              </div>
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[1.5em] mt-10">Edukimi Interaktiv 2026</p>
+
+            {/* Col 2: About Project */}
+            <div>
+              <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2"><i className="fas fa-school text-[#a2d2ff]"></i> Rreth Projektit</h3>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-4 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors group">
+                  <span className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">📚</span> 
+                  Klasa 10–11 · Fizikë
+                </li>
+                <li className="flex items-center gap-4 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors group">
+                  <span className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">🏆</span> 
+                  Projekt Kurrikular
+                </li>
+                <li className="flex items-center gap-4 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors group">
+                  <span className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">🌍</span> 
+                  Vlerësimi PISA
+                </li>
+                <li className="flex items-center gap-4 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors group">
+                  <span className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">💻</span> 
+                  Simulime Interaktive
+                </li>
+                <li className="flex items-center gap-4 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors group">
+                  <span className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-lg group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">🆓</span> 
+                  Falas për të gjithë
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3 & 4: References */}
+            <div className="lg:col-span-2">
+              <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2"><i className="fas fa-book-open text-[#cdb4db]"></i> Burimet & Referencat</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Ref 1 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#ffafcc] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#ffafcc] transition-colors">01</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1">Libri "Fizika 10–11"</h4>
+                    <p className="text-xs text-slate-400">Pjesa e parë dhe pjesa e dytë</p>
+                  </div>
+                </div>
+                {/* Ref 2 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#a2d2ff] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#a2d2ff] transition-colors">02</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1">Shënime të nxënësve</h4>
+                    <p className="text-xs text-slate-400">Udhëzimet e mësuesit</p>
+                  </div>
+                </div>
+                {/* Ref 3 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#cdb4db] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#cdb4db] transition-colors">03</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1 flex items-center gap-2"><span>🔬</span> PhET Simulations</h4>
+                    <p className="text-xs text-slate-400">University of Colorado Boulder</p>
+                  </div>
+                </div>
+                {/* Ref 4 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#ffc8dd] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#ffc8dd] transition-colors">04</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1 flex items-center gap-2"><span>📋</span> Udhëzues PISA</h4>
+                    <p className="text-xs text-slate-400">Vlerësim Ndërkombëtar</p>
+                  </div>
+                </div>
+                {/* Ref 5 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#bde0fe] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#bde0fe] transition-colors">05</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1 flex items-center gap-2"><span>📘</span> Manual Projekte</h4>
+                    <p className="text-xs text-slate-400">ASCAP · ascap.edu.al</p>
+                  </div>
+                </div>
+                {/* Ref 6 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#a8e6cf] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#a8e6cf] transition-colors">06</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1 flex items-center gap-2"><span>🟢</span> Paketa e Gjelbër</h4>
+                    <p className="text-xs text-slate-400">Materiale mbështetëse mësimore</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-medium text-slate-400">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <span className="font-bold text-slate-500">© 2026</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+              <span className="text-slate-500">Gjimnazi "Hydajet Lezha"</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+              <span>Lezhë, Shqipëri</span>
+            </div>
+            <div className="flex items-center gap-2 bg-pink-50 px-5 py-2.5 rounded-full border border-pink-100 shadow-sm">
+              <span className="text-pink-500 animate-pulse text-sm">🩷</span> 
+              <span className="text-pink-600 font-bold">Bërë me dashuri nga nxënës</span>
+            </div>
+          </div>
         </div>
       </footer>
 
