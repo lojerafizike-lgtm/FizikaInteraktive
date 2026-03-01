@@ -608,7 +608,7 @@ const App: React.FC = () => {
               <div>
                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><i className="fas fa-mobile-screen text-[#ffafcc]"></i> Na Ndiq</h3>
                 <div className="space-y-3">
-                  <a href="https://tiktok.com/@Fizika.Interaktive" target="_blank" rel="noreferrer" className="flex items-center justify-between group p-3 rounded-2xl bg-white hover:bg-[#fff0f5] border border-slate-100 hover:border-[#ffafcc] shadow-sm transition-all">
+                  <a href="https://www.tiktok.com/@fizika.interaktive?_r=1&_t=ZS-94IwXdQaQqe" target="_blank" rel="noreferrer" className="flex items-center justify-between group p-3 rounded-2xl bg-white hover:bg-[#fff0f5] border border-slate-100 hover:border-[#ffafcc] shadow-sm transition-all">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center group-hover:bg-[#ffafcc] group-hover:text-white transition-colors">
                         <i className="fab fa-tiktok text-sm"></i>
