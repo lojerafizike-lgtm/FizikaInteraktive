@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
   const [searchTerm, setSearchTerm] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
   
   const handleStart = () => {
     setIsWarping(true);
@@ -144,17 +145,13 @@ const App: React.FC = () => {
         <div className="md:hidden">
           <BubbleMenu
             logo={
-              <svg viewBox="0 0 100 100" className="w-full h-full rounded-full p-1.5" style={{ background: 'linear-gradient(135deg, #4a4e69 0%, #2b2d42 100%)' }}>
-                <g stroke="#ffafcc" strokeWidth="3" fill="none">
-                  <ellipse cx="50" cy="50" rx="35" ry="12" transform="rotate(0 50 50)" />
-                  <ellipse cx="50" cy="50" rx="35" ry="12" transform="rotate(60 50 50)" />
-                  <ellipse cx="50" cy="50" rx="35" ry="12" transform="rotate(120 50 50)" />
-                </g>
-                <circle cx="50" cy="50" r="8" fill="#ffafcc" />
-                <circle cx="85" cy="50" r="4" fill="#bde0fe" />
-                <circle cx="32.5" cy="80.3" r="4" fill="#bde0fe" />
-                <circle cx="32.5" cy="19.7" r="4" fill="#bde0fe" />
-              </svg>
+              <button 
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsChatOpen(true); }}
+                className="w-full h-full flex items-center justify-center rounded-full bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] text-white"
+                style={{ width: '100%', height: '100%' }}
+              >
+                <i className="fas fa-comment-dots text-xl drop-shadow-md"></i>
+              </button>
             }
             items={mobileMenuItems}
             menuAriaLabel="Toggle navigation"
@@ -552,6 +549,30 @@ const App: React.FC = () => {
             <p className="text-[10px] font-black uppercase tracking-[1.5em] mt-10">Edukimi Interaktiv 2026</p>
         </div>
       </footer>
+
+      {/* Floating Chat Widget */}
+      {isChatOpen && (
+        <div className="fixed inset-0 z-[100] bg-[#eef2f7] animate__animated animate__fadeIn animate__faster flex flex-col">
+          <div className="bg-white p-3 flex justify-start md:justify-end shadow-sm relative z-10">
+            <button onClick={() => setIsChatOpen(false)} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+              <i className="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          <iframe src="/chat.html" className="w-full flex-1 border-none" title="Chat Forum"></iframe>
+        </div>
+      )}
+      
+      {!isChatOpen && (
+        <div className="fixed bottom-6 right-6 z-50 hidden md:block">
+          <button 
+            onClick={() => setIsChatOpen(true)}
+            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] border-4 border-white relative group"
+          >
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
+            <i className="fas fa-comment-dots text-3xl text-white drop-shadow-md"></i>
+          </button>
+        </div>
+      )}
 
       </div>
     </ClickSpark>

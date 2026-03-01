@@ -28,6 +28,16 @@
   font-weight: 900;
   font-size: 1rem;
   color: #4a4e69;
+  padding: 0;
+  overflow: hidden;
+}
+
+.logo-content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 }
 
 .toggle-bubble {

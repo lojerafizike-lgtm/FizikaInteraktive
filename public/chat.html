@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fizika Interaktive Chat</title>
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #00b4db, #0083b0);
+            --bg: #eef2f7;
+            --glass: rgba(255, 255, 255, 0.9);
+            --my-msg: #0083b0;
+            --other-msg: #ffffff;
+            --text-main: #334155;
+            --header-text: white;
+            --input-bg: #f1f5f9;
+        }
+
+        .dark-mode {
+            --bg: #0f172a;
+            --glass: rgba(30, 41, 59, 0.95);
+            --other-msg: #1e293b;
+            --text-main: #f1f5f9;
+            --input-bg: #334155;
+        }
+
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); height: 100vh; display: flex; justify-content: center; overflow: hidden; }
+        #forum-container { width: 100%; max-width: 500px; height: 100vh; background: var(--glass); display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(0,0,0,0.1); position: relative; }
+        #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; background: url('https://www.transparenttextures.com/patterns/cubes.png'); scrollbar-width: none; }
+        #messages::-webkit-scrollbar { display: none; }
+
+        /* Stilimi i Linkeve */
+        .chat-link { text-decoration: underline; font-weight: 500; }
+        .my-msg-wrapper .chat-link { color: #ffeb3b; } /* Link i verdhe te mesazhi yt */
+        .other-msg-wrapper .chat-link { color: #0083b0; } /* Link blu te te tjeret */
+
+        #typing-indicator { padding: 5px 20px; font-size: 0.8rem; color: #0083b0; font-style: italic; height: 20px; }
+        .msg-box { padding: 10px 14px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: var(--text-main); position: relative; word-wrap: break-word; }
+        .read-more-btn { color: #00b4db; cursor: pointer; font-weight: bold; font-size: 0.85rem; display: block; margin-top: 5px; }
+        #chat-header { background: var(--primary); color: var(--header-text); padding: 20px; text-align: center; font-size: 1.2rem; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; animation: pop 0.3s ease; position: relative; }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .my-msg-wrapper { align-self: flex-end; }
+        .my-msg-wrapper .msg-box { background: var(--my-msg); color: white; border-bottom-right-radius: 4px; }
+        .other-msg-wrapper { align-self: flex-start; }
+        .other-msg-wrapper .msg-box { background: var(--other-msg); border-bottom-left-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+        .delete-btn { font-size: 0.8rem; cursor: pointer; opacity: 0; margin-left: 8px; color: #ef4444; }
+        .msg-box:hover .delete-btn { opacity: 1; }
+        .msg-box img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; cursor: pointer; }
+        .time { font-size: 0.65rem; opacity: 0.7; margin-top: 4px; text-align: right; }
+        #chat-form { padding: 15px; background: var(--glass); display: flex; align-items: center; gap: 10px; border-top: 1px solid rgba(0,0,0,0.05); }
+        .input-group { flex: 1; display: flex; background: var(--input-bg); border-radius: 25px; padding: 5px 15px; align-items: center; }
+        input { border: none; background: transparent; padding: 10px; outline: none; font-size: 0.95rem; color: var(--text-main); }
+        #username { width: 60px; font-weight: bold; border-right: 1px solid #cbd5e1; margin-right: 5px; }
+        #message-input { flex: 1; }
+        .btn-icon { font-size: 1.3rem; cursor: pointer; }
+        #send-btn { background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; }
+        #emoji-picker { display: none; position: absolute; bottom: 80px; left: 10px; right: 10px; background: var(--glass); border-radius: 20px; padding: 15px; grid-template-columns: repeat(6, 1fr); max-height: 250px; overflow-y: auto; gap: 10px; z-index: 100; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        #emoji-picker span { font-size: 1.6rem; text-align: center; cursor: pointer; transition: transform 0.1s; }
+        #emoji-picker span:hover { transform: scale(1.2); }
+        #file-input { display: none; }
+        #dark-mode-toggle { cursor: pointer; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+<div id="forum-container">
+    <div id="chat-header">
+        <div style="width: 30px;"></div>
+        <span>⚛️ FIZIKA INTERAKTIVE</span>
+        <div id="dark-mode-toggle" onclick="toggleDarkMode()">🌙</div>
+    </div>
+    <div id="messages"></div>
+    <div id="typing-indicator"></div>
+    <div id="emoji-picker">
+        <span onclick="addEmoji('⚛️')">⚛️</span> <span onclick="addEmoji('⚡')">⚡</span> <span onclick="addEmoji('🔭')">🔭</span>
+        <span onclick="addEmoji('🧪')">🧪</span> <span onclick="addEmoji('💡')">💡</span> <span onclick="addEmoji('🧬')">🧬</span>
+        <span onclick="addEmoji('🪐')">🪐</span> <span onclick="addEmoji('🌡️')">🌡️</span> <span onclick="addEmoji('🛰️')">🛰️</span>
+        <span onclick="addEmoji('🚀')">🚀</span> <span onclick="addEmoji('🌍')">🌍</span> <span onclick="addEmoji('☄️')">☄️</span>
+        <span onclick="addEmoji('🔋')">🔋</span> <span onclick="addEmoji('⚙️')">⚙️</span> <span onclick="addEmoji('🔍')">🔍</span>
+        
+        <span onclick="addEmoji('😊')">😊</span> <span onclick="addEmoji('😂')">😂</span> <span onclick="addEmoji('🤣')">🤣</span>
+        <span onclick="addEmoji('😎')">😎</span> <span onclick="addEmoji('🤔')">🤔</span> <span onclick="addEmoji('😮')">😮</span>
+        <span onclick="addEmoji('😅')">😅</span> <span onclick="addEmoji('🥳')">🥳</span> <span onclick="addEmoji('🤩')">🤩</span>
+        <span onclick="addEmoji('😲')">😲</span> <span onclick="addEmoji('🤯')">🤯</span> <span onclick="addEmoji('😴')">😴</span>
+        <span onclick="addEmoji('🧐')">🧐</span> <span onclick="addEmoji('😏')">😏</span> <span onclick="addEmoji('🙃')">🙃</span>
+
+        <span onclick="addEmoji('👍')">👍</span> <span onclick="addEmoji('👎')">👎</span> <span onclick="addEmoji('👏')">👏</span>
+        <span onclick="addEmoji('🙌')">🙌</span> <span onclick="addEmoji('🔥')">🔥</span> <span onclick="addEmoji('✨')">✨</span>
+        <span onclick="addEmoji('💯')">💯</span> <span onclick="addEmoji('✅')">✅</span> <span onclick="addEmoji('❌')">❌</span>
+        <span onclick="addEmoji('❤️')">❤️</span> <span onclick="addEmoji('💙')">💙</span> <span onclick="addEmoji('⭐')">⭐</span>
+        <span onclick="addEmoji('📍')">📍</span> <span onclick="addEmoji('📢')">📢</span> <span onclick="addEmoji('🎁')">🎁</span>
+    </div>
+    <form id="chat-form">
+        <div class="btn-icon" onclick="toggleEmoji()">😊</div>
+        <label for="file-input" class="btn-icon">🖼️</label>
+        <input type="file" id="file-input" accept="image/*">
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Ti" required>
+            <input type="text" id="message-input" placeholder="Shkruaj..." autocomplete="off">
+        </div>
+        <button type="submit" id="send-btn">➤</button>
+    </form>
+</div>
+
+<audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, onChildRemoved, remove, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBfO-SRvK1Mzc4f2ZhJPgspeVC2J4P7r8",
+        authDomain: "fizika-interaktive.firebaseapp.com",
+        databaseURL: "https://fizika-interaktive-default-rtdb.firebaseio.com",
+        projectId: "fizika-interaktive",
+        storageBucket: "fizika-interaktive.firebasestorage.app",
+        messagingSenderId: "838704352609",
+        appId: "1:838704352609:web:aa49a513f5d523bd334920"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const messagesRef = ref(db, 'messages');
+    const typingRef = ref(db, 'typing');
+    const IMGBB_API_KEY = "81ad2abec0d34efdb12321aa688ab7fe";
+    const notificationSound = document.getElementById('notif-sound');
+    let typingTimeout;
+
+    // FUNKSIONI QE KTHEN TEKSTIN NE LINK
+    function linkify(text) {
+        const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlPattern, '<a href="$1" target="_blank" class="chat-link">$1</a>');
+    }
+
+    window.toggleDarkMode = () => {
+        document.body.classList.toggle('dark-mode');
+        document.getElementById('dark-mode-toggle').innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    };
+
+    window.toggleEmoji = () => {
+        const p = document.getElementById('emoji-picker');
+        p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
+    };
+
+    window.addEmoji = (e) => {
+        document.getElementById('message-input').value += e;
+        document.getElementById('message-input').focus();
+    };
+
+    window.deleteMessage = (id) => {
+        if(confirm("Fshij për të gjithë?")) remove(ref(db, `messages/${id}`));
+    };
+
+    window.expandMessage = (id, fullText) => {
+        const textSpan = document.querySelector(`#msg-${id} .message-content`);
+        const btn = document.querySelector(`#msg-${id} .read-more-btn`);
+        textSpan.innerHTML = linkify(fullText); // Bejme linket te klikueshme edhe te Read More
+        btn.style.display = 'none';
+    };
+
+    document.getElementById('message-input').addEventListener('input', () => {
+        const user = document.getElementById('username').value || "Anonim";
+        set(ref(db, 'typing/' + user.replace(/\s/g, '_')), true);
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => remove(ref(db, 'typing/' + user.replace(/\s/g, '_'))), 2000);
+    });
+
+    onValue(typingRef, (snapshot) => {
+        const typingUsers = snapshot.val();
+        const indicator = document.getElementById('typing-indicator');
+        const currentUser = document.getElementById('username').value || "Anonim";
+        if (typingUsers) {
+            const users = Object.keys(typingUsers).filter(u => u !== currentUser.replace(/\s/g, '_'));
+            indicator.innerText = users.length > 0 ? users.join(', ').replace(/_/g, ' ') + " po shkruan..." : "";
+        } else { indicator.innerText = ""; }
+    });
+
+    document.getElementById('file-input').onchange = async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const formData = new FormData();
+        formData.append("image", file);
+        try {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+            const data = await res.json();
+            if(data.success) push(messagesRef, { username: document.getElementById('username').value || "Anonim", message: "", image: data.data.url, timestamp: Date.now() });
+        } catch (err) { alert("Gabim!"); }
+    };
+
+    document.getElementById('chat-form').onsubmit = (e) => {
+        e.preventDefault();
+        const text = document.getElementById('message-input').value;
+        if(!text.trim()) return;
+        push(messagesRef, { username: document.getElementById('username').value, message: text, timestamp: Date.now() });
+        remove(ref(db, 'typing/' + document.getElementById('username').value.replace(/\s/g, '_')));
+        document.getElementById('message-input').value = '';
+    };
+
+    onChildAdded(messagesRef, (data) => {
+        const msg = data.val();
+        const msgId = data.key;
+        const isMyMsg = msg.username === document.getElementById('username').value;
+        if (!isMyMsg && document.getElementById('username').value !== "") notificationSound.play().catch(() => {});
+
+        const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        let messageHTML = "";
+        if (msg.image) {
+            messageHTML = `<img src="${msg.image}" onclick="window.open('${msg.image}', '_blank')">`;
+        } else {
+            if (msg.message.length > 200) {
+                messageHTML = `<span class="message-content">${linkify(msg.message.substring(0, 200))}...</span>
+                               <span class="read-more-btn" onclick="expandMessage('${msgId}', '${msg.message.replace(/'/g, "\\'")}')">Lexo më shumë</span>`;
+            } else {
+                messageHTML = `<span class="message-content">${linkify(msg.message)}</span>`;
+            }
+        }
+
+        const html = `<div class="msg-wrapper ${isMyMsg ? 'my-msg-wrapper' : 'other-msg-wrapper'}" id="msg-${msgId}">
+                        <div class="msg-box"><b style="font-size: 0.75rem;">${msg.username}</b><span class="delete-btn" onclick="deleteMessage('${msgId}')">🗑️</span><br>${messageHTML}<div class="time">${time}</div></div>
+                      </div>`;
+        document.getElementById('messages').insertAdjacentHTML('beforeend', html);
+        document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+    });
+
+    onChildRemoved(messagesRef, (data) => {
+        const el = document.getElementById(`msg-${data.key}`);
+        if(el) el.remove();
+    });
+</script>
+
+</body>
+</html>
