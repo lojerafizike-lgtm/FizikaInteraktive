@@ -6,6 +6,19 @@
   --font-orbitron: 'Orbitron', sans-serif;
   
   --animate-spin-slow: spin 8s linear infinite;
+
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-primary: #4a4e69;
+  --color-primary-foreground: #ffffff;
+  --color-muted: #f8fafc;
+  --color-muted-foreground: #64748b;
+  --color-card: #ffffff;
+  --color-border: #e2e8f0;
+  --color-accent: #a2d2ff;
+  --color-accent-foreground: #0f172a;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');

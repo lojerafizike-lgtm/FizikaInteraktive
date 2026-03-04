@@ -270,9 +270,23 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
         {/* 4. LOJË */}
         {activeTab === 'loje' && (
           <div className="animate__animated animate__fadeInUp text-center py-12">
-            <i className="fas fa-gamepad text-6xl text-slate-300 mb-6"></i>
-            <h4 className="text-2xl font-black text-slate-400 mb-2">Lojë Interaktive</h4>
-            <p className="text-slate-400">Këtu do të vendoset loja për këtë term.</p>
+            {term.gameUrl ? (
+                <div className="relative">
+                    <iframe src={term.gameUrl} className="w-full h-[600px] border-none rounded-2xl shadow-lg" title={`Lojë për ${term.name}`} allowFullScreen></iframe>
+                    <button 
+                        onClick={() => window.open(term.gameUrl, '_blank')}
+                        className="mt-4 px-6 py-3 bg-[#4a4e69] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2b2d42] transition-all shadow-md flex items-center gap-2 mx-auto"
+                    >
+                        HAP FULL SCREEN <i className="fas fa-expand"></i>
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <i className="fas fa-gamepad text-6xl text-slate-300 mb-6"></i>
+                    <h4 className="text-2xl font-black text-slate-400 mb-2">Lojë Interaktive</h4>
+                    <p className="text-slate-400">Këtu do të vendoset loja për këtë term.</p>
+                </>
+            )}
           </div>
         )}
 

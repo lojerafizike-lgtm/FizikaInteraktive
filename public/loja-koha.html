@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mbrojtja Galaktike - Fizika</title>
+    <style>
+        body { margin: 0; background: #0b0d17; color: white; font-family: 'Courier New', Courier, monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #game-container { position: relative; width: 600px; height: 400px; border: 2px solid #3498db; background: radial-gradient(circle, #1b2735 0%, #090a0f 100%); border-radius: 10px; overflow: hidden; padding: 20px; }
+        #space-object { position: absolute; font-size: 3rem; right: -100px; top: 150px; transition: right 0.1s linear; }
+        #ship { position: absolute; font-size: 3rem; left: 20px; top: 150px; }
+        .hud { display: flex; justify-content: space-between; background: rgba(52, 152, 219, 0.2); padding: 10px; border-radius: 5px; border-left: 5px solid #3498db; }
+        .input-area { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center; width: 80%; }
+        input { background: transparent; border: 2px solid #3498db; color: #51ff00; padding: 10px; font-size: 1.2rem; width: 100px; text-align: center; outline: none; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #2980b9; }
+        #message { font-size: 1.2rem; margin-top: 10px; font-weight: bold; }
+        .shield { position: absolute; left: 80px; top: 140px; width: 60px; height: 80px; border: 4px solid #51ff00; border-radius: 50%; display: none; box-shadow: 0 0 20px #51ff00; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="hud">
+        <div>RRUGA: <span id="distL">0</span> m</div>
+        <div>FORMULA: t = L / v</div>
+        <div>VREJTJE: Asteroidi po vjen me <span id="speedV">0</span> m/s!</div>
+    </div>
+
+    <div id="ship">🚀</div>
+    <div id="space-object">☄️</div>
+    <div id="shield" class="shield"></div>
+
+    <div class="input-area">
+        <div id="message">LLOGARIT KOHËN TË AKTIVIZOSH MBUROJËN!</div>
+        <input type="number" id="userT" placeholder="t = ?">
+        <button onclick="activateShield()">AKTIVIZO</button>
+    </div>
+</div>
+
+<script>
+    let L, v, tCorrect;
+    let gameActive = true;
+
+    function initRound() {
+        gameActive = true;
+        document.getElementById('shield').style.display = 'none';
+        document.getElementById('message').innerText = "LLOGARIT KOHËN TË AKTIVIZOSH MBUROJËN!";
+        document.getElementById('message').style.color = "white";
+        document.getElementById('userT').value = "";
+        
+        // Gjenerimi i të dhënave
+        v = Math.floor(Math.random() * 20) + 5; 
+        tCorrect = Math.floor(Math.random() * 8) + 2;
+        L = v * tCorrect;
+
+        document.getElementById('distL').innerText = L;
+        document.getElementById('speedV').innerText = v;
+        
+        const asteroid = document.getElementById('space-object');
+        asteroid.style.right = "-100px";
+        
+        // Levizja vizuale e asteroidit (animacion i thjeshte)
+        setTimeout(() => {
+            if(gameActive) asteroid.style.right = "450px"; 
+            asteroid.style.transition = `right ${tCorrect}s linear`;
+        }, 100);
+
+        // Kontrolli i humbjes nese koha mbaron
+        setTimeout(() => {
+            if(gameActive && document.getElementById('shield').style.display === 'none') {
+                gameOver();
+            }
+        }, tCorrect * 1000);
+    }
+
+    function activateShield() {
+        let userVal = parseFloat(document.getElementById('userT').value);
+        
+        if(userVal === tCorrect) {
+            gameActive = false;
+            document.getElementById('shield').style.display = 'block';
+            document.getElementById('message').innerText = "MBUROJA U AKTIVIZUA! ✅";
+            document.getElementById('message').style.color = "#51ff00";
+            
+            // Stop asteroidin
+            const asteroid = document.getElementById('space-object');
+            let currentRight = window.getComputedStyle(asteroid).right;
+            asteroid.style.transition = "none";
+            asteroid.style.right = currentRight;
+
+            setTimeout(initRound, 3000);
+        } else {
+            document.getElementById('message').innerText = "GABIM! MBUROJA DËSHTOI!";
+            document.getElementById('message').style.color = "#ff4757";
+        }
+    }
+
+    function gameOver() {
+        gameActive = false;
+        document.getElementById('ship').innerText = "💥";
+        document.getElementById('message').innerText = "U GODITE! RINIS LOJËN...";
+        document.getElementById('message').style.color = "#ff4757";
+        setTimeout(() => {
+            document.getElementById('ship').innerText = "🚀";
+            initRound();
+        }, 3000);
+    }
+
+    initRound();
+</script>
+
+</body>
+</html>

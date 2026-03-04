@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gjuetia e Thesarit - Loja e Koordinatave</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db; /* Blue */
+            --secondary-color: #2ecc71; /* Green */
+            --accent-color: #f39c12; /* Orange */
+            --text-color: #2c3e50; /* Dark Blue */
+            --background-light: #ecf0f1; /* Light Grey */
+            --background-dark: #bdc3c7; /* Medium Grey */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .game-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            position: relative;
+            overflow: hidden; /* For future animations */
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: clamp(1.5em, 5vw, 2em);
+        }
+
+        p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .screen {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        /* --- Level Selection Screen --- */
+        .level-option {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 8px 0;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .level-option:nth-of-type(2) { background-color: #2980b9; } /* Darker Blue */
+        .level-option:nth-of-type(3) { background-color: var(--text-color); } /* Darker Grey */
+        .level-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .level-option:active {
+            transform: translateY(0);
+        }
+
+        /* --- Game Play Screen --- */
+        #game-screen .level-info {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .feedback-box {
+            background-color: var(--background-light);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.1em;
+            border: 1px solid var(--background-dark);
+        }
+
+        .input-coords {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .input-group input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            border: 2px solid var(--background-dark);
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input[type="number"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-guess, .btn-reset-game {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin-top: 10px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-guess:hover, .btn-reset-game:hover {
+            background-color: #e08e0b;
+            transform: translateY(-2px);
+        }
+        .btn-guess:active, .btn-reset-game:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset-game {
+            background-color: #95a5a6; /* Grey */
+            font-size: 0.9em;
+            margin-top: 25px;
+        }
+        .btn-reset-game:hover {
+            background-color: #7f8c8d;
+        }
+
+        .game-stats {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+
+        /* --- Win/Lose Screen --- */
+        #win-screen h2 { color: var(--secondary-color); font-size: 2.2em; margin-bottom: 10px; }
+        #win-screen p { font-size: 1.1em; margin-bottom: 25px; }
+        #win-screen .btn-play-again { background-color: var(--primary-color); }
+        #win-screen .btn-play-again:hover { background-color: #2980b9; }
+
+        .emoji { font-size: 2em; display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div id="level-selection-screen" class="screen">
+        <h1>Gjuetia e Thesarit</h1>
+        <p>Gjej thesarin e fshehur në rrjetin e koordinatave!</p>
+        <p>Zgjidh nivelin e vështirësisë:</p>
+        <button class="level-option" onclick="selectLevel(1)">Niveli 1: Fusha me Diell (1-5)</button>
+        <button class="level-option" onclick="selectLevel(2)">Niveli 2: Pylli i Mysterishëm (1-10)</button>
+        <button class="level-option" onclick="selectLevel(3)">Niveli 3: Mali i Vështirë (-10 deri 10)</button>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <div class="level-info" id="current-level-info">Niveli i Zgjedhur</div>
+        <h1>Ku është thesar! 🗺️</h1>
+        
+        <div class="feedback-box" id="feedback-message">
+            Jep koordinatat X dhe Y për të gërmuar!
+        </div>
+
+        <div class="input-coords">
+            <div class="input-group">
+                <label for="inputX">Koordinata X:</label>
+                <input type="number" id="inputX" placeholder="X" min="-10" max="10">
+            </div>
+            <div class="input-group">
+                <label for="inputY">Koordinata Y:</label>
+                <input type="number" id="inputY" placeholder="Y" min="-10" max="10">
+            </div>
+        </div>
+
+        <button class="btn-guess" onclick="checkGuess()">GËRMO KËTU!</button>
+        
+        <div class="game-stats">
+            <p>Tentativa: <span id="attempts-count">0</span></p>
+        </div>
+
+        <button class="btn-reset-game" onclick="resetGame()">Rinis Lojën</button>
+    </div>
+
+    <div id="win-screen" class="screen hidden">
+        <span class="emoji">🏆</span>
+        <h2>Urime! E gjetët!</h2>
+        <p>E gjete thesarin në <span id="final-coords"></span> me <span id="final-attempts"></span> tentativa!</p>
+        <button class="btn-level-select btn-play-again" onclick="resetGame()">Luaj Përsëri</button>
+    </div>
+</div>
+
+<script>
+    let targetX, targetY;
+    let attempts = 0;
+    let minRange, maxRange;
+    let currentLevel = 0;
+
+    const levelInfo = {
+        1: { name: "Fusha me Diell", range: { min: 1, max: 5 } },
+        2: { name: "Pylli i Mysterishëm", range: { min: 1, max: 10 } },
+        3: { name: "Mali i Vështirë", range: { min: -10, max: 10 } }
+    };
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.add('hidden');
+            screen.style.opacity = '0';
+        });
+        const activeScreen = document.getElementById(screenId);
+        activeScreen.classList.remove('hidden');
+        setTimeout(() => activeScreen.style.opacity = '1', 50); // Small delay for fade effect
+    }
+
+    function selectLevel(level) {
+        currentLevel = level;
+        minRange = levelInfo[level].range.min;
+        maxRange = levelInfo[level].range.max;
+
+        targetX = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
+        targetY = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
+
+        attempts = 0;
+        document.getElementById('attempts-count').innerText = attempts;
+        document.getElementById('inputX').value = '';
+        document.getElementById('inputY').value = '';
+        document.getElementById('inputX').min = minRange;
+        document.getElementById('inputX').max = maxRange;
+        document.getElementById('inputY').min = minRange;
+        document.getElementById('inputY').max = maxRange;
+
+
+        document.getElementById('current-level-info').innerText = `Niveli ${currentLevel}: ${levelInfo[currentLevel].name} (Rrjeti ${minRange} deri ${maxRange})`;
+        document.getElementById('feedback-message').innerText = `Gjej thesarin në rrjetin nga ${minRange} deri ${maxRange}!`;
+
+        showScreen('game-screen');
+    }
+
+    function checkGuess() {
+        const guessX = parseInt(document.getElementById('inputX').value);
+        const guessY = parseInt(document.getElementById('inputY').value);
+        const feedbackMessage = document.getElementById('feedback-message');
+
+        if (isNaN(guessX) || isNaN(guessY)) {
+            feedbackMessage.innerText = "🚨 Vendos numra të vlefshëm për X dhe Y!";
+            return;
+        }
+
+        if (guessX < minRange || guessX > maxRange || guessY < minRange || guessY > maxRange) {
+            feedbackMessage.innerText = `🚨 Koordinatat duhet të jenë brenda rrjetit: ${minRange} deri ${maxRange}!`;
+            return;
+        }
+
+        attempts++;
+        document.getElementById('attempts-count').innerText = attempts;
+
+        if (guessX === targetX && guessY === targetY) {
+            document.getElementById('final-coords').innerText = `(${targetX}, ${targetY})`;
+            document.getElementById('final-attempts').innerText = attempts;
+            showScreen('win-screen');
+        } else {
+            let hintX = '';
+            if (guessX < targetX) hintX = "Djathtas ➡️";
+            else if (guessX > targetX) hintX = "Majtas ⬅️";
+            else hintX = "X saktë! ✅";
+
+            let hintY = '';
+            if (guessY < targetY) hintY = "Lart ⬆️";
+            else if (guessY > targetY) hintY = "Poshtë ⬇️";
+            else hintY = "Y saktë! ✅";
+
+            feedbackMessage.innerHTML = `Jo, nuk është këtu. Kërko: <strong>${hintX}</strong> dhe <strong>${hintY}</strong>`;
+        }
+    }
+
+    function resetGame() {
+        showScreen('level-selection-screen');
+        // Reset game state for next play
+        targetX = 0;
+        targetY = 0;
+        attempts = 0;
+        currentLevel = 0;
+    }
+
+    // Initialize by showing the level selection screen
+    document.addEventListener('DOMContentLoaded', () => {
+        showScreen('level-selection-screen');
+    });
+
+</script>
+
+</body>
+</html>

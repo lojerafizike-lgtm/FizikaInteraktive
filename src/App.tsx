@@ -17,6 +17,8 @@ const App: React.FC = () => {
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
   const [searchTerm, setSearchTerm] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [mobileMenuSelectionOpen, setMobileMenuSelectionOpen] = useState(false);
   
   const handleStart = () => {
     setIsWarping(true);
@@ -153,11 +155,11 @@ const App: React.FC = () => {
           <BubbleMenu
             logo={
               <button 
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsChatOpen(true); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMobileMenuSelectionOpen(true); }}
                 className="w-full h-full flex items-center justify-center rounded-full bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] text-white"
                 style={{ width: '100%', height: '100%' }}
               >
-                <i className="fas fa-comment-dots text-xl drop-shadow-md"></i>
+                <i className="fas fa-plus text-xl drop-shadow-md"></i>
               </button>
             }
             items={mobileMenuItems}
@@ -183,7 +185,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
             <button onClick={() => navigate('all-terms')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Të gjitha Termat</button>
-            <button onClick={() => window.open('/revista.html', '_blank')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</button>
+            <button onClick={() => window.location.href = '/revista.html'} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</button>
             <button 
               onClick={() => navigate('games')} 
               className="bg-[#4a4e69] text-white px-6 lg:px-10 py-3 lg:py-4 rounded-[1.8rem] text-xs lg:text-sm font-black shadow-xl hover:scale-110 active:scale-95 transition-all uppercase tracking-widest flex items-center gap-3 shrink-0"
@@ -749,12 +751,57 @@ const App: React.FC = () => {
           <iframe src="/chat.html" className="w-full flex-1 border-none" title="Chat Forum"></iframe>
         </div>
       )}
+
+      {/* Floating Notes Widget */}
+      {isNotesOpen && (
+        <div className="fixed inset-0 z-[100] bg-[#eef2f7] animate__animated animate__fadeIn animate__faster flex flex-col">
+          <div className="bg-white p-3 flex justify-start md:justify-end shadow-sm relative z-10">
+            <button onClick={() => setIsNotesOpen(false)} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+              <i className="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          <iframe src="/notes.html" className="w-full flex-1 border-none" title="Shënimet"></iframe>
+        </div>
+      )}
+
+      {/* Mobile Selection Modal */}
+      {mobileMenuSelectionOpen && (
+        <div className="fixed inset-0 z-[100] bg-white/90 backdrop-blur-sm animate__animated animate__fadeIn animate__faster flex flex-col items-center justify-center p-6">
+          <button onClick={() => setMobileMenuSelectionOpen(false)} className="absolute top-6 right-6 w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+            <i className="fas fa-times text-2xl"></i>
+          </button>
+          <h2 className="text-3xl font-black text-slate-800 mb-10 text-center">Zgjidhni një opsion</h2>
+          <div className="flex flex-col gap-6 w-full max-w-sm">
+            <button 
+              onClick={() => { setMobileMenuSelectionOpen(false); setIsChatOpen(true); }}
+              className="w-full py-6 bg-gradient-to-r from-[#bde0fe] to-[#a2d2ff] text-white rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
+            >
+              <i className="fas fa-comments text-3xl"></i> FORUMI
+            </button>
+            <button 
+              onClick={() => { setMobileMenuSelectionOpen(false); setIsNotesOpen(true); }}
+              className="w-full py-6 bg-gradient-to-r from-[#ffc8dd] to-[#ffafcc] text-white rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
+            >
+              <i className="fas fa-pen-nib text-3xl"></i> SHËNIMET
+            </button>
+          </div>
+        </div>
+      )}
       
-      {!isChatOpen && (
-        <div className="fixed bottom-6 right-6 z-50 hidden md:block">
+      {!isChatOpen && !isNotesOpen && (
+        <div className="fixed bottom-6 right-6 z-50 hidden md:flex flex-col gap-4">
+          <button 
+            onClick={() => setIsNotesOpen(true)}
+            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#a2d2ff] to-[#bde0fe] border-4 border-white relative group"
+            title="Shënimet"
+          >
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
+            <i className="fas fa-pen-nib text-2xl text-white drop-shadow-md"></i>
+          </button>
           <button 
             onClick={() => setIsChatOpen(true)}
             className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] border-4 border-white relative group"
+            title="Forumi"
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
             <i className="fas fa-comment-dots text-3xl text-white drop-shadow-md"></i>

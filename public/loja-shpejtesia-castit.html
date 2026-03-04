@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Speed Trap - Minigame</title>
+    <style>
+        body { background: #222; color: #fff; font-family: 'Press Start 2P', cursive, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .game-box { background: #333; padding: 20px; border: 4px solid #f1c40f; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 10px 10px 0px #000; box-sizing: border-box; }
+        .formula { font-size: 1.2rem; color: #f1c40f; margin: 15px 0; border: 2px dashed #f1c40f; padding: 10px; }
+        .display { font-size: 1.5rem; background: #000; padding: 15px; border-radius: 5px; margin-bottom: 20px; color: #0f0; }
+        .input-group { margin-bottom: 20px; }
+        input { width: 80px; padding: 10px; font-size: 1.2rem; text-align: center; border: none; }
+        button { background: #f1c40f; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; font-family: inherit; }
+        button:hover { background: #fff; }
+        .track { height: 50px; background: #555; position: relative; margin: 20px 0; border-top: 2px solid #fff; border-bottom: 2px solid #fff; }
+        #car { position: absolute; left: 0; font-size: 2rem; transition: left 0.5s linear; }
+    </style>
+</head>
+<body>
+
+<div class="game-box">
+    <h2 style="font-size: 1rem;">SHPEJTËSIA E ÇASTIT</h2>
+    
+    <div class="formula">
+        v = Δx / Δt
+    </div>
+
+    <div class="track">
+        <div id="car">🏎️</div>
+    </div>
+
+    <div class="display">
+        Δx = <span id="dx">10</span> m<br>
+        Δt = <span id="dt">2</span> s
+    </div>
+
+    <div class="input-group">
+        <input type="number" id="ans" placeholder="?">
+        <button onclick="check()">GO!</button>
+    </div>
+
+    <div id="feedback">GATI?</div>
+</div>
+
+<script>
+    let dx, dt, v;
+
+    function newRound() {
+        // Numra të thjeshtë që pjesëtohen lehtë
+        dt = Math.floor(Math.random() * 4) + 1; // 1, 2, 3, 4
+        v = Math.floor(Math.random() * 9) + 2;  // 2 deri 10
+        dx = v * dt;
+
+        document.getElementById('dx').innerText = dx;
+        document.getElementById('dt').innerText = dt;
+        document.getElementById('ans').value = "";
+        document.getElementById('feedback').innerText = "LLOGARIT SHPEJT!";
+        document.getElementById('car').style.left = "0px";
+    }
+
+    function check() {
+        let userAns = parseInt(document.getElementById('ans').value);
+        let fb = document.getElementById('feedback');
+        let car = document.getElementById('car');
+
+        if(userAns === v) {
+            fb.innerText = "E SAKTË! 🔥";
+            fb.style.color = "#0f0";
+            car.style.left = "80%"; // Makina ecën shpejt
+            setTimeout(newRound, 1500);
+        } else {
+            fb.innerText = "GABIM! PROVO PËRSËRI";
+            fb.style.color = "#f00";
+        }
+    }
+
+    newRound();
+</script>
+
+</body>
+</html>

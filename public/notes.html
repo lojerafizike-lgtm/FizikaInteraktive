@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shënimet e Mia Kreative</title>
+    <style>
+        :root { --bg: #fdfcfd; --accent: #fb6f92; --white: #ffffff; --text: #333; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .editor-card { background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        h2 { color: var(--accent); margin-top: 0; text-align: center; font-weight: 800; }
+
+        /* Toolbar */
+        .toolbar { display: flex; flex-wrap: wrap; gap: 8px; background: #fff5f7; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #ffe0e6; align-items: center; }
+        .tool-group { display: flex; align-items: center; gap: 5px; border-right: 1px solid #ddd; padding-right: 8px; }
+        
+        button, select { padding: 8px 12px; cursor: pointer; border: 1px solid #ddd; border-radius: 6px; background: white; font-size: 14px; transition: 0.2s; }
+        button:hover { background: var(--accent); color: white; }
+        
+        /* Editori i tekstit */
+        #text-editor { 
+            min-height: 200px; border: 1px solid #ddd; padding: 20px; border-radius: 12px; 
+            outline: none; font-size: 18px; line-height: 1.6; background: #fff; margin-bottom: 15px;
+        }
+        #text-editor img { max-width: 100%; border-radius: 8px; }
+
+        /* Canvas (Vizatimi) */
+        #canvas-wrap { border: 2px dashed #ffb3c1; border-radius: 12px; background: #fff; position: relative; overflow: hidden; }
+        canvas { display: block; width: 100%; height: 350px; cursor: crosshair; }
+
+        .save-btn { width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(251, 111, 146, 0.3); }
+        
+        /* Lista e Shënimeve */
+        .note-item { background: white; padding: 20px; border-radius: 15px; margin-top: 20px; border-left: 6px solid var(--accent); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .delete-btn { position: absolute; top: 15px; right: 15px; background: #ff4d4d; color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="editor-card">
+        <h2>📝 Shënimet e Mia Kreative</h2>
+        
+        <div class="toolbar">
+            <div class="tool-group">
+                <select onchange="execCmd('fontName', this.value)" style="width: 120px;">
+                    <option value="Arial">Arial</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Courier New">Courier</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Comic Sans MS">Comic Sans</option>
+                    <option value="Impact">Impact</option>
+                </select>
+            </div>
+            <div class="tool-group">
+                <button onclick="execCmd('bold')"><b>B</b></button>
+                <button onclick="execCmd('italic')"><i>I</i></button>
+            </div>
+            <div class="tool-group">
+                <input type="color" onchange="execCmd('foreColor', this.value)" title="Ngjyra Tekstit">
+                <input type="color" value="#ffff00" onchange="execCmd('hiliteColor', this.value)" title="Highlight">
+            </div>
+            <select onchange="insertEmoji(this.value); this.selectedIndex=0;">
+                <option value="">😀 Emojis</option>
+                <option value="✨">✨ Shkëlqim</option>
+                <option value="💡">💡 Ide</option>
+                <option value="✅">✅ Done</option>
+                <option value="⭐">⭐ Yll</option>
+                <option value="🍎">🍎 Fizika</option>
+                <option value="🚀">🚀 Raketa</option>
+            </select>
+            <button onclick="document.getElementById('img-input').click()">🖼️ Foto</button>
+            <input type="file" id="img-input" hidden accept="image/*" onchange="insertImage(event)">
+        </div>
+
+        <div id="text-editor" contenteditable="true" placeholder="Shkruaj shënimin këtu..."></div>
+
+        <div class="toolbar" style="background: #eef7ff; border-color: #cce4ff;">
+            <div class="tool-group">
+                <input type="color" id="pen-color" value="#fb6f92">
+                <select id="shape-tool">
+                    <option value="pen">🖊️ Lapsi</option>
+                    <option value="rect">🟦 Katror</option>
+                    <option value="circle">⭕ Rrethi</option>
+                    <option value="line">📏 Linjë</option>
+                </select>
+            </div>
+            <button onclick="clearCanvas()">🗑️ Pastro Vizatimin</button>
+        </div>
+        
+        <div id="canvas-wrap">
+            <canvas id="notes-canvas"></canvas>
+        </div>
+
+        <button class="save-btn" onclick="saveNote()">RUAJ SHËNIMIN</button>
+    </div>
+
+    <div id="notes-list-container">
+        <h3 style="margin-top: 40px;">Arkiva Ime Private:</h3>
+        <div id="notes-list">Duke hapur arkivën...</div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://sheetdb.io/api/v1/5fuvejr5tjnwx";
+    let userID = localStorage.getItem('notes_user_id') || ('user_' + Math.random().toString(36).substr(2, 9));
+    localStorage.setItem('notes_user_id', userID);
+
+    // --- Editori ---
+    function execCmd(command, value = null) { document.execCommand(command, false, value); }
+    function insertEmoji(emoji) { if(emoji) document.execCommand('insertText', false, emoji); }
+    
+    function insertImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const img = `<img src="${reader.result}" style="width:100%; max-width:400px; margin:10px 0;">`;
+            document.getElementById('text-editor').focus();
+            document.execCommand('insertHTML', false, img);
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    // --- Canvas & Shapes ---
+    const canvas = document.getElementById('notes-canvas');
+    const ctx = canvas.getContext('2d');
+    let painting = false;
+    let startX, startY;
+    let snapshot;
+
+    function setupCanvas() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 350;
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', finishedPosition);
+        canvas.addEventListener('mousemove', draw);
+        
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            const mouseEvent = new MouseEvent('mouseup', {});
+            canvas.dispatchEvent(mouseEvent);
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+    }
+
+    function startPosition(e) {
+        painting = true;
+        const rect = canvas.getBoundingClientRect();
+        startX = e.clientX - rect.left;
+        startY = e.clientY - rect.top;
+        ctx.beginPath();
+        // Ruajmë gjendjen për vizatimin e formave (preview)
+        snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = document.getElementById('pen-color').value;
+        ctx.lineWidth = 3;
+    }
+
+    function finishedPosition() { painting = false; ctx.beginPath(); }
+
+    function draw(e) {
+        if (!painting) return;
+        const rect = canvas.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+        const tool = document.getElementById('shape-tool').value;
+
+        if (tool !== 'pen') {
+            ctx.putImageData(snapshot, 0, 0); // Pastron ekranin për preview e formës
+        }
+
+        if (tool === 'pen') {
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+        } else if (tool === 'rect') {
+            ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+        } else if (tool === 'circle') {
+            let radius = Math.sqrt(Math.pow(startX - currentX, 2) + Math.pow(startY - currentY, 2));
+            ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+        } else if (tool === 'line') {
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+        }
+    }
+
+    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+    // --- API Logic ---
+    async function saveNote() {
+        const text = document.getElementById('text-editor').innerHTML;
+        const drawing = canvas.toDataURL();
+        if(document.getElementById('text-editor').innerText.trim() === "" && drawing.length < 3000) return alert("Bosh!");
+
+        try {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: [{ userId: userID, text: text, drawing: drawing, date: new Date().toLocaleString('sq-AL') }] })
+            });
+            location.reload();
+        } catch (e) { alert("Gabim!"); }
+    }
+
+    async function deleteNote(date) {
+        if(!confirm("A dëshiron ta fshish këtë shënim?")) return;
+        try {
+            await fetch(`${API_URL}/date/${date}`, { method: 'DELETE' });
+            location.reload();
+        } catch (e) { alert("Gabim fshirjeje!"); }
+    }
+
+    async function loadNotes() {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        const list = document.getElementById('notes-list');
+        list.innerHTML = "";
+        
+        data.filter(n => n.userId === userID).reverse().forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'note-item';
+            div.innerHTML = `
+                <button class="delete-btn" onclick="deleteNote('${n.date}')">Fshi</button>
+                <small>${n.date}</small>
+                <div style="margin-top:10px;">${n.text}</div>
+                ${n.drawing && n.drawing.length > 3000 ? `<img src="${n.drawing}" style="max-width:100%; margin-top:10px; border-top:1px solid #eee;">` : ""}
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    window.onload = () => { setupCanvas(); loadNotes(); };
+</script>
+
+</body>
+</html>

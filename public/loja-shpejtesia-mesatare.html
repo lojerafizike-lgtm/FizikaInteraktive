@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fizika: Shpejtësia Mesatare</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #2c3e50; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .station-box { background: #ecf0f1; color: #2c3e50; padding: 20px; border-radius: 15px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; box-sizing: border-box; }
+        .track { height: 10px; background: #7f8c8d; margin: 30px 0; position: relative; border-radius: 5px; }
+        #train { position: absolute; left: 0; top: -25px; font-size: 2rem; transition: left linear; }
+        .formula-card { background: #34495e; color: #f1c40f; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-family: serif; font-size: 1.2rem; }
+        .data-table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+        .data-table td { border: 1px solid #bdc3c7; padding: 8px; font-size: 0.9rem; }
+        input { width: 120px; padding: 10px; border: 2px solid #3498db; border-radius: 5px; text-align: center; }
+        button { background: #e67e22; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #d35400; }
+        #feedback { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="station-box">
+    <h2>Logjika e Trenit 🚉</h2>
+    <div class="formula-card">v<sub>m</sub> = (L₁ + L₂) / (t₁ + t₂)</div>
+    
+    <table class="data-table">
+        <tr style="background: #eee;">
+            <td>Pjesa e Rrugës</td>
+            <td>Rruga (L)</td>
+            <td>Koha (t)</td>
+        </tr>
+        <tr>
+            <td>Faza 1</td>
+            <td><b id="L1">--</b> m</td>
+            <td><b id="t1">--</b> s</td>
+        </tr>
+        <tr>
+            <td>Faza 2</td>
+            <td><b id="L2">--</b> m</td>
+            <td><b id="t2">--</b> s</td>
+        </tr>
+    </table>
+
+    <div class="track">
+        <div id="train">🚂</div>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        Llogarit v<sub>m</sub> (m/s):
+        <input type="number" id="userVm" step="0.1">
+    </div>
+    <button onclick="startJourney()">NIS TRENIN</button>
+    <p id="feedback"></p>
+</div>
+
+<script>
+    let L1, t1, L2, t2, vmCorrect;
+
+    function generateLevel() {
+        // Gjenerojmë numra që japin rezultat të thjeshtë
+        t1 = Math.floor(Math.random() * 5) + 2; 
+        t2 = Math.floor(Math.random() * 5) + 2;
+        let totalT = t1 + t2;
+        
+        // Zgjedhim një vm të thjeshtë (p.sh. 5, 10, 15) dhe nxjerrim L totale
+        vmCorrect = (Math.floor(Math.random() * 4) + 1) * 5; 
+        let totalL = vmCorrect * totalT;
+
+        L1 = Math.floor(totalL * 0.4); 
+        L2 = totalL - L1;
+
+        document.getElementById('L1').innerText = L1;
+        document.getElementById('t1').innerText = t1;
+        document.getElementById('L2').innerText = L2;
+        document.getElementById('t2').innerText = t2;
+        
+        document.getElementById('train').style.left = "0";
+        document.getElementById('train').style.transition = "none";
+        document.getElementById('feedback').innerText = "";
+        document.getElementById('userVm').value = "";
+    }
+
+    function startJourney() {
+        const userVal = parseFloat(document.getElementById('userVm').value);
+        const train = document.getElementById('train');
+        const feedback = document.getElementById('feedback');
+
+        if(isNaN(userVal)) return;
+
+        // Animacioni i trenit (zgjat sa t1 + t2 sekonda)
+        train.style.transition = `left ${t1 + t2}s linear`;
+        train.style.left = "90%";
+
+        setTimeout(() => {
+            if(Math.abs(userVal - vmCorrect) < 0.1) {
+                feedback.innerText = "SAKTË! Treni arriti në kohë. ✅";
+                feedback.style.color = "green";
+                setTimeout(generateLevel, 3000);
+            } else {
+                feedback.innerText = `GABIM! v_m ishte ${vmCorrect} m/s. ❌`;
+                feedback.style.color = "red";
+                setTimeout(generateLevel, 3000);
+            }
+        }, (t1 + t2) * 1000);
+    }
+
+    generateLevel();
+</script>
+
+</body>
+</html>

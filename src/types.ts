@@ -13,6 +13,7 @@ export interface PhysicsTerm {
   catName?: string;
   img?: string;
   vid?: string;
+  gameUrl?: string;
 }
 
 export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Libri Interaktiv";

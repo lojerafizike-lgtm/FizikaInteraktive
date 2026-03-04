@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gara e Fizikës: Intervali Kohor</title>
+    <style>
+        body { margin: 0; background: #222; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #race-track { width: 600px; background: #333; border-bottom: 5px dashed white; border-top: 5px dashed white; position: relative; height: 150px; overflow: hidden; }
+        .car { position: absolute; font-size: 2.5rem; left: 0; bottom: 20px; transition: left linear; }
+        .finish-line { position: absolute; right: 50px; top: 0; bottom: 0; width: 10px; background: repeating-linear-gradient(0deg, black, black 10px, white 10px, white 20px); }
+        .info-panel { background: #111; padding: 20px; border-radius: 10px; border: 2px solid #f1c40f; margin-bottom: 20px; width: 560px; }
+        .formula-box { color: #f1c40f; font-weight: bold; font-family: 'Times New Roman', serif; font-size: 1.2rem; }
+        .inputs { display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 15px; }
+        input { padding: 10px; border-radius: 5px; border: none; width: 150px; font-size: 1rem; }
+        button { padding: 10px 20px; background: #f1c40f; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #timer-display { font-size: 2rem; color: #e74c3c; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div>
+    <div class="info-panel">
+        <div style="display: flex; justify-content: space-between;">
+            <div class="formula-box">Formula: Δt = L / v &nbsp; | &nbsp; t = Δt + t₀</div>
+            <div id="timer-display">0.0s</div>
+        </div>
+        <hr>
+        <div id="data-text">Duke u përgatitur...</div>
+    </div>
+
+    <div id="race-track">
+        <div class="finish-line"></div>
+        <div id="car" class="car">🏎️</div>
+    </div>
+
+    <div class="inputs">
+        <label>Parashiko t (sekonda):</label>
+        <input type="number" id="userT" step="0.1" placeholder="Sekonda t">
+        <button onclick="startRace()">NIS GARËN</button>
+    </div>
+    <p id="msg" style="text-align: center; margin-top: 10px; font-weight: bold;"></p>
+</div>
+
+<script>
+    let L, v, t0, deltaT, tFinal;
+    let timerInterval;
+
+    function initLevel() {
+        L = Math.floor(Math.random() * 100) + 50; // Rruga 50-150m
+        v = Math.floor(Math.random() * 15) + 5;  // Shpejtësia 5-20m/s
+        t0 = Math.floor(Math.random() * 5) + 1; // Koha fillestare 1-5s
+        
+        deltaT = L / v;
+        tFinal = t0 + deltaT;
+
+        document.getElementById('data-text').innerHTML = 
+            `Rruga (L): <b>${L}m</b> | Shpejtësia (v): <b>${v}m/s</b> | Koha e nisjes (t₀): <b>${t0}s</b>`;
+        
+        document.getElementById('car').style.left = "0px";
+        document.getElementById('car').style.transition = "none";
+        document.getElementById('timer-display').innerText = "0.0s";
+        document.getElementById('msg').innerText = "Llogarit sekondën 't' kur makina prek vijën!";
+    }
+
+    function startRace() {
+        const userT = parseFloat(document.getElementById('userT').value);
+        if (isNaN(userT)) return;
+
+        let currentTime = 0;
+        const car = document.getElementById('car');
+        const timerDisplay = document.getElementById('timer-display');
+        
+        // Animacioni fillon pas t0 sekondash
+        timerInterval = setInterval(() => {
+            currentTime += 0.1;
+            timerDisplay.innerText = currentTime.toFixed(1) + "s";
+
+            if (currentTime.toFixed(1) == t0.toFixed(1)) {
+                car.style.transition = `left ${deltaT}s linear`;
+                car.style.left = "510px"; // Arrin te vija
+            }
+
+            if (currentTime >= tFinal + 2) {
+                clearInterval(timerInterval);
+                checkWin(userT);
+            }
+        }, 100);
+    }
+
+    function checkWin(userT) {
+        const msg = document.getElementById('msg');
+        // Lejojmë një gabim të vogël prej 0.1s për rrumbullakim
+        if (Math.abs(userT - tFinal) < 0.2) {
+            msg.innerHTML = `BRAVO! Saktësi perfekte. t = ${tFinal.toFixed(1)}s`;
+            msg.style.color = "#2ecc71";
+        } else {
+            msg.innerHTML = `GABIM! Makina kaloi në sekondën ${tFinal.toFixed(1)}s. Ti the ${userT}s.`;
+            msg.style.color = "#e74c3c";
+        }
+        setTimeout(initLevel, 4000);
+    }
+
+    initLevel();
+</script>
+
+</body>
+</html>
