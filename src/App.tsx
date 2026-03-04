@@ -139,7 +139,7 @@ const App: React.FC = () => {
     {
       label: 'Revista',
       href: '/revista.html',
-      onClick: (e: React.MouseEvent) => { e.preventDefault(); window.open('/revista.html', '_blank'); },
+      onClick: (e: React.MouseEvent) => { e.preventDefault(); window.location.href = '/revista.html'; },
       rotation: -4,
       hoverStyles: { bgColor: '#bde0fe', textColor: '#4a4e69' }
     }
