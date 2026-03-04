@@ -27,8 +27,10 @@ const BuildFormula = ({ data, onComplete }: Props) => {
   };
 
   const checkFormula = () => {
-    const built = placed.join(" ").replace(/\s+/g, " ").trim();
-    const target = data.formula.replace(/\s+/g, " ").trim();
+    const normalize = (str: string) => str.replace(/[\s·×*]/g, "").toLowerCase();
+    const built = normalize(placed.join(""));
+    const target = normalize(data.formula);
+
     if (built === target) {
       setSolved(true);
       setShowApps(true);

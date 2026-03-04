@@ -16,16 +16,24 @@ const FillBlank = ({ questions, onComplete }: Props) => {
 
   const q = questions[current];
 
+  const normalizeText = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/ë/g, "e")
+      .replace(/ç/g, "c")
+      .trim();
+  };
+
   const check = () => {
-    if (input.trim().toLowerCase() === q.answer.toLowerCase()) {
+    if (normalizeText(input) === normalizeText(q.answer)) {
       setStatus("correct");
-      setScore(s => s + 1);
+      setScore((s) => s + 1);
     } else {
       setStatus("wrong");
     }
     setTimeout(() => {
       if (current < questions.length - 1) {
-        setCurrent(c => c + 1);
+        setCurrent((c) => c + 1);
         setInput("");
         setStatus("idle");
       } else {
@@ -51,7 +59,7 @@ const FillBlank = ({ questions, onComplete }: Props) => {
           className="w-full rounded-lg border border-border bg-card p-6 shadow-sm"
         >
           <p className="mb-6 text-center font-sans text-foreground leading-relaxed">
-            {q.sentence.split("___").map((part, i, arr) => (
+            {q.sentence.split(/_+/).map((part, i, arr) => (
               <span key={i}>
                 {part}
                 {i < arr.length - 1 && (

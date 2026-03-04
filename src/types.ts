@@ -1,5 +1,6 @@
 
 export interface PhysicsTerm {
+  id?: number;
   name: string;
   sym: string;
   form: string;

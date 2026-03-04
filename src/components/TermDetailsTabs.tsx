@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { PhysicsTerm } from '../types';
 import { instrumentsData, buildSim } from '../instrumentsData';
 import '../instruments.css';
+import DinamikaGameContainer from './DinamikaGameContainer';
+import KinematikaGameContainer from './KinematikaGameContainer';
 
 interface TermDetailsTabsProps {
   term: PhysicsTerm;
@@ -270,7 +272,11 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
         {/* 4. LOJË */}
         {activeTab === 'loje' && (
           <div className="animate__animated animate__fadeInUp text-center py-12">
-            {term.gameUrl ? (
+            {term.catName === 'Dinamika' && term.id !== undefined && term.id >= 1 && term.id <= 15 ? (
+              <DinamikaGameContainer termId={term.id} termName={term.name} formula={term.form} />
+            ) : term.catName === 'Kinematika' && term.id !== undefined && [9, 10, 11, 12, 13, 14, 15, 16].includes(term.id) ? (
+              <KinematikaGameContainer termId={term.id} termName={term.name} />
+            ) : term.gameUrl ? (
                 <div className="relative">
                     <iframe src={term.gameUrl} className="w-full h-[600px] border-none rounded-2xl shadow-lg" title={`Lojë për ${term.name}`} allowFullScreen></iframe>
                     <button 

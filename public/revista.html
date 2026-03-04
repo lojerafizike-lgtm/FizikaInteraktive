@@ -310,7 +310,7 @@
         try {
             // Lidhimi me të dy RSS feeds paralelisht për të rritur sasinë e lajmeve
             const fetchPromises = feedsUrls.map(url => {
-                const apiStr = \`https://api.rss2json.com/v1/api.json?rss_url=\${encodeURIComponent(url)}\`;
+                const apiStr = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
                 return fetch(apiStr).then(r => r.json());
             });
 
@@ -365,19 +365,19 @@
                 // Japim një ID Unike të domit të Përkthimit 
                 const randomGuidId = 'titull_sq_' + Math.random().toString(36).substr(2, 9);
 
-                articleDOM.innerHTML = \`
+                articleDOM.innerHTML = `
                     <div class="news-image">
-                        <img src="\${imageSrc}" onerror="this.src='\${fallbackImage}'" alt="Cover Foto për \${item.kategoria}">
+                        <img src="${imageSrc}" onerror="this.src='${fallbackImage}'" alt="Cover Foto për ${item.kategoria}">
                     </div>
                     <div class="news-content">
-                        <span class="news-meta">\${item.kategoria} • \${formattedDate}</span>
-                        <h3 class="news-title">\${item.title}</h3>
-                        <p class="translated-title" id="\${randomGuidId}">⏳ Duke përkthyer në shqip...</p>
+                        <span class="news-meta">${item.kategoria} • ${formattedDate}</span>
+                        <h3 class="news-title">${item.title}</h3>
+                        <p class="translated-title" id="${randomGuidId}">⏳ Duke përkthyer në shqip...</p>
                     </div>
                     <div class="read-action">
-                        <a href="\${item.link}" target="_blank" class="magazine-link">Hap<br>Artikullin →</a>
+                        <a href="${item.link}" target="_blank" class="magazine-link">Hap<br>Artikullin →</a>
                     </div>
-                \`;
+                `;
                 feed.appendChild(articleDOM);
 
                 // --- LIDHJA PËR TË PËRKTHYER SECILIN TITULL VEÇ --- 
@@ -386,7 +386,7 @@
 
         } catch (err) {
             document.querySelector('.spinner').style.display = 'none';
-            loader.innerHTML = \`<span style="color:red">Fatkeqësisht, pati një gabim në internet gjatë marrjes së shkrimeve shkencore. Provoni përsëri!</span>\`;
+            loader.innerHTML = `<span style="color:red">Fatkeqësisht, pati një gabim në internet gjatë marrjes së shkrimeve shkencore. Provoni përsëri!</span>`;
             console.error("Fetch API error: ", err);
         }
     }
@@ -395,7 +395,7 @@
     async function perktheTekstInAlbanian(origjinalTekst, docElementId) {
         try {
             // Duke përdorur pikën dytësore 'GTX' mundësojmë përdorimin direkt (edhe pse jo 100% zytar si Cloud-key eshte i perkyer per klient JS scriptime)
-            const endPoint = \`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=sq&dt=t&q=\${encodeURIComponent(origjinalTekst)}\`;
+            const endPoint = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=sq&dt=t&q=${encodeURIComponent(origjinalTekst)}`;
             
             const req = await fetch(endPoint);
             const data = await req.json();
@@ -404,9 +404,9 @@
             const perkthimi = data[0].map(tekstFragment => tekstFragment[0]).join('');
 
             // Bashkimi & modifikimi në Frontend 
-            document.getElementById(docElementId).innerText = \`🇦🇱 \${perkthimi}\`;
+            document.getElementById(docElementId).innerText = `🇦🇱 ${perkthimi}`;
         } catch (error) {
-            document.getElementById(docElementId).innerText = \`[Përkthimi është padisponueshëm për momentin]\`;
+            document.getElementById(docElementId).innerText = `[Përkthimi është padisponueshëm për momentin]`;
         }
     }
 </script>

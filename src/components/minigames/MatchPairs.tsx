@@ -53,6 +53,7 @@ const MatchPairs = ({ pairs, onComplete }: Props) => {
           {rightOrder.map(ri => (
             <motion.button
               key={ri}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               animate={flash === ri ? { x: [0, -6, 6, -4, 4, 0] } : {}}
               transition={{ duration: 0.4 }}
