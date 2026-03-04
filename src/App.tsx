@@ -135,6 +135,13 @@ const App: React.FC = () => {
       onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('games'); },
       rotation: 8,
       hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
+    },
+    {
+      label: 'Revista',
+      href: '/revista.html',
+      onClick: (e: React.MouseEvent) => { e.preventDefault(); window.open('/revista.html', '_blank'); },
+      rotation: -4,
+      hoverStyles: { bgColor: '#bde0fe', textColor: '#4a4e69' }
     }
   ];
 
@@ -176,6 +183,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
             <button onClick={() => navigate('all-terms')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Të gjitha Termat</button>
+            <button onClick={() => window.open('/revista.html', '_blank')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</button>
             <button 
               onClick={() => navigate('games')} 
               className="bg-[#4a4e69] text-white px-6 lg:px-10 py-3 lg:py-4 rounded-[1.8rem] text-xs lg:text-sm font-black shadow-xl hover:scale-110 active:scale-95 transition-all uppercase tracking-widest flex items-center gap-3 shrink-0"

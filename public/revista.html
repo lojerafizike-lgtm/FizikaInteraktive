@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics News Outlet</title>
+
+    <!-- Google Fonts per pamje më Serioze & Atraktiv -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-navy: #0B1E36;
+            --accent-red: #d32f2f;
+            --bg-body: #edf2f7;
+            --white: #ffffff;
+            --text-dark: #2d3748;
+            --text-gray: #718096;
+            --translation-color: #4a5568;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            text-align: center;
+            margin: 40px auto;
+        }
+
+        /* --- STILI I VIEW KRYESOR (START VIEW) --- */
+        #start-view {
+            transition: opacity 0.5s ease;
+        }
+
+        .hero-title {
+            font-family: 'Merriweather', serif;
+            font-size: 3rem;
+            color: var(--primary-navy);
+            margin-bottom: 10px;
+        }
+        
+        .hero-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        .main-btn {
+            background: var(--primary-navy);
+            color: var(--white);
+            padding: 18px 45px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-btn:hover {
+            transform: translateY(-2px);
+            background: #142E4A;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- NEWS OUTLET STYLING --- */
+        #news-outlet {
+            display: none;
+            text-align: left;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            background-color: var(--bg-body);
+        }
+
+        .header {
+            background: var(--primary-navy);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .header h1 { 
+            font-family: 'Merriweather', serif; 
+            margin: 0; 
+            font-size: 2rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .refresh-btn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .refresh-btn:hover { background: #b71c1c; }
+
+        /* Artikujt (Lista me Flexbox per te theksuar dizajnin Image + Content + Button) */
+        .news-item {
+            background: var(--white);
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: stretch;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border-left: 5px solid var(--accent-red);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .news-item:hover {
+            transform: scale(1.01);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+        }
+
+        .news-image {
+            width: 250px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: #e2e8f0;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+        .news-item:hover .news-image img {
+            transform: scale(1.05);
+        }
+
+        .news-content {
+            flex-grow: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .news-meta {
+            color: var(--accent-red);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .news-title {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            font-family: 'Merriweather', serif;
+            line-height: 1.3;
+        }
+
+        /* --- STILI I PËRKTHIMIT SHQIP --- */
+        .translated-title {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--translation-color);
+            font-style: italic;
+            border-left: 2px solid #cbd5e0;
+            padding-left: 10px;
+        }
+
+        .read-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 25px;
+            background: #fafbfc;
+            border-left: 1px solid #edf2f7;
+        }
+
+        .magazine-link {
+            color: var(--primary-navy);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            border: 2px solid var(--primary-navy);
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .magazine-link:hover { 
+            background-color: var(--primary-navy); 
+            color: var(--white); 
+        }
+
+        /* Animacioni i Loading-ut */
+        .loader-container {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-navy);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Media Queries per Ekrane te Vogla (Mobiles) */
+        @media (max-width: 850px) {
+            .news-item {
+                flex-direction: column;
+            }
+            .news-image {
+                width: 100%;
+                height: 220px;
+            }
+            .read-action {
+                border-left: none;
+                border-top: 1px solid #edf2f7;
+                padding: 15px;
+                background: #fff;
+            }
+            .magazine-link {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="start-view">
+        <h1 class="hero-title">Revista e Fizikës</h1>
+        <p class="hero-subtitle">Eksploroni lajmet, studimet dhe përparimet më të fundit nga Universiteti dhe Agjencitë Kryesore (Shqip & Anglisht)</p>
+        <button class="main-btn" onclick="openNewsOutlet()">Fillo Lëximin e Artikujve →</button>
+    </div>
+
+    <!-- Përmirësim i Pamjes së Loader -->
+    <div id="loader" class="loader-container">
+        <div class="spinner"></div>
+        <div style="color: var(--primary-navy); font-weight: 500;">Po kërkojmë të rejat e fundit shkencore dhe po i përkthejmë...</div>
+    </div>
+
+    <div id="news-outlet">
+        <div class="header">
+            <h1>Daily Physics News</h1>
+            <button class="refresh-btn" onclick="location.reload()">↺ Rifresko Lajmet</button>
+        </div>
+        
+        <div id="news-feed">
+            <!-- Të dhënat injektohen këtu -->
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Funksioni që hap portalin
+    async function openNewsOutlet() {
+        const startView = document.getElementById('start-view');
+        const newsOutlet = document.getElementById('news-outlet');
+        const loader = document.getElementById('loader');
+        const feed = document.getElementById('news-feed');
+
+        // 1. Ndryshojmë UI 
+        startView.style.display = 'none';
+        loader.style.display = 'block';
+
+        // 2. Krijojmë një listë me shumë feed-e shkencore për të marrë MË SHUMË artikuj (Fizikë & Hapësirë)
+        const feedsUrls =[
+            'https://phys.org/rss-feed/physics-news/',
+            'https://phys.org/rss-feed/space-news/'
+        ];
+
+        let allArticles =[];
+
+        try {
+            // Lidhimi me të dy RSS feeds paralelisht për të rritur sasinë e lajmeve
+            const fetchPromises = feedsUrls.map(url => {
+                const apiStr = \`https://api.rss2json.com/v1/api.json?rss_url=\${encodeURIComponent(url)}\`;
+                return fetch(apiStr).then(r => r.json());
+            });
+
+            const results = await Promise.all(fetchPromises);
+
+            results.forEach((res, index) => {
+                if (res.status === 'ok') {
+                    // Vendosim origjinën tek objekti që të dimë nga erdhi 
+                    const mappedItems = res.items.map(item => {
+                        return { 
+                            ...item, 
+                            kategoria: index === 0 ? "PHYSICS NEWS" : "SPACE & ASTROPHYSICS" 
+                        };
+                    });
+                    allArticles = allArticles.concat(mappedItems);
+                }
+            });
+
+            // 3. I rendisim që lajmi i fundit fare i të dyjave të dalë lart 
+            allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+            // Shfaqim 18 artikujt e parë kryesorë (nga zakonisht 10 qe sjell një feed)
+            const articlesToShow = allArticles.slice(0, 18);
+
+            // 4. Shfaqim UI-në e Lajmeve 
+            loader.style.display = 'none';
+            newsOutlet.style.display = 'block';
+            setTimeout(() => { newsOutlet.style.opacity = '1'; }, 50);
+
+            // Gjurmuesi bazë i imazhit defalut, në rast se lajmi RSS vjen pa një foto.
+            const fallbackImage = 'https://images.unsplash.com/photo-1636819488524-1f019ce5e855?auto=format&fit=crop&w=400&q=80';
+
+            // Përgatisim Html për të gjitha
+            articlesToShow.forEach(item => {
+                const articleDOM = document.createElement('div');
+                articleDOM.className = 'news-item';
+                
+                // Konvertojmë datën e RSS në format njerëzor 
+                const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+                const formattedDate = new Date(item.pubDate).toLocaleDateString('sq-AL', dateOptions);
+
+                // Ekstraktimi i fotos. Disa RSS ofrojnë ".thumbnail" disa e fshehin tek ".enclosure.link".
+                // Nqs ka dështime imazhi marrim fallback-in
+                let imageSrc = item.thumbnail || (item.enclosure && item.enclosure.link);
+                
+                // Mbrojtje shtesë - nëse phys.org ofron link ne regex, e kërkojmë nga 'description'
+                if(!imageSrc) {
+                    const match = item.description.match(/src=["'](.*?)["']/);
+                    imageSrc = match ? match[1] : fallbackImage;
+                }
+
+                // Japim një ID Unike të domit të Përkthimit 
+                const randomGuidId = 'titull_sq_' + Math.random().toString(36).substr(2, 9);
+
+                articleDOM.innerHTML = \`
+                    <div class="news-image">
+                        <img src="\${imageSrc}" onerror="this.src='\${fallbackImage}'" alt="Cover Foto për \${item.kategoria}">
+                    </div>
+                    <div class="news-content">
+                        <span class="news-meta">\${item.kategoria} • \${formattedDate}</span>
+                        <h3 class="news-title">\${item.title}</h3>
+                        <p class="translated-title" id="\${randomGuidId}">⏳ Duke përkthyer në shqip...</p>
+                    </div>
+                    <div class="read-action">
+                        <a href="\${item.link}" target="_blank" class="magazine-link">Hap<br>Artikullin →</a>
+                    </div>
+                \`;
+                feed.appendChild(articleDOM);
+
+                // --- LIDHJA PËR TË PËRKTHYER SECILIN TITULL VEÇ --- 
+                perktheTekstInAlbanian(item.title, randomGuidId);
+            });
+
+        } catch (err) {
+            document.querySelector('.spinner').style.display = 'none';
+            loader.innerHTML = \`<span style="color:red">Fatkeqësisht, pati një gabim në internet gjatë marrjes së shkrimeve shkencore. Provoni përsëri!</span>\`;
+            console.error("Fetch API error: ", err);
+        }
+    }
+
+    // 5. Funksion specifik për t'i dërguar tekste Google API-s publike dhe injektimi si rezultat i gjetur
+    async function perktheTekstInAlbanian(origjinalTekst, docElementId) {
+        try {
+            // Duke përdorur pikën dytësore 'GTX' mundësojmë përdorimin direkt (edhe pse jo 100% zytar si Cloud-key eshte i perkyer per klient JS scriptime)
+            const endPoint = \`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=sq&dt=t&q=\${encodeURIComponent(origjinalTekst)}\`;
+            
+            const req = await fetch(endPoint);
+            const data = await req.json();
+            
+            // Nëpër këtë API rezultatet mund te rimerren si Array ne strukturen: data[0][x][0]
+            const perkthimi = data[0].map(tekstFragment => tekstFragment[0]).join('');
+
+            // Bashkimi & modifikimi në Frontend 
+            document.getElementById(docElementId).innerText = \`🇦🇱 \${perkthimi}\`;
+        } catch (error) {
+            document.getElementById(docElementId).innerText = \`[Përkthimi është padisponueshëm për momentin]\`;
+        }
+    }
+</script>
+
+</body>
+</html>

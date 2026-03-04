@@ -133,16 +133,31 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
           <div className="animate__animated animate__fadeInUp text-center py-12">
             {term.vid ? (
               <div className="max-w-2xl mx-auto">
-                <div className="aspect-video rounded-2xl overflow-hidden shadow-lg border-4 border-white mb-6 bg-slate-100">
-                  <iframe 
-                    src={term.vid} 
-                    title={`Video për ${term.name}`}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen
-                  ></iframe>
-                </div>
+                <a 
+                  href={term.vid!.replace('/embed/', '/watch?v=')} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="block relative group aspect-video rounded-2xl overflow-hidden shadow-lg border-4 border-white mb-6 bg-slate-100 cursor-pointer"
+                >
+                  <img 
+                    src={`https://img.youtube.com/vi/${term.vid!.split('/embed/')[1]}/hqdefault.jpg`} 
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (!target.src.includes('0.jpg')) {
+                        target.src = `https://img.youtube.com/vi/${term.vid!.split('/embed/')[1]}/0.jpg`;
+                      }
+                    }}
+                    alt={`Video për ${term.name}`} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-all">
+                    <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform">
+                      <i className="fas fa-play text-white text-3xl ml-2"></i>
+                    </div>
+                  </div>
+                </a>
                 <h4 className="text-2xl font-black text-slate-400 mb-2">Video Shpjeguese</h4>
+                <p className="text-slate-400 text-sm">Kliko për ta parë videon në YouTube</p>
               </div>
             ) : (
               <>
@@ -159,7 +174,33 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
           <div className="animate__animated animate__fadeInUp text-center py-12">
             {term.img ? (
               <div className="max-w-2xl mx-auto">
-                <img src={term.img} alt={term.name} className="w-full h-auto rounded-2xl shadow-lg border-4 border-white mb-6" referrerPolicy="no-referrer" />
+                <div 
+                  className="relative group cursor-pointer rounded-2xl overflow-hidden shadow-lg border-4 border-white mb-6"
+                  onClick={() => {
+                    const modal = document.createElement('div');
+                    modal.className = 'fixed inset-0 z-[9999] bg-slate-900/95 flex items-center justify-center p-4 backdrop-blur-sm animate__animated animate__fadeIn animate__faster';
+                    modal.onclick = () => {
+                      modal.classList.replace('animate__fadeIn', 'animate__fadeOut');
+                      setTimeout(() => modal.remove(), 300);
+                    };
+                    modal.innerHTML = `
+                      <div class="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center">
+                        <button class="absolute -top-12 right-0 text-white hover:text-[#ffafcc] transition-colors text-4xl">
+                          <i class="fas fa-times"></i>
+                        </button>
+                        <img src="${term.img}" alt="${term.name}" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl" />
+                      </div>
+                    `;
+                    document.body.appendChild(modal);
+                  }}
+                >
+                  <img src={term.img} alt={term.name} className="w-full h-auto transition-transform duration-500 group-hover:scale-105" referrerPolicy="no-referrer" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="bg-white/90 text-slate-800 px-6 py-3 rounded-full font-black text-sm tracking-widest flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all">
+                      <i className="fas fa-expand"></i> ZMADHO FOTON
+                    </div>
+                  </div>
+                </div>
                 <h4 className="text-2xl font-black text-slate-400 mb-2">Foto Ilustruese</h4>
               </div>
             ) : (
