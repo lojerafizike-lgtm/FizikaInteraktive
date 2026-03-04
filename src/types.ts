@@ -47,3 +47,10 @@ export interface DigitalGame {
   type?: 'digital' | 'school';
   url?: string;
 }
+
+export interface Movie {
+  id: number;
+  title: string;
+  poster: string;
+  desc: string;
+}

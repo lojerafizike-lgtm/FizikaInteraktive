@@ -6,12 +6,13 @@ import { PhysicsTerm, CategoryName, DigitalGame } from './types';
 import ClickSpark from './components/ClickSpark';
 import TermDetailsTabs from './components/TermDetailsTabs';
 import BlurText from './components/BlurText';
+import MoviesSection from './components/MoviesSection';
 import BubbleMenu from './components/BubbleMenu';
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
-  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'all-terms'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies'>('home');
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
@@ -27,7 +28,7 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'all-terms', data?: CategoryName | PhysicsTerm | null) => {
+  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies', data?: CategoryName | PhysicsTerm | null) => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
@@ -60,16 +61,6 @@ const App: React.FC = () => {
     });
     return results;
   }, [searchTerm]);
-
-  const allTerms = useMemo(() => {
-    const terms: (PhysicsTerm & { category: string })[] = [];
-    Object.entries(ALL_PHYSICS_DATA).forEach(([cat, catTerms]) => {
-      catTerms.forEach(term => {
-        terms.push({ ...term, category: cat });
-      });
-    });
-    return terms.sort((a, b) => a.name.localeCompare(b.name));
-  }, []);
 
   const getCategoryTheme = (cat: string) => {
     switch (cat) {
@@ -132,6 +123,13 @@ const App: React.FC = () => {
       hoverStyles: { bgColor: '#4a4e69', textColor: '#ffffff' }
     },
     {
+      label: 'Filmat',
+      href: '#',
+      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('movies'); },
+      rotation: 4,
+      hoverStyles: { bgColor: '#cdb4db', textColor: '#ffffff' }
+    },
+    {
       label: 'Lojërat',
       href: '#',
       onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('games'); },
@@ -184,7 +182,7 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
-            <button onClick={() => navigate('all-terms')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Të gjitha Termat</button>
+            <button onClick={() => navigate('movies')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Filmat</button>
             <a href="/revista.html" className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</a>
             <button 
               onClick={() => navigate('games')} 
@@ -530,36 +528,8 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
-        {activePage === 'all-terms' && (
-          <div className="animate__animated animate__fadeIn">
-            <button onClick={() => navigate('home')} className="mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
-              <i className="fas fa-arrow-left"></i> Kthehu mbrapa
-            </button>
-            
-            <div className="w-full max-w-4xl mx-auto">
-              {/* Terms List */}
-              <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-50 flex flex-col">
-                <h3 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 tracking-tighter">Të gjitha Termat</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {allTerms.map((term, i) => (
-                    <div 
-                      key={i}
-                      onClick={() => navigate('details', term)}
-                      className="p-4 md:p-6 rounded-xl md:rounded-2xl hover:bg-[#f8fafc] cursor-pointer transition-all group border border-slate-100"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">{term.category}</span>
-                          <h5 className="text-base md:text-xl font-bold group-hover:text-[#ffafcc] transition-colors">{term.name}</h5>
-                        </div>
-                        <i className="fas fa-chevron-right text-[10px] text-slate-200 group-hover:text-[#ffafcc] transition-all"></i>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+        {activePage === 'movies' && (
+          <MoviesSection onBack={() => navigate('home')} />
         )}
       </main>
 
