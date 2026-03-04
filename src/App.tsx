@@ -743,7 +743,7 @@ const App: React.FC = () => {
       {/* Floating Chat Widget */}
       {isChatOpen && (
         <div className="fixed inset-0 z-[100] bg-[#eef2f7] animate__animated animate__fadeIn animate__faster flex flex-col">
-          <div className="bg-white p-3 flex justify-start md:justify-end shadow-sm relative z-10">
+          <div className="bg-white p-4 flex justify-start shadow-sm relative z-10">
             <button onClick={() => setIsChatOpen(false)} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
               <i className="fas fa-times text-xl"></i>
             </button>
@@ -755,7 +755,7 @@ const App: React.FC = () => {
       {/* Floating Notes Widget */}
       {isNotesOpen && (
         <div className="fixed inset-0 z-[100] bg-[#eef2f7] animate__animated animate__fadeIn animate__faster flex flex-col">
-          <div className="bg-white p-3 flex justify-start md:justify-end shadow-sm relative z-10">
+          <div className="bg-white p-4 flex justify-start shadow-sm relative z-10">
             <button onClick={() => setIsNotesOpen(false)} className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
               <i className="fas fa-times text-xl"></i>
             </button>
@@ -767,7 +767,7 @@ const App: React.FC = () => {
       {/* Mobile Selection Modal */}
       {mobileMenuSelectionOpen && (
         <div className="fixed inset-0 z-[100] bg-white/90 backdrop-blur-sm animate__animated animate__fadeIn animate__faster flex flex-col items-center justify-center p-6">
-          <button onClick={() => setMobileMenuSelectionOpen(false)} className="absolute top-6 right-6 w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+          <button onClick={() => setMobileMenuSelectionOpen(false)} className="absolute top-8 left-6 w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
             <i className="fas fa-times text-2xl"></i>
           </button>
           <h2 className="text-3xl font-black text-slate-800 mb-10 text-center">Zgjidhni një opsion</h2>

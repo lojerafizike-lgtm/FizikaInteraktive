@@ -1,26 +1,29 @@
 import { useState, useRef, useEffect } from 'react';
-import { Maximize, Minimize } from 'lucide-react';
+import { Maximize, X } from 'lucide-react';
 
 const GameWrapper = ({ children }: { children: React.ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
+    // Use CSS-based fullscreen state toggle
+    // This is more reliable on mobile browsers (iOS Safari) than the Fullscreen API
+    setIsFullscreen(!isFullscreen);
+    
+    // Optional: Scroll to top when entering fullscreen
+    if (!isFullscreen) {
+      window.scrollTo(0, 0);
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
     } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+      document.body.style.overflow = ''; // Restore scrolling
     }
   };
 
+  // Clean up body overflow on unmount
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+    return () => {
+      document.body.style.overflow = '';
     };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
   return (
@@ -28,20 +31,24 @@ const GameWrapper = ({ children }: { children: React.ReactNode }) => {
       ref={containerRef} 
       className={`relative w-full rounded-xl overflow-hidden transition-all duration-300 ${
         isFullscreen 
-          ? 'fixed inset-0 z-50 bg-background p-4 flex flex-col items-center justify-center' 
+          ? 'fixed inset-0 z-[9999] bg-background p-0 flex flex-col' 
           : 'bg-card border border-border shadow-sm'
       }`}
     >
       <button 
         onClick={toggleFullscreen}
-        className="absolute top-4 right-4 z-50 p-2 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-colors"
-        title={isFullscreen ? "Dil nga ekrani i plotë" : "Ekrani i plotë"}
+        className={`z-50 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-colors ${
+          isFullscreen 
+            ? 'fixed top-6 right-6' 
+            : 'absolute top-4 right-4'
+        }`}
+        title={isFullscreen ? "Mbyll lojën" : "Ekrani i plotë"}
       >
-        {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+        {isFullscreen ? <X size={24} /> : <Maximize size={20} />}
       </button>
       
-      <div className={`w-full ${isFullscreen ? 'h-full overflow-auto flex items-center justify-center' : 'p-6'}`}>
-        <div className={isFullscreen ? 'w-full max-w-6xl' : 'w-full'}>
+      <div className={`w-full ${isFullscreen ? 'h-full overflow-auto flex items-center justify-center bg-white' : 'p-6'}`}>
+        <div className={isFullscreen ? 'w-full h-full max-w-7xl p-4 flex flex-col justify-center' : 'w-full'}>
           {children}
         </div>
       </div>
