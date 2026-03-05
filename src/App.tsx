@@ -138,13 +138,6 @@ const App: React.FC = () => {
       hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
     },
     {
-      label: 'Mjetet',
-      href: '#',
-      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('instruments'); },
-      rotation: -4,
-      hoverStyles: { bgColor: '#bde0fe', textColor: '#4a4e69' }
-    },
-    {
       label: 'Revista',
       href: '/revista.html',
       onClick: (e: React.MouseEvent) => { e.preventDefault(); window.location.href = '/revista.html'; },
@@ -190,7 +183,6 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
-            <button onClick={() => navigate('instruments')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Mjetet</button>
             <button onClick={() => navigate('movies')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Filmat</button>
             <a href="/revista.html" className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</a>
             <button 

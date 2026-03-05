@@ -35,7 +35,7 @@ export interface PhysicsGame {
   description: string;
   materials: string[];
   steps: string[];
-  type: 'home' | 'school';
+  type: 'home' | 'school' | 'digital';
   url?: string;
 }
 
