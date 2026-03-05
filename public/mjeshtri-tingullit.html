@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mjeshtri i Tingullit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fdfbfb;
+            --surface: #ffffff;
+            --primary: #8ab4f8;
+            --primary-glow: rgba(138, 180, 248, 0.4);
+            --secondary: #ffb7b2;
+            --accent: #a8e6cf;
+            --text: #4a4a4a;
+            --text-muted: #888888;
+            --danger: #ff9aa2;
+            --border: rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(138, 180, 248, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(255, 183, 178, 0.15), transparent 25%);
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #6ba4ff, #ff9e99);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Game Container */
+        .game-container {
+            width: 90%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        /* Level Cards */
+        .level-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .level-card.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .level-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* Drag and Drop Areas */
+        .dnd-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dnd-container { grid-template-columns: 1fr; }
+        }
+
+        .options-area {
+            background: rgba(0,0,0,0.02);
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-height: 200px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start;
+            border: 2px dashed var(--border);
+        }
+
+        .target-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .drop-zone {
+            background: rgba(138, 180, 248, 0.1);
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(138, 180, 248, 0.2);
+            border-color: #6ba4ff;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .drop-zone::before {
+            content: attr(data-label);
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--surface);
+            padding: 0 10px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* Draggable Items */
+        .draggable {
+            background: linear-gradient(135deg, #8ab4f8, #ffb7b2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: grab;
+            user-select: none;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-block;
+            z-index: 10;
+        }
+
+        .draggable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .draggable:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .draggable.dragging {
+            opacity: 0.5;
+        }
+
+        /* Fill in the blanks specific */
+        .sentence {
+            line-height: 2.5;
+            font-size: 1.1rem;
+        }
+
+        .inline-drop {
+            display: inline-flex;
+            min-width: 150px;
+            height: 40px;
+            background: rgba(0,0,0,0.02);
+            border: 2px dashed var(--text-muted);
+            border-radius: 20px;
+            vertical-align: middle;
+            margin: 0 5px;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .inline-drop.drag-over {
+            border-color: #88d49e;
+            background: rgba(168, 230, 207, 0.2);
+        }
+
+        .inline-drop .draggable {
+            margin: 0;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons & Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        button {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        button:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        button:disabled {
+            border-color: var(--text-muted);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .btn-check {
+            background: #88d49e;
+            border-color: #88d49e;
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: #76c28c;
+            box-shadow: 0 0 20px rgba(168, 230, 207, 0.6);
+        }
+
+        /* Feedback */
+        .feedback {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 30px;
+            margin-top: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feedback.show {
+            opacity: 1;
+        }
+
+        .feedback.success { color: #76c28c; }
+        .feedback.error { color: var(--danger); }
+
+        /* Audio Wave Animation */
+        .wave-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            height: 50px;
+            margin-bottom: 2rem;
+        }
+
+        .bar {
+            width: 6px;
+            background: var(--primary);
+            border-radius: 3px;
+            animation: soundWave 1s ease-in-out infinite alternate;
+        }
+
+        .bar:nth-child(1) { height: 20%; animation-delay: 0.0s; }
+        .bar:nth-child(2) { height: 50%; animation-delay: 0.1s; }
+        .bar:nth-child(3) { height: 90%; animation-delay: 0.2s; }
+        .bar:nth-child(4) { height: 60%; animation-delay: 0.3s; }
+        .bar:nth-child(5) { height: 30%; animation-delay: 0.4s; }
+        .bar:nth-child(6) { height: 80%; animation-delay: 0.5s; }
+        .bar:nth-child(7) { height: 40%; animation-delay: 0.6s; }
+
+        @keyframes soundWave {
+            0% { transform: scaleY(0.2); background: var(--primary); }
+            100% { transform: scaleY(1); background: var(--secondary); }
+        }
+
+        /* Victory Screen */
+        #victory-screen {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .trophy {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mjeshtri i Tingullit</h1>
+        <p class="subtitle">Eksploro botën e valëve zanore dhe akustikës</p>
+    </header>
+
+    <div class="wave-container">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+
+    <div class="game-container">
+        
+        <!-- Level 1: Burimet -->
+        <div class="level-card active" id="level-1">
+            <div class="level-header">
+                <span class="level-title">Niveli 1: Burimet e Tingullit</span>
+                <span>1 / 10</span>
+            </div>
+            <p class="question-text">Kordat vokale të njeriut dhe altoparlanti janë burime valësh zanore. Tërhiq 3 burime të tjera të sakta në zonën e përgjigjeve!</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-1">
+                    <div class="draggable" draggable="true" data-id="zile">Zilja e derës</div>
+                    <div class="draggable" draggable="true" data-id="drite">Llambushka e dritës</div>
+                    <div class="draggable" draggable="true" data-id="kitar">Telat e kitarës</div>
+                    <div class="draggable" draggable="true" data-id="hije">Hija e pemës</div>
+                    <div class="draggable" draggable="true" data-id="det">Valët e detit</div>
+                    <div class="draggable" draggable="true" data-id="pasqyre">Pasqyra</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Burimet e sakta" id="target-1" data-max="3">
+                        <!-- Drop here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-1"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(1)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel1()">Kontrollo</button>
+                <button id="next-1" disabled onclick="nextLevel(2)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 2: Vakumi -->
+        <div class="level-card" id="level-2">
+            <div class="level-header">
+                <span class="level-title">Niveli 2: Tingulli në Vakum</span>
+                <span>2 / 10</span>
+            </div>
+            <p class="question-text">Shpjegoni përse tingulli nuk mund të përhapet në vakum! Gjej shpjegimin e saktë dhe vendose në kuti.</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-2" style="flex-direction: column;">
+                    <div class="draggable" draggable="true" data-id="wrong1" style="width: 100%; white-space: normal; text-align: left;">Sepse vakumi është shumë i ftohtë dhe ngrin valët.</div>
+                    <div class="draggable" draggable="true" data-id="correct" style="width: 100%; white-space: normal; text-align: left;">Valët zanore janë valë mekanike dhe kërkojnë mjedis lëndor (thërrmija) për t'u përhapur.</div>
+                    <div class="draggable" draggable="true" data-id="wrong2" style="width: 100%; white-space: normal; text-align: left;">Sepse drita udhëton më shpejt se tingulli në vakum.</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Shpjegimi i saktë" id="target-2" data-max="1"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-2"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(2)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel2()">Kontrollo</button>
+                <button id="next-2" disabled onclick="nextLevel(3)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 3: Shpejtësia -->
+        <div class="level-card" id="level-3">
+            <div class="level-header">
+                <span class="level-title">Niveli 3: Shpejtësia e Tingullit</span>
+                <span>3 / 10</span>
+            </div>
+            <p class="question-text">Në lidhje me shpejtësinë e përhapjes së tingullit, tërhiq pohimin e VËRTETË në kutinë e saktë.</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-3" style="flex-direction: column;">
+                    <div class="draggable" draggable="true" data-id="wrong1" style="width: 100%; white-space: normal; text-align: left;">Shpejtësia nuk varet nga temperatura e ambientit.</div>
+                    <div class="draggable" draggable="true" data-id="wrong2" style="width: 100%; white-space: normal; text-align: left;">Shpejtësia varet nga teknologjia e burimit.</div>
+                    <div class="draggable" draggable="true" data-id="wrong3" style="width: 100%; white-space: normal; text-align: left;">Shpejtësia është më e madhe në lëngje se në trupat e ngurtë.</div>
+                    <div class="draggable" draggable="true" data-id="correct" style="width: 100%; white-space: normal; text-align: left;">Të gjitha pohimet e mësipërme janë të gabuara.</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Pohimi i vërtetë" id="target-3" data-max="1"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-3"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(3)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel3()">Kontrollo</button>
+                <button id="next-3" disabled onclick="nextLevel(4)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 4: Veshi -->
+        <div class="level-card" id="level-4">
+            <div class="level-header">
+                <span class="level-title">Niveli 4: Anatomia e Dëgjimit</span>
+                <span>4 / 10</span>
+            </div>
+            <p class="question-text">Plotëso fjalitë duke tërhequr fjalët e duhura në hapësirat boshe.</p>
+            
+            <div class="options-area" id="options-4" style="margin-bottom: 2rem; min-height: auto;">
+                <div class="draggable" draggable="true" data-id="kanali">kanalin e dëgjimit</div>
+                <div class="draggable" draggable="true" data-id="timpani">timpani i veshit</div>
+                <div class="draggable" draggable="true" data-id="kockat">kockave të vogla</div>
+                <div class="draggable" draggable="true" data-id="kermilli">kërmilli</div>
+                <div class="draggable" draggable="true" data-id="veshi_brendshem">veshin e brendshëm</div>
+                <div class="draggable" draggable="true" data-id="nervi">nervit të dëgjimit</div>
+            </div>
+
+            <div class="sentence">
+                Kur dëgjojmë muzikë vala zanore kalon nëpër <div class="inline-drop" id="t4-1" data-ans="kanali"></div> 
+                dhe bën që <div class="inline-drop" id="t4-2" data-ans="timpani"></div> të lëkundet. 
+                Këto lëkundje i tejçohen <div class="inline-drop" id="t4-3" data-ans="kockat"></div>. 
+                Kanalet gjysmë rrethorë dhe <div class="inline-drop" id="t4-4" data-ans="kermilli"></div> 
+                përbëjnë <div class="inline-drop" id="t4-5" data-ans="veshi_brendshem"></div>. 
+                Lëngu brenda tij lëkundet dhe shkakton sinjale bioelektrikë që me anë të 
+                <div class="inline-drop" id="t4-6" data-ans="nervi"></div> kalojnë në tru.
+            </div>
+
+            <div class="feedback" id="feedback-4"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(4)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel4()">Kontrollo</button>
+                <button id="next-4" disabled onclick="nextLevel(5)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 5: Përputhja -->
+        <div class="level-card" id="level-5">
+            <div class="level-header">
+                <span class="level-title">Niveli 5: Fjalori i Valëve</span>
+                <span>5 / 10</span>
+            </div>
+            <p class="question-text">Përputhni termat me përcaktimet e sakta.</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-5">
+                    <div class="draggable" draggable="true" data-id="dendesim">Dendësim</div>
+                    <div class="draggable" draggable="true" data-id="mjedis">Mjedis</div>
+                    <div class="draggable" draggable="true" data-id="rrallim">Rrallim</div>
+                    <div class="draggable" draggable="true" data-id="lekundet">Lëkundet</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Pjesëzat pranë njëra tjetrës" id="t5-1" data-ans="dendesim" data-max="1" style="min-height: 60px; padding: 1rem;"></div>
+                    <div class="drop-zone" data-label="Trupi ku përhapet vala" id="t5-2" data-ans="mjedis" data-max="1" style="min-height: 60px; padding: 1rem;"></div>
+                    <div class="drop-zone" data-label="Pjesëzat larg njëra tjetrës" id="t5-3" data-ans="rrallim" data-max="1" style="min-height: 60px; padding: 1rem;"></div>
+                    <div class="drop-zone" data-label="Vala prodhohet nga trupi që..." id="t5-4" data-ans="lekundet" data-max="1" style="min-height: 60px; padding: 1rem;"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-5"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(5)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel5()">Kontrollo</button>
+                <button id="next-5" disabled onclick="nextLevel(6)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 6: Ngjashmëria Vesh-Mikrofon -->
+        <div class="level-card" id="level-6">
+            <div class="level-header">
+                <span class="level-title">Niveli 6: Veshi dhe Mikrofoni</span>
+                <span>6 / 10</span>
+            </div>
+            <p class="question-text">Në çfarë kuptimi veshi i njeriut është i ngjashëm me një mikrofon? Tërhiq shpjegimin e saktë.</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-6" style="flex-direction: column;">
+                    <div class="draggable" draggable="true" data-id="wrong1" style="width: 100%; white-space: normal; text-align: left;">Të dy prodhojnë valë zanore nga energjia elektrike.</div>
+                    <div class="draggable" draggable="true" data-id="correct" style="width: 100%; white-space: normal; text-align: left;">Të dy shndërrojnë valët zanore në sinjale (veshi në bioelektrikë, mikrofoni në elektrikë).</div>
+                    <div class="draggable" draggable="true" data-id="wrong2" style="width: 100%; white-space: normal; text-align: left;">Të dy përdorin magnete për të kapur tingullin.</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Shpjegimi i saktë" id="target-6" data-max="1"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-6"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(6)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel6()">Kontrollo</button>
+                <button id="next-6" disabled onclick="nextLevel(7)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 7: Molekulat e Ajrit -->
+        <div class="level-card" id="level-7">
+            <div class="level-header">
+                <span class="level-title">Niveli 7: Molekulat e Ajrit</span>
+                <span>7 / 10</span>
+            </div>
+            <p class="question-text">Çfarë ndodh me molekulat e ajrit kur flisni? Tërhiq pohimin e VËRTETË.</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-7" style="flex-direction: column;">
+                    <div class="draggable" draggable="true" data-id="wrong1" style="width: 100%; white-space: normal; text-align: left;">Molekulat e ajrit zhvendosen në largësi.</div>
+                    <div class="draggable" draggable="true" data-id="wrong2" style="width: 100%; white-space: normal; text-align: left;">Molekulat e ajrit lëkunden lart-poshtë.</div>
+                    <div class="draggable" draggable="true" data-id="correct" style="width: 100%; white-space: normal; text-align: left;">Vala zanore bën që molekulat e ajrit të lëkunden para-mbrapa.</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Pohimi i vërtetë" id="target-7" data-max="1"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-7"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(7)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel7()">Kontrollo</button>
+                <button id="next-7" disabled onclick="nextLevel(8)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 8: Karakteristikat e Tingullit -->
+        <div class="level-card" id="level-8">
+            <div class="level-header">
+                <span class="level-title">Niveli 8: Karakteristikat e Tingullit</span>
+                <span>8 / 10</span>
+            </div>
+            <p class="question-text">Ndër pohimet e mëposhtme, tërhiq 2 pohimet e VËRTETA në kuti.</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-8" style="flex-direction: column;">
+                    <div class="draggable" draggable="true" data-id="correct1" style="width: 100%; white-space: normal; text-align: left;">Një tingull mund të jetë i ulët dhe i fortë.</div>
+                    <div class="draggable" draggable="true" data-id="wrong1" style="width: 100%; white-space: normal; text-align: left;">Një tingull mund të jetë i ulët dhe me frekuencë të madhe.</div>
+                    <div class="draggable" draggable="true" data-id="correct2" style="width: 100%; white-space: normal; text-align: left;">Një tingull mund të jetë i lartë dhe i dobët.</div>
+                    <div class="draggable" draggable="true" data-id="wrong2" style="width: 100%; white-space: normal; text-align: left;">Një tingull mund të jetë i lartë dhe me frekuencë të vogël.</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Pohimet e vërteta (2)" id="target-8" data-max="2"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-8"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(8)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel8()">Kontrollo</button>
+                <button id="next-8" disabled onclick="nextLevel(9)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 9: Lartësia dhe Frekuenca -->
+        <div class="level-card" id="level-9">
+            <div class="level-header">
+                <span class="level-title">Niveli 9: Lartësia dhe Frekuenca</span>
+                <span>9 / 10</span>
+            </div>
+            <p class="question-text">Zgjidh fjalët e sakta për të plotësuar fjalitë.</p>
+            
+            <div class="options-area" id="options-9" style="margin-bottom: 2rem; min-height: auto;">
+                <div class="draggable" draggable="true" data-id="frekuenca">frekuenca</div>
+                <div class="draggable" draggable="true" data-id="madhe">më të madhe</div>
+                <div class="draggable" draggable="true" data-id="mije">mijë</div>
+                <div class="draggable" draggable="true" data-id="sekonda">sekondë</div>
+            </div>
+
+            <div class="sentence">
+                Lartësia e tingullit varet nga <div class="inline-drop" id="t9-1" data-ans="frekuenca"></div> e valës zanore.<br>
+                Tingulli i lartë ka frekuencë <div class="inline-drop" id="t9-2" data-ans="madhe"></div> se tingulli i ulët.<br>
+                Veshi i njeriut percepton tinguj me frekuencë nga 20 Hz deri 20 <div class="inline-drop" id="t9-3" data-ans="mije"></div> Hz.<br>
+                Frekuenca e shprehur në Hz është numri i valëve në një <div class="inline-drop" id="t9-4" data-ans="sekonda"></div>.
+            </div>
+
+            <div class="feedback" id="feedback-9"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(9)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel9()">Kontrollo</button>
+                <button id="next-9" disabled onclick="nextLevel(10)">Vazhdo ➡</button>
+            </div>
+        </div>
+
+        <!-- Level 10: Sonari -->
+        <div class="level-card" id="level-10">
+            <div class="level-header">
+                <span class="level-title">Niveli 10: Llogaritje me Sonar</span>
+                <span>10 / 10</span>
+            </div>
+            <p class="question-text">Një impuls ultratingujsh i dërguar nga sonari kapet 0.4 s pas pasqyrimit. Shpejtësia e tingullit në ujë është 1500 m/s. Përputh vlerat me pyetjet.</p>
+            
+            <div class="dnd-container">
+                <div class="options-area" id="options-10">
+                    <div class="draggable" draggable="true" data-id="koha">0.2 s</div>
+                    <div class="draggable" draggable="true" data-id="largesia">300 m</div>
+                    <div class="draggable" draggable="true" data-id="tjeter">Objekt tjetër më larg</div>
+                </div>
+                <div class="target-area">
+                    <div class="drop-zone" data-label="Koha nga anija te peshqit" id="t10-1" data-ans="koha" data-max="1" style="min-height: 60px; padding: 1rem;"></div>
+                    <div class="drop-zone" data-label="Largësia e peshqve nga anija" id="t10-2" data-ans="largesia" data-max="1" style="min-height: 60px; padding: 1rem;"></div>
+                    <div class="drop-zone" data-label="Pse ka një sinjal tjetër?" id="t10-3" data-ans="tjeter" data-max="1" style="min-height: 60px; padding: 1rem;"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-10"></div>
+            
+            <div class="controls">
+                <button onclick="resetLevel(10)">Rifillo</button>
+                <button class="btn-check" onclick="checkLevel10()">Kontrollo</button>
+                <button id="next-10" disabled onclick="showVictory()">Përfundo ➡</button>
+            </div>
+        </div>
+
+        <!-- Victory -->
+        <div class="level-card" id="victory-screen">
+            <div class="trophy">🏆</div>
+            <h2 style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem; font-family: 'Outfit';">Urime, Mjeshtër!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Ke zotëruar me sukses njohuritë mbi valët zanore dhe akustikën.</p>
+            <button class="btn-check" onclick="location.reload()">Luaj Përsëri</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Drag and Drop Logic ---
+        let draggedItem = null;
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('draggable')) {
+                draggedItem = e.target;
+                setTimeout(() => e.target.classList.add('dragging'), 0);
+            }
+        });
+
+        document.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('draggable')) {
+                e.target.classList.remove('dragging');
+                draggedItem = null;
+                document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            }
+        });
+
+        const dropZones = document.querySelectorAll('.drop-zone, .inline-drop, .options-area');
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                if (zone.classList.contains('options-area')) return;
+                
+                // Check capacity
+                const max = parseInt(zone.getAttribute('data-max') || '1');
+                const currentCount = zone.querySelectorAll('.draggable').length;
+                
+                if (currentCount < max || zone === draggedItem.parentElement) {
+                    zone.classList.add('drag-over');
+                }
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                
+                if (!draggedItem) return;
+
+                if (zone.classList.contains('options-area')) {
+                    zone.appendChild(draggedItem);
+                    return;
+                }
+
+                const max = parseInt(zone.getAttribute('data-max') || '1');
+                const currentCount = zone.querySelectorAll('.draggable').length;
+
+                if (currentCount < max) {
+                    zone.appendChild(draggedItem);
+                } else if (max === 1 && currentCount === 1) {
+                    // Swap items if max is 1
+                    const existingItem = zone.querySelector('.draggable');
+                    const sourceZone = draggedItem.parentElement;
+                    zone.appendChild(draggedItem);
+                    sourceZone.appendChild(existingItem);
+                }
+            });
+        });
+
+        // --- Game Logic ---
+        function showFeedback(level, isCorrect, msg) {
+            const fb = document.getElementById(`feedback-${level}`);
+            fb.innerText = msg;
+            fb.className = `feedback show ${isCorrect ? 'success' : 'error'}`;
+            if (isCorrect) {
+                document.getElementById(`next-${level}`).disabled = false;
+            }
+        }
+
+        function resetLevel(level) {
+            const optionsArea = document.getElementById(`options-${level}`);
+            const targets = document.querySelectorAll(`#level-${level} .drop-zone, #level-${level} .inline-drop`);
+            
+            targets.forEach(t => {
+                const items = t.querySelectorAll('.draggable');
+                items.forEach(item => optionsArea.appendChild(item));
+            });
+            
+            document.getElementById(`feedback-${level}`).className = 'feedback';
+            document.getElementById(`next-${level}`).disabled = true;
+        }
+
+        function nextLevel(n) {
+            document.querySelectorAll('.level-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`level-${n}`).classList.add('active');
+        }
+
+        function showVictory() {
+            document.querySelectorAll('.level-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('victory-screen').classList.add('active');
+        }
+
+        // Specific Checks
+        function checkLevel1() {
+            const target = document.getElementById('target-1');
+            const items = Array.from(target.querySelectorAll('.draggable')).map(el => el.getAttribute('data-id'));
+            
+            const correctAnswers = ['zile', 'kitar', 'det'];
+            const isCorrect = items.length === 3 && items.every(i => correctAnswers.includes(i));
+            
+            if (items.length < 3) showFeedback(1, false, "Të lutem vendos 3 burime.");
+            else if (isCorrect) showFeedback(1, true, "Saktë! Këto janë burime tingujsh.");
+            else showFeedback(1, false, "E gabuar. Disa nga këto nuk prodhojnë tingull (p.sh. drita, hija, pasqyra).");
+        }
+
+        function checkLevel2() {
+            const target = document.getElementById('target-2');
+            const item = target.querySelector('.draggable');
+            
+            if (!item) showFeedback(2, false, "Të lutem zgjidh një përgjigje.");
+            else if (item.getAttribute('data-id') === 'correct') showFeedback(2, true, "Saktë! Tingulli ka nevojë për mjedis lëndor.");
+            else showFeedback(2, false, "E gabuar. Lexo me kujdes vetitë e valëve mekanike.");
+        }
+
+        function checkLevel3() {
+            const target = document.getElementById('target-3');
+            const item = target.querySelector('.draggable');
+            
+            if (!item) showFeedback(3, false, "Të lutem zgjidh një përgjigje.");
+            else if (item.getAttribute('data-id') === 'correct') showFeedback(3, true, "Saktë! Të gjitha pohimet a, b, c janë të gabuara.");
+            else showFeedback(3, false, "E gabuar. Kujto: shpejtësia varet nga temperatura dhe është më e madhe në trupa të ngurtë.");
+        }
+
+        function checkLevel4() {
+            let correct = true;
+            for(let i=1; i<=6; i++) {
+                const drop = document.getElementById(`t4-${i}`);
+                const item = drop.querySelector('.draggable');
+                const ans = drop.getAttribute('data-ans');
+                
+                if (!item || item.getAttribute('data-id') !== ans) {
+                    correct = false;
+                    drop.style.borderColor = 'var(--danger)';
+                } else {
+                    drop.style.borderColor = '#88d49e';
+                }
+            }
+
+            if (correct) showFeedback(4, true, "Shkëlqyeshëm! Ke plotësuar saktë rrugën e tingullit në vesh.");
+            else showFeedback(4, false, "Ka disa gabime. Kontrollo ngjyrat e kutive.");
+        }
+
+        function checkLevel5() {
+            let correct = true;
+            for(let i=1; i<=4; i++) {
+                const drop = document.getElementById(`t5-${i}`);
+                const item = drop.querySelector('.draggable');
+                const ans = drop.getAttribute('data-ans');
+                
+                if (!item || item.getAttribute('data-id') !== ans) {
+                    correct = false;
+                    drop.style.borderColor = 'var(--danger)';
+                } else {
+                    drop.style.borderColor = '#88d49e';
+                }
+            }
+
+            if (correct) showFeedback(5, true, "Perfekt! I ke përputhur saktë të gjitha termat.");
+            else showFeedback(5, false, "Ka disa gabime. Provo t'i ndryshosh vendet.");
+        }
+
+        function checkLevel6() {
+            const target = document.getElementById('target-6');
+            const item = target.querySelector('.draggable');
+            
+            if (!item) showFeedback(6, false, "Të lutem zgjidh një përgjigje.");
+            else if (item.getAttribute('data-id') === 'correct') showFeedback(6, true, "Saktë! Të dy bëjnë shndërrimin e valëve zanore në sinjale.");
+            else showFeedback(6, false, "E gabuar. Mendo për funksionin e tyre kryesor të shndërrimit të energjisë.");
+        }
+
+        function checkLevel7() {
+            const target = document.getElementById('target-7');
+            const item = target.querySelector('.draggable');
+            
+            if (!item) showFeedback(7, false, "Të lutem zgjidh një përgjigje.");
+            else if (item.getAttribute('data-id') === 'correct') showFeedback(7, true, "Saktë! Valët zanore janë valë gjatësore ku molekulat lëkunden para-mbrapa.");
+            else showFeedback(7, false, "E gabuar. Kujto që valët zanore në ajër janë valë gjatësore.");
+        }
+
+        function checkLevel8() {
+            const target = document.getElementById('target-8');
+            const items = Array.from(target.querySelectorAll('.draggable')).map(el => el.getAttribute('data-id'));
+            
+            const correctAnswers = ['correct1', 'correct2'];
+            const isCorrect = items.length === 2 && items.every(i => correctAnswers.includes(i));
+            
+            if (items.length < 2) showFeedback(8, false, "Të lutem vendos 2 pohime.");
+            else if (isCorrect) showFeedback(8, true, "Saktë! Lartësia varet nga frekuenca, ndërsa fortësia varet nga amplituda.");
+            else showFeedback(8, false, "E gabuar. Kujto: Tingulli i lartë = frekuencë e madhe. Tingulli i ulët = frekuencë e vogël.");
+        }
+
+        function checkLevel9() {
+            let correct = true;
+            for(let i=1; i<=4; i++) {
+                const drop = document.getElementById(`t9-${i}`);
+                const item = drop.querySelector('.draggable');
+                const ans = drop.getAttribute('data-ans');
+                
+                if (!item || item.getAttribute('data-id') !== ans) {
+                    correct = false;
+                    drop.style.borderColor = 'var(--danger)';
+                } else {
+                    drop.style.borderColor = '#88d49e';
+                }
+            }
+
+            if (correct) showFeedback(9, true, "Shkëlqyeshëm! Ke plotësuar saktë fjalitë.");
+            else showFeedback(9, false, "Ka disa gabime. Kontrollo ngjyrat e kutive.");
+        }
+
+        function checkLevel10() {
+            let correct = true;
+            for(let i=1; i<=3; i++) {
+                const drop = document.getElementById(`t10-${i}`);
+                const item = drop.querySelector('.draggable');
+                const ans = drop.getAttribute('data-ans');
+                
+                if (!item || item.getAttribute('data-id') !== ans) {
+                    correct = false;
+                    drop.style.borderColor = 'var(--danger)';
+                } else {
+                    drop.style.borderColor = '#88d49e';
+                }
+            }
+
+            if (correct) showFeedback(10, true, "Perfekt! Llogaritjet dhe arsyetimi janë të sakta.");
+            else showFeedback(10, false, "Ka disa gabime. Kujto: Koha te peshqit është gjysma e kohës totale (0.4 / 2 = 0.2s).");
+        }
+
+    </script>
+</body>
+</html>

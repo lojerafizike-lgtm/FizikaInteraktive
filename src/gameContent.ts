@@ -413,5 +413,574 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     type: "digital",
     url: "/fuckuuu.html",
     html: ""
+  },
+  {
+    id: "dinamika-adventure",
+    title: "Dinamika",
+    category: "Dinamika",
+    type: "digital",
+    url: "/loja-dinamika.html",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventura e Dinamikës - Pro Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #f093fb;
+            --bg: #050510;
+            --card: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --success: #22c55e;
+            --error: #ef4444;
+            --gold: #ffd700;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 242, 254, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(240, 147, 251, 0.1) 0%, transparent 40%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .game-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .main-panel {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* --- 3D DICE --- */
+        .dice-container {
+            perspective: 1000px;
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            cursor: pointer;
+        }
+
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: var(--bg);
+            box-shadow: inset 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .front  { transform: rotateY(0deg) translateZ(50px); }
+        .back   { transform: rotateY(180deg) translateZ(50px); }
+        .right  { transform: rotateY(90deg) translateZ(50px); }
+        .left   { transform: rotateY(-90deg) translateZ(50px); }
+        .top    { transform: rotateX(90deg) translateZ(50px); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+        .dice.rolling {
+            animation: roll 0.5s infinite linear;
+        }
+
+        @keyframes roll {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* --- BOARD --- */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .cell.active-path {
+            background: rgba(0, 242, 254, 0.1);
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        .cell.finish {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+        }
+
+        .cell.start {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+        }
+
+        .player-token {
+            width: 34px;
+            height: 34px;
+            background: var(--accent);
+            border: 3px solid white;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 100;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px var(--accent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 16px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .btn-action {
+            margin-top: 20px;
+            padding: 14px 28px;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: var(--bg);
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
+        }
+
+        /* --- STATS --- */
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Victory Screen */
+        #victory-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .victory-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            color: var(--gold);
+            text-shadow: 0 0 30px var(--gold);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-wrapper">
+        <div class="main-panel">
+            <div class="title-section">
+                <h1>Aventura e Dinamikës</h1>
+                <p style="opacity: 0.6; font-size: 0.9rem; margin-top: 5px;">Mjeshtëro forcat dhe ligjet e Njutonit</p>
+            </div>
+
+            <div class="board" id="board">
+                <div id="player" class="player-token">🚀</div>
+                <!-- Cells will be generated here -->
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="stat-card">
+                <div class="stat-value" id="score-val">0</div>
+                <div class="stat-label">Pikët</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label" style="margin-bottom: 10px;">Kliko për të hedhur zarin</div>
+                <div class="dice-container" onclick="rollDice()">
+                    <div class="dice" id="dice">
+                        <div class="dice-face front">1</div>
+                        <div class="dice-face back">6</div>
+                        <div class="dice-face right">3</div>
+                        <div class="dice-face left">4</div>
+                        <div class="dice-face top">2</div>
+                        <div class="dice-face bottom">5</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card" style="font-size: 0.85rem; text-align: left; line-height: 1.4;">
+                <strong style="color: var(--primary);">Rregullat:</strong><br>
+                1. Hidh zarin për të lëvizur.<br>
+                2. Përgjigju saktë pyetjes për të qëndruar në vend.<br>
+                3. Nëse gabon, kthehesh 2 hapa pas!<br>
+                4. Arri në FINISH për të fituar.
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="question-text" id="q-text">Pyetja po ngarkohet...</div>
+            <div class="options-list" id="options"></div>
+            <button class="btn-action hidden" id="btn-continue" onclick="closeModal()">Vazhdo</button>
+        </div>
+    </div>
+
+    <div id="victory-screen">
+        <h1 class="victory-title">FITORE!</h1>
+        <p style="font-size: 1.5rem; margin-bottom: 30px;">Ti je mjeshtër i Dinamikës!</p>
+        <button class="btn-action" onclick="location.reload()">Luaj Përsëri</button>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const player = document.getElementById('player');
+        const dice = document.getElementById('dice');
+        const modal = document.getElementById('modal');
+        const qText = document.getElementById('q-text');
+        const optionsDiv = document.getElementById('options');
+        const btnContinue = document.getElementById('btn-continue');
+        const scoreVal = document.getElementById('score-val');
+
+        const totalCells = 24;
+        let playerPos = 0;
+        let isRolling = false;
+        let score = 0;
+
+        const questions = [
+            { q: "Forca me të cilën Toka tërheq trupin quhet:", options: ["Forca e fërkimit", "Forca e rëndesës", "Forca e elasticitetit", "Forca e tensionit"], correct: 1 },
+            { q: "Ku zbatohet forca e rëndesës?", options: ["Në sipërfaqen e trupit", "Në qendër të trupit", "Në pikën e mbështetjes", "Në skajet e trupit"], correct: 1 },
+            { q: "Drejtimi i forcës së rëndesës është:", options: ["Horizontal", "Vertikalisht lart", "Pingul me sipërfaqen e Tokës", "Paralel me lëvizjen"], correct: 2 },
+            { q: "Pesha është forca që trupi ushtron:", options: ["Mbi veten e tij", "Atje ku varet ose mbështetet", "Mbi ajrin", "Mbi qendrën e Tokës"], correct: 1 },
+            { q: "Kur është Forca e Rëndesës (G) e barabartë me Peshën (P)?", options: ["Kur trupi lëviz me nxitim", "Kur trupi është në prehje ose lëviz me v=konst", "Kur trupi bie lirshëm", "Asnjëherë"], correct: 1 },
+            { q: "Formula e Ligjit të tërheqjes së gjithësishme është:", options: ["F = m*g", "F = k*x", "F = G * (m1*m2)/R²", "F = mu * N"], correct: 2 },
+            { q: "Me rritjen e lartësisë (h) nga Toka, nxitimi i rënies së lirë (g):", options: ["Rritet", "Zvogëlohet", "Nuk ndryshon", "Bëhet zero menjëherë"], correct: 1 },
+            { q: "Formula e Ligjit të Hukut është:", options: ["F = m*a", "Fe = -k*x", "F = mu * N", "P = m*g"], correct: 1 },
+            { q: "Çfarë tregon shenja minus te formula Fe = -kx?", options: ["Forca është negative", "Drejtimi i forcës është i njëjtë me shformimin", "Drejtimi i forcës është i kundërt me shformimin", "Nuk tregon asgjë"], correct: 2 },
+            { q: "Forca e fërkimit ka gjithmonë kah:", options: ["Të njëjtë me lëvizjen", "Të kundërt me lëvizjen", "Pingul me lëvizjen", "Të rastësishëm"], correct: 1 },
+            { q: "Formula e forcës së fërkimit është:", options: ["f = m*g", "f = k*x", "f = mu * N", "f = G/R"], correct: 2 },
+            { q: "Nëse m2 = m1/4 dhe F2 = 2F1, sa herë zmadhohet nxitimi a2?", options: ["2 herë", "4 herë", "8 herë", "16 herë"], correct: 2 },
+            { q: "Nëse m2 = 8m1 dhe F2 = F1/4, sa bëhet nxitimi a2?", options: ["a1/2", "a1/8", "a1/32", "4*a1"], correct: 2 },
+            { q: "Nëse m = 2kg dhe trupi është i varur në fije, sa është Tensioni (T)? (g=10)", options: ["10 N", "20 N", "5 N", "40 N"], correct: 1 },
+            { q: "Nëse F=600N, f=300N dhe a=4m/s², sa është masa (m)?", options: ["50 kg", "75 kg", "100 kg", "150 kg"], correct: 1 },
+            { q: "Nëse v0=10m/s dhe mu=0.5, sa rrugë bën trupi derisa ndalon?", options: ["5 m", "10 m", "20 m", "50 m"], correct: 1 },
+            { q: "Kur një trup ndalon vetëm për shkak të fërkimit, nxitimi a është:", options: ["a = g", "a = mu * g", "a = F/m", "a = 0"], correct: 1 }
+        ];
+
+        function initBoard() {
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                if (i === 0) {
+                    cell.classList.add('start');
+                    cell.innerText = 'START';
+                } else if (i === totalCells - 1) {
+                    cell.classList.add('finish');
+                    cell.innerText = 'FINISH';
+                } else {
+                    cell.classList.add('active-path');
+                    cell.innerText = i;
+                }
+                board.appendChild(cell);
+            }
+            updatePlayer();
+        }
+
+        function updatePlayer() {
+            const cells = document.querySelectorAll('.cell');
+            const target = cells[playerPos];
+            player.style.top = (target.offsetTop + (target.offsetHeight / 2) - 17) + 'px';
+            player.style.left = (target.offsetLeft + (target.offsetWidth / 2) - 17) + 'px';
+        }
+
+        function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            dice.classList.add('rolling');
+
+            const result = Math.floor(Math.random() * 6) + 1;
+            
+            setTimeout(() => {
+                dice.classList.remove('rolling');
+                applyDiceRotation(result);
+                setTimeout(() => movePlayer(result), 600);
+            }, 1000);
+        }
+
+        function applyDiceRotation(n) {
+            const rotations = {
+                1: 'rotateX(0deg) rotateY(0deg)',
+                2: 'rotateX(-90deg) rotateY(0deg)',
+                3: 'rotateX(0deg) rotateY(-90deg)',
+                4: 'rotateX(0deg) rotateY(90deg)',
+                5: 'rotateX(90deg) rotateY(0deg)',
+                6: 'rotateX(180deg) rotateY(0deg)'
+            };
+            dice.style.transform = rotations[n];
+        }
+
+        async function movePlayer(steps) {
+            for (let i = 0; i < steps; i++) {
+                if (playerPos < totalCells - 1) {
+                    playerPos++;
+                    updatePlayer();
+                    await new Promise(r => setTimeout(r, 300));
+                }
+            }
+
+            if (playerPos === totalCells - 1) {
+                document.getElementById('victory-screen').style.display = 'flex';
+            } else {
+                showQuestion();
+            }
+        }
+
+        function showQuestion() {
+            const q = questions[Math.floor(Math.random() * questions.length)];
+            qText.innerText = q.q;
+            optionsDiv.innerHTML = '';
+            btnContinue.classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx, q.correct, btn);
+                optionsDiv.appendChild(btn);
+            });
+
+            modal.style.display = 'flex';
+        }
+
+        function checkAnswer(idx, correct, btn) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+            if (idx === correct) {
+                btn.classList.add('correct');
+                score += 10;
+                scoreVal.innerText = score;
+                setTimeout(closeModal, 1000);
+            } else {
+                btn.classList.add('wrong');
+                allBtns[correct].classList.add('correct');
+                score = Math.max(0, score - 5);
+                scoreVal.innerText = score;
+                
+                // Penalty: move back
+                setTimeout(() => {
+                    playerPos = Math.max(0, playerPos - 2);
+                    updatePlayer();
+                    closeModal();
+                }, 1500);
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            isRolling = false;
+        }
+
+        window.addEventListener('resize', updatePlayer);
+        initBoard();
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "mjeshtri-tingullit",
+    title: "Mjeshtri i Tingullit",
+    category: "Valët dhe Tingulli",
+    type: "digital",
+    url: "/mjeshtri-tingullit.html",
+    html: ""
+  },
+  {
+    id: "sfida-matures",
+    title: "Sfida e Maturës",
+    category: "Fizika",
+    type: "digital",
+    url: "/sfida-matures.html",
+    html: ""
   }
 ];

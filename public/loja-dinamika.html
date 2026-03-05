@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventura e Dinamikës - Monopoly Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --safe: #d1fae5;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --card: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--card);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 950px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+
+        /* --- BOARD DESIGN --- */
+        .board-wrapper {
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #cbd5e1;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 10px;
+            position: relative;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .cell.path {
+            border-color: #cbd5e1;
+            color: #64748b;
+            background: #ffffff;
+        }
+
+        .cell.safe {
+            background: var(--safe);
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .cell.safe::after {
+            content: '🛡️';
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .cell.start {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .cell.finish {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .cell.active {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            transform: scale(1.02);
+        }
+
+        .player-token {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border: 4px solid white;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 100;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        /* --- CONTROLS & STATS --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 5px;
+        }
+
+        /* --- 3D DICE --- */
+        .dice-area {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            border: 2px dashed #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dice-area:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .dice-container {
+            perspective: 1000px;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--primary);
+            box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.1);
+        }
+
+        .front  { transform: rotateY(0deg) translateZ(40px); }
+        .back   { transform: rotateY(180deg) translateZ(40px); }
+        .right  { transform: rotateY(90deg) translateZ(40px); }
+        .left   { transform: rotateY(-90deg) translateZ(40px); }
+        .top    { transform: rotateX(90deg) translateZ(40px); }
+        .bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+        .dice.rolling {
+            animation: roll 0.5s infinite linear;
+        }
+
+        @keyframes roll {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .question-header {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            padding: 18px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+            color: var(--text);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: #d1fae5;
+            border-color: var(--secondary);
+            color: #065f46;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .safe-modal {
+            background: var(--safe);
+            border: 2px solid var(--secondary);
+        }
+
+        .safe-modal h2 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .hidden { display: none !important; }
+
+        #victory-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .victory-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .victory-title {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="header">
+            <h1>Aventura e Dinamikës</h1>
+        </div>
+
+        <div class="board-wrapper">
+            <div id="board" class="board">
+                <!-- Cells generated by JS -->
+            </div>
+            <div id="player" class="player-token">🚗</div>
+        </div>
+
+        <div class="sidebar">
+            <div class="stat-box">
+                <div class="stat-label">Pikët</div>
+                <div class="stat-value" id="score-val">0</div>
+            </div>
+
+            <div class="dice-area" onclick="rollDice()">
+                <div class="dice-container">
+                    <div class="dice" id="dice">
+                        <div class="dice-face front">1</div>
+                        <div class="dice-face back">6</div>
+                        <div class="dice-face right">3</div>
+                        <div class="dice-face left">4</div>
+                        <div class="dice-face top">2</div>
+                        <div class="dice-face bottom">5</div>
+                    </div>
+                </div>
+                <div class="stat-label">Kliko për të hedhur</div>
+            </div>
+
+            <div class="stat-box" style="text-align: left; font-size: 0.9rem;">
+                <p><strong>Rregullat:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>🛡️ <strong>Zona e Sigurt:</strong> Shpëton nga pyetja!</li>
+                    <li>❌ <strong>Gabim:</strong> Kthehesh 2 hapa pas.</li>
+                    <li>✅ <strong>Saktë:</strong> Fiton 10 pikë.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal" id="modal-content">
+            <div class="question-header">Sfidë Fizike</div>
+            <div class="question-text" id="q-text">...</div>
+            <div class="options" id="options"></div>
+        </div>
+    </div>
+
+    <!-- Safe Zone Modal -->
+    <div class="modal-overlay" id="safe-modal">
+        <div class="modal safe-modal">
+            <h2>🛡️ Zonë e Sigurt!</h2>
+            <p>Je me fat! Në këtë katror nuk ka pyetje. Pusho pak dhe vazhdo përpara.</p>
+            <button class="btn-primary" onclick="closeSafeModal()">Vazhdo</button>
+        </div>
+    </div>
+
+    <!-- Victory Screen -->
+    <div id="victory-screen">
+        <div class="victory-icon">🏆</div>
+        <h1 class="victory-title">Urime!</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">Ti përfundove rrugëtimin e Dinamikës me sukses!</p>
+        <div class="stat-box" style="display: inline-block; min-width: 200px;">
+            <div class="stat-label">Pikët Totale</div>
+            <div class="stat-value" id="final-score">0</div>
+        </div>
+        <br>
+        <button class="btn-primary" onclick="location.reload()">Luaj Përsëri</button>
+    </div>
+
+    <script>
+        const boardEl = document.getElementById('board');
+        const playerEl = document.getElementById('player');
+        const diceEl = document.getElementById('dice');
+        const modalEl = document.getElementById('modal');
+        const safeModalEl = document.getElementById('safe-modal');
+        const qTextEl = document.getElementById('q-text');
+        const optionsEl = document.getElementById('options');
+        const scoreValEl = document.getElementById('score-val');
+        const finalScoreEl = document.getElementById('final-score');
+
+        // Path coordinates for a 7x5 grid (Monopoly style)
+        // Top row (0-6), Right col (7-10), Bottom row (11-17), Left col (18-20)
+        const pathIndices = [
+            0, 1, 2, 3, 4, 5, 6, // Top
+            13, 20, 27, 34,      // Right
+            33, 32, 31, 30, 29, 28, 27, // This is wrong, let's just do a simple snake path
+        ];
+
+        // Let's generate a simple snake path for 24 cells
+        const totalCells = 24;
+        const safeZones = [4, 8, 12, 16, 20]; // Indices of safe zones
+        let playerPos = 0;
+        let score = 0;
+        let isRolling = false;
+
+        const questions = [
+            { q: "Forca me të cilën Toka tërheq trupin quhet:", options: ["Forca e fërkimit", "Forca e rëndesës", "Forca e elasticitetit", "Forca e tensionit"], correct: 1 },
+            { q: "Ku zbatohet forca e rëndesës?", options: ["Në sipërfaqen e trupit", "Në qendër të trupit", "Në pikën e mbështetjes", "Në skajet e trupit"], correct: 1 },
+            { q: "Drejtimi i forcës së rëndesës është:", options: ["Horizontal", "Vertikalisht lart", "Pingul me sipërfaqen e Tokës", "Paralel me lëvizjen"], correct: 2 },
+            { q: "Pesha është forca që trupi ushtron:", options: ["Mbi veten e tij", "Atje ku varet ose mbështetet", "Mbi ajrin", "Mbi qendrën e Tokës"], correct: 1 },
+            { q: "Kur është Forca e Rëndesës (G) e barabartë me Peshën (P)?", options: ["Kur trupi lëviz me nxitim", "Kur trupi është në prehje ose lëviz me v=konst", "Kur trupi bie lirshëm", "Asnjëherë"], correct: 1 },
+            { q: "Formula e Ligjit të tërheqjes së gjithësishme është:", options: ["F = m*g", "F = k*x", "F = G * (m1*m2)/R²", "F = mu * N"], correct: 2 },
+            { q: "Me rritjen e lartësisë (h) nga Toka, nxitimi i rënies së lirë (g):", options: ["Rritet", "Zvogëlohet", "Nuk ndryshon", "Bëhet zero menjëherë"], correct: 1 },
+            { q: "Formula e Ligjit të Hukut është:", options: ["F = m*a", "Fe = -k*x", "F = mu * N", "P = m*g"], correct: 1 },
+            { q: "Çfarë tregon shenja minus te formula Fe = -kx?", options: ["Forca është negative", "Drejtimi i forcës është i njëjtë me shformimin", "Drejtimi i forcës është i kundërt me shformimin", "Nuk tregon asgjë"], correct: 2 },
+            { q: "Forca e fërkimit ka gjithmonë kah:", options: ["Të njëjtë me lëvizjen", "Të kundërt me lëvizjen", "Pingul me lëvizjen", "Të rastësishëm"], correct: 1 },
+            { q: "Formula e forcës së fërkimit është:", options: ["f = m*g", "f = k*x", "f = mu * N", "f = G/R"], correct: 2 },
+            { q: "Nëse m2 = m1/4 dhe F2 = 2F1, sa herë zmadhohet nxitimi a2?", options: ["2 herë", "4 herë", "8 herë", "16 herë"], correct: 2 },
+            { q: "Nëse m2 = 8m1 dhe F2 = F1/4, sa bëhet nxitimi a2?", options: ["a1/2", "a1/8", "a1/32", "4*a1"], correct: 2 },
+            { q: "Nëse m = 2kg dhe trupi është i varur në fije, sa është Tensioni (T)? (g=10)", options: ["10 N", "20 N", "5 N", "40 N"], correct: 1 },
+            { q: "Nëse F=600N, f=300N dhe a=4m/s², sa është masa (m)?", options: ["50 kg", "75 kg", "100 kg", "150 kg"], correct: 1 },
+            { q: "Nëse v0=10m/s dhe mu=0.5, sa rrugë bën trupi derisa ndalon?", options: ["5 m", "10 m", "20 m", "50 m"], correct: 1 },
+            { q: "Kur një trup ndalon vetëm për shkak të fërkimit, nxitimi a është:", options: ["a = g", "a = mu * g", "a = F/m", "a = 0"], correct: 1 },
+            { q: "Nëse largësinë mes dy trupave e zvogëlojmë 2 herë dhe m2 e zvogëlojmë 2 herë, forca:", options: ["Mbetet e njëjtë", "Zvogëlohet 2 herë", "Zmadhohet 2 herë", "Zmadhohet 4 herë"], correct: 2 },
+            { q: "Nëse m=0.2kg, v0=2m/s dhe trupi ndalet pas 10s, sa është forca e fërkimit?", options: ["0.04 N", "0.4 N", "4 N", "40 N"], correct: 0 },
+            { q: "Nëse x=27m dhe t=3s (v0=0), sa është nxitimi a?", options: ["3 m/s²", "6 m/s²", "9 m/s²", "12 m/s²"], correct: 1 }
+        ];
+
+        function initBoard() {
+            // Create a 7x5 grid
+            // Path: 0,0 to 6,0 -> 6,1 to 6,4 -> 5,4 to 0,4 -> 0,3 to 0,1
+            const cells = [];
+            for (let r = 0; r < 5; r++) {
+                for (let c = 0; c < 7; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${r}-${c}`;
+                    boardEl.appendChild(cell);
+                    cells.push(cell);
+                }
+            }
+
+            // Define the path sequence (r,c)
+            const path = [
+                [0,0], [0,1], [0,2], [0,3], [0,4], [0,5], [0,6],
+                [1,6], [2,6], [3,6], [4,6],
+                [4,5], [4,4], [4,3], [4,2], [4,1], [4,0],
+                [3,0], [2,0], [1,0],
+                [1,1], [1,2], [1,3], [1,4] // End
+            ];
+
+            path.forEach((coords, i) => {
+                const cell = document.getElementById(`cell-${coords[0]}-${coords[1]}`);
+                cell.classList.add('path');
+                if (i === 0) {
+                    cell.classList.add('start');
+                    cell.innerText = 'START';
+                } else if (i === path.length - 1) {
+                    cell.classList.add('finish');
+                    cell.innerText = 'FINISH';
+                } else if (safeZones.includes(i)) {
+                    cell.classList.add('safe');
+                    cell.innerText = i;
+                } else {
+                    cell.innerText = i;
+                }
+                cell.dataset.index = i;
+            });
+
+            window.pathCoords = path;
+            updatePlayer();
+        }
+
+        function updatePlayer() {
+            const coords = window.pathCoords[playerPos];
+            const cell = document.getElementById(`cell-${coords[0]}-${coords[1]}`);
+            
+            // Calculate absolute position
+            const rect = cell.getBoundingClientRect();
+            const boardRect = boardEl.getBoundingClientRect();
+            
+            playerEl.style.top = (cell.offsetTop + (cell.offsetHeight / 2) - 20) + 'px';
+            playerEl.style.left = (cell.offsetLeft + (cell.offsetWidth / 2) - 20) + 'px';
+
+            // Highlight active cell
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
+            cell.classList.add('active');
+        }
+
+        function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            diceEl.classList.add('rolling');
+
+            const result = Math.floor(Math.random() * 6) + 1;
+            
+            setTimeout(() => {
+                diceEl.classList.remove('rolling');
+                applyDiceRotation(result);
+                setTimeout(() => movePlayer(result), 600);
+            }, 1000);
+        }
+
+        function applyDiceRotation(n) {
+            const rotations = {
+                1: 'rotateX(0deg) rotateY(0deg)',
+                2: 'rotateX(-90deg) rotateY(0deg)',
+                3: 'rotateX(0deg) rotateY(-90deg)',
+                4: 'rotateX(0deg) rotateY(90deg)',
+                5: 'rotateX(90deg) rotateY(0deg)',
+                6: 'rotateX(180deg) rotateY(0deg)'
+            };
+            diceEl.style.transform = rotations[n];
+        }
+
+        async function movePlayer(steps) {
+            const pathLen = window.pathCoords.length;
+            for (let i = 0; i < steps; i++) {
+                if (playerPos < pathLen - 1) {
+                    playerPos++;
+                    updatePlayer();
+                    await new Promise(r => setTimeout(r, 300));
+                }
+            }
+
+            if (playerPos === pathLen - 1) {
+                showVictory();
+            } else if (safeZones.includes(playerPos)) {
+                showSafeModal();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function showQuestion() {
+            const q = questions[Math.floor(Math.random() * questions.length)];
+            qTextEl.innerText = q.q;
+            optionsEl.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx, q.correct, btn);
+                optionsEl.appendChild(btn);
+            });
+
+            modalEl.style.display = 'flex';
+        }
+
+        function checkAnswer(idx, correct, btn) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+            if (idx === correct) {
+                btn.classList.add('correct');
+                score += 10;
+                scoreValEl.innerText = score;
+                setTimeout(closeModal, 1000);
+            } else {
+                btn.classList.add('wrong');
+                allBtns[correct].classList.add('correct');
+                score = Math.max(0, score - 5);
+                scoreValEl.innerText = score;
+                
+                // Penalty: move back
+                setTimeout(() => {
+                    playerPos = Math.max(0, playerPos - 2);
+                    updatePlayer();
+                    closeModal();
+                }, 1500);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+            isRolling = false;
+        }
+
+        function showSafeModal() {
+            safeModalEl.style.display = 'flex';
+        }
+
+        function closeSafeModal() {
+            safeModalEl.style.display = 'none';
+            isRolling = false;
+        }
+
+        function showVictory() {
+            finalScoreEl.innerText = score;
+            document.getElementById('victory-screen').style.display = 'flex';
+        }
+
+        window.addEventListener('resize', updatePlayer);
+        initBoard();
+    </script>
+</body>
+</html>

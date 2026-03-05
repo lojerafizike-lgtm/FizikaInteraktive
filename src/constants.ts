@@ -190,6 +190,14 @@ export const GAMES: PhysicsGame[] = [
     steps: ["Shiko masën e lëndës dhe rendimentin.", "Llogarit E = m · rendimenti.", "Shëno rezultatin dhe shkakto fisionin!"],
     type: 'digital',
     url: '/loja-energjia-berthamore.html'
+  },
+  {
+    title: "Dinamika",
+    description: "Një aventurë interaktive për të mësuar ligjet e Njutonit dhe forcat.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Hidh zarin për të lëvizur.", "Përgjigju saktë pyetjeve rreth Dinamikës.", "Arri në fund të tabelës për të fituar!"],
+    type: 'digital',
+    url: '/loja-dinamika.html'
   }
 ];
 
