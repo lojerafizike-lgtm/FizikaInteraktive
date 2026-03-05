@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Mbrojtja e Kështjellës: Sfida Kinetike</title>
+    <style>
+        body {
+            margin: 0;
+            background: #a29bfe;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-zone {
+            background: #ffffff;
+            width: 800px;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 15px 0 #6c5ce7;
+            text-align: center;
+            position: relative;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 15px;
+        }
+
+        /* Arena e Betejës */
+        .arena {
+            height: 200px;
+            background: linear-gradient(to bottom, #81ecec 70%, #55efc4 70%);
+            border-radius: 20px;
+            position: relative;
+            margin: 20px 0;
+            border: 4px solid #2d3436;
+            overflow: hidden;
+        }
+
+        #projectile {
+            position: absolute;
+            bottom: 20px;
+            left: -60px;
+            font-size: 50px;
+            z-index: 10;
+        }
+
+        #monster {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            font-size: 60px;
+            transition: 0.3s;
+        }
+
+        .castle-gate {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 120px;
+            background: #636e72;
+            border: 4px solid #2d3436;
+            border-bottom: none;
+        }
+
+        /* Kontrollet */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 3px solid #6c5ce7;
+            border-radius: 15px;
+            width: 150px;
+            text-align: center;
+        }
+
+        .fire-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: #ff7675;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #d63031;
+        }
+
+        .fire-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #d63031;
+        }
+
+        /* Animacionet */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            40% { transform: translate(3px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(3px, 1px) rotate(-1deg); }
+            100% { transform: translate(1px, -2px) rotate(1deg); }
+        }
+
+        .shake { animation: shake 0.5s; }
+
+        .hint { font-size: 0.9rem; color: #636e72; margin-top: 10px; }
+    </style>
+</head>
+<body id="body">
+
+<div class="game-zone" id="gameZone">
+    <div class="status-bar">
+        <span>Masa: <b id="m-val">2</b>kg</span>
+        <span>Shpejtësia: <b id="v-val">4</b>m/s</span>
+        <span>Jetët: <b id="lives">❤️❤️❤️</b></span>
+    </div>
+
+    <div class="arena">
+        <div class="castle-gate"></div>
+        <div id="projectile">💣</div>
+        <div id="monster">👾</div>
+    </div>
+
+    <div class="controls">
+        <div class="inputs">
+            <input type="number" id="userEk" placeholder="Energjia (J)">
+            <button class="fire-btn" onclick="launch()">ZJARR! 🔥</button>
+        </div>
+        <div id="message">Llogarit Ek = ½mv² për të mbrojtur portën!</div>
+    </div>
+
+    <div class="hint">Kujdes: Shpejtësia është në katror (v * v)!</div>
+    <button id="nextBtn" style="display:none; margin-top:20px; padding:10px;" onclick="nextLevel()">Niveli Tjetër ➡️</button>
+</div>
+
+<script>
+    let m, v, correctEk, lives = 3;
+
+    function init() {
+        // Numra zbavitës
+        m = (Math.floor(Math.random() * 5) + 1) * 2; // Gjithmonë çift (2, 4, 6, 8, 10)
+        v = Math.floor(Math.random() * 5) + 2; // (2 deri 6)
+        correctEk = 0.5 * m * (v * v);
+
+        document.getElementById('m-val').innerText = m;
+        document.getElementById('v-val').innerText = v;
+        document.getElementById('userEk').value = "";
+        document.getElementById('projectile').style.left = "-60px";
+        document.getElementById('projectile').innerText = "💣";
+        document.getElementById('monster').innerText = "👾";
+        document.getElementById('nextBtn').style.display = "none";
+        document.getElementById('message').innerText = "Përbindëshi po afrohet! Llogarit mbrojtjen...";
+        document.getElementById('message').style.color = "black";
+    }
+
+    function launch() {
+        const userVal = parseFloat(document.getElementById('userEk').value);
+        const bomb = document.getElementById('projectile');
+        const monster = document.getElementById('monster');
+        const msg = document.getElementById('message');
+        const zone = document.getElementById('gameZone');
+
+        if(isNaN(userVal)) return;
+
+        if(userVal === correctEk) {
+            // FITORE
+            bomb.style.left = "calc(100% - 150px)";
+            setTimeout(() => {
+                monster.innerText = "😵";
+                msg.innerText = "BOOM! Goditje perfekte!";
+                msg.style.color = "green";
+                document.getElementById('nextBtn').style.display = "inline-block";
+            }, 1000);
+        } else {
+            // GABIM
+            bomb.style.left = userVal > correctEk ? "120%" : "30%";
+            zone.classList.add('shake');
+            setTimeout(() => zone.classList.remove('shake'), 500);
+
+            lives--;
+            updateLives();
+
+            if(userVal > correctEk) {
+                msg.innerText = "TEPËR FORTË! E hodhe bombën mbi përbindësh!";
+                monster.innerText = "😂";
+            } else {
+                msg.innerText = "TEPËR DOBËT! Përbindëshi po qesh!";
+                monster.innerText = "😈";
+            }
+            msg.style.color = "red";
+
+            if(lives <= 0) {
+                msg.innerText = "KËSHTJELLA RA! Loja mbaroi.";
+                setTimeout(() => location.reload(), 2000);
+            }
+        }
+    }
+
+    function updateLives() {
+        let l = "";
+        for(let i=0; i<lives; i++) l += "❤️";
+        document.getElementById('lives').innerText = l;
+    }
+
+    function nextLevel() {
+        init();
+    }
+
+    init();
+</script>
+
+</body>
+</html>

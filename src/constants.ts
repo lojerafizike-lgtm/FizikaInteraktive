@@ -38,16 +38,16 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
         { id: 15, catName: "Dinamika", name: "15. Shtypja", sym: "P", form: "P=F/S", unit: "Pa", otherUnits: "atm, bar, mmHg,N/m²", teTjera: "", nature: "Skalare", desc: "Forca që ushtrohet pingul mbi njësinë e sipërfaqes së një trupi.", phetUrl: "https://phet.colorado.edu/en/simulation/gas-properties", img: "https://ademgllavica.wordpress.com/wp-content/uploads/2020/03/image-391.png?w=571", vid: "https://www.youtube.com/embed/LDGohoxWZY4" }
     ],
     "Energjia": [
-        { name: "1. Energjia kinetike", sym: "Ek", form: "Ek = ½mv²", unit: "J", otherUnits: "cal,  kWh", teTjera: "", nature: "Skalare", desc: "Energjia që zotëron një trup për shkak të lëvizjes së tij me një shpejtësi të caktuar.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://img.jagranjosh.com/images/2024/July/1072024/kinetic-energy-definition-formula-derivation-types-examples-and-calculations.webp", vid: "https://www.youtube.com/embed/bSwFLr4kO6g" },
-        { name: "2. Energjia potenciale gravitacionale", sym: "Ep", form: "Ep = mgh", unit: "J", otherUnits: "cal, kWh", teTjera: "", nature: "Skalare", desc: "Energjia që zotëron një trup për shkak të pozicionit të tij në një fushë gravitacionale.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://www.meracalculator.com/images/blog/2020/11/1605613981potential-energy-png.png", vid: "https://www.youtube.com/embed/XCl0Dx8g5Pc" },
-        { name: "3. Energjia potenciale elastike", sym: "Ee", form: "Ee = ½kx²", unit: "J", otherUnits: "cal, kWh", teTjera: "", nature: "Skalare", desc: "Energjia e ruajtur në një trup elastik si pasojë e shformimit të tij.", phetUrl: "https://phet.colorado.edu/en/simulation/masses-and-springs", img: "https://energyeducation.ca/wiki/images/1/11/Mxcpcrossbow-elastic-potential.gif", vid: "https://www.youtube.com/embed/CvJHBOssY5Q" },
-        { name: "4. Energjia mekanike", sym: "Em", form: "Em = Ek + Ep", unit: "J", otherUnits: "cal, kWh", teTjera: "", nature: "Skalare", desc: "Shuma e energjisë kinetike dhe asaj potenciale të një sistemi fizik.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://engineerfix.com/wp-content/uploads/2021/04/Mechanical-Energy.png", vid: "https://www.youtube.com/embed/4bNajhqV8ws" },
-        { name: "5. Puna", sym: "A", form: "A = Fscosθ", unit: "J", otherUnits: "cal,", teTjera: "", nature: "Skalare", desc: "Energjia e transferuar te një trup ose nga një trup përmes veprimit të një force gjatë një zhvendosjeje.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://williamqin.com/assets/blog/Energy%20Blog%20Graphics/work.jpg", vid: "https://www.youtube.com/embed/G86VPx8ywyU" },
-        { name: "6. Fuqia", sym: "P", form: "P = A / t ose P = Fv", unit: "W", otherUnits: "HP, kW, 1W=1J/S, 1 Kuaj fuqi(HP)=745.7W ", teTjera: "", nature: "Skalare", desc: "Puna e kryer ne njësine e kohës.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://i.ytimg.com/vi/irSJL1U_gOQ/maxresdefault.jpg", vid: "https://www.youtube.com/embed/aHKEy7Oa0-A" },
-        { name: "7. Energjia e brendshme termike", sym: "U", form: "U=3/2 nRT(1 atomike),U=5/2 nRT(2 atomike) ", unit: "J", otherUnits: "cal, kcal", teTjera: "", nature: "Skalare", desc: "Shuma e energjisë kinetike dhe potenciale të të gjitha grimcave që përbëjnë një sistem.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-forms-and-changes", img: "https://solarschools.net/build/img/learn/energy/types/thermal//heat-tranfer-diagram_400_resize_q95.jpg", vid: "https://www.youtube.com/embed/mm_vaHqJvfw" },
-        { name: "8. Energjia elektrike", sym: "Ee", form: "E = pt=UIt", unit: "J", otherUnits: "kWh", teTjera: "", nature: "Skalare", desc: "Energjia që mat bashkëveprimin elektrik.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://electricalampere.com/wp-content/uploads/2025/08/Electrical-Energy-Sources-%E2%80%93-Types-Examples-and-How-Electricity-is-Produced.png", vid: "https://www.youtube.com/embed/LdYNNRKgP9U" },
-        { name: "9. Energjia kimike", sym: "E_kim", form: "—", unit: "J", otherUnits: "cal, kcal", teTjera: "", nature: "Skalare", desc: "Energjia e ruajtur në lidhjet kimike të substancave, e cila çlirohet gjatë reaksioneve.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-forms-and-changes", img: "https://www.sciencefacts.net/wp-content/uploads/2022/07/Chemical-Energy.jpg", vid: "https://www.youtube.com/embed/Iqwrl79a55A" },
-        { name: "10. Energjia bërthamore", sym: "E", form: "E = mc²", unit: "J", otherUnits: "MeV,1 MeV=10⁶ • 1,6•10⁻¹⁹J", teTjera: "", nature: "Skalare", desc: "Energjia e çliruar gjatë proceseve të fisionit ose fuzionit të bërthamave atomike.", phetUrl: "https://phet.colorado.edu/en/simulation/nuclear-fission", img: "https://cdn1.byjus.com/wp-content/uploads/2018/01/Nuclear-Energy2-700x416.png", vid: "https://www.youtube.com/embed/fuDOxIveHA4" }
+        { name: "1. Energjia kinetike", sym: "Ek", form: "Ek = ½mv²", unit: "J", otherUnits: "cal,  kWh", teTjera: "", nature: "Skalare", desc: "Energjia që zotëron një trup për shkak të lëvizjes së tij me një shpejtësi të caktuar.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://img.jagranjosh.com/images/2024/July/1072024/kinetic-energy-definition-formula-derivation-types-examples-and-calculations.webp", vid: "https://www.youtube.com/embed/bSwFLr4kO6g", gameUrl: "/loja-energjia-kinetike.html" },
+        { name: "2. Energjia potenciale gravitacionale", sym: "Ep", form: "Ep = mgh", unit: "J", otherUnits: "cal, kWh", teTjera: "", nature: "Skalare", desc: "Energjia që zotëron një trup për shkak të pozicionit të tij në një fushë gravitacionale.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://www.meracalculator.com/images/blog/2020/11/1605613981potential-energy-png.png", vid: "https://www.youtube.com/embed/XCl0Dx8g5Pc", gameUrl: "/loja-energjia-potenciale-gravitacionale.html" },
+        { name: "3. Energjia potenciale elastike", sym: "Ee", form: "Ee = ½kx²", unit: "J", otherUnits: "cal, kWh", teTjera: "", nature: "Skalare", desc: "Energjia e ruajtur në një trup elastik si pasojë e shformimit të tij.", phetUrl: "https://phet.colorado.edu/en/simulation/masses-and-springs", img: "https://energyeducation.ca/wiki/images/1/11/Mxcpcrossbow-elastic-potential.gif", vid: "https://www.youtube.com/embed/CvJHBOssY5Q", gameUrl: "/loja-energjia-potenciale-elastike.html" },
+        { name: "4. Energjia mekanike", sym: "Em", form: "Em = Ek + Ep", unit: "J", otherUnits: "cal, kWh", teTjera: "", nature: "Skalare", desc: "Shuma e energjisë kinetike dhe asaj potenciale të një sistemi fizik.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://engineerfix.com/wp-content/uploads/2021/04/Mechanical-Energy.png", vid: "https://www.youtube.com/embed/4bNajhqV8ws", gameUrl: "/loja-energjia-mekanike.html" },
+        { name: "5. Puna", sym: "A", form: "A = Fscosθ", unit: "J", otherUnits: "cal,", teTjera: "", nature: "Skalare", desc: "Energjia e transferuar te një trup ose nga një trup përmes veprimit të një force gjatë një zhvendosjeje.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://williamqin.com/assets/blog/Energy%20Blog%20Graphics/work.jpg", vid: "https://www.youtube.com/embed/G86VPx8ywyU", gameUrl: "/loja-puna.html" },
+        { name: "6. Fuqia", sym: "P", form: "P = A / t ose P = Fv", unit: "W", otherUnits: "HP, kW, 1W=1J/S, 1 Kuaj fuqi(HP)=745.7W ", teTjera: "", nature: "Skalare", desc: "Puna e kryer ne njësine e kohës.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-skate-park", img: "https://i.ytimg.com/vi/irSJL1U_gOQ/maxresdefault.jpg", vid: "https://www.youtube.com/embed/aHKEy7Oa0-A", gameUrl: "/loja-fuqia.html" },
+        { name: "7. Energjia e brendshme termike", sym: "U", form: "U=3/2 nRT(1 atomike),U=5/2 nRT(2 atomike) ", unit: "J", otherUnits: "cal, kcal", teTjera: "", nature: "Skalare", desc: "Shuma e energjisë kinetike dhe potenciale të të gjitha grimcave që përbëjnë një sistem.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-forms-and-changes", img: "https://solarschools.net/build/img/learn/energy/types/thermal//heat-tranfer-diagram_400_resize_q95.jpg", vid: "https://www.youtube.com/embed/mm_vaHqJvfw", gameUrl: "/loja-energjia-termike.html" },
+        { name: "8. Energjia elektrike", sym: "Ee", form: "E = pt=UIt", unit: "J", otherUnits: "kWh", teTjera: "", nature: "Skalare", desc: "Energjia që mat bashkëveprimin elektrik.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://electricalampere.com/wp-content/uploads/2025/08/Electrical-Energy-Sources-%E2%80%93-Types-Examples-and-How-Electricity-is-Produced.png", vid: "https://www.youtube.com/embed/LdYNNRKgP9U", gameUrl: "/loja-energjia-elektrike.html" },
+        { name: "9. Energjia kimike", sym: "E_kim", form: "—", unit: "J", otherUnits: "cal, kcal", teTjera: "", nature: "Skalare", desc: "Energjia e ruajtur në lidhjet kimike të substancave, e cila çlirohet gjatë reaksioneve.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-forms-and-changes", img: "https://www.sciencefacts.net/wp-content/uploads/2022/07/Chemical-Energy.jpg", vid: "https://www.youtube.com/embed/Iqwrl79a55A", gameUrl: "/loja-energjia-kimike.html" },
+        { name: "10. Energjia bërthamore", sym: "E", form: "E = mc²", unit: "J", otherUnits: "MeV,1 MeV=10⁶ • 1,6•10⁻¹⁹J", teTjera: "", nature: "Skalare", desc: "Energjia e çliruar gjatë proceseve të fisionit ose fuzionit të bërthamave atomike.", phetUrl: "https://phet.colorado.edu/en/simulation/nuclear-fission", img: "https://cdn1.byjus.com/wp-content/uploads/2018/01/Nuclear-Energy2-700x416.png", vid: "https://www.youtube.com/embed/fuDOxIveHA4", gameUrl: "/loja-energjia-berthamore.html" }
     ],
     "Elektriciteti": [
         { name: "1. Intensiteti i rrymes", sym: "I", form: "I=q/t ose I=U/R", unit: "A", otherUnits: "mA, μA, 1A=1C/S", teTjera: "", nature: "Skalare", desc: "Sasia e ngarkesës elektrike që kalon nëpër seksionin tërthor të përcjellësit në njësinë e kohës.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://i.ytimg.com/vi/_ZpqdJJ5M9U/maxresdefault.jpg", vid: "https://www.youtube.com/embed/kM72Xa4cOVQ" },
@@ -110,6 +110,86 @@ export const GAMES: PhysicsGame[] = [
     steps: ["Mbështill telin rreth gozhdës disa herë.", "Lidh skajet e telit me baterinë.", "Afroje gozhdën te kapëset metalike.", "Shkëpute baterinë dhe vëzhgo ndryshimin."],
     type: 'home',
     url: '/eksperimente.html?exp=3'
+  },
+  {
+    title: "Mbrojtja e Kështjellës",
+    description: "Llogarit energjinë kinetike për të mbrojtur portën e kështjellës nga përbindëshat.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko masën dhe shpejtësinë e bombës.", "Llogarit Ek = ½mv².", "Shëno rezultatin dhe gjuaj!"],
+    type: 'digital',
+    url: '/loja-energjia-kinetike.html'
+  },
+  {
+    title: "Eksperimenti i Gravitetit",
+    description: "Llogarit energjinë potenciale gravitacionale për të lëshuar objektet saktësisht.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko masën e objektit dhe lartësinë.", "Llogarit Ep = mgh (g=10).", "Shëno rezultatin dhe lësho objektin!"],
+    type: 'digital',
+    url: '/loja-energjia-potenciale-gravitacionale.html'
+  },
+  {
+    title: "Gjuajtësi Elastik",
+    description: "Llogarit energjinë potenciale elastike të sustës për të gjuajtur topin.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko konstantin k dhe shtypjen x.", "Llogarit Epe = ½kx².", "Shëno rezultatin dhe lësho topin!"],
+    type: 'digital',
+    url: '/loja-energjia-potenciale-elastike.html'
+  },
+  {
+    title: "Roller Coaster",
+    description: "Llogarit energjinë mekanike totale për të nisur udhëtimin e trenit.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko lartësinë h dhe shpejtësinë v.", "Llogarit Em = mgh + ½mv².", "Shëno rezultatin dhe nis trenin!"],
+    type: 'digital',
+    url: '/loja-energjia-mekanike.html'
+  },
+  {
+    title: "Eksperimenti i Punës",
+    description: "Llogarit punën e kryer duke tërhequr arkën në një kënd të caktuar.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko forcën F, rrugën s dhe këndin α.", "Llogarit A = F · s · cos(α).", "Shëno rezultatin dhe tërhiq arkën!"],
+    type: 'digital',
+    url: '/loja-puna.html'
+  },
+  {
+    title: "Fuqia e Ashensorit",
+    description: "Llogarit fuqinë e motorit të ashensorit për të ngjitur ngarkesën.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko masën m, lartësinë h dhe kohën t.", "Llogarit P = (mgh) / t.", "Shëno rezultatin dhe aktivizo ashensorin!"],
+    type: 'digital',
+    url: '/loja-fuqia.html'
+  },
+  {
+    title: "Laboratori Termik",
+    description: "Llogarit nxehtësinë e nevojshme për të ngrohur ujin në një temperaturë të caktuar.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko masën m dhe ndryshimin e temperaturës ΔT.", "Llogarit Q = m · c · ΔT.", "Shëno rezultatin dhe furnizo nxehtësi!"],
+    type: 'digital',
+    url: '/loja-energjia-termike.html'
+  },
+  {
+    title: "Qarku Elektrik",
+    description: "Llogarit energjinë elektrike të konsumuar nga një llambë.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko tensionin U, rrymën I dhe kohën t.", "Llogarit E = U · I · t.", "Shëno rezultatin dhe ndiz llambën!"],
+    type: 'digital',
+    url: '/loja-energjia-elektrike.html'
+  },
+  {
+    title: "Karburanti i Trupit",
+    description: "Llogarit energjinë kimike të ushqimit për të mbushur energjinë e trupit.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko sasinë e ushqimit dhe vlerën e tij energjetike.", "Llogarit E = sasia · vlera.", "Shëno rezultatin dhe hani vaktin!"],
+    type: 'digital',
+    url: '/loja-energjia-kimike.html'
+  },
+  {
+    title: "Reaktori Bërthamor",
+    description: "Llogarit energjinë e çliruar nga fisioni bërthamor i Uraniumit.",
+    materials: ["Kompjuter ose Telefon"],
+    steps: ["Shiko masën e lëndës dhe rendimentin.", "Llogarit E = m · rendimenti.", "Shëno rezultatin dhe shkakto fisionin!"],
+    type: 'digital',
+    url: '/loja-energjia-berthamore.html'
   }
 ];
 

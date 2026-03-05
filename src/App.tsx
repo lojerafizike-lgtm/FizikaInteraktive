@@ -7,12 +7,13 @@ import ClickSpark from './components/ClickSpark';
 import TermDetailsTabs from './components/TermDetailsTabs';
 import BlurText from './components/BlurText';
 import MoviesSection from './components/MoviesSection';
+import InstrumentsSection from './components/InstrumentsSection';
 import BubbleMenu from './components/BubbleMenu';
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
-  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments'>('home');
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
@@ -28,7 +29,7 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies', data?: CategoryName | PhysicsTerm | null) => {
+  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments', data?: CategoryName | PhysicsTerm | null) => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
@@ -137,6 +138,13 @@ const App: React.FC = () => {
       hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
     },
     {
+      label: 'Mjetet',
+      href: '#',
+      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('instruments'); },
+      rotation: -4,
+      hoverStyles: { bgColor: '#bde0fe', textColor: '#4a4e69' }
+    },
+    {
       label: 'Revista',
       href: '/revista.html',
       onClick: (e: React.MouseEvent) => { e.preventDefault(); window.location.href = '/revista.html'; },
@@ -182,6 +190,7 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
+            <button onClick={() => navigate('instruments')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Mjetet</button>
             <button onClick={() => navigate('movies')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Filmat</button>
             <a href="/revista.html" className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</a>
             <button 
@@ -530,6 +539,9 @@ const App: React.FC = () => {
         )}
         {activePage === 'movies' && (
           <MoviesSection onBack={() => navigate('home')} />
+        )}
+        {activePage === 'instruments' && (
+          <InstrumentsSection onBack={() => navigate('home')} />
         )}
       </main>
 

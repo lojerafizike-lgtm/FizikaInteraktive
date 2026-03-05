@@ -79,15 +79,30 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
                     <button 
                       onClick={() => {
                         const modal = document.createElement('div');
-                        modal.className = 'fixed inset-0 z-[9999] bg-slate-900/90 flex items-center justify-center p-4 backdrop-blur-sm';
+                        modal.className = 'fixed inset-0 z-[10000] bg-slate-900/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12 animate__animated animate__fadeIn';
                         modal.innerHTML = `
-                          <div class="bg-white rounded-[2rem] p-8 w-full max-w-4xl relative flex flex-col items-center justify-center min-h-[50vh] shadow-2xl">
-                            <button class="absolute top-6 right-6 w-12 h-12 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-xl hover:bg-red-50 hover:text-red-500 transition-colors" onclick="this.parentElement.parentElement.remove()">
-                              <i class="fas fa-times"></i>
-                            </button>
-                            <h2 class="text-3xl font-black text-slate-800 mb-8">${matchedInstrument.instrument}</h2>
-                            <div class="w-full max-w-2xl transform scale-125 md:scale-150 origin-top mt-12">
-                              ${buildSim(matchedInstrument.simType)}
+                          <div class="bg-white w-full max-w-6xl rounded-[3rem] overflow-hidden shadow-2xl relative flex flex-col h-full max-h-[90vh] animate__animated animate__zoomIn">
+                            <div class="p-8 md:p-10 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                              <div class="flex items-center gap-6">
+                                <div class="w-16 h-16 bg-[#ffc8dd] rounded-2xl flex items-center justify-center text-3xl shadow-lg">
+                                  <i class="fas fa-microscope text-white"></i>
+                                </div>
+                                <div>
+                                  <h2 class="text-3xl md:text-5xl font-black text-slate-800 tracking-tighter leading-none">${matchedInstrument.instrument}</h2>
+                                  <p class="text-slate-400 font-bold mt-2 uppercase tracking-widest text-xs">Eksperiment Virtual</p>
+                                </div>
+                              </div>
+                              <button class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-all group" onclick="this.closest('.fixed').remove()">
+                                <i class="fas fa-times text-2xl group-hover:rotate-90 transition-transform"></i>
+                              </button>
+                            </div>
+                            <div class="flex-1 flex items-center justify-center p-4 md:p-20 bg-slate-50/50 overflow-auto">
+                              <div class="w-full max-w-4xl transform scale-[1.5] sm:scale-[1.8] md:scale-[2] lg:scale-[2.5] origin-center flex items-center justify-center">
+                                ${buildSim(matchedInstrument.simType)}
+                              </div>
+                            </div>
+                            <div class="p-8 bg-white border-t border-slate-100 text-center">
+                              <p class="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">Fizika Interaktive 2026 • Mjetet Matëse</p>
                             </div>
                           </div>
                         `;

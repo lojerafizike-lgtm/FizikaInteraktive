@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratori i Fizikës: Energjia Elektrike</title>
+    <style>
+        :root {
+            --primare: #2980b9;
+            --sekondare: #3498db;
+            --sukses: #27ae60;
+            --gabim: #c0392b;
+            --sfondi: #f4f7f6;
+            --teksti: #2c3e50;
+            --llamba-off: #7f8c8d;
+            --llamba-on: #f1c40f;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--sfondi);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--teksti);
+        }
+
+        .karta {
+            background: white;
+            width: 850px;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 10px solid var(--primare);
+        }
+
+        h1 { margin-top: 0; color: var(--primare); }
+        
+        .shfaqja-formules {
+            background: #e1f5fe;
+            color: var(--primare);
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            border: 2px solid var(--sekondare);
+        }
+
+        .parametrat {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .kutia-param {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 16px;
+            border-bottom: 4px solid var(--sekondare);
+        }
+
+        .kutia-param span { font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase; font-weight: bold; }
+        .kutia-param b { font-size: 1.2rem; display: block; margin-top: 5px; color: var(--teksti); }
+
+        /* Skena Elektrike */
+        .skena-elektrike {
+            height: 300px;
+            background: #2d3436;
+            border-radius: 20px;
+            position: relative;
+            margin-bottom: 30px;
+            border: 3px solid #636e72;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .qarku {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            z-index: 2;
+        }
+
+        .bateria {
+            width: 80px;
+            height: 120px;
+            background: #dcdde1;
+            border: 4px solid #718093;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .bateria::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            width: 30px;
+            height: 15px;
+            background: #718093;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .llamba-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .llamba {
+            width: 80px;
+            height: 80px;
+            background: var(--llamba-off);
+            border-radius: 50%;
+            border: 4px solid #7f8c8d;
+            transition: all 0.5s;
+            position: relative;
+        }
+
+        .llamba.ndezur {
+            background: var(--llamba-on);
+            border-color: #f39c12;
+            box-shadow: 0 0 50px #f1c40f;
+        }
+
+        .teli {
+            height: 4px;
+            background: #7f8c8d;
+            width: 100px;
+            position: absolute;
+            transition: background 0.5s;
+        }
+
+        .teli.ndezur {
+            background: #f1c40f;
+        }
+
+        /* Kontrollet */
+        .kontrollet {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        input {
+            padding: 15px;
+            border: 2px solid #ced4da;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            width: 250px;
+            text-align: center;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primare); }
+
+        button {
+            padding: 15px 35px;
+            background-color: var(--primare);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover { background-color: #1a5276; transform: scale(1.05); }
+        
+        #mesazhi { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 30px; }
+        .butoni-reset { background: var(--sukses); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; display: none; margin: 15px auto; font-weight: bold;}
+    </style>
+</head>
+<body>
+
+<div class="karta">
+    <h1>Laboratori i Energjisë Elektrike ⚡</h1>
+    <div class="shfaqja-formules">E = U · I · t</div>
+    <p style="margin-top: -20px; font-size: 0.9rem; color: #7f8c8d;">Llogarit energjinë totale të konsumuar në <b>Joule (J)</b></p>
+
+    <div class="parametrat">
+        <div class="kutia-param">
+            <span>Tensioni (U)</span>
+            <b id="u-vlera">0 V</b>
+        </div>
+        <div class="kutia-param">
+            <span>Rryma (I)</span>
+            <b id="i-vlera">0 A</b>
+        </div>
+        <div class="kutia-param">
+            <span>Koha (t)</span>
+            <b id="t-vlera">0 s</b>
+        </div>
+    </div>
+
+    <div class="skena-elektrike">
+        <div class="qarku">
+            <div class="bateria">
+                <span>+</span>
+                <span>BATERIA</span>
+                <span>-</span>
+            </div>
+            <div class="llamba-container">
+                <div id="llamba" class="llamba"></div>
+                <div style="color: white; margin-top: 10px; font-weight: bold;">KONSUMATORI</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kontrollet">
+        <input type="number" id="inputE" placeholder="Shëno Energjinë (J)">
+        <button onclick="ndizQarkun()">NDIZ QARKUN 💡</button>
+    </div>
+
+    <div id="mesazhi"></div>
+    <button id="reset" class="butoni-reset" onclick="init()">EKSPERIMENT I RI</button>
+</div>
+
+<script>
+    let u, i, t, targetE;
+
+    function init() {
+        // Gjenerojmë të dhëna të rastësishme
+        u = Math.floor(Math.random() * 12) + 12; // 12V deri 24V
+        i = parseFloat((Math.random() * 2 + 0.5).toFixed(1)); // 0.5A deri 2.5A
+        t = Math.floor(Math.random() * 50) + 10; // 10s deri 60s
+        
+        // Formula: E = U * I * t
+        targetE = Math.round(u * i * t);
+
+        document.getElementById('u-vlera').innerText = u + " V";
+        document.getElementById('i-vlera').innerText = i + " A";
+        document.getElementById('t-vlera').innerText = t + " s";
+        
+        document.getElementById('inputE').value = "";
+        document.getElementById('mesazhi').innerText = "";
+        document.getElementById('reset').style.display = "none";
+        
+        const llamba = document.getElementById('llamba');
+        llamba.classList.remove('ndezur');
+    }
+
+    function ndizQarkun() {
+        const vleraUser = parseFloat(document.getElementById('inputE').value);
+        const llamba = document.getElementById('llamba');
+        const mesazhi = document.getElementById('mesazhi');
+        const resetBtn = document.getElementById('reset');
+
+        if(isNaN(vleraUser)) {
+            mesazhi.innerText = "Ju lutem vendosni një vlerë!";
+            mesazhi.style.color = "var(--gabim)";
+            return;
+        }
+
+        // Kontrollojmë saktësinë
+        if(Math.abs(vleraUser - targetE) <= 2) {
+            llamba.classList.add('ndezur');
+            
+            mesazhi.innerText = "✅ SAKTË! Qarku u mbyll dhe energjia e konsumuar është llogaritur drejt.";
+            mesazhi.style.color = "var(--sukses)";
+            resetBtn.style.display = "block";
+        } else {
+            mesazhi.innerText = "❌ GABIM! Llogaritja nuk doli saktë. Duheshin " + formatNr(targetE) + " Joule.";
+            mesazhi.style.color = "var(--gabim)";
+            resetBtn.style.display = "block";
+        }
+    }
+
+    function formatNr(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Nisja
+    init();
+</script>
+
+</body>
+</html>

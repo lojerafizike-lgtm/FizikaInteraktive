@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Fizika: Sfida e Punës (A = Fs cos α)</title>
+    <style>
+        body {
+            margin: 0;
+            background: #dfe6e9;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 750px;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            border-bottom: 8px solid #fdcb6e;
+        }
+
+        .header h1 { color: #2d3436; margin: 0; }
+        .formula { color: #e17055; font-weight: bold; font-size: 1.2rem; }
+
+        /* Skena e Punës */
+        .dock-area {
+            height: 250px;
+            background: linear-gradient(to bottom, #81ecec, #fab1a0);
+            border-radius: 15px;
+            position: relative;
+            margin: 25px 0;
+            border-bottom: 10px solid #636e72;
+            overflow: hidden;
+        }
+
+        #crate {
+            position: absolute;
+            bottom: 10px;
+            left: 50px;
+            font-size: 50px;
+            transition: left 2s ease-in-out;
+            z-index: 5;
+        }
+
+        /* Litari */
+        #rope {
+            position: absolute;
+            bottom: 40px;
+            left: 90px;
+            width: 100px;
+            height: 4px;
+            background: #8e44ad;
+            transform-origin: left center;
+            transition: transform 0.5s;
+        }
+
+        .worker {
+            position: absolute;
+            bottom: 40px;
+            left: 180px;
+            font-size: 40px;
+            transition: left 2s ease-in-out;
+        }
+
+        /* Panelet e të dhënave */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .data-card {
+            background: #f1f2f6;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .data-card span { font-size: 0.8rem; color: #636e72; display: block; }
+        .data-card b { font-size: 1.1rem; }
+
+        input {
+            padding: 12px;
+            width: 150px;
+            border: 2px solid #fdcb6e;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #fdcb6e;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        button:hover { background: #e1b12c; }
+
+        #msg { margin-top: 15px; font-weight: bold; min-height: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Eksperimenti i Punës 👷‍♂️</h1>
+        <div class="formula">A = F · s · cos(α)</div>
+    </div>
+
+    <div class="data-grid">
+        <div class="data-card"><span>Forca (F)</span><b id="f-val">?</b> N</div>
+        <div class="data-card"><span>Rruga (s)</span><b id="s-val">?</b> m</div>
+        <div class="data-card"><span>Këndi (α)</span><b id="angle-val">?</b>°</div>
+    </div>
+
+    <div class="dock-area">
+        <div id="crate">📦</div>
+        <div id="rope"></div>
+        <div id="worker" class="worker">👨‍🏭</div>
+    </div>
+
+    <div class="controls">
+        <input type="number" id="userA" placeholder="Puna (J)">
+        <button onclick="pullCrate()">TËRHIQE!</button>
+    </div>
+
+    <div id="msg"></div>
+    <button id="reset-btn" style="display:none; margin: 10px auto;" onclick="init()">Arka tjetër</button>
+</div>
+
+
+
+<script>
+    let F, s, angle, correctA;
+
+    function init() {
+        // Numra që japin rezultate të thjeshta (cos 0=1, cos 60=0.5)
+        F = (Math.floor(Math.random() * 5) + 1) * 10; // 10, 20... 50
+        s = Math.floor(Math.random() * 5) + 2; // 2 deri 6
+        const angles = [0, 60]; // Përdorim kënde me cosinus të thjeshtë
+        angle = angles[Math.floor(Math.random() * angles.length)];
+        
+        // Llogaritja: cos(0)=1, cos(60)=0.5
+        let cosVal = (angle === 0) ? 1 : 0.5;
+        correctA = F * s * cosVal;
+
+        document.getElementById('f-val').innerText = F;
+        document.getElementById('s-val').innerText = s;
+        document.getElementById('angle-val').innerText = angle;
+        document.getElementById('userA').value = "";
+        document.getElementById('msg').innerText = "";
+        document.getElementById('reset-btn').style.display = "none";
+
+        const crate = document.getElementById('crate');
+        const worker = document.getElementById('worker');
+        const rope = document.getElementById('rope');
+
+        crate.style.left = "50px";
+        worker.style.left = "180px";
+        rope.style.transform = `rotate(-${angle}deg)`;
+        rope.style.left = "90px";
+    }
+
+    function pullCrate() {
+        const userVal = parseFloat(document.getElementById('userA').value);
+        const crate = document.getElementById('crate');
+        const worker = document.getElementById('worker');
+        const rope = document.getElementById('rope');
+        const msg = document.getElementById('msg');
+
+        if(isNaN(userVal)) return;
+
+        if(userVal === correctA) {
+            // Animacioni i lëvizjes
+            crate.style.left = "400px";
+            worker.style.left = "530px";
+            rope.style.left = "440px";
+            
+            msg.innerText = "✅ SAKTË! Ke kryer " + userVal + " J punë.";
+            msg.style.color = "#27ae60";
+        } else {
+            msg.innerText = "❌ GABIM! Llogaritja nuk doli. Duheshin " + correctA + " J.";
+            msg.style.color = "#d63031";
+        }
+        document.getElementById('reset-btn').style.display = "block";
+    }
+
+    init();
+</script>
+
+</body>
+</html>
