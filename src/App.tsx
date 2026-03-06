@@ -55,7 +55,13 @@ const App: React.FC = () => {
     const results: (PhysicsTerm & { category: string })[] = [];
     Object.entries(ALL_PHYSICS_DATA).forEach(([cat, terms]) => {
       terms.forEach(term => {
-        if (term.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        const searchLower = searchTerm.toLowerCase();
+        if (
+          term.name.toLowerCase().includes(searchLower) || 
+          term.desc.toLowerCase().includes(searchLower) ||
+          term.sym.toLowerCase().includes(searchLower) ||
+          term.form.toLowerCase().includes(searchLower)
+        ) {
           results.push({ ...term, category: cat });
         }
       });
@@ -464,7 +470,10 @@ const App: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
                 {gameFilter === 'digital' ? DIGITAL_GAMES.filter(g => g.type !== 'school').map((game, i) => (
-                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#bde0fe]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha">
+                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#bde0fe]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
+                        <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                            {game.category}
+                        </div>
                         <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
                             <div className="w-16 h-16 md:w-32 md:h-32 bg-[#bde0fe]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
                                 <i className="fas fa-gamepad"></i>
@@ -474,7 +483,10 @@ const App: React.FC = () => {
                         <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ffafcc] group-hover:text-white transition-all">LUAJ TANI</button>
                     </div>
                 )) : gameFilter === 'school' ? DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
-                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha">
+                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
+                        <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                            {game.category}
+                        </div>
                         <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
                             <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
                                 <i className="fas fa-chalkboard-user"></i>

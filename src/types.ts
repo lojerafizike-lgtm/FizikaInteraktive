@@ -17,7 +17,7 @@ export interface PhysicsTerm {
   gameUrl?: string;
 }
 
-export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Libri Interaktiv";
+export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Libri Interaktiv" | "Fizika 8";
 
 export interface PhysicsData {
   [key: string]: PhysicsTerm[];

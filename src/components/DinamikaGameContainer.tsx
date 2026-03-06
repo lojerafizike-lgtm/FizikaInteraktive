@@ -44,15 +44,15 @@ const DinamikaGameContainer: React.FC<Props> = ({ termId, termName, formula }) =
   return (
     <GameWrapper>
       <div className="w-full h-full flex flex-col">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
-            <span className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl">🎮</span>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-3">
+            <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg sm:text-xl">🎮</span>
             Lojëra: {termName}
           </h2>
           {activeGame !== 'menu' && (
             <button 
               onClick={handleBack}
-              className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-200 transition-colors"
+              className="px-3 py-2 sm:px-4 sm:py-2 bg-slate-100 text-slate-600 rounded-lg font-bold text-xs sm:text-sm hover:bg-slate-200 transition-colors w-full sm:w-auto text-center"
             >
               ← Kthehu tek Menuja
             </button>

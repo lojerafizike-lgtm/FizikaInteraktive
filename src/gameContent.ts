@@ -982,5 +982,173 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     type: "digital",
     url: "/sfida-matures.html",
     html: ""
+  },
+  {
+    id: "loja-energjia-berthamore",
+    title: "Energjia Bërthamore",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-berthamore.html",
+    html: ""
+  },
+  {
+    id: "loja-energjia-elektrike",
+    title: "Energjia Elektrike",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-elektrike.html",
+    html: ""
+  },
+  {
+    id: "loja-energjia-kimike",
+    title: "Energjia Kimike",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-kimike.html",
+    html: ""
+  },
+  {
+    id: "loja-energjia-kinetike",
+    title: "Energjia Kinetike",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-kinetike.html",
+    html: ""
+  },
+  {
+    id: "loja-energjia-mekanike",
+    title: "Energjia Mekanike",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-mekanike.html",
+    html: ""
+  },
+  {
+    id: "loja-energjia-potenciale-elastike",
+    title: "Energjia Potenciale Elastike",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-potenciale-elastike.html",
+    html: ""
+  },
+  {
+    id: "loja-energjia-potenciale-gravitacionale",
+    title: "Energjia Potenciale Gravitacionale",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-potenciale-gravitacionale.html",
+    html: ""
+  },
+  {
+    id: "loja-energjia-termike",
+    title: "Energjia Termike",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-energjia-termike.html",
+    html: ""
+  },
+  {
+    id: "loja-forca",
+    title: "Loja e Forcës",
+    category: "Dinamika",
+    type: "digital",
+    url: "/loja-forca.html",
+    html: ""
+  },
+  {
+    id: "loja-fuqia",
+    title: "Loja e Fuqisë",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-fuqia.html",
+    html: ""
+  },
+  {
+    id: "loja-intervali",
+    title: "Loja e Intervalit",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-intervali.html",
+    html: ""
+  },
+  {
+    id: "loja-koha",
+    title: "Loja e Kohës",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-koha.html",
+    html: ""
+  },
+  {
+    id: "loja-koordinata",
+    title: "Loja e Koordinatës",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-koordinata.html",
+    html: ""
+  },
+  {
+    id: "loja-masa",
+    title: "Loja e Masës",
+    category: "Dinamika",
+    type: "digital",
+    url: "/loja-masa.html",
+    html: ""
+  },
+  {
+    id: "loja-nxitimi",
+    title: "Loja e Nxitimit",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-nxitimi.html",
+    html: ""
+  },
+  {
+    id: "loja-pesha",
+    title: "Loja e Peshës",
+    category: "Dinamika",
+    type: "digital",
+    url: "/loja-pesha.html",
+    html: ""
+  },
+  {
+    id: "loja-puna",
+    title: "Loja e Punës",
+    category: "Energjia",
+    type: "digital",
+    url: "/loja-puna.html",
+    html: ""
+  },
+  {
+    id: "loja-rruga",
+    title: "Loja e Rrugës",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-rruga.html",
+    html: ""
+  },
+  {
+    id: "loja-shpejtesia-castit",
+    title: "Loja e Shpejtësisë së Çastit",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-shpejtesia-castit.html",
+    html: ""
+  },
+  {
+    id: "loja-shpejtesia-mesatare",
+    title: "Loja e Shpejtësisë Mesatare",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-shpejtesia-mesatare.html",
+    html: ""
+  },
+  {
+    id: "loja-zhvendosja",
+    title: "Loja e Zhvendosjes",
+    category: "Kinematika",
+    type: "digital",
+    url: "/loja-zhvendosja.html",
+    html: ""
   }
 ];

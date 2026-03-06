@@ -2,12 +2,12 @@ export const instrumentsData = [
   // KINEMATIKA
   { cat: 'Kinematika', name: 'Koordinata', sym: 'x, y, z', unit: 'm', nature: 'Vektoriale',
     instrument: 'Vizore / Shirit matës', icon: '📏',
-    desc: 'Vizoreja dhe shiriti matës janë mjetet themelore për matjen e koordinatave dhe pozicionit. Vizoreja ka shkallëzim milimetrik, ndërsa shiriti matës mund të matë gjatësi deri në disa metra.',
+    desc: 'Vizorja dhe shiriti matës janë mjetet themelore për matjen e koordinatave dhe pozicionit. Vizorja ka shkallëzim milimetrik, ndërsa shiriti matës mund të matë gjatësi deri në disa metra.',
     simType: 'ruler', color: '#FFB6C1' },
 
   { cat: 'Kinematika', name: 'Zhvendosja', sym: 'Δx', unit: 'm', nature: 'Vektoriale',
     instrument: 'Shirit matës / Vizore', icon: '📐',
-    desc: 'Shiriti matës dhe vizoreja përdoren për të matur largësinë midis pozicionit fillestar dhe atij përfundimtar të trupit. Shiriti matës fleksibël është ideal për sipërfaqe të lakuara.',
+    desc: 'Shiriti matës dhe vizorja përdoren për të matur largësinë midis pozicionit fillestar dhe atij përfundimtar të trupit. Shiriti matës është ideal për sipërfaqe të lakuara.',
     simType: 'ruler', color: '#FFB6C1' },
 
   { cat: 'Kinematika', name: 'Koha', sym: 't', unit: 's', nature: 'Skalare',
@@ -31,24 +31,29 @@ export const instrumentsData = [
     simType: 'oscilloscope', color: '#A8D8EA' },
 
   { cat: 'Kinematika', name: 'Këndi', sym: 'θ', unit: 'rad', nature: 'Skalare',
-    instrument: 'Raportore / Gonometër', icon: '📐',
-    desc: 'Raportoreja mat këndet në gradë, ndërsa gonometri mat me saktësi kënde te imëta. Perdoren ne gjeometri dhe fizike per matjen e traektoreve rrethore.',
-    simType: 'ruler', color: '#FFB6C1' },
+    instrument: 'Raportor / Gonometër', icon: '📐',
+    desc: 'Raportori mat këndet në gradë, ndërsa gonometri mat me saktësi kënde te imëta. Perdoren ne gjeometri dhe fizike per matjen e trajektoreve rrethore.',
+    simType: 'protractor', color: '#FFB6C1' },
 
   // DINAMIKA
   { cat: 'Dinamika', name: 'Forca', sym: 'F', unit: 'N', nature: 'Vektoriale',
     instrument: 'Dinamometër', icon: '🔩',
-    desc: 'Dinamometri mat forcën duke shfrytëzuar shformimin elastik të një sustave. Kur aplikohet forca, sustaja shformohet dhe treguesi tregon vlerën e forcës në Njutone (N).',
+    desc: 'Dinamometri mat forcën duke shfrytëzuar shformimin elastik të një sustave. Kur vendoset force, susta shformohet dhe treguesi merr vlerën e forcës në Njuton (N).',
     simType: 'dynamometer', color: '#C8A8E9' },
 
   { cat: 'Dinamika', name: 'Masa', sym: 'm', unit: 'kg', nature: 'Skalare',
-    instrument: 'Peshore / Balancë analitike', icon: '⚖️',
-    desc: 'Peshorja mat masën e trupave duke krahasuar me peshat standarde. Balanca analitike arrin saktësi deri 0.0001g dhe perdoret ne laborator.',
+    instrument: 'Peshore', icon: '⚖️',
+    desc: 'Peshorja mat masën e trupave duke krahasuar me peshat standarde.',
     simType: 'scale', color: '#A8D8EA' },
 
   { cat: 'Dinamika', name: 'Pesha', sym: 'P', unit: 'N', nature: 'Vektoriale',
     instrument: 'Dinamometër / Peshore elektronike', icon: '🏋️',
-    desc: 'Dinamometri mat peshen P = N (reaksioni normal). Peshorja elektronike me sensor mat peshen direkt ne Njutone ose konverton nga kg duke shumezuar me g = 9.81.',
+    desc: 'Dinamometri mat peshen P = N (reaksioni normal). Peshorja elektronike me sensor mat peshen direkt ne Njuton ose ne kg.',
+    simType: 'dynamometer', color: '#C8A8E9' },
+
+ { cat: 'Dinamika', name: 'Forca e rendeses', sym: 'P', unit: 'N', nature: 'Vektoriale',
+    instrument: 'Dinamometër / Peshore elektronike', icon: '🏋️',
+    desc: 'Dinamometri mat peshen P = N (reaksioni normal). Peshorja elektronike me sensor mat peshen direkt ne Njuton ose ne kg.',
     simType: 'dynamometer', color: '#C8A8E9' },
 
   { cat: 'Dinamika', name: 'Forca e fërkimit', sym: 'F_f', unit: 'N', nature: 'Vektoriale',
@@ -58,7 +63,7 @@ export const instrumentsData = [
 
   { cat: 'Dinamika', name: 'Forca elastike', sym: 'F_e', unit: 'N', nature: 'Vektoriale',
     instrument: 'Dinamometër me sustë', icon: '🌀',
-    desc: 'Dinamometri me suste mat forcen elastike F = kx. Shformimi i sustes eshte drejtperdrejt proporcional me forcen e aplikuar (Ligji i Hukut).',
+    desc: 'Dinamometri me suste mat forcen elastike Fe = kx. Shformimi i sustes eshte ne perpjestim te drejte me forcen elastike (Ligji i Hukut).',
     simType: 'dynamometer', color: '#C8A8E9' },
 
   { cat: 'Dinamika', name: 'Konstanta elastike', sym: 'k', unit: 'N/m', nature: 'Skalare',
@@ -72,39 +77,39 @@ export const instrumentsData = [
     simType: 'manometer', color: '#FFB6C1' },
 
   { cat: 'Dinamika', name: 'Impulsi i forcës', sym: 'Δp', unit: 'N·s', nature: 'Vektoriale',
-    instrument: 'Dinamometër + Kronometër', icon: '💥',
-    desc: 'Impulsi mat me dinamometrin (forca) dhe kronometrin (koha). Kombinimi Δp = F·Δt jep impuls total. Perdoret ne eksperimente me goditje.',
+    instrument: 'Kronometër', icon: '💥',
+    desc: 'Impulsi matet me kronometer (koha). Kombinimi Δp = F·Δt jep impulsin. Perdoret ne eksperimente me goditje.',
     simType: 'dynamometer', color: '#C8A8E9' },
 
   { cat: 'Dinamika', name: 'Impuls i trupit', sym: 'p', unit: 'kg·m/s', nature: 'Vektoriale',
     instrument: 'Peshore + Shpejtësimatës', icon: '🚀',
-    desc: 'Sasia e levizjes p = mv matet duke kombinuar peshojen (masa m) dhe shpejtesimatësin (shpejtesia v). Perdoret ne eksperimente me perplasje.',
+    desc: 'Sasia e levizjes p = mv matet duke kombinuar peshoren (masa m) dhe shpejtesimatësin (shpejtesia v). Perdoret ne eksperimente me perplasje.',
     simType: 'scale', color: '#A8D8EA' },
 
   // ENERGJIA
   { cat: 'Energjia', name: 'Energjia kinetike', sym: 'Ek', unit: 'J', nature: 'Skalare',
     instrument: 'Shpejtësimatës + Peshore', icon: '⚡',
-    desc: 'Ek = ½mv² llogaritet duke kombinuar peshojen per mase dhe shpejtesimatësin per shpejtesi. Foto-sensori mat shpejtësinë e kalimit.',
+    desc: 'Ek = ½mv² llogaritet duke kombinuar peshoren per masen dhe shpejtesimatësin per shpejtesine. Foto-sensori mat shpejtësinë e kalimit.',
     simType: 'scale', color: '#A8D8EA' },
 
   { cat: 'Energjia', name: 'Energjia potenciale gravitacionale', sym: 'Ep', unit: 'J', nature: 'Skalare',
     instrument: 'Peshore + Vizore/Shirit matës', icon: '🏔️',
-    desc: 'Ep = mgh matet duke kombinuar peshojen (masa) dhe shiriti mates (lartesia h). Shprehet ne Xhul (J).',
+    desc: 'Ep = mgh matet duke kombinuar peshoren (masa) dhe shiritin mates (lartesia h). Shprehet ne Xhul (J).',
     simType: 'scale', color: '#A8D8EA' },
 
   { cat: 'Energjia', name: 'Puna', sym: 'A', unit: 'J', nature: 'Skalare',
     instrument: 'Dinamometër + Vizore', icon: '💪',
-    desc: 'A = F·s·cosθ — forca matet me dinamometrin, zhvendosja me vizore. Këndi matet me raportore. Perdoret per verifikimin e energjise mekanike.',
+    desc: 'A = F·s·cosθ — forca matet me dinamometrin, zhvendosja me vizore. Këndi matet me raportor. Perdoret per verifikimin e energjise mekanike.',
     simType: 'dynamometer', color: '#C8A8E9' },
 
   { cat: 'Energjia', name: 'Fuqia', sym: 'P', unit: 'W', nature: 'Skalare',
     instrument: 'Wattmetër / Multimetër', icon: '🔌',
-    desc: 'Wattmetri mat fuqine elektrike direkt. Multimetri mat tensionin dhe rrymën, dhe llogarit P = U·I. 1 Watt = 1 Joule/sekondë.',
+    desc: 'Vatmetri mat fuqine elektrike direkt. Multimetri mat tensionin dhe rrymën, dhe llogarit P = U·I. 1 Watt = 1 Joule/sekondë.',
     simType: 'multimeter', color: '#FFD6E0' },
 
   { cat: 'Energjia', name: 'Energjia e brendshme termike', sym: 'U', unit: 'J', nature: 'Skalare',
     instrument: 'Kalorimetër + Termometër', icon: '🔥',
-    desc: 'Kalorimetri mat nxehtësine e absorbuar ose te liruar nga nje sistem. Termometri mat ndryshimin e temperatures. Q = mcΔT jep energjine termike.',
+    desc: 'Kalorimetri mat nxehtësine e thithur ose te çliruar nga nje sistem. Termometri mat ndryshimin e temperatures. Q = mcΔT jep energjine termike.',
     simType: 'calorimeter', color: '#FFD6B0' },
 
   { cat: 'Energjia', name: 'Energjia elektrike', sym: 'Ee', unit: 'J', nature: 'Skalare',
@@ -130,7 +135,7 @@ export const instrumentsData = [
 
   { cat: 'Elektriciteti', name: 'Fuqia e rrymes', sym: 'P', unit: 'W', nature: 'Skalare',
     instrument: 'Wattmetër / Multimetër', icon: '💡',
-    desc: 'Wattmetri mat fuqine elektrike duke kombinuar tensionin dhe rrymën. P = U·I. Multimetri modern llogarit automatikisht fuqinë.',
+    desc: 'Vatmetri mat fuqine elektrike duke kombinuar tensionin dhe rrymën. P = U·I. Multimetri modern llogarit automatikisht fuqinë.',
     simType: 'multimeter', color: '#FFD6E0' },
 
   { cat: 'Elektriciteti', name: 'Intensiteti i fushes elektrike', sym: 'E', unit: 'N/C', nature: 'Vektoriale',
@@ -166,7 +171,7 @@ export const instrumentsData = [
 
   { cat: 'Magnetizmi', name: 'Rryme e induktuar', sym: 'I_in', unit: 'A', nature: 'Skalare',
     instrument: 'Galvanometër', icon: '⚡',
-    desc: 'Galvanometri eshte instrumenti me i ndjeshëm per matjen e rrymave te induktuara te vogla. Tregon edhe drejtimin e rrymazës se induktuara sipas Ligjit te Lenz.',
+    desc: 'Galvanometri eshte instrumenti me i ndjeshëm per matjen e rrymave te induktuara te vogla. Tregon edhe drejtimin e rrymës se induktuara sipas Ligjit te Lenz.',
     simType: 'galvanometer', color: '#A8D8EA' },
 ];
 
@@ -189,6 +194,22 @@ export function buildSim(type: string) {
             </div>
           </div>
           <div style="text-align:center;font-size:11px;font-weight:700;color:var(--text-light);">Vizore / Shirit matës</div>
+        </div>
+      </div>`;
+
+    case 'protractor': return `
+      <div class="sim-container ruler-sim">
+        <div style="position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div style="position:relative;width:140px;height:70px;border-top-left-radius:70px;border-top-right-radius:70px;border:2px solid #A89A20;border-bottom:2px solid #A89A20;background:rgba(255,245,200,0.6);box-sizing:border-box;overflow:hidden;">
+            <div style="position:absolute;bottom:-2px;left:50%;width:6px;height:6px;background:#7A6C10;border-radius:50%;transform:translateX(-50%);"></div>
+            ${[0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180].map(deg => `
+              <div style="position:absolute;bottom:0;left:50%;width:1px;height:70px;transform-origin:bottom center;transform:translateX(-50%) rotate(${deg - 90}deg);">
+                <div style="width:100%;height:${deg % 30 === 0 ? '8px' : '5px'};background:#A89A20;"></div>
+                ${deg % 30 === 0 ? `<div style="position:absolute;top:10px;left:-6px;font-size:8px;font-weight:bold;color:#7A6C10;transform:rotate(${-(deg - 90)}deg);">${deg}°</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+          <div style="text-align:center;font-size:11px;font-weight:700;color:var(--text-light);">Raportore / Gonometër</div>
         </div>
       </div>`;
 

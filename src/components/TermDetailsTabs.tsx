@@ -4,6 +4,7 @@ import { instrumentsData, buildSim } from '../instrumentsData';
 import '../instruments.css';
 import DinamikaGameContainer from './DinamikaGameContainer';
 import KinematikaGameContainer from './KinematikaGameContainer';
+import GameWrapper from './GameWrapper';
 
 interface TermDetailsTabsProps {
   term: PhysicsTerm;
@@ -292,15 +293,11 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
             ) : term.catName === 'Kinematika' && term.id !== undefined && [9, 10, 11, 12, 13, 14, 15, 16].includes(term.id) ? (
               <KinematikaGameContainer termId={term.id} termName={term.name} />
             ) : term.gameUrl ? (
-                <div className="relative">
-                    <iframe src={term.gameUrl} className="w-full h-[600px] border-none rounded-2xl shadow-lg" title={`Lojë për ${term.name}`} allowFullScreen></iframe>
-                    <button 
-                        onClick={() => window.open(term.gameUrl, '_blank')}
-                        className="mt-4 px-6 py-3 bg-[#4a4e69] text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#2b2d42] transition-all shadow-md flex items-center gap-2 mx-auto"
-                    >
-                        HAP FULL SCREEN <i className="fas fa-expand"></i>
-                    </button>
-                </div>
+                <GameWrapper>
+                    <div className="relative w-full h-full min-h-[400px] sm:min-h-[600px] flex items-center justify-center">
+                        <iframe src={term.gameUrl} className="w-full h-full min-h-[400px] sm:min-h-[600px] border-none rounded-2xl shadow-lg" title={`Lojë për ${term.name}`} allowFullScreen></iframe>
+                    </div>
+                </GameWrapper>
             ) : (
                 <>
                     <i className="fas fa-gamepad text-6xl text-slate-300 mb-6"></i>

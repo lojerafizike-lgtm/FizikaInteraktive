@@ -49,12 +49,12 @@ const KinematikaGameContainer = ({ termId, termName }: Props) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8 text-center"
+        className="mb-6 sm:mb-8 text-center px-4"
       >
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
           {termName} - Lojë Interaktive
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Zgjidh sfidat dhe mëso duke luajtur!
         </p>
       </motion.div>
