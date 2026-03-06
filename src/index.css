@@ -21,6 +21,8 @@
   --color-destructive-foreground: #ffffff;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');
+
 body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: #fcf9ff;
