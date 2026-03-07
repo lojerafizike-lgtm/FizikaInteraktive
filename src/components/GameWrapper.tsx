@@ -12,18 +12,26 @@ const GameWrapper = ({ children }: { children: React.ReactNode }) => {
       if (!document.fullscreenElement) {
         if (containerRef.current.requestFullscreen) {
           await containerRef.current.requestFullscreen();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } else if ((containerRef.current as any).webkitRequestFullscreen) { /* Safari */
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (containerRef.current as any).webkitRequestFullscreen();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } else if ((containerRef.current as any).msRequestFullscreen) { /* IE11 */
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (containerRef.current as any).msRequestFullscreen();
         }
         setIsFullscreen(true);
       } else {
         if (document.exitFullscreen) {
           await document.exitFullscreen();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } else if ((document as any).webkitExitFullscreen) { /* Safari */
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (document as any).webkitExitFullscreen();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } else if ((document as any).msExitFullscreen) { /* IE11 */
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (document as any).msExitFullscreen();
         }
         setIsFullscreen(false);

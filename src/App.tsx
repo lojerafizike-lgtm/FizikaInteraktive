@@ -21,6 +21,7 @@ const App: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [mobileMenuSelectionOpen, setMobileMenuSelectionOpen] = useState(false);
+  const [playingGame, setPlayingGame] = useState<{ title: string, url?: string, html?: string } | null>(null);
   
   const handleStart = () => {
     setIsWarping(true);
@@ -39,22 +40,14 @@ const App: React.FC = () => {
   };
 
   const handlePlayGame = (game: DigitalGame) => {
-    if (game.url) {
-      window.open(game.url, '_blank');
-    } else if (game.html) {
-      const newWindow = window.open('', '_blank');
-      if (newWindow) {
-        newWindow.document.write(game.html);
-        newWindow.document.close();
-      }
-    }
+    setPlayingGame(game);
   };
 
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return null;
     const results: (PhysicsTerm & { category: string })[] = [];
     Object.entries(ALL_PHYSICS_DATA).forEach(([cat, terms]) => {
-      terms.forEach(term => {
+      (terms as PhysicsTerm[]).forEach((term: PhysicsTerm) => {
         const searchLower = searchTerm.toLowerCase();
         if (
           term.name.toLowerCase().includes(searchLower) || 
@@ -288,7 +281,7 @@ const App: React.FC = () => {
               <h2 className="text-3xl md:text-7xl font-black tracking-tighter text-slate-800">{selectedCategory}</h2>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
-              {ALL_PHYSICS_DATA[selectedCategory].map((term, i) => (
+              {(ALL_PHYSICS_DATA[selectedCategory] as PhysicsTerm[]).map((term: PhysicsTerm, i: number) => (
                 <div 
                   key={i}
                   onClick={() => navigate('details', term)}
@@ -413,11 +406,7 @@ const App: React.FC = () => {
                               </div>
                               <button 
                                   onClick={() => {
-                                      const newWindow = window.open('', '_blank');
-                                      if (newWindow) {
-                                        newWindow.document.write(selectedTerm.html!);
-                                        newWindow.document.close();
-                                      }
+                                      setPlayingGame({ title: 'Libri Interaktiv', html: selectedTerm.html });
                                   }}
                                   className="w-full md:w-auto md:mr-6 px-8 md:px-12 py-3 md:py-4 bg-[#ff758f] text-white rounded-2xl md:rounded-[2rem] font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#ff4d6d] transition-all shadow-xl flex items-center justify-center gap-3"
                               >
@@ -529,7 +518,7 @@ const App: React.FC = () => {
                                     <iframe src={game.url} className="w-full h-full border-none" title={game.title}></iframe>
                                 </div>
                                 <button 
-                                    onClick={() => window.open(game.url, '_blank')}
+                                    onClick={() => setPlayingGame(game)}
                                     className="w-full py-4 md:py-6 bg-[#ffafcc] text-white rounded-xl md:rounded-[2rem] font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#ff758f] transition-all shadow-xl flex items-center justify-center gap-3"
                                 >
                                     HAP FULL SCREEN <i className="fas fa-expand"></i>
@@ -792,6 +781,28 @@ const App: React.FC = () => {
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
             <i className="fas fa-comment-dots text-3xl text-white drop-shadow-md"></i>
           </button>
+        </div>
+      )}
+
+      {/* Full Screen Game Overlay */}
+      {playingGame && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col">
+          <div className="bg-slate-800 text-white p-4 flex justify-between items-center shadow-md">
+            <h2 className="text-xl font-bold font-['Orbitron']">{playingGame.title}</h2>
+            <button 
+              onClick={() => setPlayingGame(null)} 
+              className="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center transition-colors"
+            >
+              <i className="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          <div className="flex-1 w-full relative bg-white">
+            {playingGame.url ? (
+              <iframe src={playingGame.url} className="w-full h-full border-none" title={playingGame.title} allowFullScreen></iframe>
+            ) : playingGame.html ? (
+              <iframe srcDoc={playingGame.html} className="w-full h-full border-none" title={playingGame.title} allowFullScreen></iframe>
+            ) : null}
+          </div>
         </div>
       )}
 

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratori i Saktësisë </title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif; background-color: #f7f9fa; color: #4b4b4b;
+            margin: 0; padding: 15px; display: flex; justify-content: center;
+        }
+        .container { width: 100%; max-width: 800px; }
+        h1 { text-align: center; color: #ce82ff; font-size: 2.2em; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #afafaf; font-weight: bold; margin-bottom: 30px; }
+
+        /* Kartat e Përbashkëta */
+        .card {
+            background-color: #ffffff; border: 2px solid #e5e5e5; border-radius: 16px;
+            padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 0 #e5e5e5;
+        }
+        .section-title { color: #1cb0f6; text-transform: uppercase; font-weight: 800; margin-bottom: 15px; border-bottom: 2px dashed #e5e5e5; padding-bottom: 5px; }
+
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .icon-circle {
+            background-color: #ddf4ff; font-size: 24px; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center; border-radius: 50%; flex-shrink: 0;
+        }
+        .question-text { font-size: 1.1em; font-weight: 700; }
+
+        /* Alternativat */
+        .option-label {
+            display: block; border: 2px solid #e5e5e5; border-radius: 12px;
+            padding: 12px 15px; margin-bottom: 10px; cursor: pointer;
+            font-weight: 700; transition: all 0.2s ease;
+        }
+        .option-label:hover { background-color: #f1f1f1; }
+        .option-label input { display: none; }
+        .option-label.selected { background-color: #ddf4ff; border-color: #1cb0f6; color: #1cb0f6; }
+
+        /* Teksti me Vende Bosh */
+        .fill-blanks-text { font-size: 1.1em; line-height: 2.2; font-weight: 700; }
+        .blank-zone {
+            display: inline-flex; justify-content: center; align-items: center;
+            min-width: 100px; height: 35px; background-color: #f7f9fa;
+            border: 2px dashed #afafaf; border-radius: 8px; margin: 0 5px;
+            vertical-align: middle; color: #1cb0f6; font-size: 0.9em; cursor: pointer;
+        }
+        .blank-zone.correct-match { border: 2px solid #58cc02; background-color: #d7ffb8; color: #58a700; }
+
+        .word-draggable {
+            background-color: #1cb0f6; color: white; font-weight: 800;
+            padding: 10px 15px; border-radius: 12px; cursor: pointer; /* Ndryshuar në pointer për celularet */
+            box-shadow: 0 4px 0 #1899d6; display: inline-block; margin: 5px;
+            transition: transform 0.2s;
+        }
+        .word-draggable:active { transform: translateY(2px); box-shadow: 0 2px 0 #1899d6; }
+        .word-draggable.selected-mobile { transform: scale(1.1); box-shadow: 0 0 10px rgba(28, 176, 246, 0.5); }
+
+        /* Lidh me Shigjetë */
+        .drag-container { display: flex; gap: 20px; margin-top: 20px; }
+        .column { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .block-draggable {
+            background-color: #ffc800; color: white; font-weight: 800;
+            padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; 
+            box-shadow: 0 4px 0 #e5b400; transition: transform 0.2s;
+        }
+        .block-draggable.prefix { background-color: #ff9600; box-shadow: 0 4px 0 #cc7800; }
+        .block-draggable.selected-mobile { transform: scale(1.05); box-shadow: 0 0 10px rgba(255, 200, 0, 0.8); }
+        
+        .block-drop-zone {
+            background-color: #f7f9fa; border: 2px dashed #afafaf; border-radius: 12px;
+            padding: 15px; min-height: 24px; font-weight: 700; color: #777; 
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .block-drop-zone.correct-match { background-color: #d7ffb8; border-color: #58cc02; border-style: solid; color: #58a700; }
+
+        /* Butoni Kryesor */
+        .btn-check {
+            width: 100%; background-color: #58cc02; color: white; font-size: 1.2em; font-weight: 800; 
+            padding: 15px; border: none; border-radius: 16px; cursor: pointer; 
+            box-shadow: 0 4px 0 #58a700; text-transform: uppercase; margin-top: 20px; margin-bottom: 40px;
+        }
+        .btn-check:active { transform: translateY(4px); box-shadow: 0 0 0 #58a700; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; box-sizing: border-box; }
+        .modal-card { background: white; padding: 30px; border-radius: 24px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out; }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-title { font-size: 2em; margin-bottom: 10px; }
+        .modal-score { font-size: 1.1em; color: #777; margin-bottom: 20px; font-weight: bold; }
+        .btn-close { background-color: #1cb0f6; color: white; border: none; padding: 15px; font-size: 1.1em; font-weight: 800; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 0 #1899d6; width: 100%; text-transform: uppercase; }
+
+        /* Përshtatja për Celular (Mobile Responsiveness) */
+        @media (max-width: 600px) {
+            .drag-container { flex-direction: column; gap: 30px; }
+            .question-header { flex-direction: column; text-align: center; }
+            .question-text { font-size: 1em; }
+            .card { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Laboratori i Saktësisë 🚀</h1>
+        <p class="subtitle">Zgjidh, tërhiq ose kliko për të luajtur!</p>
+
+        <h2 class="section-title">Pjesa 1: Alternativat</h2>
+        <div id="quiz-container"></div>
+
+        <h2 class="section-title">Pjesa 2: Plotëso Fjalinë</h2>
+        
+        <div class="card">
+            <div class="question-header">
+                <div class="icon-circle">🧩</div>
+                <div class="question-text">Ushtrimi 1: Çfarë është matja?</div>
+            </div>
+            <div class="fill-blanks-text">
+                Matja e një madhësie fizike do të thotë 
+                <span class="blank-zone" data-target="w1"></span> i saj me një 
+                <span class="blank-zone" data-target="w2"></span> standarte. Madhësitë fizike vlerësojnë nga ana 
+                <span class="blank-zone" data-target="w3"></span> vetitë e materies.
+            </div>
+            <div style="margin-top: 15px; text-align: center;">
+                <div class="word-draggable" draggable="true" id="w2">njësi</div>
+                <div class="word-draggable" draggable="true" id="w3">sasiore</div>
+                <div class="word-draggable" draggable="true" id="w1">krahasimi</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="question-header">
+                <div class="icon-circle">💡</div>
+                <div class="question-text">Ushtrimi 2: Thelbi i Shkencës</div>
+            </div>
+            <div class="fill-blanks-text">
+                Thelbi i <span class="blank-zone" data-target="w4"></span> kërkon që 
+                <span class="blank-zone" data-target="w5"></span> të testohet në 
+                <span class="blank-zone" data-target="w6"></span> praktike.
+            </div>
+            <div style="margin-top: 15px; text-align: center;">
+                <div class="word-draggable" draggable="true" id="w6">eksperimente</div>
+                <div class="word-draggable" draggable="true" id="w4">shkencës</div>
+                <div class="word-draggable" draggable="true" id="w5">teoria</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Pjesa 3: Lidh me Shigjetë</h2>
+        
+        <div class="card">
+            <div class="question-header">
+                <div class="icon-circle">📏</div>
+                <div class="question-text">Lidh Madhësitë me Njësitë e tyre (SI):</div>
+            </div>
+            <p style="font-size: 0.9em; color: #777; text-align: center;">(Në celular: Kliko ngjyrën e verdhë, pastaj kliko kutinë bosh ku do ta vendosësh)</p>
+            <div class="drag-container">
+                <div class="column">
+                    <div class="block-draggable" draggable="true" id="t1">Gjatësia</div>
+                    <div class="block-draggable" draggable="true" id="t2">Masa</div>
+                    <div class="block-draggable" draggable="true" id="t3">Koha</div>
+                    <div class="block-draggable" draggable="true" id="t4">Temperatura</div>
+                </div>
+                <div class="column">
+                    <div class="block-drop-zone" data-target="t3">Sekonda ⏱️</div>
+                    <div class="block-drop-zone" data-target="t1">Metri 📏</div>
+                    <div class="block-drop-zone" data-target="t4">Kelvin 🌡️</div>
+                    <div class="block-drop-zone" data-target="t2">Kilogrami ⚖️</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="question-header">
+                <div class="icon-circle">🔢</div>
+                <div class="question-text">Lidh Prefikset me vlerat e tyre matematikore:</div>
+            </div>
+            <div class="drag-container">
+                <div class="column">
+                    <div class="block-draggable prefix" draggable="true" id="p1">Kilo</div>
+                    <div class="block-draggable prefix" draggable="true" id="p2">Mega</div>
+                    <div class="block-draggable prefix" draggable="true" id="p3">Giga</div>
+                    <div class="block-draggable prefix" draggable="true" id="p4">Tera</div>
+                </div>
+                <div class="column">
+                    <div class="block-drop-zone" data-target="p2">10<sup>6</sup></div>
+                    <div class="block-drop-zone" data-target="p4">10<sup>12</sup></div>
+                    <div class="block-drop-zone" data-target="p1">10<sup>3</sup></div>
+                    <div class="block-drop-zone" data-target="p3">10<sup>9</sup></div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn-check" onclick="checkAllAnswers()">Përfundo & Kontrollo</button>
+    </div>
+
+    <div class="modal-overlay" id="result-modal">
+        <div class="modal-card">
+            <h2 class="modal-title" id="modal-msg">Të Lumtë! 🎉</h2>
+            <div class="modal-score" id="modal-score-text">Ke gjetur X nga Y pyetje.</div>
+            <button class="btn-close" onclick="closeModal()">Mbyll & Shiko Gabimet</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Të 8 Pyetjet me Alternativa ---
+        const quizData = [
+            { question: "Pse shkenca ndryshon nga fusha të tjera të dijes?", options: ["Nuk përdor instrumente.", "Kërkon që teoria të testohet në eksperimente praktike.", "Bazohet vetëm në imagjinatë."], correctIndex: 1, icon: "🔬" },
+            { question: "Çfarë quhet gabimi që ndodh kur lexoni shkallën nga një pikë e gabuar?", options: ["Gabimi i paralaksit", "Gabimi absolut", "Gabimi relativ"], correctIndex: 0, icon: "👀" },
+            { question: "Cilat instrumente masin me saktësi më të madhe se vizorja?", options: ["Gota e shkallëzuar", "Peshorja dhe termometri", "Kalibri dhe mikrometri"], correctIndex: 2, icon: "🎯" },
+            { question: "Si vlerësohet pasiguria në matje nga ndarjet e shkallës së instrumentit?", options: ["Gjysma e precizionit maksimal", "Sa dyfishi i gabimit", "E barabartë me vlerën e matur"], correctIndex: 0, icon: "📏" },
+            { question: "Çfarë dallimi ka midis 'gabimit' dhe 'pasigurisë' në matje?", options: ["Gabimi është problem, pasiguria është interval", "Janë ekzaktësisht e njëjta gjë", "Pasiguria është problem, gabimi është interval"], correctIndex: 0, icon: "⚖️" },
+            { question: "Çfarë karakteristike ka një madhësi skalare?", options: ["Ka drejtim dhe kah", "Ka vetëm vlerë numerike (dhe njësi)", "Nuk mund të matet asnjëherë"], correctIndex: 1, icon: "🔢" },
+            { question: "Si llogaritet pasiguria relative në matje?", options: ["Pasiguria absolute / vlera e matur", "Duke mbledhur gabimet", "Gjysma e precizionit"], correctIndex: 0, icon: "➗" },
+            { question: "Çfarë duhet të kenë madhësitë fizike që mblidhen ose zbriten?", options: ["Mund të jenë çfarëdo lloji", "Të njëjtin lloj dhe njësi", "Vetëm të njëjtën vlerë numerike"], correctIndex: 1, icon: "➕" }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        quizData.forEach((q, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            let optionsHTML = '';
+            q.options.forEach((opt, optIndex) => {
+                optionsHTML += `
+                    <label class="option-label" onclick="selectOption(this)">
+                        <input type="radio" name="q${index}" value="${optIndex}">
+                        ${opt}
+                    </label>`;
+            });
+            card.innerHTML = `
+                <div class="question-header">
+                    <div class="icon-circle">${q.icon}</div>
+                    <div class="question-text">${q.question}</div>
+                </div>
+                <div class="options-container">${optionsHTML}</div>`;
+            quizContainer.appendChild(card);
+        });
+
+        function selectOption(labelElement) {
+            const labels = labelElement.parentElement.querySelectorAll('.option-label');
+            labels.forEach(lbl => lbl.classList.remove('selected'));
+            labelElement.classList.add('selected');
+        }
+
+        // --- 2. Logjika Hibride Drag & Drop (Tërhiq PËR PC / Kliko PËR Telefon) ---
+        let selectedElementForMobile = null;
+
+        function setupInteractions(draggableClass, dropZoneClass, isTextReplacement) {
+            const draggables = document.querySelectorAll(draggableClass);
+            const dropZones = document.querySelectorAll(dropZoneClass);
+
+            // Logjika e PC (Drag & Drop)
+            draggables.forEach(item => {
+                item.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text', e.target.id); });
+                
+                // Logjika e Celularit (Kliko për të zgjedhur)
+                item.addEventListener('click', () => {
+                    if (item.getAttribute('draggable') === 'false') return;
+                    draggables.forEach(d => d.classList.remove('selected-mobile'));
+                    selectedElementForMobile = item;
+                    item.classList.add('selected-mobile');
+                });
+            });
+
+            dropZones.forEach(zone => {
+                // Për PC
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    handleMatch(e.dataTransfer.getData('text'), zone, isTextReplacement);
+                });
+
+                // Për Celular (Kliko kutinë bosh për ta hedhur)
+                zone.addEventListener('click', () => {
+                    if (selectedElementForMobile) {
+                        handleMatch(selectedElementForMobile.id, zone, isTextReplacement);
+                        selectedElementForMobile.classList.remove('selected-mobile');
+                        selectedElementForMobile = null; // Pastro zgjedhjen
+                    }
+                });
+            });
+        }
+
+        // Funksioni që menaxhon përputhjen (përdoret nga PC dhe Celulari njëlloj)
+        function handleMatch(draggedId, zone, isTextReplacement) {
+            const expectedId = zone.getAttribute('data-target');
+            if (draggedId === expectedId) {
+                const draggedElement = document.getElementById(draggedId);
+                if (isTextReplacement) {
+                    zone.innerHTML = draggedElement.innerText;
+                    draggedElement.style.display = 'none';
+                } else {
+                    zone.innerHTML = ''; 
+                    zone.appendChild(draggedElement);
+                    draggedElement.style.boxShadow = 'none';
+                    draggedElement.style.margin = '0';
+                }
+                zone.classList.add('correct-match');
+                draggedElement.setAttribute('draggable', 'false');
+            } else {
+                const originalColor = zone.style.borderColor;
+                zone.style.borderColor = "#ff4b4b"; // Kuqe për gabim
+                setTimeout(() => zone.style.borderColor = originalColor, 500);
+            }
+        }
+
+        // Aktivizo ndërveprimet
+        setupInteractions('.word-draggable', '.blank-zone', true);
+        setupInteractions('.block-draggable', '.block-drop-zone', false);
+
+        // --- 3. Kontrolli Përfundimtar ---
+        function checkAllAnswers() {
+            let score = 0;
+            quizData.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const card = document.querySelectorAll('.card')[index];
+                if (selected && parseInt(selected.value) === q.correctIndex) {
+                    card.style.borderColor = "#58cc02";
+                    score++;
+                } else {
+                    card.style.borderColor = "#ff4b4b";
+                }
+            });
+
+            const modalMsg = document.getElementById('modal-msg');
+            const modalScoreText = document.getElementById('modal-score-text');
+            const modal = document.getElementById('result-modal');
+
+            modalScoreText.innerHTML = `Ke gjetur saktë <strong style="color:#58cc02">${score}</strong> nga ${quizData.length} pyetje me alternativa. <br><br> (Sigurohu që kutitë e tjera të jenë të gjitha me ngjyrë të gjelbër!)`;
+
+            if (score === quizData.length) {
+                modalMsg.innerText = "Të Lumtë! 🎉";
+                modalMsg.style.color = "#58cc02";
+                launchConfetti();
+            } else if (score >= 4) {
+                modalMsg.innerText = "Goxha Mirë! 💪";
+                modalMsg.style.color = "#ffc800";
+            } else {
+                modalMsg.innerText = "Provo Sërish! 🔄";
+                modalMsg.style.color = "#ff4b4b";
+            }
+            modal.style.display = "flex";
+        }
+
+        function closeModal() { document.getElementById('result-modal').style.display = "none"; }
+
+        function launchConfetti() {
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#58cc02', '#1cb0f6', '#ce82ff', '#ffc800'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#58cc02', '#1cb0f6', '#ce82ff', '#ffc800'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+    </script>
+</body>
+</html>

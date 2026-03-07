@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Nunito', 'Poppins', ui-sans-serif, system-ui, sans-serif;
   --font-orbitron: 'Orbitron', sans-serif;
   
   --animate-spin-slow: spin 8s linear infinite;
@@ -21,10 +21,10 @@
   --color-destructive-foreground: #ffffff;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&family=Fredoka:wght@400;500;600;700&display=swap');
 
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Nunito', 'Poppins', sans-serif;
     background-color: #fcf9ff;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;

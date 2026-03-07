@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Beteja e Fizikës ⚛️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #f0f4f8;
+            background-image: radial-gradient(#d9e2ec 2px, transparent 2px);
+            background-size: 30px 30px;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
+            height: 100vh; overflow: hidden; /* Ndalon daljen e elementeve jashtë ekranit */
+            user-select: none; 
+        }
+
+        /* Paneli i Ekipeve (Sipër) - Zvogëluar lartësia */
+        .scoreboard {
+            width: 100%; height: 18vh;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4%; box-sizing: border-box;
+            background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .team-card {
+            display: flex; align-items: center; gap: 15px;
+            padding: 10px 20px; border-radius: 25px;
+            transition: all 0.3s;
+            opacity: 0.5; transform: scale(0.9);
+        }
+
+        .team-card.active-turn {
+            opacity: 1; transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 4px solid #333;
+        }
+
+        /* Ekipi Elektron (Blu/Verdhë) */
+        .team-blue { background: #e0f2fe; color: #0369a1; border-color: #38bdf8; }
+        /* Ekipi Foton (Portokalli/Kuq) */
+        .team-orange { background: #ffedd5; color: #c2410c; border-color: #fb923c; }
+
+        .team-icon { font-size: 4vw; background: white; padding: 10px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+        .team-info h2 { margin: 0; font-size: 2vw; font-weight: 900; }
+
+        /* Bateria UI */
+        .battery-container {
+            width: 14vw; height: 3vw; background: #fff;
+            border: 3px solid #333; border-radius: 8px;
+            position: relative; padding: 3px; box-sizing: border-box; margin-top: 5px;
+        }
+        .battery-container::after {
+            content: ''; position: absolute; top: 20%; right: -8px;
+            width: 5px; height: 60%; background: #333; border-radius: 0 3px 3px 0;
+        }
+        .battery-level {
+            height: 100%; background: #4de66c; border-radius: 4px;
+            width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Zona e Pyetjeve (Qendër) */
+        .game-area {
+            flex-grow: 1; width: 95%; height: 82vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; gap: 2vh;
+        }
+
+        .turn-indicator {
+            font-size: 1.8vw; font-weight: 900;
+            padding: 8px 25px; border-radius: 50px;
+            animation: bounce 1s infinite alternate;
+            background: white; border: 3px dashed #cbd5e1; color: #475569;
+        }
+
+        .question-box {
+            background: white; padding: 3vh 4vw; border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 4px solid #94a3b8;
+            font-size: 2.5vw; font-weight: 900; color: #1e293b;
+            max-width: 85%;
+        }
+
+        /* Butonat e Përgjigjeve (Poshtë) - Zvogëluar për t'u përshtatur */
+        .options-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.5vw; width: 85%; max-height: 40vh;
+        }
+
+        .btn-option {
+            background: #ffffff; border: 4px solid #cbd5e1;
+            border-radius: 20px; padding: 2vh 1.5vw;
+            font-size: 1.8vw; font-weight: 900; color: #334155;
+            cursor: pointer; box-shadow: 0 6px 0 #cbd5e1;
+            transition: all 0.1s;
+            font-family: 'Nunito', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 10vh;
+        }
+
+        .btn-option:active { transform: translateY(6px); box-shadow: 0 0 0 transparent; }
+        
+        .btn-correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; box-shadow: 0 6px 0 #22c55e !important; }
+        .btn-wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; box-shadow: 0 6px 0 #ef4444 !important; animation: shake 0.4s; }
+
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+        /* Ekrani i Fituesit */
+        .winner-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 100;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .winner-screen h1 { font-size: 7vw; margin: 0; text-shadow: 0 5px 0 #ccc; color: #1e293b;}
+        .btn-restart {
+            margin-top: 5vh; padding: 2vh 4vw; font-size: 2.5vw;
+            background: #fde047; border: 4px solid #eab308; border-radius: 30px;
+            font-weight: 900; cursor: pointer; box-shadow: 0 8px 0 #eab308; color: #854d0e;
+        }
+        .btn-restart:active { transform: translateY(8px); box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <div class="scoreboard">
+        <div class="team-card team-blue" id="team1-card">
+            <div class="team-icon">⚡</div>
+            <div class="team-info">
+                <h2>Ekipi Elektron</h2>
+                <div class="battery-container">
+                    <div class="battery-level" id="bat1"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card team-orange" id="team2-card">
+            <div class="team-info" style="text-align: right;">
+                <h2>Ekipi Foton</h2>
+                <div class="battery-container">
+                    <div class="battery-level" id="bat2"></div>
+                </div>
+            </div>
+            <div class="team-icon">🌟</div>
+        </div>
+    </div>
+
+    <div class="game-area">
+        <div class="turn-indicator" id="turn-display">Gati për të filluar!</div>
+        
+        <div class="question-box" id="question-text">
+            Shtypni butonin poshtë për të nisur betejën e Fizikës!
+        </div>
+
+        <div class="options-grid" id="options-container">
+            <button class="btn-option" style="grid-column: span 2; background: #38bdf8; color: white; border-color: #0284c7; box-shadow: 0 6px 0 #0284c7;" onclick="startGame()">Fillo Lojën 🚀</button>
+        </div>
+    </div>
+
+    <div class="winner-screen" id="winner-screen">
+        <div style="font-size: 8vw;" id="winner-icon">🏆</div>
+        <h1 id="winner-text">Ekipi Fitoi!</h1>
+        <button class="btn-restart" onclick="location.reload()">Luaj Përsëri 🔄</button>
+    </div>
+
+    <script>
+        // Të dhënat e kombinuara nga JSON dhe Skedari i Tekstit
+        const data = [
+            // Nga JSON i Elektricitetit
+            { name: "Intensiteti i rrymës", form: "I=q/t ose I=U/R", unit: "A (Amper)", desc: "Sasia e ngarkesës elektrike që kalon nëpër seksionin tërthor të përcjellësit në njësinë e kohës." },
+            { name: "Rezistenca elektrike", form: "R=U/I", unit: "Ω (Ohm)", desc: "Pengesa që lënda i paraqet kalimit të rrymës elektrike." },
+            { name: "Fuqia e rrymës", form: "P=UI", unit: "W (Vat)", desc: "Puna e kryer nga rryma elektrike në njësinë e kohës në një pjesë të qarkut." },
+            { name: "Tensioni", form: "U=IR", unit: "V (Volt)", desc: "Diferenca e potencialeve. Sasi elektronesh që i merr ose i jep trupi." },
+            { name: "Ngarkesa elektrike", form: "q=ne", unit: "C (Kulon)", desc: "Vetia fizike e lëndës që bën që ajo të përjetojë një forcë kur vendoset në një fushë elektromagnetike." },
+            { name: "Intensiteti i fushës elektrike", form: "E=F/q", unit: "N/C", desc: "Tregon forcën mbi ngarkesën provë në 1 pikë të fushës." },
+            { name: "Kapaciteti elektrik", form: "C=q/V", unit: "F (Farad)", desc: "Tregon aftësinë e një kondensatori për të nxënë ngarkesa." },
+            { name: "Potenciali elektrik", form: "V=Ep/q", unit: "V (Volt)", desc: "Tregon energjinë potenciale të ngarkesës provë në 1 pikë të fushës." },
+            // Nga Skedari yt i tekstit (Fizike.txt)
+            { name: "Shpejtësia e castit", form: "v =Δx / Δt", unit: "m/s", desc:"Shpejtësia e trupit në një çast të caktuar të kohës ose në një pikë të dhënë të trajektores." },
+            { name: "Nxitimi", form: "a = Δv / Δt", unit: "m/s²", desc: "Madhësia që tregon ndryshimin e shpejtësisë në njësinë e kohë." },
+            { name: "Forca", form: "F=ma", unit: "N (Njuton)", desc: "Veprimi i një trupi mbi një tjetër." },
+            { name: "Impulsi i trupit", form: "p=mv", unit: "kg·m/s", desc: "Sasia e lëvizjes së trupit." },
+            { name: "Puna mekanike", form: "A = Fscosθ", unit: "J (Xhaul)", desc: "Energjia e transferuar te një trup ose nga një trup përmes veprimit të një force gjatë një zhvendosjeje." },
+            { name: "Shtypja", form: "P=F/S", unit: "Pa (Paskal)", desc: "Forca që ushtrohet pingul mbi njësinë e sipërfaqes së një trupi." },
+            { name: "Induksioni magnetik", form: "B=Fmax/IL", unit: "T (Tesla)", desc: "Madhësia vektoriale që karakterizon fushën magnetike në çdo pikë të saj." },
+            { name: "Energjia Kinetike", form: "Ek=mv²/2", unit: "J (Xhaul)", desc: "Energjia që zotëron një trup për shkak të lëvizjes së tij me një shpejtësi të caktuar." }
+        ];
+
+        // Gjendja e lojës
+        let currentTeam = 1; // 1 = Elektron, 2 = Foton
+        let scores = { 1: 0, 2: 0 };
+        const winScore = 6; // Duhen 6 pyetje të sakta për të fituar
+        let isWaiting = false; 
+
+        function startGame() {
+            scores = { 1: 0, 2: 0 };
+            currentTeam = 1;
+            updateUI();
+            nextTurn();
+        }
+
+        function updateUI() {
+            document.getElementById('bat1').style.width = (scores[1] / winScore) * 100 + "%";
+            document.getElementById('bat2').style.width = (scores[2] / winScore) * 100 + "%";
+
+            const card1 = document.getElementById('team1-card');
+            const card2 = document.getElementById('team2-card');
+            const turnDisplay = document.getElementById('turn-display');
+
+            if(currentTeam === 1) {
+                card1.classList.add('active-turn');
+                card2.classList.remove('active-turn');
+                turnDisplay.innerText = "Radha e Ekipit Elektron ⚡";
+                turnDisplay.style.borderColor = "#38bdf8";
+                turnDisplay.style.color = "#0369a1";
+            } else {
+                card2.classList.add('active-turn');
+                card1.classList.remove('active-turn');
+                turnDisplay.innerText = "Radha e Ekipit Foton 🌟";
+                turnDisplay.style.borderColor = "#fb923c";
+                turnDisplay.style.color = "#c2410c";
+            }
+        }
+
+        function nextTurn() {
+            if(scores[1] >= winScore) return declareWinner(1);
+            if(scores[2] >= winScore) return declareWinner(2);
+
+            isWaiting = false;
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            // Zgjidh një koncept rastësor nga lista e 16 koncepteve
+            const correctItem = data[Math.floor(Math.random() * data.length)];
+            
+            // Zgjidh llojin e pyetjes
+            const qType = Math.floor(Math.random() * 3);
+            let questionText = "";
+            let correctAnswer = "";
+            let propertyToExtract = "";
+
+            if(qType === 0) {
+                questionText = `Cila është formula për:\n"${correctItem.name}"?`;
+                correctAnswer = correctItem.form;
+                propertyToExtract = "form";
+            } else if(qType === 1) {
+                questionText = `Cila është njësia matëse për:\n"${correctItem.name}"?`;
+                correctAnswer = correctItem.unit;
+                propertyToExtract = "unit";
+            } else {
+                questionText = `Cili koncept e ka këtë përkufizim:\n"${correctItem.desc}"?`;
+                correctAnswer = correctItem.name;
+                propertyToExtract = "name";
+            }
+
+            document.getElementById('question-text').innerText = questionText;
+
+            // Gjenero 3 përgjigje të gabuara (unike)
+            let wrongOptions = [];
+            while(wrongOptions.length < 3) {
+                let randomWrong = data[Math.floor(Math.random() * data.length)][propertyToExtract];
+                if(randomWrong !== correctAnswer && !wrongOptions.includes(randomWrong)) {
+                    wrongOptions.push(randomWrong);
+                }
+            }
+
+            // Bashko dhe përziej 4 përgjigjet
+            let allOptions = [correctAnswer, ...wrongOptions];
+            allOptions.sort(() => Math.random() - 0.5);
+
+            // Vizato butonat
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = "";
+            
+            allOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt === correctAnswer, correctAnswer);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(btn, isCorrect, correctText) {
+            if(isWaiting) return;
+            isWaiting = true;
+
+            if(isCorrect) {
+                btn.classList.add('btn-correct');
+                scores[currentTeam]++; // Shto pikë
+                launchMiniConfetti();
+            } else {
+                btn.classList.add('btn-wrong');
+                // Theksojmë butonin e saktë me të gjelbër
+                const buttons = document.querySelectorAll('.btn-option');
+                buttons.forEach(b => {
+                    if(b.innerText === correctText) {
+                        b.style.background = "#dcfce7";
+                        b.style.borderColor = "#22c55e";
+                    }
+                });
+            }
+
+            updateUI();
+
+            // Kalo radhën te ekipi tjetër pas 2 sekondash
+            setTimeout(() => {
+                currentTeam = currentTeam === 1 ? 2 : 1;
+                updateUI();
+                nextTurn();
+            }, 2500);
+        }
+
+        function declareWinner(team) {
+            const screen = document.getElementById('winner-screen');
+            const text = document.getElementById('winner-text');
+            const icon = document.getElementById('winner-icon');
+            
+            screen.style.display = 'flex';
+            if(team === 1) {
+                text.innerText = "Ekipi Elektron Fitoi!";
+                text.style.color = "#0369a1";
+                icon.innerText = "⚡🏆⚡";
+            } else {
+                text.innerText = "Ekipi Foton Fitoi!";
+                text.style.color = "#c2410c";
+                icon.innerText = "🌟🏆🌟";
+            }
+
+            var duration = 5 * 1000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 10, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#38bdf8', '#fb923c'] });
+                confetti({ particleCount: 10, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#38bdf8', '#fb923c'] });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+        }
+
+        function launchMiniConfetti() {
+            confetti({ particleCount: 50, spread: 70, origin: { y: 0.7 } });
+        }
+    </script>
+</body>
+</html>

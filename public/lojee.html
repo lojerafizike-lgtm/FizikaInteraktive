@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElektroGame⚛️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&display=swap');
+
+        /* Sfond i errët pastel */
+        body {
+            font-family: 'Nunito', sans-serif; 
+            background: #1a1a2e; 
+            color: #e2e8f0;
+            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center;
+            height: 100vh; overflow: hidden; 
+        }
+        
+        /* Shiriti i progresit në krye (Pa titull) */
+        .header { text-align: center; padding: 10px 15px; width: 100%; z-index: 10; background: rgba(26, 26, 46, 0.9); }
+        .progress-bar { width: 80%; max-width: 600px; height: 8px; background: #2a2a4a; border-radius: 10px; margin: 10px auto; overflow: hidden; }
+        .progress-fill { height: 100%; background: #4facf7; width: 0%; transition: width 0.4s ease; }
+
+        /* Kontejneri i Ekraneve */
+        .app-container {
+            width: 100%; max-width: 800px; flex-grow: 1; position: relative;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Stili i Faqeve me Animacion */
+        .screen {
+            position: absolute; width: 90%; max-height: 85vh; overflow-y: auto;
+            background: #24243e; border-radius: 30px; padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 3px solid #303050;
+            display: none; 
+            opacity: 0; transform: translateX(50px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .screen.active {
+            display: block; opacity: 1; transform: translateX(0) scale(1);
+        }
+        .screen::-webkit-scrollbar { width: 8px; }
+        .screen::-webkit-scrollbar-thumb { background: #4facf7; border-radius: 10px; }
+
+        /* Titulli Kryesor (Vetëm për faqen e parë) */
+        h1.main-title { color: #4facf7; font-size: 2.6em; margin: 0 0 15px 0; font-weight: 900; text-align: center; text-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+
+        .screen-icon { font-size: 3.5em; text-align: center; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 10px rgba(79,172,247,0.5)); }
+        .screen-title { color: #f1f5f9; text-align: center; font-size: 1.5em; margin-bottom: 20px; }
+
+        /* Butonat e Navigimit (Poshtë) */
+        .nav-buttons { width: 100%; max-width: 800px; display: flex; justify-content: space-between; padding: 15px 20px; box-sizing: border-box; z-index: 10; }
+        .btn-nav { background: #303050; color: #fff; border: none; padding: 12px 25px; font-size: 1.1em; font-weight: bold; border-radius: 15px; cursor: pointer; transition: all 0.2s; box-shadow: 0 5px 0 #1a1a2e; }
+        .btn-nav:hover { background: #4facf7; box-shadow: 0 5px 0 #287dc2; }
+        .btn-nav:active { transform: translateY(5px); box-shadow: none; }
+
+        /* --- STILI I USHTRIMEVE --- */
+        .question-text { font-size: 1.1em; font-weight: 700; margin-bottom: 10px; color: #cbd5e1;}
+        .option-label { display: block; background: #2a2a4a; border: 2px solid #303050; border-radius: 15px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .option-label:hover { background: #303050; }
+        .option-label input { display: none; }
+        .option-label.selected { background: #1b3a57; border-color: #4facf7; color: #4facf7; box-shadow: 0 4px 0 #132a40; }
+
+        /* Drag & Drop */
+        .draggable { background: #e07a5f; color: white; padding: 10px 15px; border-radius: 12px; font-weight: bold; display: inline-block; margin: 5px; cursor: pointer; border: 2px solid #fff; box-shadow: 0 4px 0 #b3563d; transition: 0.2s; }
+        .draggable.selected-mobile { transform: scale(1.1); box-shadow: 0 0 15px #e07a5f; }
+        .drop-zone { background: #2a2a4a; border: 2px dashed #81b29a; border-radius: 15px; padding: 15px; min-height: 20px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; text-align: center; color: #81b29a; font-weight: bold; cursor: pointer;}
+        .drop-zone.correct-match { background: #81b29a; color: #1a1a2e; border-style: solid; }
+
+        /* Formulat */
+        .formula-row { background: #2a2a4a; padding: 15px; border-radius: 15px; margin-bottom: 15px; text-align: center;}
+        .formula-slot { width: 45px; height: 45px; background: #1a1a2e; border: 2px dashed #f2cc8f; border-radius: 10px; display: inline-flex; justify-content: center; align-items: center; font-size: 1.2em; font-weight: bold; margin: 0 5px; vertical-align: middle; color: #f2cc8f; cursor: pointer;}
+
+        /* --- SIMULIMET PHET STYLE --- */
+        .sim-box { background: #1a1a2e; border-radius: 20px; padding: 20px; text-align: center; border: 2px solid #303050; margin-bottom: 20px;}
+        input[type=range] { width: 90%; margin: 15px 0; accent-color: #4facf7; }
+        
+        .capacitor-area { height: 120px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; margin: 10px 0; position: relative;}
+        .cap-plate { background: #81b29a; width: 100px; height: 15px; border-radius: 5px; display: flex; justify-content: space-evenly; align-items: center; color: #1a1a2e; font-weight: bold; font-size: 12px; transition: 0.2s; z-index: 2;}
+        .e-field-lines { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 50px; background: repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(224, 122, 95, 0.5) 15px, rgba(224, 122, 95, 0.5) 17px); z-index: 1;}
+
+        .optics-box { height: 150px; background: linear-gradient(180deg, #1a1a2e 50%, #3d5a80 50%); border-radius: 10px; position: relative; overflow: hidden; margin: 10px 0; border: 2px solid #cbd5e1;}
+        .laser-beam-in { position: absolute; width: 200px; height: 4px; background: #ef476f; top: 25%; left: 0; transform-origin: left center; transform: rotate(30deg); box-shadow: 0 0 10px #ef476f;}
+        .laser-beam-out { position: absolute; width: 200px; height: 4px; background: #ef476f; top: 50%; left: 50%; transform-origin: left center; transform: rotate(15deg); box-shadow: 0 0 10px #ef476f;}
+        .normal-line { position: absolute; width: 2px; height: 100%; background: dashed rgba(255,255,255,0.3); left: 50%; }
+
+        .wire { height: 40px; background: #3d5a80; border-radius: 20px; position: relative; overflow: hidden; margin: 10px 0; border: 2px solid #98c1d9;}
+        .electron { width: 16px; height: 16px; background: #f2cc8f; border-radius: 50%; position: absolute; top: 10px; font-size: 10px; display: flex; align-items: center; justify-content: center; color: #1a1a2e; font-weight: bold;}
+        .electron::after { content: '-'; }
+
+        /* Modal */
+        #apple-drop { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); font-size: 80px; z-index: 1000; display: none; }
+        .apple-anim { animation: drop 1s forwards cubic-bezier(0.5, 0, 0.5, 1); }
+        @keyframes drop { to { top: 50%; transform: translate(-50%, -50%) scale(1.5); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    </div>
+
+    <div id="apple-drop">🍎</div>
+
+    <div class="app-container">
+
+        <div class="screen active" id="screen-0">
+            <h1 class="main-title">ElektroGame ⚛️</h1>
+            <span class="screen-icon">🔬</span>
+            <h2 class="screen-title">Mirësevini!</h2>
+            <p style="text-align: center; color: #cbd5e1;">Zbuloni ligjet e elektricitetit, optikës dhe fushës magnetike. Përdorni butonat poshtë për të kaluar faqet.</p>
+        </div>
+
+        <div class="screen" id="screen-1">
+            <span class="screen-icon">🔋</span>
+            <h2 class="screen-title">1. Simulimi i Kondensatorit</h2>
+            <div class="sim-box">
+                <div class="capacitor-area" id="cap-gap">
+                    <div class="e-field-lines" id="e-field"></div>
+                    <div class="cap-plate" id="plate1"><span>+</span><span>+</span><span>+</span></div>
+                    <div class="cap-plate" id="plate2"><span>-</span><span>-</span><span>-</span></div>
+                </div>
+                <h3 style="color: #4facf7; margin:5px 0;">Kapaciteti: <span id="cap-val">0.0</span> F</h3>
+                <label style="color:#cbd5e1; font-size:0.9em;">Sipërfaqja (S)</label>
+                <input type="range" id="sl-area" min="80" max="200" value="120" oninput="simCap()"><br>
+                <label style="color:#cbd5e1; font-size:0.9em;">Largësia (d)</label>
+                <input type="range" id="sl-dist" min="30" max="100" value="60" oninput="simCap()">
+            </div>
+        </div>
+
+        <div class="screen" id="screen-2">
+            <span class="screen-icon">⚡</span>
+            <h2 class="screen-title">2. Ligji i Ohmit</h2>
+            <div class="sim-box">
+                <div class="wire">
+                    <div class="electron" id="el1" style="left: 0;"></div>
+                    <div class="electron" id="el2" style="left: 100px;"></div>
+                    <div class="electron" id="el3" style="left: 200px;"></div>
+                </div>
+                <h3 style="color: #f2cc8f; margin:5px 0;">Rryma (I): <span id="ohm-val">5.0</span> A</h3>
+                <label style="color:#cbd5e1; font-size:0.9em;">Tensioni (U)</label>
+                <input type="range" id="sl-volt" min="1" max="10" value="5" oninput="simOhm()"><br>
+                <label style="color:#cbd5e1; font-size:0.9em;">Rezistenca (R)</label>
+                <input type="range" id="sl-res" min="1" max="10" value="5" oninput="simOhm()">
+            </div>
+        </div>
+
+        <div class="screen" id="screen-3">
+            <span class="screen-icon">🌈</span>
+            <h2 class="screen-title">3. Përthyerja e Dritës</h2>
+            <div class="sim-box">
+                <div class="optics-box">
+                    <div class="normal-line"></div>
+                    <div class="laser-beam-in" id="laser-in"></div>
+                    <div class="laser-beam-out" id="laser-out"></div>
+                    <span style="position: absolute; top:5px; left:5px; color:#fff; font-size:10px;">Ajër (n=1)</span>
+                    <span style="position: absolute; bottom:5px; left:5px; color:#fff; font-size:10px;">Qelq (n=1.5)</span>
+                </div>
+                <label style="color:#cbd5e1; font-size:0.9em;">Këndi i Rënies</label>
+                <input type="range" id="sl-angle" min="10" max="80" value="45" oninput="simOptics()">
+            </div>
+        </div>
+
+        <div class="screen" id="screen-4">
+            <span class="screen-icon">📐</span>
+            <h2 class="screen-title">Ndërto Formulat</h2>
+            <p style="text-align: center; color: #cbd5e1; font-size: 0.9em;">Kliko simbolin, pastaj kliko kutinë bosh.</p>
+            
+            <div class="formula-row">
+                <div class="question-text">1. Intensiteti Fushës (E):</div>
+                <span class="formula-slot" data-target="E1"></span> = <span class="formula-slot" data-target="F1"></span> / <span class="formula-slot" data-target="q1"></span><br>
+                <div style="margin-top: 10px;">
+                    <div class="draggable" draggable="true" id="F1" style="background:#4facf7;">F</div>
+                    <div class="draggable" draggable="true" id="q1" style="background:#4facf7;">q<sub>0</sub></div>
+                    <div class="draggable" draggable="true" id="E1" style="background:#4facf7;">E</div>
+                </div>
+            </div>
+
+            <div class="formula-row">
+                <div class="question-text">2. Kapaciteti (C):</div>
+                <span class="formula-slot" data-target="C2"></span> = <span class="formula-slot" data-target="Q2"></span> / <span class="formula-slot" data-target="U2"></span><br>
+                <div style="margin-top: 10px;">
+                    <div class="draggable" draggable="true" id="U2" style="background:#e07a5f;">U</div>
+                    <div class="draggable" draggable="true" id="Q2" style="background:#e07a5f;">Q</div>
+                    <div class="draggable" draggable="true" id="C2" style="background:#e07a5f;">C</div>
+                </div>
+            </div>
+
+            <div class="formula-row">
+                <div class="question-text">3. Intensiteti Rrymës (I):</div>
+                <span class="formula-slot" data-target="I3"></span> = Δ<span class="formula-slot" data-target="Q3"></span> / Δ<span class="formula-slot" data-target="t3"></span><br>
+                <div style="margin-top: 10px;">
+                    <div class="draggable" draggable="true" id="t3" style="background:#81b29a;">t</div>
+                    <div class="draggable" draggable="true" id="I3" style="background:#81b29a;">I</div>
+                    <div class="draggable" draggable="true" id="Q3" style="background:#81b29a;">Q</div>
+                </div>
+            </div>
+
+            <div class="formula-row">
+                <div class="question-text">4. Fluksi Elektrik (Φ):</div>
+                <span class="formula-slot" data-target="Phi4"></span> = <span class="formula-slot" data-target="E4"></span> · <span class="formula-slot" data-target="S4"></span><br>
+                <div style="margin-top: 10px;">
+                    <div class="draggable" draggable="true" id="S4" style="background:#f2cc8f; color:#1a1a2e;">S</div>
+                    <div class="draggable" draggable="true" id="Phi4" style="background:#f2cc8f; color:#1a1a2e;">Φ</div>
+                    <div class="draggable" draggable="true" id="E4" style="background:#f2cc8f; color:#1a1a2e;">E</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-5">
+            <span class="screen-icon">🧲</span>
+            <h2 class="screen-title">Ndarja & Lidhjet</h2>
+            
+            <div class="question-text">Ndaj Përcjellësit nga Dielektrikët:</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <div style="flex: 1;">
+                    <div class="drop-zone sort-zone" data-group="diel" style="border-color:#e07a5f; color:#e07a5f;">Dielektrikë 🚫</div>
+                </div>
+                <div style="flex: 1;">
+                    <div class="drop-zone sort-zone" data-group="perc" style="border-color:#81b29a; color:#81b29a;">Përcjellës ⚡</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom:30px;">
+                <div class="draggable sort-item" draggable="true" id="s1" data-type="diel" style="background:#3d5a80;">Qelqi</div>
+                <div class="draggable sort-item" draggable="true" id="s2" data-type="perc" style="background:#3d5a80;">Hekuri</div>
+                <div class="draggable sort-item" draggable="true" id="s3" data-type="diel" style="background:#3d5a80;">Letra</div>
+                <div class="draggable sort-item" draggable="true" id="s4" data-type="perc" style="background:#3d5a80;">Bakri</div>
+            </div>
+
+            <div class="question-text">Lidh Përkufizimet:</div>
+            <div class="drop-zone" data-target="m1">2 ngarkesa të barabarta e të kundërta</div>
+            <div class="drop-zone" data-target="m2">Sipërfaqe ku potenciali është i njëjtë</div>
+            <div class="drop-zone" data-target="m3">F.E.M nga lëvizja e fushës</div>
+            <div class="drop-zone" data-target="m4">Prodhimi E me sipërfaqen pingule S</div>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <div class="draggable" draggable="true" id="m2" style="background:#8e44ad;">Sip. Ekuipotenciale</div>
+                <div class="draggable" draggable="true" id="m4" style="background:#8e44ad;">Fluksi Elektrik</div>
+                <div class="draggable" draggable="true" id="m1" style="background:#8e44ad;">Dipoli Elektrik</div>
+                <div class="draggable" draggable="true" id="m3" style="background:#8e44ad;">F.E.M Dinamike</div>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-6">
+            <span class="screen-icon">📝</span>
+            <h2 class="screen-title">Kuizi (Pjesa 1)</h2>
+            <div id="quiz-part1"></div>
+        </div>
+
+        <div class="screen" id="screen-7">
+            <span class="screen-icon">🧠</span>
+            <h2 class="screen-title">Kuizi (Pjesa 2)</h2>
+            <div id="quiz-part2"></div>
+        </div>
+
+        <div class="screen" id="screen-8">
+            <span class="screen-icon">⚖️</span>
+            <h2 class="screen-title">E Vërtetë apo E Gabuar?</h2>
+            <div id="tf-container"></div>
+            
+            <div style="text-align:center; margin-top:30px;">
+                <button class="btn-nav" style="background: #e07a5f; padding: 15px 30px; font-size: 1.2em;" onclick="finishApp()">Përfundo & Shiko Rezultatin</button>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-9" style="text-align: center;">
+            <span class="screen-icon" id="res-icon" style="font-size: 5em;">🏆</span>
+            <h2 class="screen-title" id="res-msg" style="font-size: 2em; color: #4facf7;">Urime!</h2>
+            <p id="res-score" style="font-size: 1.3em; font-weight: bold; color: #cbd5e1;">Ke mbledhur X nga Y pikë.</p>
+            <p style="color: #81b29a; margin-top: 20px;">Faleminderit që përdorët ElektroGame!</p>
+        </div>
+
+    </div>
+
+    <div class="nav-buttons">
+        <button class="btn-nav" id="btn-prev" onclick="prevScreen()">⬅️ Kthehu</button>
+        <button class="btn-nav" id="btn-next" onclick="nextScreen()">Vazhdo ➡️</button>
+    </div>
+
+    <script>
+        // --- 1. NAVIGIMI I FAQEVE (SISTEMI PA SCROLL) ---
+        let currentScreen = 0;
+        const totalScreens = 10; 
+
+        function updateNav() {
+            document.querySelectorAll('.screen').forEach((el, i) => {
+                el.classList.remove('active');
+                if(i === currentScreen) el.classList.add('active');
+            });
+            
+            document.getElementById('btn-prev').style.visibility = (currentScreen === 0 || currentScreen === 9) ? 'hidden' : 'visible';
+            document.getElementById('btn-next').style.visibility = (currentScreen >= 8) ? 'hidden' : 'visible';
+            
+            document.getElementById('progress').style.width = ((currentScreen) / 8) * 100 + "%";
+        }
+
+        function nextScreen() { if(currentScreen < 8) { currentScreen++; updateNav(); } }
+        function prevScreen() { if(currentScreen > 0) { currentScreen--; updateNav(); } }
+
+        // --- 2. SIMULIMET E AVANCUARA ---
+        function simCap() {
+            const area = document.getElementById('sl-area').value;
+            const dist = document.getElementById('sl-dist').value;
+            const p1 = document.getElementById('plate1');
+            const p2 = document.getElementById('plate2');
+            const field = document.getElementById('e-field');
+            
+            p1.style.width = area + 'px'; p2.style.width = area + 'px';
+            document.getElementById('cap-gap').style.height = dist + 'px';
+            
+            field.style.width = (area - 10) + 'px'; field.style.height = (dist - 15) + 'px';
+            field.style.opacity = 1 - (dist / 150);
+            document.getElementById('cap-val').innerText = ((area / dist) * 1.5).toFixed(2);
+        }
+        simCap();
+
+        let ohmAnim, p1=0, p2=100, p3=200;
+        function simOhm() {
+            const v = document.getElementById('sl-volt').value;
+            const r = document.getElementById('sl-res').value;
+            let speed = v / r;
+            document.getElementById('ohm-val').innerText = speed.toFixed(1);
+            
+            cancelAnimationFrame(ohmAnim);
+            function animate() {
+                let s = speed * 1.5;
+                p1 += s; p2 += s; p3 += s;
+                const w = document.querySelector('.wire').offsetWidth;
+                if(p1>w) p1=-20; if(p2>w) p2=-20; if(p3>w) p3=-20;
+                
+                document.getElementById('el1').style.left = p1 + 'px';
+                document.getElementById('el2').style.left = p2 + 'px';
+                document.getElementById('el3').style.left = p3 + 'px';
+                ohmAnim = requestAnimationFrame(animate);
+            }
+            animate();
+        }
+        simOhm();
+
+        function simOptics() {
+            const angleIn = document.getElementById('sl-angle').value;
+            const n1 = 1.0; 
+            const n2 = 1.5; 
+            
+            const radIn = angleIn * (Math.PI / 180);
+            const radOut = Math.asin((n1 / n2) * Math.sin(radIn));
+            const angleOut = radOut * (180 / Math.PI);
+
+            const laserIn = document.getElementById('laser-in');
+            const laserOut = document.getElementById('laser-out');
+            
+            laserIn.style.transform = `rotate(${angleIn}deg)`;
+            laserOut.style.transform = `rotate(${angleOut}deg)`;
+        }
+        simOptics();
+
+        // --- 3. KUIZET DHE TË DHËNAT ---
+        const mcqData = [
+            { q: "Raporti i forcës së ushtruar nga fusha mbi njësinë e ngarkesës provë quhet:", o: ["Fluks", "Intensitet i fushës elektrike", "Potencial"], c: 1 },
+            { q: "Ç'ndodh me kapacitetin e kondensatorit kur shtohet një dielektrik?", o: ["Zvogëlohet", "Mbetet i njëjtë", "Rritet"], c: 2 },
+            { q: "Ligji i Lencit thotë se rryma e induktuar ka një kah që:", o: ["Kundërshton shkakun që e krijon", "Ndihmon shkakun", "Është paralel me fushën"], c: 0 },
+            { q: "Kufizimi i Teoremës së Amperit është se:", o: ["Vlen vetëm në vakum", "Vlen vetëm për vija të mbyllura", "Zbatohet vetëm te kondensatorët"], c: 1 },
+            { q: "Parimi i Huygensit thotë se çdo pikë e një fronti valor shërben si:", o: ["Pasqyrë", "Burim i valëve sferike sekondare", "Pengesë"], c: 1 },
+            { q: "Kur këndi i rënies është më i madh se këndi kufi, ndodh:", o: ["Përthyerje", "Difraksion", "Pasqyrim i plotë i brendshëm"], c: 2 },
+            { q: "Dukuria e polarizimit tregon se drita është një valë:", o: ["Tërthore", "Gjatësore", "Mekanike"], c: 0 },
+            { q: "Dispersioni është varësia e treguesit të përthyerjes nga:", o: ["Koha", "Gjatësia e valës", "Temperatura"], c: 1 },
+            { q: "Kur vala ndesh një pengesë me një çarje të vogël dhe përkulet, kjo quhet:", o: ["Difraksion", "Pasqyrim", "Kondensim"], c: 0 },
+            { q: "Cila është njësia matëse e Kapacitetit elektrik?", o: ["Volt", "Farad", "Ohm"], c: 1 }
+        ];
+
+        const tfData = [
+            { q: "Vijat e fushës elektrike mund të priten me njëra-tjetrën.", c: 1 }, 
+            { q: "Sipas Teoremës së Gausit, fluksi varet thellësisht nga forma gjeometrike e sipërfaqes.", c: 1 },
+            { q: "Kondensatori shërben për të grumbulluar ngarkesë elektrike.", c: 0 },
+            { q: "Teorema e Gausit për magnetizmin tregon se fluksi magnetik në një sipërfaqe të mbyllur është 0.", c: 0 },
+            { q: "Pasqyrat janë shembull i difraksionit të dritës.", c: 1 }
+        ];
+
+        function renderQuestions(data, containerId, prefix, isTF, startIndex = 0, limit = data.length) {
+            const container = document.getElementById(containerId);
+            for(let i = startIndex; i < startIndex + limit; i++) {
+                if(!data[i]) break;
+                const item = data[i];
+                let optionsHTML = '';
+                const options = isTF ? ["E Vërtetë", "E Gabuar"] : item.o;
+                options.forEach((opt, optIndex) => {
+                    optionsHTML += `<label class="option-label" onclick="selectOpt(this)"><input type="radio" name="${prefix}${i}" value="${optIndex}">${opt}</label>`;
+                });
+                container.innerHTML += `<div style="margin-bottom:20px;"><div class="question-text">${i + 1}. ${item.q}</div>${optionsHTML}</div>`;
+            }
+        }
+        
+        renderQuestions(mcqData, 'quiz-part1', 'mcq', false, 0, 5);
+        renderQuestions(mcqData, 'quiz-part2', 'mcq', false, 5, 5);
+        renderQuestions(tfData, 'tf-container', 'tf', true, 0, 5);
+
+        function selectOpt(lbl) {
+            lbl.parentElement.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+            lbl.classList.add('selected');
+        }
+
+        // --- 4. DRAG & DROP ---
+        let selectedElement = null;
+        function initDragDrop() {
+            const draggables = document.querySelectorAll('.draggable');
+            const zones = document.querySelectorAll('.drop-zone, .formula-slot');
+
+            draggables.forEach(item => {
+                item.addEventListener('dragstart', e => e.dataTransfer.setData('text', e.target.id));
+                item.addEventListener('click', () => {
+                    if(item.style.display === 'none') return;
+                    draggables.forEach(d => d.classList.remove('selected-mobile'));
+                    selectedElement = item;
+                    item.classList.add('selected-mobile');
+                });
+            });
+
+            zones.forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', e => { e.preventDefault(); processDrop(e.dataTransfer.getData('text'), zone); });
+                zone.addEventListener('click', () => {
+                    if(selectedElement) { processDrop(selectedElement.id, zone); selectedElement.classList.remove('selected-mobile'); selectedElement = null; }
+                });
+            });
+        }
+
+        function processDrop(dragId, zone) {
+            const el = document.getElementById(dragId);
+            
+            if(zone.classList.contains('sort-zone')) {
+                if(el.getAttribute('data-type') === zone.getAttribute('data-group')) {
+                    zone.appendChild(el); el.style.margin = '5px';
+                } else flashError(zone);
+                return;
+            }
+
+            if(dragId === zone.getAttribute('data-target')) {
+                if(zone.classList.contains('formula-slot')) {
+                    zone.innerHTML = el.innerHTML; el.style.display = 'none';
+                    zone.style.background = el.style.background; zone.style.color = '#1a1a2e'; zone.style.borderColor = 'transparent';
+                } else {
+                    zone.innerHTML = ''; zone.appendChild(el); el.style.margin = '0'; zone.classList.add('correct-match');
+                }
+            } else flashError(zone);
+        }
+
+        function flashError(el) {
+            const oldBorder = el.style.borderColor;
+            el.style.borderColor = "#ef476f";
+            setTimeout(() => el.style.borderColor = oldBorder, 400);
+        }
+        initDragDrop();
+
+        // --- 5. LLOGARITJA DHE MOLLA ---
+        function finishApp() {
+            let score = 0; let total = mcqData.length + tfData.length;
+            mcqData.forEach((q, i) => { const s = document.querySelector(`input[name="mcq${i}"]:checked`); if(s && parseInt(s.value) === q.c) score++; });
+            tfData.forEach((q, i) => { const s = document.querySelector(`input[name="tf${i}"]:checked`); if(s && parseInt(s.value) === q.c) score++; });
+
+            document.getElementById('res-score').innerText = `Pikët tuaja nga Kuizi: ${score} / ${total}`;
+            const msg = document.getElementById('res-msg');
+            const icon = document.getElementById('res-icon');
+            
+            if(score >= 12) { msg.innerText = "Gjeni si Ajnshtajni!"; msg.style.color = "#81b29a"; icon.innerText = "🚀"; }
+            else if(score >= 7) { msg.innerText = "Goxha Mirë!"; msg.style.color = "#f2cc8f"; icon.innerText = "👍"; }
+            else { msg.innerText = "Duhet më shumë praktikë!"; msg.style.color = "#e07a5f"; icon.innerText = "📚"; }
+
+            const apple = document.getElementById('apple-drop');
+            apple.style.display = 'block';
+            apple.classList.add('apple-anim');
+
+            setTimeout(() => {
+                currentScreen = 9; updateNav(); 
+                if(score >= 7) confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }});
+                apple.style.display = 'none'; apple.classList.remove('apple-anim');
+            }, 1000);
+        }
+
+        updateNav(); 
+    </script>
+</body>
+</html>
