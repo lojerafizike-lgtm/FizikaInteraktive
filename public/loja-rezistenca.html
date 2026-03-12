@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resistance Guard - Loja e Rezistencës</title>
+    <style>
+        :root {
+            --bg-color: #2c3e50;
+            --primary: #e74c3c;
+            --secondary: #3498db;
+            --text-color: #ecf0f1;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 { color: var(--primary); margin-bottom: 5px; }
+        p { margin-top: 0; color: #bdc3c7; }
+
+        .game-area {
+            background: #34495e;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .circuit-display {
+            background: #1a252f;
+            height: 150px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 10px;
+            border: 2px solid #7f8c8d;
+            position: relative;
+        }
+
+        .component {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .battery {
+            width: 40px;
+            height: 60px;
+            background: #f1c40f;
+            border-radius: 5px;
+            position: relative;
+        }
+        .battery::before {
+            content: '+';
+            position: absolute;
+            top: -15px;
+            left: 15px;
+            color: #f1c40f;
+        }
+
+        .resistor-visual {
+            width: 80px;
+            height: 30px;
+            background: repeating-linear-gradient(
+                45deg,
+                #e74c3c,
+                #e74c3c 10px,
+                #c0392b 10px,
+                #c0392b 20px
+            );
+            border-radius: 15px;
+            border: 2px solid #fff;
+            position: relative;
+        }
+
+        .device {
+            font-size: 3rem;
+        }
+
+        .wire {
+            height: 4px;
+            background: #7f8c8d;
+            flex-grow: 1;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .electron {
+            width: 8px;
+            height: 8px;
+            background: #3498db;
+            border-radius: 50%;
+            position: absolute;
+            top: -2px;
+            animation: flow 2s linear infinite;
+        }
+
+        @keyframes flow {
+            from { left: -10px; }
+            to { left: 100%; }
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            background: #2c3e50;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        label { font-weight: bold; margin-bottom: 5px; color: #ecf0f1; }
+        
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover { background: #c0392b; }
+
+        .target-info {
+            background: #27ae60;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .value-display {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #f1c40f;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>🛡️ Resistance Guard</h1>
+    <p>Mbro pajisjen duke vendosur rezistencën e duhur sipas Ligjit të Ohmit ($R = U / I$)</p>
+
+    <div class="game-area">
+        
+        <div class="target-info">
+            Pajisja kërkon: <span id="targetI">2.0</span> A
+        </div>
+
+        <div class="circuit-display">
+            <div class="component">
+                <div class="battery"></div>
+                <span id="displayU">12 V</span>
+            </div>
+            
+            <div class="wire">
+                <div class="electron" id="e1"></div>
+            </div>
+
+            <div class="component">
+                <div class="resistor-visual" id="resVisual"></div>
+                <span id="displayR">6 Ω</span>
+            </div>
+
+            <div class="wire">
+                <div class="electron" id="e2"></div>
+            </div>
+
+            <div class="component">
+                <div class="device" id="deviceIcon">📱</div>
+                <span>Pajisja</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="slider-container">
+                <label>Tensioni i Burimit (U): <span class="value-display" id="valU">12</span> V</label>
+                <input type="range" id="sliderU" min="5" max="50" value="12">
+            </div>
+
+            <div class="slider-container">
+                <label>Zgjidh Rezistencën (R): <span class="value-display" id="valR">6</span> Ω</label>
+                <input type="range" id="sliderR" min="1" max="100" value="6">
+            </div>
+
+            <div style="text-align: left; margin-top: 10px;">
+                Rryma aktuale: <span class="value-display" id="currentI">2.00</span> A
+            </div>
+
+            <button class="btn" onclick="checkCircuit()">AKTIVIZO QARKUN</button>
+            <div id="message"></div>
+        </div>
+
+    </div>
+
+    <script>
+        let targetCurrent = 2.0;
+        let level = 1;
+        const devices = ["📱", "💻", "💡", "📻", "📺"];
+
+        const sliderU = document.getElementById('sliderU');
+        const sliderR = document.getElementById('sliderR');
+        const valU = document.getElementById('valU');
+        const valR = document.getElementById('valR');
+        const displayU = document.getElementById('displayU');
+        const displayR = document.getElementById('displayR');
+        const currentI = document.getElementById('currentI');
+        const e1 = document.getElementById('e1');
+        const e2 = document.getElementById('e2');
+        const resVisual = document.getElementById('resVisual');
+
+        function updateUI() {
+            let u = parseFloat(sliderU.value);
+            let r = parseFloat(sliderR.value);
+            let i = u / r;
+
+            valU.innerText = u;
+            valR.innerText = r;
+            displayU.innerText = u + " V";
+            displayR.innerText = r + " Ω";
+            currentI.innerText = i.toFixed(2);
+
+            // Ndrysho shpejtësinë e elektroneve bazuar në rrymë
+            let speed = Math.max(0.2, 5 / i); // Rrymë më e madhe -> kohë më e shkurtër (më shpejt)
+            e1.style.animationDuration = speed + "s";
+            e2.style.animationDuration = speed + "s";
+
+            // Ndrysho ngjyrën e rezistencës bazuar në vlerë
+            let hue = 120 - Math.min(r, 100); // Nga jeshile në të kuqe
+            resVisual.style.filter = `hue-rotate(${hue}deg)`;
+        }
+
+        function generateLevel() {
+            // Gjenero një target logjik
+            let randU = Math.floor(Math.random() * 40) + 10;
+            let randR = Math.floor(Math.random() * 20) + 2;
+            targetCurrent = parseFloat((randU / randR).toFixed(1));
+            
+            document.getElementById('targetI').innerText = targetCurrent;
+            document.getElementById('deviceIcon').innerText = devices[level % devices.length];
+            document.getElementById('message').innerText = "";
+            
+            // Randomizo sliderat për të mos qenë e saktë në fillim
+            sliderU.value = Math.floor(Math.random() * 40) + 10;
+            sliderR.value = Math.floor(Math.random() * 90) + 10;
+            updateUI();
+        }
+
+        function checkCircuit() {
+            let u = parseFloat(sliderU.value);
+            let r = parseFloat(sliderR.value);
+            let i = u / r;
+            let diff = Math.abs(i - targetCurrent);
+            let msg = document.getElementById('message');
+
+            if (diff < 0.2) {
+                msg.style.color = "#2ecc71";
+                msg.innerText = "SUKSES! Rezistenca është e saktë për pajisjen.";
+                level++;
+                setTimeout(generateLevel, 2000);
+            } else if (i > targetCurrent) {
+                msg.style.color = "#e74c3c";
+                msg.innerText = "BOOM! Rryma është shumë e lartë. Pajisja u dogj!";
+                level = 1;
+                setTimeout(generateLevel, 3000);
+            } else {
+                msg.style.color = "#f1c40f";
+                msg.innerText = "Rryma është shumë e ulët. Pajisja nuk ndizet.";
+            }
+        }
+
+        sliderU.addEventListener('input', updateUI);
+        sliderR.addEventListener('input', updateUI);
+
+        generateLevel();
+
+    </script>
+</body>
+</html>

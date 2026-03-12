@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { ALL_PHYSICS_DATA, GAMES } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
@@ -13,7 +13,8 @@ import BubbleMenu from './components/BubbleMenu';
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
-  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists'>('home');
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
   const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
@@ -30,7 +31,7 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments', data?: CategoryName | PhysicsTerm | null) => {
+  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists', data?: CategoryName | PhysicsTerm | null) => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
@@ -116,6 +117,13 @@ const App: React.FC = () => {
 
   const mobileMenuItems = [
     {
+      label: 'Shkencëtarët',
+      href: '#',
+      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('scientists'); },
+      rotation: -12,
+      hoverStyles: { bgColor: '#a2d2ff', textColor: '#ffffff' }
+    },
+    {
       label: 'Fillimi',
       href: '#',
       onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('home'); },
@@ -182,6 +190,7 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
+            <button onClick={() => navigate('scientists')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Shkencëtarët</button>
             <button onClick={() => navigate('movies')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Filmat</button>
             <a href="/revista.html" className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</a>
             <button 
@@ -194,7 +203,7 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 py-8 md:px-8 md:py-16">
+      <main className={`max-w-7xl mx-auto px-4 py-8 md:px-8 md:py-16 ${activePage === 'scientists' ? 'overflow-hidden h-[calc(100vh-100px)]' : ''}`}>
         {/* Home: Categories & Search */}
         {activePage === 'home' && (
           <div className="animate__animated animate__fadeIn">
@@ -280,7 +289,7 @@ const App: React.FC = () => {
               </div>
               <h2 className="text-3xl md:text-7xl font-black tracking-tighter text-slate-800">{selectedCategory}</h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-16">
               {(ALL_PHYSICS_DATA[selectedCategory] as PhysicsTerm[]).map((term: PhysicsTerm, i: number) => (
                 <div 
                   key={i}
@@ -295,6 +304,38 @@ const App: React.FC = () => {
                 </div>
               ))}
             </div>
+
+            {/* Games for this category */}
+            {DIGITAL_GAMES.filter(g => g.category === selectedCategory).length > 0 && (
+              <div className="mt-20">
+                <div className="flex items-center gap-6 mb-12">
+                  <div className="w-12 h-12 bg-[#ffafcc] text-white rounded-xl flex items-center justify-center text-xl shadow-lg">
+                    <i className="fas fa-gamepad"></i>
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-black tracking-tighter">Lojërat e {selectedCategory}</h3>
+                    <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">MËSO DUKE LUAJTUR</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {DIGITAL_GAMES.filter(g => g.category === selectedCategory).map((game, i) => (
+                    <div 
+                      key={i} 
+                      onClick={() => handlePlayGame(game)}
+                      className="bg-white p-8 md:p-12 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent hover:border-[#ffafcc]/20 group flex flex-col justify-between h-64 card-fusha"
+                    >
+                      <div className="flex items-center gap-6">
+                        <div className="w-16 h-16 bg-[#f8fafc] text-slate-400 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner">
+                          <i className="fas fa-gamepad"></i>
+                        </div>
+                        <h4 className="text-2xl md:text-3xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                      </div>
+                      <button className="w-full py-4 bg-[#f8fafc] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] group-hover:bg-[#ffafcc] group-hover:text-white transition-all">LUAJ TANI</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -527,6 +568,16 @@ const App: React.FC = () => {
                         )}
                     </div>
                 ))}
+            </div>
+          </div>
+        )}
+        {activePage === 'scientists' && (
+          <div className="animate__animated animate__fadeIn h-full flex flex-col overflow-hidden">
+            <button onClick={() => navigate('home')} className="mb-4 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors shrink-0">
+              <i className="fas fa-arrow-left"></i> Kthehu mbrapa
+            </button>
+            <div className="flex-1 bg-white rounded-[2rem] shadow-2xl overflow-hidden">
+              <iframe src="/fizikaaa.html" className="w-full h-full border-none" title="Shkencëtarët"></iframe>
             </div>
           </div>
         )}
@@ -764,10 +815,18 @@ const App: React.FC = () => {
       )}
       
       {!isChatOpen && !isNotesOpen && (
-        <div className="fixed bottom-6 right-6 z-50 hidden md:flex flex-col gap-4">
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
+          <button 
+            onClick={() => setIsCalculatorOpen(true)}
+            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] border-4 border-white relative group"
+            title="Kalkulatori"
+          >
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
+            <i className="fas fa-calculator text-2xl text-white drop-shadow-md"></i>
+          </button>
           <button 
             onClick={() => setIsNotesOpen(true)}
-            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#a2d2ff] to-[#bde0fe] border-4 border-white relative group"
+            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#a2d2ff] to-[#bde0fe] border-4 border-white relative group hidden md:flex"
             title="Shënimet"
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
@@ -775,7 +834,7 @@ const App: React.FC = () => {
           </button>
           <button 
             onClick={() => setIsChatOpen(true)}
-            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] border-4 border-white relative group"
+            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] border-4 border-white relative group hidden md:flex"
             title="Forumi"
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
@@ -784,6 +843,10 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {isCalculatorOpen && (
+        <DraggableCalculator onClose={() => setIsCalculatorOpen(false)} />
+      )}
+      
       {/* Full Screen Game Overlay */}
       {playingGame && (
         <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col">
@@ -808,6 +871,95 @@ const App: React.FC = () => {
 
       </div>
     </ClickSpark>
+  );
+};
+
+const DraggableCalculator: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+
+  const handleStart = (clientX: number, clientY: number) => {
+    setIsDragging(true);
+    setStartPos({ x: clientX - position.x, y: clientY - position.y });
+  };
+
+  const handleMove = useCallback((clientX: number, clientY: number) => {
+    if (!isDragging) return;
+    setPosition({
+      x: clientX - startPos.x,
+      y: clientY - startPos.y
+    });
+  }, [isDragging, startPos.x, startPos.y]);
+
+  const handleEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  React.useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY);
+    const onTouchMove = (e: TouchEvent) => handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    const onMouseUp = () => handleEnd();
+    const onTouchEnd = () => handleEnd();
+
+    if (isDragging) {
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+      window.addEventListener('touchmove', onTouchMove, { passive: false });
+      window.addEventListener('touchend', onTouchEnd);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [isDragging, handleMove, handleEnd]);
+
+  React.useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data === 'close-calculator') {
+        onClose();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [onClose]);
+
+  return (
+    <div 
+      className="fixed z-[10000] shadow-2xl rounded-[1.5rem] overflow-hidden bg-white border border-pink-200"
+      style={{ 
+        bottom: '100px', 
+        right: '30px',
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        width: '320px',
+        height: '520px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        touchAction: 'none'
+      }}
+    >
+      <div 
+        className="h-8 bg-slate-100 cursor-grab active:cursor-grabbing flex items-center justify-center border-b border-slate-200"
+        onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
+        onTouchStart={(e) => handleStart(e.touches[0].clientX, e.touches[0].clientY)}
+      >
+        <div className="w-10 h-1 bg-slate-400 rounded-full"></div>
+      </div>
+      <button 
+        onClick={onClose}
+        className="absolute top-1 right-3 text-slate-500 hover:text-pink-500 text-xl font-bold z-10"
+      >
+        <i className="fas fa-times"></i>
+      </button>
+      <iframe 
+        src="/kalk2222.html" 
+        className="w-full h-[calc(100%-32px)] border-none" 
+        title="Kalkulatori"
+      ></iframe>
+    </div>
   );
 };
 

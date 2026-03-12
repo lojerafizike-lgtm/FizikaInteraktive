@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacitor Master - Fizika Lab</title>
+    <style>
+        :root {
+            --bg: #2c3e50;
+            --panel: #34495e;
+            --accent: #1abc9c;
+            --text: #ecf0f1;
+            --danger: #e74c3c;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        h1 { color: var(--accent); margin-bottom: 0.5rem; }
+        .subtitle { color: #bdc3c7; margin-bottom: 2rem; font-size: 1.1rem; }
+
+        .lab-container {
+            background: var(--panel);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            gap: 2rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .visualization {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #22313f;
+            border-radius: 10px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .capacitor {
+            width: 150px;
+            height: 200px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .plate {
+            width: 20px;
+            height: 100%;
+            background: #95a5a6;
+            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .plate.positive { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.5); }
+        .plate.negative { background: #3498db; box-shadow: 0 0 15px rgba(52, 152, 219, 0.5); }
+
+        .dielectric {
+            position: absolute;
+            top: 10%;
+            bottom: 10%;
+            left: 25px;
+            right: 25px;
+            background: rgba(46, 204, 113, 0.2);
+            border: 2px dashed #2ecc71;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2ecc71;
+            transition: all 0.3s ease;
+        }
+
+        .controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label { font-weight: bold; color: #bdc3c7; display: flex; justify-content: space-between; }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #2c3e50;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        .stats {
+            background: #22313f;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .stat-value { font-family: monospace; color: var(--accent); font-weight: bold; }
+        
+        .formula {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            color: #f1c40f;
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn:hover { background: #16a085; }
+        
+        .target-box {
+            background: #f39c12;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>🔋 Capacitor Master</h1>
+    <div class="subtitle">Rregullo sipërfaqen dhe distancën për të arritur kapacitetin e kërkuar!</div>
+
+    <div class="lab-container">
+        
+        <div class="controls">
+            <div class="target-box">Target C: <span id="targetC">50.0</span> pF</div>
+            
+            <div class="control-group">
+                <label>Sipërfaqja e Pllakave (A) <span id="valA">100 mm²</span></label>
+                <input type="range" id="sliderA" min="50" max="400" value="100">
+            </div>
+
+            <div class="control-group">
+                <label>Distanca mes Pllakave (d) <span id="valD">5.0 mm</span></label>
+                <input type="range" id="sliderD" min="1" max="20" step="0.5" value="5">
+            </div>
+
+            <div class="control-group">
+                <label>Konstantja Dielektrike (εr) <span id="valE">1.0 (Ajër)</span></label>
+                <input type="range" id="sliderE" min="1" max="10" step="0.5" value="1">
+            </div>
+
+            <div class="stats">
+                <div class="stat-row">
+                    <span>Kapaciteti Aktual (C):</span>
+                    <span class="stat-value" id="currentC">0.00 pF</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="checkAnswer()">KONTROLLO</button>
+            <div id="message" style="text-align: center; margin-top: 10px; font-weight: bold; min-height: 20px;"></div>
+        </div>
+
+        <div class="visualization">
+            <div class="capacitor" id="capVisual">
+                <div class="plate positive" id="platePos"></div>
+                <div class="dielectric" id="dielectricVisual">ε</div>
+                <div class="plate negative" id="plateNeg"></div>
+            </div>
+            <div class="formula">C = ε₀ · εr · (A / d)</div>
+        </div>
+
+    </div>
+
+    <script>
+        const e0 = 8.85; // Permitiviteti i vakuumit (e thjeshtuar për lojën)
+        let targetCapacitance = 50.0;
+        let currentCapacitance = 0;
+
+        const sliderA = document.getElementById('sliderA');
+        const sliderD = document.getElementById('sliderD');
+        const sliderE = document.getElementById('sliderE');
+        
+        const valA = document.getElementById('valA');
+        const valD = document.getElementById('valD');
+        const valE = document.getElementById('valE');
+        const currentC = document.getElementById('currentC');
+        
+        const platePos = document.getElementById('platePos');
+        const plateNeg = document.getElementById('plateNeg');
+        const capVisual = document.getElementById('capVisual');
+        const dielectricVisual = document.getElementById('dielectricVisual');
+
+        function updateSimulation() {
+            let A = parseFloat(sliderA.value);
+            let d = parseFloat(sliderD.value);
+            let er = parseFloat(sliderE.value);
+
+            // Përditëso tekstet
+            valA.innerText = A + " mm²";
+            valD.innerText = d.toFixed(1) + " mm";
+            
+            let material = "Ajër";
+            if(er > 1 && er < 3) material = "Letër";
+            else if(er >= 3 && er < 6) material = "Qelq";
+            else if(er >= 6) material = "Qeramikë";
+            valE.innerText = er.toFixed(1) + " (" + material + ")";
+
+            // Llogarit Kapacitetin: C = e0 * er * (A / d)
+            currentCapacitance = (e0 * er * (A / d)).toFixed(1);
+            currentC.innerText = currentCapacitance + " pF";
+
+            // Përditëso Vizualizimin
+            // Lartësia e pllakave përfaqëson Sipërfaqen (A)
+            let heightPercent = (A / 400) * 100;
+            platePos.style.height = Math.max(heightPercent, 20) + "%";
+            plateNeg.style.height = Math.max(heightPercent, 20) + "%";
+
+            // Gjerësia e kontejnerit përfaqëson Distancën (d)
+            let widthPx = (d / 20) * 200 + 40; // min 40px, max 240px
+            capVisual.style.width = widthPx + "px";
+
+            // Ngjyra e dielektrikut
+            dielectricVisual.style.backgroundColor = `rgba(46, 204, 113, ${er/10})`;
+            dielectricVisual.innerText = "εr=" + er;
+        }
+
+        function generateNewTarget() {
+            // Gjenero një target të arritshëm
+            let randA = Math.floor(Math.random() * 350) + 50;
+            let randD = Math.floor(Math.random() * 19) + 1;
+            let randE = Math.floor(Math.random() * 9) + 1;
+            
+            targetCapacitance = (e0 * randE * (randA / randD)).toFixed(1);
+            document.getElementById('targetC').innerText = targetCapacitance;
+            document.getElementById('message').innerText = "";
+        }
+
+        function checkAnswer() {
+            let diff = Math.abs(currentCapacitance - targetCapacitance);
+            let msg = document.getElementById('message');
+            
+            // Tolerancë e vogël për shkak të rrumbullakimit
+            if (diff <= 2.0) {
+                msg.style.color = "#2ecc71";
+                msg.innerText = "E SAKTË! Kapaciteti u arrit.";
+                setTimeout(generateNewTarget, 2000);
+            } else {
+                msg.style.color = "#e74c3c";
+                msg.innerText = "Gabim! Provo të ndryshosh parametrat.";
+            }
+        }
+
+        // Event Listeners
+        sliderA.addEventListener('input', updateSimulation);
+        sliderD.addEventListener('input', updateSimulation);
+        sliderE.addEventListener('input', updateSimulation);
+
+        // Inicializimi
+        generateNewTarget();
+        updateSimulation();
+
+    </script>
+</body>
+</html>

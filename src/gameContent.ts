@@ -40,7 +40,7 @@ export const DIGITAL_GAMES: DigitalGame[] = [
   {
     id: "energy-battle-formula",
     title: "Energy Battle: Formula Challenge",
-    category: "Energjia",
+    category: "Elektriciteti",
     type: "school",
     html: `<!DOCTYPE html>
 <html lang="sq">
@@ -403,23 +403,951 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     title: "Elektriciteti",
     category: "Elektriciteti",
     type: "digital",
-    url: "/asteriana.html",
-    html: ""
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratori i Elektricitetit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a1a;
+            --panel-bg: rgba(20, 20, 40, 0.8);
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #f093fb;
+            --text: #e0e0e0;
+            --wire-color: #555;
+            --wire-active: #00f2fe;
+            --electron: #ffeb3b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 20px;
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        .circuit-board {
+            flex: 2;
+            background: var(--panel-bg);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            position: relative;
+            height: 500px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+            overflow: hidden;
+        }
+
+        .controls-panel {
+            flex: 1;
+            background: var(--panel-bg);
+            border: 2px solid var(--secondary);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Circuit Elements */
+        .component {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+
+        .component:hover {
+            transform: scale(1.1);
+        }
+
+        .battery {
+            width: 60px;
+            height: 100px;
+            border: 3px solid #fff;
+            border-radius: 5px;
+            background: linear-gradient(to bottom, #ff4444 50%, #4444ff 50%);
+            left: 50px;
+            top: 200px;
+        }
+
+        .battery::before {
+            content: '+';
+            position: absolute;
+            top: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .battery::after {
+            content: '-';
+            position: absolute;
+            bottom: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .lightbulb {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: rgba(255, 255, 255, 0.1);
+            right: 100px;
+            top: 100px;
+            transition: all 0.3s;
+        }
+
+        .lightbulb.on {
+            background: radial-gradient(circle, #fff 0%, #ffeb3b 50%, transparent 100%);
+            box-shadow: 0 0 50px #ffeb3b;
+            border-color: #ffeb3b;
+        }
+
+        .resistor {
+            width: 80px;
+            height: 30px;
+            background: #8b4513;
+            border: 2px solid #fff;
+            right: 100px;
+            bottom: 100px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .resistor-band {
+            width: 10px;
+            height: 100%;
+        }
+
+        .switch {
+            width: 60px;
+            height: 30px;
+            left: 250px;
+            top: 50px;
+            position: relative;
+        }
+
+        .switch-base {
+            width: 100%;
+            height: 4px;
+            background: #fff;
+            position: absolute;
+            bottom: 0;
+        }
+
+        .switch-arm {
+            width: 50px;
+            height: 4px;
+            background: var(--primary);
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            transform-origin: left center;
+            transform: rotate(-30deg);
+            transition: transform 0.3s;
+        }
+
+        .switch.closed .switch-arm {
+            transform: rotate(0deg);
+        }
+
+        /* Wires */
+        .wire {
+            position: absolute;
+            background: var(--wire-color);
+            z-index: 1;
+        }
+
+        .wire.active {
+            background: var(--wire-active);
+            box-shadow: 0 0 10px var(--wire-active);
+        }
+
+        /* Electrons */
+        .electron {
+            width: 8px;
+            height: 8px;
+            background: var(--electron);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 8px var(--electron);
+            display: none;
+            z-index: 5;
+        }
+
+        .active .electron {
+            display: block;
+        }
+
+        /* Controls */
+        .control-group {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .value-display {
+            float: right;
+            color: var(--accent);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 12px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .meters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .meter {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .meter-title {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .meter-value {
+            font-size: 1.5rem;
+            color: #0f0;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Quiz Overlay */
+        .quiz-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            border-radius: 15px;
+        }
+
+        .quiz-box {
+            background: var(--panel-bg);
+            border: 2px solid var(--accent);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .quiz-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Space Mono', monospace;
+            transition: 0.3s;
+        }
+
+        .quiz-btn:hover {
+            background: var(--primary);
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Laboratori i Elektricitetit</h1>
+
+    <div class="game-container">
+        <div class="circuit-board" id="board">
+            <!-- Wires -->
+            <div class="wire" style="top: 65px; left: 80px; width: 170px; height: 4px;"></div>
+            <div class="wire" style="top: 65px; left: 310px; width: 200px; height: 4px;"></div>
+            <div class="wire" style="top: 65px; right: 130px; width: 4px; height: 35px;"></div>
+            
+            <div class="wire" style="bottom: 115px; right: 130px; width: 4px; height: 100px;"></div>
+            <div class="wire" style="bottom: 115px; left: 80px; width: 390px; height: 4px;"></div>
+            
+            <div class="wire" style="top: 65px; left: 80px; width: 4px; height: 135px;"></div>
+            <div class="wire" style="bottom: 115px; left: 80px; width: 4px; height: 85px;"></div>
+
+            <!-- Components -->
+            <div class="component battery" id="battery" title="Burimi i Rrymës (Bateria)"></div>
+            
+            <div class="component switch" id="switch" onclick="toggleSwitch()" title="Çelësi (Kliko për të hapur/mbyllur)">
+                <div class="switch-base"></div>
+                <div class="switch-arm"></div>
+            </div>
+            
+            <div class="component lightbulb" id="bulb" title="Llambushka (Konsumatori)"></div>
+            
+            <div class="component resistor" id="resistor" title="Rezistenca">
+                <div class="resistor-band" style="background: red;"></div>
+                <div class="resistor-band" style="background: black;"></div>
+                <div class="resistor-band" style="background: brown;"></div>
+            </div>
+
+            <div class="quiz-overlay" id="quiz">
+                <div class="quiz-box">
+                    <h2 style="color: var(--accent); margin-top: 0;">Sfidë e Qarkut!</h2>
+                    <p id="q-text">Nëse rrisim tensionin (U) dhe rezistenca (R) mbetet e njëjtë, çfarë ndodh me rrymën (I)?</p>
+                    <div class="quiz-options" id="q-opts">
+                        <!-- Options injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="meters">
+                <div class="meter">
+                    <div class="meter-title">TENSIONI (U)</div>
+                    <div class="meter-value" id="val-u">12.0 V</div>
+                </div>
+                <div class="meter">
+                    <div class="meter-title">RRYMA (I)</div>
+                    <div class="meter-value" id="val-i">0.00 A</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    Tensioni i Baterisë (V)
+                    <span class="value-display" id="disp-v">12 V</span>
+                </label>
+                <input type="range" id="slider-v" min="0" max="24" value="12" step="1" oninput="updateCircuit()">
+            </div>
+
+            <div class="control-group">
+                <label>
+                    Rezistenca (Ω)
+                    <span class="value-display" id="disp-r">10 Ω</span>
+                </label>
+                <input type="range" id="slider-r" min="1" max="50" value="10" step="1" oninput="updateCircuit()">
+            </div>
+
+            <div class="control-group" style="background: rgba(0, 242, 254, 0.1); border-color: var(--primary);">
+                <label style="text-align: center; margin-bottom: 5px;">Ligji i Ohmit</label>
+                <div style="text-align: center; font-size: 1.5rem; font-family: 'Orbitron'; color: white;">
+                    I = <span style="color: var(--primary);">U</span> / <span style="color: var(--accent);">R</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="triggerQuiz()">Sfida e Njohurive</button>
+        </div>
+    </div>
+
+    <script>
+        let isClosed = false;
+        let animationId;
+        const electrons = [];
+
+        // Initialize electrons along the path
+        function initElectrons() {
+            const board = document.getElementById('board');
+            // Simplified path for visual effect
+            const path = [
+                {x: 80, y: 190, dx: 0, dy: -1}, // Up from battery
+                {x: 80, y: 65, dx: 1, dy: 0},   // Right top wire
+                {x: 470, y: 65, dx: 0, dy: 1},  // Down to bulb
+                {x: 470, y: 385, dx: -1, dy: 0},// Left bottom wire
+                {x: 80, y: 385, dx: 0, dy: -1}  // Up to battery
+            ];
+
+            for(let i=0; i<20; i++) {
+                const el = document.createElement('div');
+                el.className = 'electron';
+                board.appendChild(el);
+                electrons.push({
+                    element: el,
+                    segment: 0,
+                    progress: i * (1000 / 20) // Spread them out
+                });
+            }
+        }
+
+        function toggleSwitch() {
+            const sw = document.getElementById('switch');
+            isClosed = !isClosed;
+            
+            if(isClosed) {
+                sw.classList.add('closed');
+                document.querySelectorAll('.wire').forEach(w => w.classList.add('active'));
+                updateCircuit();
+                animateElectrons();
+            } else {
+                sw.classList.remove('closed');
+                document.querySelectorAll('.wire').forEach(w => w.classList.remove('active'));
+                document.getElementById('bulb').classList.remove('on');
+                document.getElementById('val-i').innerText = "0.00 A";
+                cancelAnimationFrame(animationId);
+            }
+        }
+
+        function updateCircuit() {
+            const v = parseFloat(document.getElementById('slider-v').value);
+            const r = parseFloat(document.getElementById('slider-r').value);
+            
+            document.getElementById('disp-v').innerText = v + " V";
+            document.getElementById('disp-r').innerText = r + " Ω";
+            document.getElementById('val-u').innerText = v.toFixed(1) + " V";
+
+            if(isClosed) {
+                const i = v / r;
+                document.getElementById('val-i').innerText = i.toFixed(2) + " A";
+                
+                // Adjust bulb brightness based on power (P = V*I)
+                const power = v * i;
+                const maxPower = 24 * (24/1); // Max possible
+                const brightness = Math.min(1, power / 50); // Cap brightness
+                
+                const bulb = document.getElementById('bulb');
+                if(power > 0) {
+                    bulb.classList.add('on');
+                    bulb.style.boxShadow = \`0 0 \${20 + brightness * 80}px #ffeb3b\`;
+                    bulb.style.opacity = 0.3 + brightness * 0.7;
+                } else {
+                    bulb.classList.remove('on');
+                }
+            }
+        }
+
+        function animateElectrons() {
+            if(!isClosed) return;
+            
+            const v = parseFloat(document.getElementById('slider-v').value);
+            const r = parseFloat(document.getElementById('slider-r').value);
+            const current = v / r;
+            
+            // Speed proportional to current
+            const speed = current * 2; 
+
+            // Simple rectangular path animation
+            // Top-Left: 80,65 | Top-Right: 470,65 | Bot-Right: 470,385 | Bot-Left: 80,385
+            const pathLength = (470-80) * 2 + (385-65) * 2;
+
+            electrons.forEach(e => {
+                e.progress += speed;
+                if(e.progress > pathLength) e.progress = 0;
+
+                let p = e.progress;
+                let x, y;
+
+                if(p < (385-65)) { // Up from battery
+                    x = 80; y = 385 - p;
+                } else if(p < (385-65) + (470-80)) { // Right
+                    p -= (385-65);
+                    x = 80 + p; y = 65;
+                } else if(p < (385-65) + (470-80) + (385-65)) { // Down
+                    p -= ((385-65) + (470-80));
+                    x = 470; y = 65 + p;
+                } else { // Left
+                    p -= ((385-65) + (470-80) + (385-65));
+                    x = 470 - p; y = 385;
+                }
+
+                e.element.style.left = (x - 4) + 'px';
+                e.element.style.top = (y - 4) + 'px';
+            });
+
+            animationId = requestAnimationFrame(animateElectrons);
+        }
+
+        // Quiz Logic
+        const questions = [
+            {
+                q: "Sipas Ligjit të Ohmit (I = U/R), nëse rrisim tensionin (U) dhe rezistenca mbetet e njëjtë, çfarë ndodh me rrymën (I)?",
+                opts: ["Rritet", "Zvogëlohet", "Mbetet e njëjtë", "Bëhet zero"],
+                ans: 0
+            },
+            {
+                q: "Cila është njësia matëse për Rezistencën Elektrike?",
+                opts: ["Volt (V)", "Amper (A)", "Ohm (Ω)", "Vat (W)"],
+                ans: 2
+            },
+            {
+                q: "Nëse qarku është i hapur (çelësi i fikur), sa është vlera e rrymës?",
+                opts: ["Maksimale", "Varet nga bateria", "Zero", "E pafundme"],
+                ans: 2
+            }
+        ];
+
+        function triggerQuiz() {
+            const qObj = questions[Math.floor(Math.random() * questions.length)];
+            document.getElementById('q-text').innerText = qObj.q;
+            
+            const optsDiv = document.getElementById('q-opts');
+            optsDiv.innerHTML = '';
+            
+            qObj.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if(i === qObj.ans) {
+                        btn.style.background = 'var(--primary)';
+                        btn.style.color = 'black';
+                        setTimeout(() => {
+                            document.getElementById('quiz').style.display = 'none';
+                        }, 1000);
+                    } else {
+                        btn.style.background = 'red';
+                        btn.style.borderColor = 'red';
+                    }
+                };
+                optsDiv.appendChild(btn);
+            });
+
+            document.getElementById('quiz').style.display = 'flex';
+        }
+
+        initElectrons();
+        updateCircuit();
+    </script>
+</body>
+</html>`
   },
   {
     id: "gjej-shkencetarin",
     title: "Gjej shkencetarin",
     category: "Shkencëtarë",
     type: "digital",
-    url: "/fuckuuu.html",
-    html: ""
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gjej Shkencëtarin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --primary: #d4af37; /* Gold */
+            --text: #f0f0f0;
+            --text-muted: #a0a0a0;
+            --correct: #2ecc71;
+            --wrong: #e74c3c;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .clue-container {
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            padding-left: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .clue-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text);
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: var(--correct);
+            color: var(--correct);
+        }
+
+        .option-btn.wrong {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: var(--wrong);
+            color: var(--wrong);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .next-btn {
+            display: none;
+            width: 100%;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .next-btn:hover {
+            background: #e5c158;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .progress-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: 0.3s;
+        }
+
+        .progress-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        .progress-dot.completed {
+            background: var(--correct);
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 2.2rem; }
+            .clue-text { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gjej Shkencëtarin</h1>
+    <div class="subtitle">Zbulo mendjet gjeniale pas zbulimeve të mëdha</div>
+
+    <div class="game-card">
+        <div class="score-display">Pikët: <span id="score">0</span></div>
+        
+        <div class="clue-container">
+            <div class="clue-text" id="clue">Po ngarkon...</div>
+        </div>
+
+        <div class="options-grid" id="options">
+            <!-- Buttons injected here -->
+        </div>
+
+        <button class="next-btn" id="next-btn" onclick="nextScientist()">Vazhdo</button>
+
+        <div class="progress-container" id="progress">
+            <!-- Dots injected here -->
+        </div>
+    </div>
+
+    <script>
+        const scientists = [
+            { 
+                name: "Isak Njuton", 
+                clue: "Unë formulova ligjin e tërheqjes së gjithësishme dhe tre ligjet e lëvizjes. Legjenda thotë se një mollë më ndihmoi.", 
+                options: ["Albert Ajnshtajn", "Isak Njuton", "Nikola Tesla", "Galileo Galilei"] 
+            },
+            { 
+                name: "Albert Ajnshtajn", 
+                clue: "Unë zhvillova teorinë e relativitetit. Ekuacioni im E = mc² është ndoshta më i famshmi në botë.", 
+                options: ["Niels Bohr", "Isak Njuton", "Albert Ajnshtajn", "Stiven Hoking"] 
+            },
+            { 
+                name: "Nikola Tesla", 
+                clue: "Unë shpika sistemin e rrymës alternative (AC) dhe ëndërroja për transmetimin e energjisë pa tela.", 
+                options: ["Tomas Edison", "Nikola Tesla", "Aleksandër Volta", "Majkëll Faradej"] 
+            },
+            { 
+                name: "Mari Kyri", 
+                clue: "Unë zbulova radiumin dhe poloniumin. Jam gruaja e parë që fitoi çmimin Nobel dhe e vetmja në dy fusha të ndryshme shkencore.", 
+                options: ["Mari Kyri", "Lize Majtner", "Rozalind Frenklin", "Ada Lavlejs"] 
+            },
+            { 
+                name: "Galileo Galilei", 
+                clue: "Unë përmirësova teleskopin, zbulova hënat e Jupiterit dhe mbështeta idenë se Toka rrotullohet rreth Diellit.", 
+                options: ["Nikola Koperniku", "Johanes Kepleri", "Galileo Galilei", "Klaudio Ptolemeu"] 
+            },
+            { 
+                name: "Majkëll Faradej", 
+                clue: "Unë zbulova induksionin elektromagnetik dhe ndërtova motorin e parë elektrik, megjithëse kisha pak arsimim formal.", 
+                options: ["Xhejms Klark Maksuell", "Hajnrih Herc", "Majkëll Faradej", "Andre-Mari Amper"] 
+            }
+        ];
+
+        let current = 0;
+        let score = 0;
+        let answered = false;
+
+        function initGame() {
+            const progressDiv = document.getElementById('progress');
+            scientists.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                dot.id = 'dot-' + i;
+                progressDiv.appendChild(dot);
+            });
+            loadScientist();
+        }
+
+        function loadScientist() {
+            if (current >= scientists.length) {
+                showFinalResult();
+                return;
+            }
+
+            answered = false;
+            const s = scientists[current];
+            
+            // Update UI
+            document.getElementById('clue').innerText = '"' + s.clue + '"';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            // Update dots
+            document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+                dot.classList.remove('active');
+                if (i < current) dot.classList.add('completed');
+                if (i === current) dot.classList.add('active');
+            });
+
+            const optsDiv = document.getElementById('options');
+            optsDiv.innerHTML = '';
+
+            // Shuffle options
+            const shuffledOpts = [...s.options].sort(() => Math.random() - 0.5);
+
+            shuffledOpts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, s.name, btn);
+                optsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct, btn) {
+            if (answered) return;
+            answered = true;
+
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                score += 100;
+                document.getElementById('score').innerText = score;
+            } else {
+                btn.classList.add('wrong');
+                btns.forEach(b => {
+                    if (b.innerText === correct) b.classList.add('correct');
+                });
+            }
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextScientist() {
+            current++;
+            loadScientist();
+        }
+
+        function showFinalResult() {
+            const card = document.querySelector('.game-card');
+            const maxScore = scientists.length * 100;
+            const percentage = (score / maxScore) * 100;
+            
+            let title = "Urime!";
+            let msg = "Një performancë e shkëlqyer!";
+            
+            if (percentage === 100) {
+                title = "Gjeni!";
+                msg = "Ti i njeh shkencëtarët po aq mirë sa ata njihnin fizikën!";
+            } else if (percentage < 50) {
+                title = "Përpjekje e Mirë";
+                msg = "Ndoshta duhet të lexosh pak më shumë histori shkence.";
+            }
+
+            card.innerHTML = \`
+                <div style="text-align: center; padding: 20px 0;">
+                    <h2 style="color: var(--primary); font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px;">\${title}</h2>
+                    <div style="font-size: 4rem; color: var(--text); font-weight: bold; margin: 20px 0;">\${score}</div>
+                    <p style="color: var(--text-muted); font-size: 1.2rem; margin-bottom: 30px;">Pikët e tua nga \${maxScore} të mundshme.</p>
+                    <p style="font-size: 1.1rem; margin-bottom: 40px;">\${msg}</p>
+                    <button class="next-btn" style="display: block;" onclick="location.reload()">Luaj Përsëri</button>
+                </div>
+            \`;
+        }
+
+        // Start game
+        initGame();
+    </script>
+</body>
+</html>`
   },
   {
     id: "dinamika-adventure",
-    title: "Dinamika",
+    title: "Dinamika Adventure: Pro Edition",
     category: "Dinamika",
     type: "digital",
-    url: "/loja-dinamika.html",
     html: `<!DOCTYPE html>
 <html lang="sq">
 <head>
@@ -597,372 +1525,426 @@ export const DIGITAL_GAMES: DigitalGame[] = [
             color: white;
             border: none;
         }
-
-        .player-token {
-            width: 34px;
-            height: 34px;
-            background: var(--accent);
-            border: 3px solid white;
-            border-radius: 50%;
-            position: absolute;
-            z-index: 100;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 20px var(--accent);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-        }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: #1e293b;
-            width: 90%;
-            max-width: 500px;
-            padding: 40px;
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes modalIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .question-text {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
-            line-height: 1.5;
-            color: var(--text);
-        }
-
-        .options-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .option-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 16px;
-            border-radius: 16px;
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            font-size: 1rem;
-        }
-
-        .option-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary);
-            transform: translateX(5px);
-        }
-
-        .option-btn.correct {
-            background: rgba(34, 197, 94, 0.2);
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .option-btn.wrong {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: var(--error);
-            color: var(--error);
-        }
-
-        .btn-action {
-            margin-top: 20px;
-            padding: 14px 28px;
-            background: var(--primary);
-            border: none;
-            border-radius: 12px;
-            color: var(--bg);
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
-        }
-
-        /* --- STATS --- */
-        .stat-card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.6;
-            margin-top: 5px;
-        }
-
-        .hidden { display: none !important; }
-
-        /* Victory Screen */
-        #victory-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .victory-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
-            color: var(--gold);
-            text-shadow: 0 0 30px var(--gold);
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
-
     <div class="game-wrapper">
         <div class="main-panel">
             <div class="title-section">
                 <h1>Aventura e Dinamikës</h1>
-                <p style="opacity: 0.6; font-size: 0.9rem; margin-top: 5px;">Mjeshtëro forcat dhe ligjet e Njutonit</p>
+                <p>Mëso ligjet e Njutonit duke luajtur!</p>
             </div>
-
-            <div class="board" id="board">
-                <div id="player" class="player-token">🚀</div>
-                <!-- Cells will be generated here -->
-            </div>
+            <div class="board" id="board"></div>
         </div>
-
         <div class="side-panel">
-            <div class="stat-card">
-                <div class="stat-value" id="score-val">0</div>
-                <div class="stat-label">Pikët</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label" style="margin-bottom: 10px;">Kliko për të hedhur zarin</div>
-                <div class="dice-container" onclick="rollDice()">
-                    <div class="dice" id="dice">
-                        <div class="dice-face front">1</div>
-                        <div class="dice-face back">6</div>
-                        <div class="dice-face right">3</div>
-                        <div class="dice-face left">4</div>
-                        <div class="dice-face top">2</div>
-                        <div class="dice-face bottom">5</div>
-                    </div>
+            <div class="dice-container" onclick="rollDice()">
+                <div class="dice" id="dice">
+                    <div class="dice-face front">1</div>
+                    <div class="dice-face back">6</div>
+                    <div class="dice-face right">3</div>
+                    <div class="dice-face left">4</div>
+                    <div class="dice-face top">2</div>
+                    <div class="dice-face bottom">5</div>
                 </div>
             </div>
-
-            <div class="stat-card" style="font-size: 0.85rem; text-align: left; line-height: 1.4;">
-                <strong style="color: var(--primary);">Rregullat:</strong><br>
-                1. Hidh zarin për të lëvizur.<br>
-                2. Përgjigju saktë pyetjes për të qëndruar në vend.<br>
-                3. Nëse gabon, kthehesh 2 hapa pas!<br>
-                4. Arri në FINISH për të fituar.
-            </div>
+            <div id="status">Shtyp zarin për të lëvizur!</div>
         </div>
     </div>
-
-    <div class="modal-overlay" id="modal">
-        <div class="modal-content">
-            <div class="question-text" id="q-text">Pyetja po ngarkohet...</div>
-            <div class="options-list" id="options"></div>
-            <button class="btn-action hidden" id="btn-continue" onclick="closeModal()">Vazhdo</button>
-        </div>
-    </div>
-
-    <div id="victory-screen">
-        <h1 class="victory-title">FITORE!</h1>
-        <p style="font-size: 1.5rem; margin-bottom: 30px;">Ti je mjeshtër i Dinamikës!</p>
-        <button class="btn-action" onclick="location.reload()">Luaj Përsëri</button>
-    </div>
-
     <script>
         const board = document.getElementById('board');
-        const player = document.getElementById('player');
         const dice = document.getElementById('dice');
-        const modal = document.getElementById('modal');
-        const qText = document.getElementById('q-text');
-        const optionsDiv = document.getElementById('options');
-        const btnContinue = document.getElementById('btn-continue');
-        const scoreVal = document.getElementById('score-val');
+        const status = document.getElementById('status');
+        let currentPos = 0;
+        const totalCells = 36;
 
-        const totalCells = 24;
-        let playerPos = 0;
-        let isRolling = false;
-        let score = 0;
-
-        const questions = [
-            { q: "Forca me të cilën Toka tërheq trupin quhet:", options: ["Forca e fërkimit", "Forca e rëndesës", "Forca e elasticitetit", "Forca e tensionit"], correct: 1 },
-            { q: "Ku zbatohet forca e rëndesës?", options: ["Në sipërfaqen e trupit", "Në qendër të trupit", "Në pikën e mbështetjes", "Në skajet e trupit"], correct: 1 },
-            { q: "Drejtimi i forcës së rëndesës është:", options: ["Horizontal", "Vertikalisht lart", "Pingul me sipërfaqen e Tokës", "Paralel me lëvizjen"], correct: 2 },
-            { q: "Pesha është forca që trupi ushtron:", options: ["Mbi veten e tij", "Atje ku varet ose mbështetet", "Mbi ajrin", "Mbi qendrën e Tokës"], correct: 1 },
-            { q: "Kur është Forca e Rëndesës (G) e barabartë me Peshën (P)?", options: ["Kur trupi lëviz me nxitim", "Kur trupi është në prehje ose lëviz me v=konst", "Kur trupi bie lirshëm", "Asnjëherë"], correct: 1 },
-            { q: "Formula e Ligjit të tërheqjes së gjithësishme është:", options: ["F = m*g", "F = k*x", "F = G * (m1*m2)/R²", "F = mu * N"], correct: 2 },
-            { q: "Me rritjen e lartësisë (h) nga Toka, nxitimi i rënies së lirë (g):", options: ["Rritet", "Zvogëlohet", "Nuk ndryshon", "Bëhet zero menjëherë"], correct: 1 },
-            { q: "Formula e Ligjit të Hukut është:", options: ["F = m*a", "Fe = -k*x", "F = mu * N", "P = m*g"], correct: 1 },
-            { q: "Çfarë tregon shenja minus te formula Fe = -kx?", options: ["Forca është negative", "Drejtimi i forcës është i njëjtë me shformimin", "Drejtimi i forcës është i kundërt me shformimin", "Nuk tregon asgjë"], correct: 2 },
-            { q: "Forca e fërkimit ka gjithmonë kah:", options: ["Të njëjtë me lëvizjen", "Të kundërt me lëvizjen", "Pingul me lëvizjen", "Të rastësishëm"], correct: 1 },
-            { q: "Formula e forcës së fërkimit është:", options: ["f = m*g", "f = k*x", "f = mu * N", "f = G/R"], correct: 2 },
-            { q: "Nëse m2 = m1/4 dhe F2 = 2F1, sa herë zmadhohet nxitimi a2?", options: ["2 herë", "4 herë", "8 herë", "16 herë"], correct: 2 },
-            { q: "Nëse m2 = 8m1 dhe F2 = F1/4, sa bëhet nxitimi a2?", options: ["a1/2", "a1/8", "a1/32", "4*a1"], correct: 2 },
-            { q: "Nëse m = 2kg dhe trupi është i varur në fije, sa është Tensioni (T)? (g=10)", options: ["10 N", "20 N", "5 N", "40 N"], correct: 1 },
-            { q: "Nëse F=600N, f=300N dhe a=4m/s², sa është masa (m)?", options: ["50 kg", "75 kg", "100 kg", "150 kg"], correct: 1 },
-            { q: "Nëse v0=10m/s dhe mu=0.5, sa rrugë bën trupi derisa ndalon?", options: ["5 m", "10 m", "20 m", "50 m"], correct: 1 },
-            { q: "Kur një trup ndalon vetëm për shkak të fërkimit, nxitimi a është:", options: ["a = g", "a = mu * g", "a = F/m", "a = 0"], correct: 1 }
-        ];
-
-        function initBoard() {
-            for (let i = 0; i < totalCells; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                if (i === 0) {
-                    cell.classList.add('start');
-                    cell.innerText = 'START';
-                } else if (i === totalCells - 1) {
-                    cell.classList.add('finish');
-                    cell.innerText = 'FINISH';
-                } else {
-                    cell.classList.add('active-path');
-                    cell.innerText = i;
-                }
-                board.appendChild(cell);
-            }
-            updatePlayer();
-        }
-
-        function updatePlayer() {
-            const cells = document.querySelectorAll('.cell');
-            const target = cells[playerPos];
-            player.style.top = (target.offsetTop + (target.offsetHeight / 2) - 17) + 'px';
-            player.style.left = (target.offsetLeft + (target.offsetWidth / 2) - 17) + 'px';
+        for (let i = 0; i < totalCells; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            if (i === 0) { cell.classList.add('start'); cell.innerText = 'START'; }
+            else if (i === totalCells - 1) { cell.classList.add('finish'); cell.innerText = 'FINISH'; }
+            else { cell.innerText = i + 1; }
+            board.appendChild(cell);
         }
 
         function rollDice() {
-            if (isRolling) return;
-            isRolling = true;
+            if (dice.classList.contains('rolling')) return;
             dice.classList.add('rolling');
-
-            const result = Math.floor(Math.random() * 6) + 1;
-            
             setTimeout(() => {
                 dice.classList.remove('rolling');
-                applyDiceRotation(result);
-                setTimeout(() => movePlayer(result), 600);
+                const roll = Math.floor(Math.random() * 6) + 1;
+                updateDice(roll);
+                movePlayer(roll);
             }, 1000);
         }
 
-        function applyDiceRotation(n) {
+        function updateDice(roll) {
             const rotations = {
                 1: 'rotateX(0deg) rotateY(0deg)',
                 2: 'rotateX(-90deg) rotateY(0deg)',
                 3: 'rotateX(0deg) rotateY(-90deg)',
                 4: 'rotateX(0deg) rotateY(90deg)',
                 5: 'rotateX(90deg) rotateY(0deg)',
-                6: 'rotateX(180deg) rotateY(0deg)'
+                6: 'rotateX(0deg) rotateY(180deg)'
             };
-            dice.style.transform = rotations[n];
+            dice.style.transform = rotations[roll];
         }
 
-        async function movePlayer(steps) {
-            for (let i = 0; i < steps; i++) {
-                if (playerPos < totalCells - 1) {
-                    playerPos++;
-                    updatePlayer();
-                    await new Promise(r => setTimeout(r, 300));
+        function movePlayer(steps) {
+            currentPos += steps;
+            if (currentPos >= totalCells - 1) {
+                currentPos = totalCells - 1;
+                status.innerText = 'URIME! KE ARRITUR NË FINALE!';
+            } else {
+                status.innerText = 'Lëvize ' + steps + ' hapa. Pozicioni: ' + (currentPos + 1);
+            }
+            updateBoard();
+        }
+
+        function updateBoard() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, i) => {
+                cell.classList.remove('active-path');
+                if (i === currentPos) cell.classList.add('active-path');
+            });
+        }
+        updateBoard();
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "resistance-guard",
+    title: "Mbrojtësi i Rezistencës",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Mbrojtësi i Rezistencës</title>
+    <style>
+        body { margin: 0; background: #0a0a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        #game-container { position: relative; width: 600px; height: 400px; border: 2px solid #00f2fe; border-radius: 15px; background: rgba(0,0,0,0.5); overflow: hidden; }
+        .enemy { position: absolute; width: 40px; height: 40px; background: #ff0055; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: top 0.1s linear; }
+        #player { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 20px; background: #00f2fe; border-radius: 5px; }
+        #score { position: absolute; top: 10px; left: 10px; font-size: 20px; }
+        #formula { position: absolute; top: 10px; right: 10px; font-size: 18px; color: #ffd700; }
+        .bullet { position: absolute; width: 5px; height: 15px; background: #ffd700; border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <h1>Mbrojtësi i Rezistencës</h1>
+    <p>Përdor shigjetat për të lëvizur dhe Space për të gjuajtur!</p>
+    <div id="game-container">
+        <div id="score">Pikët: 0</div>
+        <div id="formula">R = U / I</div>
+        <div id="player"></div>
+    </div>
+    <script>
+        const container = document.getElementById('game-container');
+        const player = document.getElementById('player');
+        const scoreEl = document.getElementById('score');
+        let score = 0;
+        let playerX = 270;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && playerX > 0) playerX -= 20;
+            if (e.key === 'ArrowRight' && playerX < 540) playerX += 20;
+            if (e.key === ' ') shoot();
+            player.style.left = playerX + 'px';
+        });
+
+        function shoot() {
+            const bullet = document.createElement('div');
+            bullet.className = 'bullet';
+            bullet.style.left = (playerX + 27) + 'px';
+            bullet.style.bottom = '40px';
+            container.appendChild(bullet);
+            let bPos = 40;
+            const bInt = setInterval(() => {
+                bPos += 5;
+                bullet.style.bottom = bPos + 'px';
+                if (bPos > 400) { clearInterval(bInt); bullet.remove(); }
+                document.querySelectorAll('.enemy').forEach(en => {
+                    const rect1 = bullet.getBoundingClientRect();
+                    const rect2 = en.getBoundingClientRect();
+                    if (!(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)) {
+                        en.remove(); bullet.remove(); clearInterval(bInt);
+                        score += 10; scoreEl.innerText = 'Pikët: ' + score;
+                    }
+                });
+            }, 20);
+        }
+
+        function spawnEnemy() {
+            const en = document.createElement('div');
+            en.className = 'enemy';
+            en.innerText = 'Ω';
+            en.style.left = Math.random() * 560 + 'px';
+            en.style.top = '0px';
+            container.appendChild(en);
+            let ePos = 0;
+            const eInt = setInterval(() => {
+                ePos += 2;
+                en.style.top = ePos + 'px';
+                if (ePos > 380) { clearInterval(eInt); en.remove(); }
+            }, 50);
+        }
+        setInterval(spawnEnemy, 2000);
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "efield-explorer",
+    title: "Eksploruesi i Fushës E",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Eksploruesi i Fushës E</title>
+    <style>
+        body { margin: 0; background: #050510; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        canvas { border: 2px solid #f093fb; border-radius: 10px; cursor: crosshair; }
+        .controls { margin-top: 20px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Eksploruesi i Fushës E</h1>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <div class="controls">Klikoni për të vendosur ngarkesa: Majtas (+), Djathtas (-)</div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const charges = [];
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            charges.push({ x, y, q: e.button === 0 ? 1 : -1 });
+            draw();
+        });
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+        function draw() {
+            ctx.clearRect(0, 0, 600, 400);
+            for (let i = 0; i < 600; i += 30) {
+                for (let j = 0; j < 400; j += 30) {
+                    let ex = 0, ey = 0;
+                    charges.forEach(c => {
+                        const dx = i - c.x, dy = j - c.y;
+                        const d2 = dx*dx + dy*dy || 1;
+                        const f = c.q / d2 * 1000;
+                        ex += f * dx / Math.sqrt(d2);
+                        ey += f * dy / Math.sqrt(d2);
+                    });
+                    const angle = Math.atan2(ey, ex);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+                    ctx.beginPath();
+                    ctx.moveTo(i, j);
+                    ctx.lineTo(i + Math.cos(angle)*15, j + Math.sin(angle)*15);
+                    ctx.stroke();
                 }
             }
-
-            if (playerPos === totalCells - 1) {
-                document.getElementById('victory-screen').style.display = 'flex';
-            } else {
-                showQuestion();
-            }
-        }
-
-        function showQuestion() {
-            const q = questions[Math.floor(Math.random() * questions.length)];
-            qText.innerText = q.q;
-            optionsDiv.innerHTML = '';
-            btnContinue.classList.add('hidden');
-
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(idx, q.correct, btn);
-                optionsDiv.appendChild(btn);
+            charges.forEach(c => {
+                ctx.fillStyle = c.q > 0 ? '#ff0055' : '#00d2ff';
+                ctx.beginPath(); ctx.arc(c.x, c.y, 10, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.fillText(c.q > 0 ? '+' : '-', c.x, c.y+4);
             });
-
-            modal.style.display = 'flex';
         }
-
-        function checkAnswer(idx, correct, btn) {
-            const allBtns = document.querySelectorAll('.option-btn');
-            allBtns.forEach(b => b.style.pointerEvents = 'none');
-
-            if (idx === correct) {
-                btn.classList.add('correct');
-                score += 10;
-                scoreVal.innerText = score;
-                setTimeout(closeModal, 1000);
-            } else {
-                btn.classList.add('wrong');
-                allBtns[correct].classList.add('correct');
-                score = Math.max(0, score - 5);
-                scoreVal.innerText = score;
-                
-                // Penalty: move back
-                setTimeout(() => {
-                    playerPos = Math.max(0, playerPos - 2);
-                    updatePlayer();
-                    closeModal();
-                }, 1500);
+        draw();
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "power-grid-master",
+    title: "Mjeshtri i Rrjetit",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Mjeshtri i Rrjetit</title>
+    <style>
+        body { background: #111; color: #0f0; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; }
+        .node { width: 100px; height: 100px; border: 2px solid #0f0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.3s; }
+        .node.active { background: #0f0; color: #000; box-shadow: 0 0 20px #0f0; }
+        #status { margin-top: 20px; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Mjeshtri i Rrjetit: P = U * I</h1>
+    <div class="grid" id="grid"></div>
+    <div id="status">Aktivizo të gjitha nyjet për të furnizuar qytetin!</div>
+    <script>
+        const grid = document.getElementById('grid');
+        const nodes = [];
+        for (let i = 0; i < 9; i++) {
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.innerText = '⚡';
+            node.onclick = () => {
+                node.classList.toggle('active');
+                checkWin();
+            };
+            grid.appendChild(node);
+            nodes.push(node);
+        }
+        function checkWin() {
+            if (nodes.every(n => n.classList.contains('active'))) {
+                document.getElementById('status').innerText = 'QYTETI U FURNIZUA! FUQIA MAKSIMALE!';
             }
         }
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "voltage-stabilizer",
+    title: "Stabilizuesi i Tensionit",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Stabilizuesi i Tensionit</title>
+    <style>
+        body { background: #000; color: #00ff00; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        #meter { width: 300px; height: 30px; border: 2px solid #00ff00; position: relative; }
+        #pointer { width: 4px; height: 40px; background: red; position: absolute; top: -5px; left: 50%; transition: left 0.1s; }
+        #target { width: 40px; height: 30px; background: rgba(0,255,0,0.3); position: absolute; left: 130px; }
+        button { margin-top: 20px; padding: 10px 20px; background: #00ff00; border: none; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Stabilizuesi i Tensionit (U)</h1>
+    <div id="meter">
+        <div id="target"></div>
+        <div id="pointer"></div>
+    </div>
+    <p>Mbaje tensionin në zonën e gjelbër!</p>
+    <button onmousedown="powerUp()" onmouseup="powerDown()">FURNIZO</button>
+    <script>
+        let voltage = 50;
+        let target = 40 + Math.random() * 20;
+        const pointer = document.getElementById('pointer');
+        const targetEl = document.getElementById('target');
+        targetEl.style.left = (target * 3) + 'px';
 
-        function closeModal() {
-            modal.style.display = 'none';
-            isRolling = false;
+        let interval;
+        function powerUp() { clearInterval(interval); interval = setInterval(() => { if(voltage < 100) voltage += 2; update(); }, 50); }
+        function powerDown() { clearInterval(interval); interval = setInterval(() => { if(voltage > 0) voltage -= 1.5; update(); }, 50); }
+        
+        function update() {
+            pointer.style.left = (voltage * 3) + 'px';
+            if (Math.abs(voltage - (target + 6)) < 6) targetEl.style.background = 'lime';
+            else targetEl.style.background = 'rgba(0,255,0,0.3)';
         }
-
-        window.addEventListener('resize', updatePlayer);
-        initBoard();
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "current-master",
+    title: "Mjeshtri i Rrymës",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Mjeshtri i Rrymës</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .wire { width: 80%; height: 10px; background: #333; margin: 50px auto; position: relative; border-radius: 5px; }
+        .electron { width: 15px; height: 15px; background: #00d2ff; border-radius: 50%; position: absolute; top: -2.5px; box-shadow: 0 0 10px #00d2ff; }
+        input { width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Intensiteti i Rrymës (I = Q / t)</h1>
+    <div class="wire" id="wire"></div>
+    <p>Rregullo intensitetin: <input type="range" id="slider" min="1" max="20" value="5"></p>
+    <div id="info">Elektronet po lëvizin...</div>
+    <script>
+        const wire = document.getElementById('wire');
+        const slider = document.getElementById('slider');
+        function createElectron() {
+            const e = document.createElement('div');
+            e.className = 'electron';
+            e.style.left = '-20px';
+            wire.appendChild(e);
+            let pos = -20;
+            const speed = parseInt(slider.value);
+            const move = setInterval(() => {
+                pos += speed;
+                e.style.left = pos + 'px';
+                if (pos > wire.offsetWidth) { clearInterval(move); e.remove(); }
+            }, 20);
+        }
+        setInterval(() => {
+            for(let i=0; i<slider.value/5; i++) createElectron();
+        }, 500);
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "capacitor-master",
+    title: "Mjeshtri i Kondensatorëve",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Mjeshtri i Kondensatorëve</title>
+    <style>
+        body { background: #050510; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .plates { display: flex; gap: 40px; align-items: center; }
+        .plate { width: 20px; height: 200px; background: #888; border-radius: 5px; position: relative; }
+        .charge { width: 10px; height: 10px; border-radius: 50%; position: absolute; left: 5px; }
+        #controls { margin-top: 30px; }
+        button { padding: 10px 20px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Kapaciteti Elektrik (C = Q / U)</h1>
+    <div class="plates">
+        <div class="plate" id="plate1"></div>
+        <div class="plate" id="plate2"></div>
+    </div>
+    <div id="controls">
+        <button onclick="charge()">NGARKONI</button>
+        <button onclick="discharge()">SHKARKONI</button>
+    </div>
+    <p id="stat">Ngarkesa: 0 C</p>
+    <script>
+        let q = 0;
+        function charge() {
+            if (q < 10) {
+                q++;
+                const c1 = document.createElement('div'); c1.className = 'charge'; c1.style.background = 'red'; c1.style.top = (q * 18) + 'px';
+                const c2 = document.createElement('div'); c2.className = 'charge'; c2.style.background = 'blue'; c2.style.top = (q * 18) + 'px';
+                document.getElementById('plate1').appendChild(c1);
+                document.getElementById('plate2').appendChild(c2);
+                update();
+            }
+        }
+        function discharge() {
+            q = 0;
+            document.getElementById('plate1').innerHTML = '';
+            document.getElementById('plate2').innerHTML = '';
+            update();
+        }
+        function update() { document.getElementById('stat').innerText = 'Ngarkesa: ' + q + ' C'; }
     </script>
 </body>
 </html>`
@@ -972,39 +1954,491 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     title: "Mjeshtri i Tingullit",
     category: "Valët dhe Tingulli",
     type: "digital",
-    url: "/mjeshtri-tingullit.html",
-    html: ""
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Mjeshtri i Tingullit</title>
+    <style>
+        body { background: #111; color: #0f0; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { color: #0f0; text-shadow: 0 0 10px #0f0; }
+        .oscilloscope { width: 80%; max-width: 800px; height: 300px; background: #002200; border: 3px solid #0f0; border-radius: 20px; position: relative; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,255,0,0.2); margin-bottom: 30px; }
+        canvas { width: 100%; height: 100%; }
+        .controls { display: flex; gap: 40px; background: #222; padding: 20px; border-radius: 15px; border: 1px solid #444; }
+        .control-group { display: flex; flex-direction: column; align-items: center; }
+        label { margin-bottom: 10px; font-size: 1.2rem; font-weight: bold; }
+        input[type=range] { width: 200px; accent-color: #0f0; }
+        .value-display { margin-top: 10px; font-size: 1.1rem; color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>Oshiloskopi Virtual</h1>
+    
+    <div class="oscilloscope">
+        <canvas id="waveCanvas"></canvas>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>Amplituda (Zëri)</label>
+            <input type="range" id="ampSlider" min="10" max="100" value="50">
+            <div class="value-display" id="ampVal">50</div>
+        </div>
+        <div class="control-group">
+            <label>Frekuenca (Toni)</label>
+            <input type="range" id="freqSlider" min="1" max="20" value="5">
+            <div class="value-display" id="freqVal">5 Hz</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        const ampSlider = document.getElementById('ampSlider');
+        const freqSlider = document.getElementById('freqSlider');
+        const ampVal = document.getElementById('ampVal');
+        const freqVal = document.getElementById('freqVal');
+
+        let time = 0;
+
+        function resize() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function drawWave() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#004400';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=50) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+            for(let i=0; i<canvas.height; i+=50) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke(); }
+
+            // Draw center line
+            ctx.strokeStyle = '#008800';
+            ctx.beginPath(); ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); ctx.stroke();
+
+            const amplitude = parseInt(ampSlider.value);
+            const frequency = parseInt(freqSlider.value);
+            
+            ampVal.innerText = amplitude;
+            freqVal.innerText = frequency + ' Hz';
+
+            ctx.strokeStyle = '#0f0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            for (let x = 0; x < canvas.width; x++) {
+                const y = canvas.height / 2 + Math.sin(x * frequency * 0.01 + time) * amplitude;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            time += 0.1;
+            requestAnimationFrame(drawWave);
+        }
+
+        drawWave();
+    </script>
+</body>
+</html>`
   },
   {
     id: "sfida-matures",
     title: "Sfida e Maturës",
     category: "Fizika",
     type: "digital",
-    url: "/sfida-matures.html",
-    html: ""
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Sfida e Maturës - Fizikë</title>
+    <style>
+        body { background: #f4f4f9; color: #333; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; margin: 0; min-height: 100vh; }
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { color: #2c3e50; font-size: 2.5rem; margin: 0; }
+        .subtitle { color: #7f8c8d; font-size: 1.2rem; }
+        .quiz-container { background: white; width: 100%; max-width: 700px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 40px; box-sizing: border-box; }
+        .question { font-size: 1.4rem; font-weight: bold; color: #2c3e50; margin-bottom: 20px; }
+        .options { display: flex; flex-direction: column; gap: 15px; }
+        .option { background: #ecf0f1; border: 2px solid #bdc3c7; padding: 15px 20px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+        .option:hover { background: #e0e6ed; border-color: #95a5a6; }
+        .option.selected { background: #3498db; color: white; border-color: #2980b9; }
+        .option.correct { background: #2ecc71; color: white; border-color: #27ae60; }
+        .option.wrong { background: #e74c3c; color: white; border-color: #c0392b; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; border-top: 2px solid #ecf0f1; padding-top: 20px; }
+        .score { font-size: 1.2rem; font-weight: bold; color: #34495e; }
+        .btn { background: #3498db; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:hover { background: #2980b9; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .progress-bar { width: 100%; height: 10px; background: #ecf0f1; border-radius: 5px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #3498db; width: 0%; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sfida e Maturës</h1>
+        <div class="subtitle">Përgatitje për Provimin e Shtetit në Fizikë</div>
+    </div>
+
+    <div class="quiz-container">
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        <div id="quiz-content">
+            <div class="question" id="question-text">Po ngarkon pyetjen...</div>
+            <div class="options" id="options-container"></div>
+        </div>
+        <div class="controls">
+            <div class="score">Pikët: <span id="score-val">0</span>/<span id="total-val">0</span></div>
+            <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Vazhdo</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Cila nga madhësitë e mëposhtme është vektoriale?", options: ["Koha", "Masa", "Nxitimi", "Temperatura"], correct: 2 },
+            { q: "Njësia matëse e punës mekanike në sistemin SI është:", options: ["Njuton (N)", "Xhaul (J)", "Vat (W)", "Paskal (Pa)"], correct: 1 },
+            { q: "Nëse rezultantja e forcave që veprojnë mbi një trup është zero, trupi:", options: ["Lëviz me nxitim", "Ndalon menjëherë", "Ruan gjendjen e prehjes ose lëvizjes së njëtrajtshme", "Lëviz me shpejtësi të ndryshueshme"], correct: 2 },
+            { q: "Cila është formula e ligjit të dytë të Njutonit?", options: ["F = m/a", "F = m*a", "a = m*F", "F = a/m"], correct: 1 },
+            { q: "Gjatë rënies së lirë të një trupi (pa fërkim), energjia mekanike e tij:", options: ["Rritet", "Zvogëlohet", "Mbetet konstante", "Bëhet zero"], correct: 2 }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            if (currentQ >= questions.length) {
+                showResults();
+                return;
+            }
+
+            const q = questions[currentQ];
+            document.getElementById('question-text').innerText = (currentQ + 1) + ". " + q.q;
+            document.getElementById('total-val').innerText = questions.length;
+            document.getElementById('progress').style.width = ((currentQ / questions.length) * 100) + '%';
+            
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+            answered = false;
+            document.getElementById('next-btn').disabled = true;
+
+            q.options.forEach((opt, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerText = opt;
+                div.onclick = () => selectOption(index, div);
+                optsContainer.appendChild(div);
+            });
+        }
+
+        function selectOption(index, element) {
+            if (answered) return;
+            answered = true;
+            
+            const q = questions[currentQ];
+            const options = document.querySelectorAll('.option');
+            
+            if (index === q.correct) {
+                element.classList.add('correct');
+                score++;
+                document.getElementById('score-val').innerText = score;
+            } else {
+                element.classList.add('wrong');
+                options[q.correct].classList.add('correct');
+            }
+            
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('progress').style.width = '100%';
+            const percentage = (score / questions.length) * 100;
+            let message = "";
+            if (percentage === 100) message = "Shkëlqyeshëm! Je gati për maturën!";
+            else if (percentage >= 60) message = "Mirë! Por mund të përmirësohesh.";
+            else message = "Duhet të studiosh më shumë!";
+
+            document.getElementById('quiz-content').innerHTML = \`
+                <div style="text-align: center;">
+                    <h2 style="font-size: 2rem; color: #2c3e50; margin-bottom: 10px;">Rezultati Përfundimtar</h2>
+                    <div style="font-size: 4rem; font-weight: bold; color: #3498db; margin: 20px 0;">\${score} / \${questions.length}</div>
+                    <p style="font-size: 1.2rem; color: #7f8c8d;">\${message}</p>
+                </div>
+            \`;
+            
+            const btn = document.getElementById('next-btn');
+            btn.innerText = "Luaj Përsëri";
+            btn.disabled = false;
+            btn.onclick = () => location.reload();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>`
   },
   {
     id: "sti-game",
     title: "Beteja e Fizikes",
     category: "Gjithëpërfshirëse",
     type: "school",
-    url: "/sti.html",
-    html: ""
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Beteja e Fizikës</title>
+    <style>
+        body { background: #222; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { color: #f39c12; }
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #444; padding: 10px; border-radius: 10px; }
+        .cell { width: 100px; height: 100px; background: #333; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        .cell:hover { background: #555; }
+        .status { margin-top: 20px; font-size: 1.5rem; }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 1.2rem; background: #f39c12; color: #000; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Beteja e Fizikës (Tic-Tac-Toe)</h1>
+    <div class="board" id="board">
+        <div class="cell" onclick="makeMove(0)"></div>
+        <div class="cell" onclick="makeMove(1)"></div>
+        <div class="cell" onclick="makeMove(2)"></div>
+        <div class="cell" onclick="makeMove(3)"></div>
+        <div class="cell" onclick="makeMove(4)"></div>
+        <div class="cell" onclick="makeMove(5)"></div>
+        <div class="cell" onclick="makeMove(6)"></div>
+        <div class="cell" onclick="makeMove(7)"></div>
+        <div class="cell" onclick="makeMove(8)"></div>
+    </div>
+    <div class="status" id="status">Radha e Lojtarit: X</div>
+    <button onclick="reset()">Fillo Përsëri</button>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        const cells = document.querySelectorAll('.cell');
+        const status = document.getElementById('status');
+
+        const winConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function makeMove(index) {
+            if (board[index] !== '' || !gameActive) return;
+            board[index] = currentPlayer;
+            cells[index].innerText = currentPlayer;
+            cells[index].style.color = currentPlayer === 'X' ? '#3498db' : '#e74c3c';
+            checkWin();
+        }
+
+        function checkWin() {
+            let roundWon = false;
+            for (let i = 0; i < winConditions.length; i++) {
+                const [a, b, c] = winConditions[i];
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                status.innerText = \`Lojtari \${currentPlayer} fitoi!\`;
+                gameActive = false;
+                return;
+            }
+
+            if (!board.includes('')) {
+                status.innerText = 'Barazim!';
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            status.innerText = \`Radha e Lojtarit: \${currentPlayer}\`;
+        }
+
+        function reset() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            status.innerText = \`Radha e Lojtarit: \${currentPlayer}\`;
+            cells.forEach(cell => { cell.innerText = ''; });
+        }
+    </script>
+</body>
+</html>`
   },
   {
     id: "lojee-game",
     title: "ElektroGame",
-    category: "Gjithëpërfshirëse",
+    category: "Elektriciteti",
     type: "digital",
-    url: "/lojee.html",
-    html: ""
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>ElektroGame</title>
+    <style>
+        body { background: #000; color: #0ff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { text-shadow: 0 0 10px #0ff; }
+        .game-area { width: 400px; height: 400px; border: 2px solid #0ff; position: relative; overflow: hidden; }
+        .player { width: 20px; height: 20px; background: #0f0; position: absolute; bottom: 10px; left: 190px; border-radius: 50%; box-shadow: 0 0 10px #0f0; }
+        .enemy { width: 20px; height: 20px; background: #f00; position: absolute; border-radius: 50%; box-shadow: 0 0 10px #f00; }
+        #score { font-size: 1.5rem; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Evito Shkarkimet Elektrike!</h1>
+    <div class="game-area" id="gameArea">
+        <div class="player" id="player"></div>
+    </div>
+    <div id="score">Pikët: 0</div>
+    <p>Përdor shigjetat Majtas/Djathtas për të lëvizur.</p>
+
+    <script>
+        const player = document.getElementById('player');
+        const gameArea = document.getElementById('gameArea');
+        const scoreDisplay = document.getElementById('score');
+        let playerX = 190;
+        let score = 0;
+        let enemies = [];
+        let gameInterval;
+        let isGameOver = false;
+
+        document.addEventListener('keydown', (e) => {
+            if (isGameOver) return;
+            if (e.key === 'ArrowLeft' && playerX > 0) playerX -= 20;
+            if (e.key === 'ArrowRight' && playerX < 380) playerX += 20;
+            player.style.left = playerX + 'px';
+        });
+
+        function spawnEnemy() {
+            const enemy = document.createElement('div');
+            enemy.className = 'enemy';
+            enemy.style.left = Math.floor(Math.random() * 380) + 'px';
+            enemy.style.top = '0px';
+            gameArea.appendChild(enemy);
+            enemies.push({ el: enemy, y: 0 });
+        }
+
+        function gameLoop() {
+            if (Math.random() < 0.1) spawnEnemy();
+
+            for (let i = 0; i < enemies.length; i++) {
+                let enemy = enemies[i];
+                enemy.y += 5;
+                enemy.el.style.top = enemy.y + 'px';
+
+                // Collision detection
+                const pRect = player.getBoundingClientRect();
+                const eRect = enemy.el.getBoundingClientRect();
+
+                if (!(pRect.right < eRect.left || 
+                      pRect.left > eRect.right || 
+                      pRect.bottom < eRect.top || 
+                      pRect.top > eRect.bottom)) {
+                    gameOver();
+                    return;
+                }
+
+                if (enemy.y > 400) {
+                    enemy.el.remove();
+                    enemies.splice(i, 1);
+                    i--;
+                    score++;
+                    scoreDisplay.innerText = 'Pikët: ' + score;
+                }
+            }
+        }
+
+        function gameOver() {
+            isGameOver = true;
+            clearInterval(gameInterval);
+            alert('Lojë e përfunduar! Pikët: ' + score);
+            location.reload();
+        }
+
+        gameInterval = setInterval(gameLoop, 50);
+    </script>
+</body>
+</html>`
   },
   {
     id: "smartt-game",
     title: "Laboratori i Saktësisë",
     category: "Gjithëpërfshirëse",
     type: "digital",
-    url: "/smartt.html",
-    html: ""
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratori i Saktësisë</title>
+    <style>
+        body { background: #e0e5ec; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { background: #e0e5ec; padding: 40px; border-radius: 20px; box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5); text-align: center; }
+        h1 { color: #2c3e50; }
+        .target { width: 100px; height: 100px; background: #e74c3c; border-radius: 50%; margin: 20px auto; cursor: pointer; transition: transform 0.1s; box-shadow: inset 5px 5px 10px rgba(0,0,0,0.2), inset -5px -5px 10px rgba(255,255,255,0.2); }
+        .target:active { transform: scale(0.9); }
+        #time { font-size: 2rem; font-weight: bold; color: #2980b9; }
+        #result { margin-top: 20px; font-size: 1.2rem; }
+        button { margin-top: 20px; padding: 10px 20px; border: none; border-radius: 10px; background: #3498db; color: white; font-size: 1.1rem; cursor: pointer; box-shadow: 5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255, 0.5); }
+        button:active { box-shadow: inset 5px 5px 10px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Testi i Reagimit</h1>
+        <p>Kliko rrethin e kuq sa më shpejt të jetë e mundur kur të shfaqet!</p>
+        <div id="time">0.000 s</div>
+        <div class="target" id="target" style="display: none;" onclick="hitTarget()"></div>
+        <button id="startBtn" onclick="startTest()">Fillo Testin</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let startTime;
+        let timeoutId;
+        const target = document.getElementById('target');
+        const timeDisplay = document.getElementById('time');
+        const resultDisplay = document.getElementById('result');
+        const startBtn = document.getElementById('startBtn');
+
+        function startTest() {
+            startBtn.style.display = 'none';
+            resultDisplay.innerText = 'Prit...';
+            target.style.display = 'none';
+            timeDisplay.innerText = '0.000 s';
+
+            const delay = Math.random() * 3000 + 1000; // 1 to 4 seconds
+            timeoutId = setTimeout(() => {
+                target.style.display = 'block';
+                startTime = Date.now();
+                resultDisplay.innerText = 'Kliko Tani!';
+            }, delay);
+        }
+
+        function hitTarget() {
+            const reactionTime = (Date.now() - startTime) / 1000;
+            target.style.display = 'none';
+            timeDisplay.innerText = reactionTime.toFixed(3) + ' s';
+            resultDisplay.innerText = 'Koha jote e reagimit!';
+            startBtn.style.display = 'inline-block';
+            startBtn.innerText = 'Provo Përsëri';
+        }
+    </script>
+</body>
+</html>`
   }
 ];

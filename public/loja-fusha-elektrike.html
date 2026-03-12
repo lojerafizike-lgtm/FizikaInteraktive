@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Field Explorer</title>
+    <style>
+        :root {
+            --bg-color: #fff0f5;
+            --primary-pink: #ffb6c1;
+            --electric-blue: #87cefa;
+            --text-color: #5d5d5d;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        h1 { margin-bottom: 10px; color: #ff69b4; }
+        #game-container {
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            border: 4px solid var(--primary-pink);
+        }
+
+        canvas { display: block; background: #fafafa; cursor: none; }
+
+        .ui-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .instructions {
+            margin-top: 15px;
+            max-width: 500px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        #intensity-meter {
+            font-weight: bold;
+            color: #ff1493;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>⚡ Intensiti i Fushës ⚡</h1>
+
+    <div id="game-container">
+        <div class="ui-panel">
+            Pikët: <span id="score">0</span><br>
+            Intensiteti (E): <span id="intensity-meter">0</span> N/C
+        </div>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+    </div>
+
+    <div class="instructions">
+        <p>Lëviz miun (mouse) për të kontrolluar <b>ngarkesën provë (+q)</b>. 
+        Mblidh sferat pastel për pikë, por kujdes: <b>burimi i fushës</b> në qendër të shtyn me forcë më të madhe sa më afër t'i shkosh!</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const intensityMeter = document.getElementById('intensity-meter');
+
+        let score = 0;
+        let mouse = { x: 300, y: 200 };
+        let player = { x: 300, y: 200, radius: 10 };
+        
+        // Burimi i fushës (ngarkesë e madhe pozitive në qendër)
+        const source = { x: 300, y: 200, q: 5000 }; 
+        
+        let collectibles = [];
+
+        function spawnCollectible() {
+            collectibles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: 8,
+                color: `hsl(${Math.random() * 360}, 70%, 80%)`
+            });
+        }
+
+        // Krijo disa mbledhëse në fillim
+        for(let i=0; i<5; i++) spawnCollectible();
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        function update() {
+            // Llogarit distancën nga qendra (r)
+            let dx = mouse.x - source.x;
+            let dy = mouse.y - source.y;
+            let r = Math.sqrt(dx*dx + dy*dy);
+            if (r < 20) r = 20; // Parandalon forcën pafundësi
+
+            // Formula e Intensitetit: E = k * Q / r^2
+            const k = 8987; 
+            let E = (k * source.q) / (r * r);
+            
+            // Shfaq intensitetin në ekran
+            intensityMeter.innerText = Math.round(E);
+
+            // "Shtytja" elektrike - e bën kontrollin e vështirë
+            // Ngarkesa provë ndjen një forcë që e largon nga qendra
+            let pushX = (dx / r) * (E / 100);
+            let pushY = (dy / r) * (E / 100);
+
+            player.x = mouse.x + pushX;
+            player.y = mouse.y + pushY;
+
+            // Kontrolli i mbledhjes së pikëve
+            collectibles.forEach((c, index) => {
+                let dist = Math.sqrt((player.x - c.x)**2 + (player.y - c.y)**2);
+                if (dist < player.radius + c.radius) {
+                    collectibles.splice(index, 1);
+                    score += 10;
+                    scoreElement.innerText = score;
+                    spawnCollectible();
+                }
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vizatimi i vijave të fushës (vizuale)
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.beginPath();
+            for(let i=0; i<360; i+=30) {
+                let rad = i * Math.PI / 180;
+                ctx.moveTo(source.x, source.y);
+                ctx.lineTo(source.x + Math.cos(rad) * 600, source.y + Math.sin(rad) * 600);
+            }
+            ctx.stroke();
+
+            // Burimi i fushës (+Q)
+            ctx.fillStyle = '#ff1493';
+            ctx.beginPath();
+            ctx.arc(source.x, source.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.font = "bold 16px Arial";
+            ctx.fillText("+Q", source.x - 10, source.y + 6);
+
+            // Mbledhëset
+            collectibles.forEach(c => {
+                ctx.fillStyle = c.color;
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Lojtari (ngarkesa provë +q)
+            ctx.fillStyle = '#87cefa';
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ff69b4';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
