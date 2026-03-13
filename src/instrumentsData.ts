@@ -153,6 +153,16 @@ export const instrumentsData = [
     desc: 'Voltmetri me rezistencë të lartë interne mat potencialin elektrik ne raport me nje pikë reference (tok). Elektrometri mat potenciale te vogla me saktësi të lartë.',
     simType: 'voltmeter', color: '#FFB6C1' },
 
+  { cat: 'Elektriciteti', name: 'Ngarkesa elektrike', sym: 'q', unit: 'C', nature: 'Skalare',
+    instrument: 'Elektrometri / Elektroskopi (zbulim) / Coulombmetri', icon: '✨',
+    instIcon: '⚡', animType: 'gauge',
+    useCases: ['Elektrostatika', 'Bateritë', 'Elektronika'],
+    desc: 'Elektroskopi zbuleson praninë e ngarkesës (gjethët metalike zmadhohen). Coulombmetri (charge meter) mat saktë q = I·t duke integruar rrymën në kohë. Elektrometri modern mat ngarkesa shumë të vogla (fC = 10⁻¹⁵ C).',
+    simType: 'gauge', color: '#fde68a',
+    stripeA: "#fde68a", stripeB: "#fcd34d",
+    bubBg: "rgba(253,230,138,0.3)"
+  },
+
   // MAGNETIZMI
   { cat: 'Magnetizmi', name: 'Induksioni magnetik', sym: 'B', unit: 'T', nature: 'Vektoriale',
     instrument: 'Teslametër / Hall sensori', icon: '🧲',
@@ -173,6 +183,27 @@ export const instrumentsData = [
     instrument: 'Galvanometër', icon: '⚡',
     desc: 'Galvanometri eshte instrumenti me i ndjeshëm per matjen e rrymave te induktuara te vogla. Tregon edhe drejtimin e rrymës se induktuara sipas Ligjit te Lenz.',
     simType: 'galvanometer', color: '#A8D8EA' },
+
+  // FIZIKA KUANTIKE
+  { cat: 'Fizika Kuantike', name: 'Energjia e fotonit', sym: 'E', unit: 'J', nature: 'Skalare',
+    instrument: 'Spektrometri', icon: '🌈',
+    desc: 'Spektrometri e ndan dritën sipas gjatësisë valore duke përdorur një prizmë ose rrjetë difraksioni. Çdo element kimik lëshon spektër karakteristik — si \'gjurmë gishti\' e dritës.',
+    simType: 'spektrometri', color: '#bae6fd' },
+
+  { cat: 'Fizika Kuantike', name: 'Puna e daljes', sym: 'A<sub>d</sub>', unit: 'J', nature: 'Skalare',
+    instrument: 'Qeliza Fotoelektrike', icon: '⚡',
+    desc: 'Qeliza fotoelektrike ka një katodë metalike brenda. Kur rrezatimi bie mbi katodë, elektronet shpëtojnë nga sipërfaqja nëse E ≥ A_d. Galvanometri mat rrymën e krijuar nga elektronet e çliruar.',
+    simType: 'fotoelektrike', color: '#fce7f3' },
+
+  { cat: 'Fizika Kuantike', name: 'Gjatësia e valës së De Brojit', sym: 'λ', unit: 'm', nature: 'Skalare',
+    instrument: 'Difraktometri i Elektronëve', icon: '〰️',
+    desc: 'Difraktometri i elektronëve dërgon tufë elektronesh mbi një kristal. Elektronet difraktohen nga rrjeta kristalore — si drita me valë! Modeli i unazave Bragg në ekran tregon gjatësinë valore λ.',
+    simType: 'difraktometri', color: '#e9d5ff' },
+
+  { cat: 'Fizika Kuantike', name: 'Perioda e gjysmëzbërthimit', sym: 'T<sub>1/2</sub>', unit: 's', nature: 'Skalare',
+    instrument: 'Detektor Geiger-Müller', icon: '☢️',
+    desc: 'Detektori Geiger-Müller ka një tub të mbushur me gaz inert. Kur grimca rrezuese hyn, jonizon gazin dhe krijohet impuls elektrik. Duke regjistruar klikimet me kalimin e kohës, gjendet perioda e gjysmëzbërthimit.',
+    simType: 'geiger', color: '#d1fae5' }
 ];
 
 export function buildSim(type: string) {
@@ -339,6 +370,20 @@ export function buildSim(type: string) {
         </div>
       </div>`;
 
+    case 'gauge': return `
+      <div class="sim-container manometer-sim">
+        <div class="pressure-gauge" style="background:radial-gradient(circle at center, #fff, #fef3c7);">
+          <div class="gauge-needle" style="transform: rotate(45deg); background: #f59e0b;"></div>
+          <div class="gauge-center" style="background: #d97706;"></div>
+          <div class="gauge-label" style="color: #b45309;">⚡ Q</div>
+          <div style="position:absolute;top:12px;font-size:8px;font-weight:900;color:#d97706;">CHARGE</div>
+          <div style="position:absolute;bottom:15px;display:flex;gap:10px;">
+            <div style="width:4px;height:4px;background:#f59e0b;border-radius:50%;animation: pulse 1s infinite;"></div>
+            <div style="width:4px;height:4px;background:#f59e0b;border-radius:50%;animation: pulse 1s infinite 0.5s;"></div>
+          </div>
+        </div>
+      </div>`;
+
     case 'oscilloscope': return `
       <div class="sim-container oscillo-sim">
         <div class="oscilloscope">
@@ -389,6 +434,84 @@ export function buildSim(type: string) {
           <div class="heat-source"></div>
         </div>
         <div style="font-size:10px;font-weight:700;color:var(--text-light);text-align:center;">Kalorimetër</div>
+      </div>`;
+
+    case 'spektrometri': return `
+      <div class="sim-container" style="background:rgba(186,230,253,0.3)">
+        <div class="spec-wrap">
+          <div class="spec-beam-in"></div>
+          <div class="spec-prism"></div>
+          <div class="spec-rainbow">
+            <div class="spec-line" style="background:#f87171;animation-delay:0s"></div>
+            <div class="spec-line" style="background:#fb923c;animation-delay:.15s"></div>
+            <div class="spec-line" style="background:#fcd34d;animation-delay:.3s"></div>
+            <div class="spec-line" style="background:#4ade80;animation-delay:.45s"></div>
+            <div class="spec-line" style="background:#38bdf8;animation-delay:.6s"></div>
+            <div class="spec-line" style="background:#818cf8;animation-delay:.75s"></div>
+            <div class="spec-line" style="background:#c084fc;animation-delay:.9s"></div>
+          </div>
+        </div>
+      </div>`;
+
+    case 'fotoelektrike': return `
+      <div class="sim-container" style="background:rgba(249,168,212,0.25)">
+        <div class="photo-wrap">
+          <div style="font-size:.65rem;font-weight:700;color:var(--lav-deep, #8b5cf6);margin-bottom:2px">☀️ → hf ≥ A_d → e⁻</div>
+          <div class="photo-cell">
+            <div class="photo-photon">🌟</div>
+            <div class="photo-cathode"></div>
+            <div class="photo-electron"></div>
+            <div class="photo-anode"></div>
+          </div>
+          <div class="photo-arrow">
+            <span>e⁻ →</span>
+            <div class="photo-galv">🔌 Galvanometri</div>
+          </div>
+        </div>
+      </div>`;
+
+    case 'difraktometri': return `
+      <div class="sim-container" style="background:rgba(196,181,253,0.25)">
+        <div class="diffr-wrap">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="diffr-gun"></div>
+            <div class="diffr-beam-row">
+              <div class="diffr-beam-dot"></div>
+              <div class="diffr-beam-dot"></div>
+              <div class="diffr-beam-dot"></div>
+              <div class="diffr-beam-dot"></div>
+              <div class="diffr-beam-dot"></div>
+            </div>
+            <div class="diffr-crystal">💎</div>
+          </div>
+          <svg class="diffr-rings-svg" width="100" height="60" viewBox="0 0 100 60">
+            <circle class="diffr-ring" cx="50" cy="30" r="18" stroke="#f9a8d4" stroke-dasharray="120 10"/>
+            <circle class="diffr-ring" cx="50" cy="30" r="26" stroke="#c4b5fd" stroke-dasharray="170 10"/>
+            <circle class="diffr-ring" cx="50" cy="30" r="34" stroke="#7dd3fc" stroke-dasharray="220 10"/>
+          </svg>
+        </div>
+      </div>`;
+
+    case 'geiger': return `
+      <div class="sim-container" style="background:rgba(167,243,208,0.25)">
+        <div class="geiger-wrap">
+          <div class="geiger-radi">
+            <div class="radi-wave"></div>
+            <div class="radi-wave"></div>
+            <div class="radi-wave"></div>
+          </div>
+          <div class="geiger-tube"><span class="geiger-label">GEIGER-MÜLLER TUBE</span></div>
+          <div class="geiger-clicks">
+            <div class="g-dot"></div>
+            <div class="g-dot"></div>
+            <div class="g-dot"></div>
+            <div class="g-dot"></div>
+            <div class="g-dot"></div>
+          </div>
+          <div class="geiger-display">
+            ☢️ <span class="geiger-num" id="gNum">247</span> <span style="font-size:.72rem;color:var(--muted, #a78ab5)">CPM</span>
+          </div>
+        </div>
       </div>`;
 
     default: return `<div class="sim-container ruler-sim"><div style="font-size:2rem;">🔬</div></div>`;

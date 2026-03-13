@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Mbrojtja e Bazës – Fotoefekti</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap');
+
+:root {
+  --bg:       #eef2ff;
+  --card:     #ffffff;
+  --border:   #d0d8f0;
+  --text:     #1a1a2e;
+  --dim:      #5560a0;
+  --blue:     #4e8ef7;
+  --blue-lt:  #ddeaff;
+  --green:    #3ecf8e;
+  --green-lt: #d4f5e8;
+  --red:      #f76b6b;
+  --red-lt:   #ffe0e0;
+  --yellow:   #f5b83e;
+  --yel-lt:   #fff3d4;
+  --purple:   #a78bfa;
+  --pur-lt:   #ede9fe;
+  --shadow:   0 2px 12px rgba(80,100,200,.10);
+  --shadow-m: 0 4px 20px rgba(80,100,200,.16);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--text);display:flex;flex-direction:column;}
+
+/* ── TOP BAR ── */
+.top{background:var(--card);border-bottom:2px solid var(--border);padding:7px 14px;
+  display:flex;align-items:center;gap:8px;flex-shrink:0;box-shadow:var(--shadow);z-index:10;}
+.logo{font-family:'Baloo 2',sans-serif;font-size:.95rem;font-weight:800;color:var(--blue);white-space:nowrap;}
+.pills{display:flex;gap:5px;flex:1;justify-content:flex-end;flex-wrap:wrap;}
+.pill{display:flex;align-items:center;gap:3px;border-radius:20px;padding:3px 10px;
+  font-size:.75rem;font-weight:800;white-space:nowrap;}
+.pill.hp  {background:var(--red-lt); color:#c03030;}
+.pill.en  {background:var(--green-lt);color:#1a7050;}
+.pill.wv  {background:var(--yel-lt); color:#a06010;}
+.pill.sc  {background:var(--blue-lt);color:#1a50c0;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;flex:1;overflow:hidden;}
+
+/* canvas */
+.cv-wrap{flex:1;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#e8f0ff 0%,#f5eeff 55%,#e8fff5 100%);}
+canvas{width:100%;height:100%;display:block;touch-action:none;}
+
+/* ── DESKTOP SIDE ── */
+.side{width:195px;background:var(--card);border-left:2px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+@media(max-width:580px){.side{display:none;}.mob{display:flex!important;}}
+
+/* ── MOBILE BOTTOM ── */
+.mob{display:none;flex-direction:column;background:var(--card);
+  border-top:2px solid var(--border);flex-shrink:0;box-shadow:0 -4px 16px rgba(80,100,200,.08);}
+.mob-row{display:flex;gap:6px;padding:7px 10px;overflow-x:auto;scrollbar-width:none;}
+.mob-row::-webkit-scrollbar{display:none;}
+
+/* ── SECTIONS ── */
+.sec{padding:10px 12px;border-bottom:1px solid var(--border);}
+.sec-t{font-family:'Baloo 2',sans-serif;font-size:.62rem;font-weight:800;
+  color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;}
+
+/* ── FREQ BUTTONS ── */
+.fb{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;margin-bottom:5px;
+  background:#f8f9ff;border:2px solid var(--border);border-radius:12px;
+  cursor:pointer;font-family:'Nunito',sans-serif;font-size:.74rem;font-weight:700;
+  color:var(--text);text-align:left;transition:all .15s;touch-action:manipulation;}
+/* mobile variant */
+.mob-row .fb{width:auto;flex-direction:column;align-items:center;
+  padding:8px 14px;margin-bottom:0;min-width:68px;gap:3px;font-size:.7rem;}
+.fb:active,.fb.on{border-color:var(--fc,#4e8ef7);background:#fff;box-shadow:var(--shadow-m);transform:scale(.97);}
+.fb[data-i="0"]{--fc:#f76b6b;} .fb[data-i="1"]{--fc:#f5b83e;} .fb[data-i="2"]{--fc:#4e8ef7;} .fb[data-i="3"]{--fc:#a78bfa;}
+.fb.on{border-color:var(--fc);}
+.dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;}
+.fb[data-i="0"] .dot{background:#f76b6b;} .fb[data-i="1"] .dot{background:#f5b83e;}
+.fb[data-i="2"] .dot{background:#4e8ef7;} .fb[data-i="3"] .dot{background:#a78bfa;}
+.kbd{margin-left:auto;background:var(--border);border-radius:5px;padding:1px 6px;
+  font-size:.62rem;font-weight:800;color:var(--dim);}
+
+/* ── METALS ── */
+.mi{display:flex;justify-content:space-between;align-items:center;
+  padding:5px 8px;border-radius:9px;font-size:.72rem;font-weight:700;
+  margin-bottom:4px;background:#f8f9ff;border:1.5px solid var(--border);transition:all .2s;}
+.mi.hi{background:var(--yel-lt);border-color:var(--yellow);}
+.mi.ok{background:var(--green-lt);border-color:var(--green);}
+.tag{background:var(--yel-lt);color:#a06010;border-radius:6px;padding:1px 6px;font-size:.66rem;font-weight:800;}
+
+/* ── ENERGY BAR ── */
+.ebar{height:13px;background:#f0f0f8;border-radius:8px;border:1.5px solid var(--border);overflow:hidden;margin-top:4px;}
+.efill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--green),#7effd4);transition:width .4s;}
+.elab{display:flex;justify-content:space-between;font-size:.68rem;font-weight:700;color:var(--dim);margin-top:3px;}
+
+/* formula */
+.form-box{background:var(--blue-lt);border-radius:10px;padding:8px 10px;
+  font-size:.71rem;font-weight:700;color:#1a50c0;line-height:1.75;}
+
+/* ── QUIZ ── */
+.qov{position:fixed;inset:0;background:rgba(238,242,255,.96);display:none;
+  align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px);padding:14px;}
+.qov.on{display:flex;}
+.qbox{background:var(--card);border:2px solid var(--blue);border-radius:20px;
+  padding:22px 18px;max-width:480px;width:100%;box-shadow:var(--shadow-m);}
+.qt{font-family:'Baloo 2',sans-serif;font-size:.95rem;font-weight:800;color:var(--blue);margin-bottom:10px;}
+.qq{font-size:.85rem;font-weight:600;line-height:1.7;color:var(--text);margin-bottom:12px;white-space:pre-wrap;}
+.qopts{display:flex;flex-direction:column;gap:7px;}
+.qo{display:flex;align-items:center;gap:9px;padding:10px 13px;
+  background:#f8f9ff;border:2px solid var(--border);border-radius:12px;
+  cursor:pointer;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:700;
+  color:var(--text);transition:all .15s;text-align:left;touch-action:manipulation;}
+.qo:hover,.qo:active{border-color:var(--blue);background:var(--blue-lt);}
+.qo.ok {border-color:var(--green);background:var(--green-lt);color:#1a7050;}
+.qo.bad{border-color:var(--red);  background:var(--red-lt);  color:#c03030;}
+.ok-key{background:var(--blue-lt);color:var(--blue);border-radius:7px;padding:2px 8px;
+  font-size:.72rem;font-weight:800;flex-shrink:0;}
+.qfb{margin-top:11px;padding:10px 12px;border-radius:10px;font-size:.8rem;
+  font-weight:600;line-height:1.6;display:none;}
+.qfb.show{display:block;}
+.qfb.ok {background:var(--green-lt);color:#1a7050;border:1.5px solid var(--green);}
+.qfb.bad{background:var(--red-lt); color:#c03030;border:1.5px solid var(--red);}
+.qcont{margin-top:12px;width:100%;padding:11px;background:var(--blue);border:none;
+  border-radius:12px;color:#fff;font-family:'Baloo 2',sans-serif;font-size:.82rem;
+  font-weight:800;cursor:pointer;letter-spacing:.5px;transition:all .15s;display:none;touch-action:manipulation;}
+.qcont.show{display:block;}
+.qcont:active{transform:scale(.97);}
+
+/* ── GAME OVER ── */
+.go{position:fixed;inset:0;background:rgba(238,242,255,.97);display:none;
+  align-items:center;justify-content:center;z-index:300;flex-direction:column;
+  gap:14px;padding:20px;text-align:center;}
+.go.on{display:flex;}
+.go-em{font-size:3.5rem;}
+.go-t{font-family:'Baloo 2',sans-serif;font-size:1.9rem;font-weight:800;}
+.go-t.win{color:var(--green);} .go-t.lose{color:var(--red);}
+.go-s{font-size:.95rem;font-weight:600;color:var(--dim);}
+.rbtn{padding:13px 34px;background:var(--blue);border:none;border-radius:14px;
+  color:#fff;font-family:'Baloo 2',sans-serif;font-size:.95rem;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 16px rgba(78,142,247,.4);transition:all .15s;touch-action:manipulation;}
+.rbtn:active{transform:scale(.96);}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:56px;left:50%;transform:translateX(-50%);
+  background:var(--card);border:2px solid var(--blue);border-radius:12px;
+  padding:7px 16px;font-size:.8rem;font-weight:700;color:var(--text);
+  box-shadow:var(--shadow-m);z-index:150;pointer-events:none;
+  opacity:0;transition:opacity .3s;white-space:nowrap;max-width:90vw;
+  text-align:center;text-overflow:ellipsis;overflow:hidden;}
+.toast.on{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">⚡ Mbrojtja e Bazës</div>
+  <div class="pills">
+    <div class="pill hp">❤️ <span id="sHP">100</span></div>
+    <div class="pill en">⚡ <span id="sE">50</span>%</div>
+    <div class="pill wv">🌊 Valë <span id="sW">1</span></div>
+    <div class="pill sc">⭐ <span id="sS">0</span></div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="cv-wrap"><canvas id="c"></canvas></div>
+
+  <!-- desktop side -->
+  <div class="side">
+    <div class="sec">
+      <div class="sec-t">☀ Frekuenca e Dritës</div>
+      <button class="fb on" data-i="0" onclick="sel(0)"><span class="dot"></span><span>E kuqe<br><small style="opacity:.65">4.3×10¹⁴ Hz · 1.79 eV</small></span><span class="kbd">1</span></button>
+      <button class="fb"    data-i="1" onclick="sel(1)"><span class="dot"></span><span>E verdhe<br><small style="opacity:.65">5.2×10¹⁴ Hz · 2.14 eV</small></span><span class="kbd">2</span></button>
+      <button class="fb"    data-i="2" onclick="sel(2)"><span class="dot"></span><span>E kaltër<br><small style="opacity:.65">6.7×10¹⁴ Hz · 2.76 eV</small></span><span class="kbd">3</span></button>
+      <button class="fb"    data-i="3" onclick="sel(3)"><span class="dot"></span><span>UV<br><small style="opacity:.65">7.5×10¹⁴ Hz · 3.09 eV</small></span><span class="kbd">4</span></button>
+    </div>
+    <div class="sec">
+      <div class="sec-t">🔬 Metalet (Aₑ)</div>
+      <div class="mi" id="m0"><span>Cesium</span><span class="tag">2.0 eV</span></div>
+      <div class="mi" id="m1"><span>Kalium</span><span class="tag">2.3 eV</span></div>
+      <div class="mi" id="m2"><span>Natrium</span><span class="tag">2.7 eV</span></div>
+      <div class="mi" id="m3"><span>Zink</span><span class="tag">4.3 eV</span></div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">⚡ Energjia e Bazës</div>
+      <div class="ebar"><div class="efill" id="ef" style="width:50%"></div></div>
+      <div class="elab"><span>Baza</span><span id="ep">50%</span></div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">📐 Formula</div>
+      <div class="form-box">E = h · f<br>h = 6.63×10⁻³⁴ J·s<br>Fotoefekti: E ≥ Aₑ<br>Ek = E − Aₑ</div>
+    </div>
+    <div class="sec" style="font-size:.71rem;font-weight:600;color:var(--dim);line-height:1.9;">
+      <div class="sec-t">🎮 Kontrolle</div>
+      <b style="color:var(--text)">1–4</b> Frekuenca<br>
+      <b style="color:var(--text)">Klik</b> Godit panel ose armik<br>
+      <b style="color:var(--text)">a–d</b> Kuizi
+    </div>
+  </div>
+</div>
+
+<!-- mobile bottom -->
+<div class="mob" id="mobBar">
+  <div class="mob-row">
+    <button class="fb on" data-i="0" onclick="sel(0)"><span class="dot"></span>E kuqe</button>
+    <button class="fb"    data-i="1" onclick="sel(1)"><span class="dot"></span>Verdhe</button>
+    <button class="fb"    data-i="2" onclick="sel(2)"><span class="dot"></span>Kaltër</button>
+    <button class="fb"    data-i="3" onclick="sel(3)"><span class="dot"></span>UV</button>
+  </div>
+</div>
+
+<!-- quiz -->
+<div class="qov" id="qov">
+  <div class="qbox">
+    <div class="qt">⚡ Sfidë Fizike!</div>
+    <div class="qq" id="qq"></div>
+    <div class="qopts" id="qopts"></div>
+    <div class="qfb" id="qfb"></div>
+    <button class="qcont" id="qcont" onclick="closeQ()">▶ Vazhdo</button>
+  </div>
+</div>
+
+<!-- game over -->
+<div class="go" id="go">
+  <div class="go-em" id="goem"></div>
+  <div class="go-t"  id="got"></div>
+  <div class="go-s"  id="gos"></div>
+  <button class="rbtn" onclick="restart()">↻ Rifillo</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════ CONSTANTS ════════════════ */
+const CV  = document.getElementById('c');
+const CX  = CV.getContext('2d');
+const h_p = 6.63e-34, eVj = 1.6e-19;
+
+const FREQS = [
+  {name:'E kuqe', f:4.3e14, hex:'#f76b6b', eV:1.79},
+  {name:'Verdhe',  f:5.2e14, hex:'#f5b83e', eV:2.14},
+  {name:'Kaltër',  f:6.7e14, hex:'#4e8ef7', eV:2.76},
+  {name:'UV',      f:7.5e14, hex:'#a78bfa', eV:3.09},
+];
+const METALS=[
+  {name:'Cesium', ad:2.0},{name:'Kalium',  ad:2.3},
+  {name:'Natrium',ad:2.7},{name:'Zink',    ad:4.3},
+];
+const QUIZ=[
+  {q:'Rrezatimi ka f = 4.0×10¹⁸ Hz.\nGjej energjinë E të fotonit.\nh = 6.63×10⁻³⁴ J·s',
+   opts:['A) 1.5×10⁻¹⁵ J','B) 2.7×10⁻¹⁵ J','C) 3.2×10⁻¹⁵ J','D) 5.0×10⁻¹⁵ J'],
+   ans:1, exp:'E = hf = 6.63×10⁻³⁴ × 4.0×10¹⁸ ≈ 2.7×10⁻¹⁵ J ✓'},
+  {q:'Metali ka Aₑ = 3 eV.\nCila gjatësi vale maks. shkakton fotoefekt?\nh=6.63×10⁻³⁴, c=3×10⁸',
+   opts:['A) λ = 0.4 μm','B) λ = 0.5 μm','C) λ = 0.6 μm','D) λ = 0.7 μm'],
+   ans:0, exp:'λ = hc/Aₑ = (6.63×10⁻³⁴×3×10⁸)/(3×1.6×10⁻¹⁹) ≈ 0.4 μm ✓'},
+  {q:'Fotoni ka E = 5 eV, metali ka Aₑ = 3 eV.\nSa është Ek e elektronit?',
+   opts:['A) 1 eV','B) 2 eV','C) 3 eV','D) 5 eV'],
+   ans:1, exp:'Ek = E − Aₑ = 5 − 3 = 2 eV (Ekuacioni i Ajnshtajnit) ✓'},
+];
+
+/* ════════════════ STATE ════════════════ */
+let selF=0, hp=100, energy=50, score=0, wave=1;
+let enemies=[], beams=[], panels=[], ptcl=[], flt=[];
+let qIdx=0, qOpen=false, running=true, frm=0;
+let nextQ=220, nextSpawn=60;
+let W=0, H=0;
+
+/* ════════════════ RESIZE / PANELS ════════════════ */
+function resize(){
+  const wrap=CV.parentElement;
+  CV.width=wrap.clientWidth; CV.height=wrap.clientHeight;
+  W=CV.width; H=CV.height;
+  buildPanels();
+}
+function buildPanels(){
+  panels=[
+    {x:W*.17,y:H*.28,m:0},{x:W*.37,y:H*.60,m:1},
+    {x:W*.52,y:H*.28,m:2},{x:W*.52,y:H*.65,m:3},
+  ];
+}
+window.addEventListener('resize',()=>{resize();});
+
+/* ════════════════ HUD ════════════════ */
+function hud(){
+  document.getElementById('sHP').textContent=Math.max(0,Math.round(hp));
+  document.getElementById('sE').textContent=Math.round(energy);
+  document.getElementById('sW').textContent=wave;
+  document.getElementById('sS').textContent=score;
+  document.getElementById('ef').style.width=Math.round(energy)+'%';
+  document.getElementById('ep').textContent=Math.round(energy)+'%';
+}
+
+/* ════════════════ FREQ SELECT ════════════════ */
+function sel(i){
+  selF=i;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));
+}
+
+/* ════════════════ METAL HIGHLIGHT ════════════════ */
+function flashMetal(i){
+  const el=document.getElementById('m'+i);
+  if(!el)return;
+  el.classList.add('hi');
+  setTimeout(()=>el.classList.remove('hi'),700);
+}
+
+/* ════════════════ TOAST ════════════════ */
+let _tid;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(_tid);
+  _tid=setTimeout(()=>t.classList.remove('on'),1800);
+}
+
+/* ════════════════ PARTICLES ════════════════ */
+function burst(x,y,col,n=14){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,s=1.5+Math.random()*3.5;
+    ptcl.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,col,r:3+Math.random()*3,life:32+Math.random()*22});
+  }
+}
+function addFlt(x,y,txt,col){flt.push({x,y,txt,col,life:75,vy:-.55});}
+
+/* ════════════════ SHOOT + PANEL HIT ════════════════ */
+function shoot(mx,my){
+  if(!running||qOpen)return;
+  const f=FREQS[selF];
+  beams.push({x1:W*.88,y1:H/2,x2:mx,y2:my,col:f.hex,life:1});
+  burst(W*.88,H/2,f.hex,5);
+  tryPanel(mx,my);
+  tryEnemy(mx,my);
+}
+
+const PW=54,PH=66;
+function tryPanel(mx,my){
+  panels.forEach(p=>{
+    if(mx>p.x-PW/2&&mx<p.x+PW/2&&my>p.y-PH/2&&my<p.y+PH/2){
+      const f=FREQS[selF],m=METALS[p.m];
+      flashMetal(p.m);
+      if(f.eV>=m.ad){
+        const g=Math.round((f.eV-m.ad)*14+5);
+        energy=Math.min(100,energy+g);
+        score+=g*4;
+        burst(p.x,p.y,'#3ecf8e',18);
+        addFlt(p.x,p.y-38,`+${g}% ⚡`,'#1a7050');
+        toast(`✓ ${m.name}: ${f.eV} eV ≥ Aₑ ${m.ad} eV → elektrone lirohen!`);
+      }else{
+        burst(p.x,p.y,'#f76b6b',7);
+        addFlt(p.x,p.y-38,'E fotonit < Aₑ ✗','#c03030');
+        toast(`✗ ${m.name}: ${f.eV} eV < Aₑ=${m.ad} eV. Rrit frekuencën!`);
+      }
+      hud();
+    }
+  });
+}
+
+function tryEnemy(mx,my){
+  for(let i=enemies.length-1;i>=0;i--){
+    const en=enemies[i];
+    const dx=mx-en.x,dy=my-en.y;
+    if(Math.sqrt(dx*dx+dy*dy)<en.r+18){
+      const dmg=Math.ceil(FREQS[selF].eV*.9);
+      en.hp-=dmg; en.fl=10;
+      burst(en.x,en.y,FREQS[selF].hex,10);
+      if(en.hp<=0){
+        const pts=8+wave*4;
+        score+=pts; burst(en.x,en.y,'#f5b83e',20);
+        addFlt(en.x,en.y-28,`+${pts} ⭐`,'#a06010');
+        enemies.splice(i,1); hud();
+      }
+      break;
+    }
+  }
+}
+
+/* ════════════════ POINTER EVENTS ════════════════ */
+CV.addEventListener('click',e=>{
+  const r=CV.getBoundingClientRect();
+  shoot((e.clientX-r.left)*(W/r.width),(e.clientY-r.top)*(H/r.height));
+});
+CV.addEventListener('touchend',e=>{
+  e.preventDefault();
+  const r=CV.getBoundingClientRect(),t=e.changedTouches[0];
+  shoot((t.clientX-r.left)*(W/r.width),(t.clientY-r.top)*(H/r.height));
+},{passive:false});
+
+/* ════════════════ ENEMIES ════════════════ */
+function spawnEnemy(){
+  const y=H*.12+Math.random()*H*.76;
+  const spd=.7+wave*.22+Math.random()*.35;
+  enemies.push({x:W+32,y,r:16+Math.random()*9,hp:2+wave,maxHp:2+wave,vy:(Math.random()-.5)*1.3,spd,fl:0});
+}
+
+/* ════════════════ UPDATE ════════════════ */
+function update(){
+  if(!running||qOpen)return;
+  frm++;
+
+  if(frm>=nextSpawn){spawnEnemy();nextSpawn=frm+Math.max(45,115-wave*11);}
+  if(frm%880===0){wave++;hud();addFlt(W/2,H*.4,`🌊 Valë ${wave}!`,'#1a50c0');}
+  if(score>=nextQ&&qIdx<QUIZ.length){openQ();nextQ+=360;return;}
+
+  // move enemies
+  enemies.forEach(en=>{
+    en.x-=en.spd; en.y+=en.vy;
+    if(en.y<en.r||en.y>H-en.r)en.vy*=-1;
+    if(en.fl>0)en.fl--;
+  });
+
+  // enemy reaches base
+  enemies=enemies.filter(en=>{
+    if(en.x<W*.84){
+      hp-=11; hud();
+      burst(W*.88,H/2,'#f76b6b',12);
+      addFlt(W*.83,H/2-18,'-11 ❤️','#c03030');
+      if(hp<=0)endGame(false); return false;
+    } return true;
+  });
+
+  // energy drain
+  if(frm%110===0){energy=Math.max(0,energy-2.5);if(energy<=0){hp-=3;addFlt(W*.8,H/2,'-3 ❤️','#c03030');}if(hp<=0)endGame(false);hud();}
+
+  beams.forEach(b=>b.life-=.07); beams=beams.filter(b=>b.life>0);
+  ptcl.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.93;p.vy*=.93;p.life--;});
+  ptcl=ptcl.filter(p=>p.life>0);
+  flt.forEach(f=>{f.y+=f.vy;f.life--;});
+  flt=flt.filter(f=>f.life>0);
+
+  if(score>=2600)endGame(true);
+}
+
+/* ════════════════ DRAW ════════════════ */
+function drawBg(){
+  const g=CX.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#e8f0ff');g.addColorStop(.5,'#f3eeff');g.addColorStop(1,'#e5fff4');
+  CX.fillStyle=g; CX.fillRect(0,0,W,H);
+  CX.strokeStyle='rgba(180,185,230,.22)'; CX.lineWidth=1;
+  const gs=46;
+  for(let x=0;x<W;x+=gs){CX.beginPath();CX.moveTo(x,0);CX.lineTo(x,H);CX.stroke();}
+  for(let y=0;y<H;y+=gs){CX.beginPath();CX.moveTo(0,y);CX.lineTo(W,y);CX.stroke();}
+}
+
+function drawWaveBg(){
+  CX.save(); CX.globalAlpha=.05;
+  CX.fillStyle='#4e8ef7';
+  CX.font=`bold ${Math.min(W,H)*.3}px 'Baloo 2',sans-serif`;
+  CX.textAlign='center'; CX.textBaseline='middle';
+  CX.fillText('W'+wave,W/2,H/2);
+  CX.restore();
+}
+
+function drawPanels(){
+  panels.forEach(p=>{
+    const f=FREQS[selF],m=METALS[p.m];
+    const works=f.eV>=m.ad;
+    const bx=p.x-PW/2,by=p.y-PH/2;
+    CX.save();
+    CX.shadowColor=works?'rgba(62,207,142,.3)':'rgba(245,184,62,.2)';
+    CX.shadowBlur=12;
+    CX.fillStyle=works?'#e6fff4':'#fff8e6';
+    CX.beginPath(); CX.roundRect(bx,by,PW,PH,11); CX.fill();
+    CX.strokeStyle=works?'#3ecf8e':'#f5b83e'; CX.lineWidth=2.5;
+    CX.beginPath(); CX.roundRect(bx,by,PW,PH,11); CX.stroke();
+    CX.shadowBlur=0;
+    CX.fillStyle='#1a1a2e'; CX.textAlign='center';
+    CX.font='bold 8.5px Nunito'; CX.fillText(m.name,p.x,p.y-6);
+    CX.font='7.5px Nunito'; CX.fillStyle='#5560a0';
+    CX.fillText(`Aₑ=${m.ad}eV`,p.x,p.y+7);
+    CX.font='15px serif';
+    CX.fillText(works?'✅':'🔴',p.x,p.y+26);
+    CX.restore();
+  });
+}
+
+function drawBase(){
+  const bx=W*.88,by=H/2;
+  CX.save();
+  CX.shadowColor='rgba(78,142,247,.28)'; CX.shadowBlur=16;
+  CX.fillStyle='#ddeaff';
+  CX.beginPath(); CX.roundRect(bx-22,by-46,44,92,11); CX.fill();
+  CX.strokeStyle='#4e8ef7'; CX.lineWidth=2.5;
+  CX.beginPath(); CX.roundRect(bx-22,by-46,44,92,11); CX.stroke();
+  CX.shadowBlur=0;
+  const eh=88*(energy/100);
+  CX.fillStyle=energy>30?'rgba(62,207,142,.45)':'rgba(247,107,107,.45)';
+  CX.beginPath(); CX.roundRect(bx-20,by+44-eh,40,eh,7); CX.fill();
+  CX.fillStyle='#1a50c0'; CX.font='bold 7.5px Nunito'; CX.textAlign='center';
+  CX.fillText('BAZA',bx,by-52);
+  CX.restore();
+}
+
+function drawTurret(){
+  const tx=W*.88,ty=H/2,col=FREQS[selF].hex;
+  CX.save();
+  CX.shadowColor=col+'60'; CX.shadowBlur=14;
+  CX.fillStyle='#fff';
+  CX.beginPath(); CX.arc(tx,ty,15,0,Math.PI*2); CX.fill();
+  CX.strokeStyle=col; CX.lineWidth=3;
+  CX.beginPath(); CX.arc(tx,ty,15,0,Math.PI*2); CX.stroke();
+  CX.shadowBlur=0;
+  CX.fillStyle=col;
+  CX.beginPath(); CX.arc(tx,ty,6,0,Math.PI*2); CX.fill();
+  CX.restore();
+}
+
+function drawBeams(){
+  beams.forEach(b=>{
+    CX.save(); CX.globalAlpha=b.life*.85;
+    CX.strokeStyle=b.col; CX.lineWidth=3;
+    CX.shadowColor=b.col+'80'; CX.shadowBlur=8; CX.lineCap='round';
+    CX.beginPath(); CX.moveTo(b.x1,b.y1); CX.lineTo(b.x2,b.y2); CX.stroke();
+    CX.restore();
+  });
+}
+
+function drawEnemies(){
+  enemies.forEach(en=>{
+    CX.save();
+    const fl=en.fl>0;
+    CX.shadowColor=fl?'#fff':'rgba(247,107,107,.35)'; CX.shadowBlur=fl?18:8;
+    CX.fillStyle=fl?'#ffe8e8':'#fff0f0';
+    CX.beginPath(); CX.arc(en.x,en.y,en.r,0,Math.PI*2); CX.fill();
+    CX.strokeStyle='#f76b6b'; CX.lineWidth=2.5;
+    CX.beginPath(); CX.arc(en.x,en.y,en.r,0,Math.PI*2); CX.stroke();
+    CX.shadowBlur=0;
+    // hp bar
+    const bw=en.r*2,bh=5,bx=en.x-en.r,by=en.y-en.r-9;
+    CX.fillStyle='#f0f0f8'; CX.beginPath(); CX.roundRect(bx,by,bw,bh,3); CX.fill();
+    CX.fillStyle='#f76b6b'; CX.beginPath(); CX.roundRect(bx,by,bw*(en.hp/en.maxHp),bh,3); CX.fill();
+    CX.fillStyle='#1a1a2e'; CX.font=`${Math.max(10,en.r*.8)}px serif`;
+    CX.textAlign='center'; CX.textBaseline='middle';
+    CX.fillText('👾',en.x,en.y);
+    CX.restore();
+  });
+}
+
+function drawPtcl(){
+  ptcl.forEach(p=>{
+    CX.save(); CX.globalAlpha=p.life/55;
+    CX.fillStyle=p.col;
+    CX.beginPath(); CX.arc(p.x,p.y,p.r,0,Math.PI*2); CX.fill();
+    CX.restore();
+  });
+}
+
+function drawFlt(){
+  flt.forEach(f=>{
+    CX.save(); CX.globalAlpha=Math.min(1,f.life/30);
+    CX.fillStyle=f.col||'#1a1a2e';
+    CX.font='bold 13px Nunito'; CX.textAlign='center';
+    CX.fillText(f.txt,f.x,f.y);
+    CX.restore();
+  });
+}
+
+function draw(){
+  CX.clearRect(0,0,W,H);
+  drawBg(); drawWaveBg();
+  drawPanels(); drawBase(); drawTurret();
+  drawBeams(); drawEnemies();
+  drawPtcl(); drawFlt();
+}
+
+/* ════════════════ QUIZ ════════════════ */
+function openQ(){
+  qOpen=true;
+  const q=QUIZ[qIdx];
+  document.getElementById('qq').textContent=q.q;
+  const el=document.getElementById('qopts'); el.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='qo';
+    b.innerHTML=`<span class="ok-key">${String.fromCharCode(65+i)}</span>${o.slice(3)}`;
+    b.onclick=()=>ansQ(i);
+    el.appendChild(b);
+  });
+  document.getElementById('qfb').className='qfb';
+  document.getElementById('qcont').className='qcont';
+  document.getElementById('qov').classList.add('on');
+}
+
+function ansQ(i){
+  const q=QUIZ[qIdx];
+  document.querySelectorAll('.qo').forEach((o,j)=>{
+    if(j===q.ans)o.classList.add('ok');
+    else if(j===i&&i!==q.ans)o.classList.add('bad');
+  });
+  const fb=document.getElementById('qfb');
+  if(i===q.ans){
+    fb.className='qfb show ok'; fb.textContent='✓ Saktë! '+q.exp;
+    energy=Math.min(100,energy+22); score+=100;
+  }else{fb.className='qfb show bad'; fb.textContent='✗ Gabim. '+q.exp;}
+  document.getElementById('qcont').className='qcont show';
+  qIdx++; hud();
+}
+
+function closeQ(){document.getElementById('qov').classList.remove('on');qOpen=false;}
+
+/* ════════════════ END ════════════════ */
+function endGame(win){
+  running=false;
+  document.getElementById('goem').textContent=win?'🎉':'💥';
+  const t=document.getElementById('got');
+  t.className='go-t '+(win?'win':'lose');
+  t.textContent=win?'Fitore!':'Humbe!';
+  document.getElementById('gos').textContent=
+    win?`Baza u mbrojt! Pikë: ${score}`:`Baza u shkatërrua. Pikë: ${score}`;
+  document.getElementById('go').classList.add('on');
+}
+
+function restart(){
+  hp=100;energy=50;score=0;wave=1;
+  enemies=[];beams=[];ptcl=[];flt=[];
+  qIdx=0;qOpen=false;running=true;frm=0;
+  nextQ=220;nextSpawn=60;
+  buildPanels();hud();
+  document.getElementById('go').classList.remove('on');
+  document.getElementById('qov').classList.remove('on');
+}
+
+/* ════════════════ KEYBOARD ════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key>='1'&&e.key<='4')sel(+e.key-1);
+  if(qOpen&&'abcd'.includes(e.key.toLowerCase())){
+    const i='abcd'.indexOf(e.key.toLowerCase());
+    const ops=document.querySelectorAll('.qo');
+    if(ops[i]&&!ops[0].classList.contains('ok')&&!ops[0].classList.contains('bad'))ansQ(i);
+  }
+});
+
+/* ════════════════ MOBILE BAR VIS ════════════════ */
+function checkMob(){
+  document.getElementById('mobBar').style.display=window.innerWidth<=580?'flex':'none';
+}
+window.addEventListener('resize',checkMob);
+checkMob();
+
+/* ════════════════ LOOP ════════════════ */
+function loop(){update();draw();requestAnimationFrame(loop);}
+resize(); hud(); loop();
+</script>
+</body>
+</html>

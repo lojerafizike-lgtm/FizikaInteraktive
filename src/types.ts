@@ -7,6 +7,15 @@ export interface PhysicsTerm {
   unit: string;
   otherUnits?: string;
   teTjera?: string;
+  ushtrime?: string;
+  ushtrimInteraktiv?: {
+    pyetja: string;
+    zgjidhja: string; // the correct answer string to check against
+    hapi1: string;
+    hapi2: string;
+    hapi3: string;
+  };
+  mjetMat?: string;
   nature: 'Vektoriale' | 'Skalare' | '-';
   desc: string;
   phetUrl?: string;
@@ -17,7 +26,7 @@ export interface PhysicsTerm {
   gameUrl?: string;
 }
 
-export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Libri Interaktiv" | "Fizika 8";
+export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Fizika Kuantike" | "Libri Interaktiv" | "Fizika 8";
 
 export interface PhysicsData {
   [key: string]: PhysicsTerm[];

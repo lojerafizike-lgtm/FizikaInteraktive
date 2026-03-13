@@ -14,6 +14,8 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
   const [activeTab, setActiveTab] = useState<'mjet' | 'video' | 'foto' | 'ushtrime' | 'loje'>('mjet');
   const [showSolutionPanel, setShowSolutionPanel] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   
   // Track the current term to reset state when it changes without using useEffect
   const [currentTermName, setCurrentTermName] = useState(term.name);
@@ -35,6 +37,8 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
     setActiveTab(matchedInstrument ? 'mjet' : 'video');
     setShowSolutionPanel(false);
     setShowSteps(false);
+    setUserAnswer('');
+    setIsCorrect(null);
   }
 
   // Ensure activeTab is valid if matchedInstrument changes (e.g., on first load)
@@ -237,50 +241,81 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
             <div className="text-center py-8 mb-8 border-b border-slate-200">
               <i className="fas fa-dumbbell text-5xl text-slate-300 mb-4"></i>
               <h4 className="text-2xl font-black text-slate-400 mb-2">Ushtrime Praktike</h4>
-              <p className="text-slate-400">Këtu do të vendosen ushtrimet.</p>
+              <p className="text-slate-400">Këtu do të gjeni ushtrime të zgjidhura për këtë term.</p>
             </div>
 
-            <div className="flex flex-wrap gap-4 justify-center">
-              <button 
-                onClick={() => setShowSolutionPanel(!showSolutionPanel)}
-                className="px-8 py-4 bg-[#a2d2ff] text-slate-800 rounded-full font-black text-sm uppercase tracking-widest shadow-md hover:bg-[#8ec5fc] transition-colors flex items-center gap-3"
-              >
-                <i className="fas fa-keyboard"></i> Zgjidh ushtrimin
-              </button>
-              <button 
-                onClick={() => setShowSteps(!showSteps)}
-                className="px-8 py-4 bg-white text-slate-600 rounded-full font-black text-sm uppercase tracking-widest shadow-sm hover:bg-slate-50 border border-slate-200 transition-colors flex items-center gap-3"
-              >
-                <i className="fas fa-list-ol"></i> Hap pas hapi
-              </button>
-            </div>
-
-            {/* Solution Panel (Keyboard placeholder) */}
-            {showSolutionPanel && (
-              <div className="mt-8 bg-white p-8 rounded-[2rem] shadow-inner border-2 border-slate-100 animate__animated animate__fadeIn">
-                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Shkruaj Përgjigjen (Physics Keyboard)</p>
-                <div className="w-full h-32 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 mb-6">
-                  <i className="fas fa-square-root-alt text-3xl mr-3"></i> Hapësira për të shkruar formulën/përgjigjen
-                </div>
-                <button className="px-10 py-4 bg-[#4a4e69] text-white rounded-xl font-black uppercase tracking-widest shadow-md hover:bg-[#2b2d42] transition-colors w-full md:w-auto">
-                  Kontrollo
-                </button>
-              </div>
+            {term.ushtrime && (
+              <div className="max-w-3xl mx-auto mb-8" dangerouslySetInnerHTML={{ __html: term.ushtrime }} />
             )}
 
-            {/* Step by step solution */}
-            {showSteps && (
-              <div className="mt-8 space-y-4">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between animate__animated animate__slideInLeft">
-                  <span className="font-bold text-slate-500">Hapi 1: Zgjidh formulën</span>
+            {term.ushtrimInteraktiv && (
+              <>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <button 
+                    onClick={() => { setShowSolutionPanel(!showSolutionPanel); setShowSteps(false); }}
+                    className={`px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest shadow-md transition-colors flex items-center gap-3 ${showSolutionPanel ? 'bg-[#8ec5fc] text-slate-800' : 'bg-[#a2d2ff] text-slate-800 hover:bg-[#8ec5fc]'}`}
+                  >
+                    <i className="fas fa-keyboard"></i> Zgjidh ushtrimin
+                  </button>
+                  <button 
+                    onClick={() => { setShowSteps(!showSteps); setShowSolutionPanel(false); }}
+                    className={`px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest shadow-sm border border-slate-200 transition-colors flex items-center gap-3 ${showSteps ? 'bg-slate-100 text-slate-600' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                  >
+                    <i className="fas fa-list-ol"></i> Hap pas hapi
+                  </button>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between animate__animated animate__slideInLeft" style={{ animationDelay: '0.1s' }}>
-                  <span className="font-bold text-slate-500">Hapi 2: Zëvendëso vlerat</span>
-                </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between animate__animated animate__slideInLeft" style={{ animationDelay: '0.2s' }}>
-                  <span className="font-bold text-slate-500">Hapi 3: Llogarit</span>
-                </div>
-              </div>
+
+                {/* Solution Panel */}
+                {showSolutionPanel && (
+                  <div className="mt-8 bg-white p-8 rounded-[2rem] shadow-inner border-2 border-slate-100 animate__animated animate__fadeIn">
+                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Shkruaj Përgjigjen</p>
+                    <div className="mb-6">
+                      <input 
+                        type="text" 
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        placeholder="psh. 2.5 ose 2.5e-19"
+                        className="w-full p-4 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-[#a2d2ff] focus:outline-none text-slate-700 text-lg"
+                      />
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => {
+                          if (userAnswer.trim() === '') {
+                             setIsCorrect(null);
+                             return;
+                          }
+                          const isMatch = term.ushtrimInteraktiv?.zgjidhja.toLowerCase().includes(userAnswer.toLowerCase().trim());
+                          setIsCorrect(!!isMatch);
+                        }}
+                        className="px-10 py-4 bg-[#4a4e69] text-white rounded-xl font-black uppercase tracking-widest shadow-md hover:bg-[#2b2d42] transition-colors w-full md:w-auto"
+                      >
+                        Kontrollo
+                      </button>
+                      {isCorrect === true && <span className="text-green-500 font-bold text-lg animate__animated animate__bounceIn"><i className="fas fa-check-circle mr-2"></i> E saktë!</span>}
+                      {isCorrect === false && <span className="text-red-500 font-bold text-lg animate__animated animate__shakeX"><i className="fas fa-times-circle mr-2"></i> E pasaktë, provo përsëri.</span>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step by step solution */}
+                {showSteps && (
+                  <div className="mt-8 space-y-4">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 animate__animated animate__slideInLeft">
+                      <div className="font-bold text-slate-500 mb-2">Hapi 1: Zgjidh formulën</div>
+                      <div className="text-slate-700" dangerouslySetInnerHTML={{ __html: term.ushtrimInteraktiv.hapi1 }} />
+                    </div>
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 animate__animated animate__slideInLeft" style={{ animationDelay: '0.1s' }}>
+                      <div className="font-bold text-slate-500 mb-2">Hapi 2: Zëvendëso vlerat</div>
+                      <div className="text-slate-700" dangerouslySetInnerHTML={{ __html: term.ushtrimInteraktiv.hapi2 }} />
+                    </div>
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 animate__animated animate__slideInLeft" style={{ animationDelay: '0.2s' }}>
+                      <div className="font-bold text-slate-500 mb-2">Hapi 3: Llogarit</div>
+                      <div className="text-slate-700" dangerouslySetInnerHTML={{ __html: term.ushtrimInteraktiv.hapi3 }} />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

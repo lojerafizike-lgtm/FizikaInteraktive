@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Dhoma e Bllokuar – Gjysmëzbërthimi</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap');
+
+:root {
+  --bg: #f5f0ff;
+  --bg2: #ede8fa;
+  --card: #ffffff;
+  --border: #d0c8ee;
+  --text: #1a1a38;
+  --text2: #4a4870;
+  --text3: #8880a8;
+  --purple: #7a50d8;
+  --purpleL: #ede8ff;
+  --blue: #4a70d8;
+  --blueL: #ddeeff;
+  --green: #3ab870;
+  --greenL: #d6f5e6;
+  --red: #e05060;
+  --redL: #ffe0e4;
+  --yellow: #e8a020;
+  --yellowL: #fff3d0;
+  --amber: #c87820;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  background: var(--card);
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0; gap: 6px; flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(80,60,160,0.08);
+}
+
+.logo {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 0.95rem; font-weight: 800; color: var(--purple);
+}
+
+.stats { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.pill {
+  display: flex; align-items: center; gap: 4px;
+  border-radius: 20px; padding: 3px 9px;
+  font-size: 0.78rem; font-weight: 800;
+  white-space: nowrap; border: 1.5px solid;
+}
+.pill.timer { border-color:#f0b8c8; background:#fff0f4; color:#a02040; }
+.pill.timer.warn { border-color:#e05060; background:#ffe0e4; animation: blink .6s infinite; }
+.pill.notes { border-color:#c0b8e8; background:#f0eeff; color:#5040a0; }
+.pill.tries { border-color:#e8c080; background:#fff8e8; color:#805010; }
+
+@keyframes blink { 50%{opacity:.4} }
+
+.main {
+  display: flex; flex: 1; overflow: hidden; min-height: 0;
+}
+
+canvas {
+  flex: 1; min-width: 0; cursor: pointer; display: block;
+  background: var(--bg);
+}
+
+/* Side panel */
+.side {
+  width: 230px; background: var(--card);
+  border-left: 2px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+.side-header {
+  padding: 9px 12px; background: var(--bg2);
+  border-bottom: 1.5px solid var(--border);
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 0.72rem; font-weight: 800;
+  color: var(--text3); letter-spacing: 1px; text-transform: uppercase;
+}
+
+.notes-area {
+  flex: 1; padding: 10px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.note-card {
+  background: var(--bg2); border: 1.5px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: 10px; padding: 9px 11px;
+  font-size: 0.72rem; line-height: 1.8; color: var(--text3);
+  cursor: pointer; transition: all 0.2s; opacity: 0.45;
+  font-weight: 600;
+}
+.note-card.found {
+  opacity: 1; border-left-color: var(--purple);
+  color: var(--text2); background: var(--card);
+  box-shadow: 0 2px 8px rgba(80,60,160,0.08);
+}
+.note-card.found:hover {
+  border-color: var(--purple); background: var(--purpleL);
+}
+.note-card .ntitle {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 0.78rem; font-weight: 800;
+  color: var(--purple); margin-bottom: 4px;
+}
+.note-card.found .ntitle { color: var(--purple); }
+
+.door-panel {
+  border-top: 2px solid var(--border);
+  padding: 12px; background: var(--purpleL);
+  flex-shrink: 0;
+}
+.dp-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 0.8rem; font-weight: 800;
+  color: var(--purple); margin-bottom: 6px;
+}
+.dp-sub {
+  font-size: 0.7rem; color: var(--text2); margin-bottom: 9px; line-height: 1.6; font-weight: 600;
+}
+.frac-btns { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.fb {
+  padding: 5px 11px; background: var(--card);
+  border: 1.5px solid var(--border); border-radius: 9px;
+  cursor: pointer; font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem; font-weight: 800; color: var(--text2);
+  transition: all 0.13s;
+}
+.fb:hover, .fb.sel { border-color: var(--purple); color: var(--purple); background: var(--purpleL); }
+.sub-btn {
+  width: 100%; padding: 8px; background: var(--purple); border: none;
+  border-radius: 9px; color: white;
+  font-family: 'Baloo 2', sans-serif; font-size: 0.78rem; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.sub-btn:hover { opacity: 0.85; }
+.dp-fb {
+  margin-top: 7px; padding: 7px 10px; border-radius: 8px;
+  font-size: 0.72rem; font-weight: 700; line-height: 1.5; display: none;
+}
+.dp-fb.on  { display: block; }
+.dp-fb.ok  { background: var(--greenL); color: #1a6040; border: 1.5px solid #80d8a8; }
+.dp-fb.bad { background: var(--redL);   color: #801020; border: 1.5px solid #f0a0a8; }
+
+/* Note Modal */
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(240,236,255,0.92);
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; backdrop-filter: blur(8px); padding: 14px;
+}
+.modal.on { display: flex; }
+.mbox {
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: 20px; padding: 22px 20px;
+  max-width: 440px; width: 100%;
+  box-shadow: 0 8px 32px rgba(80,60,160,0.13);
+}
+.mtitle {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 1rem; font-weight: 800; color: var(--purple);
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1.5px solid var(--border);
+}
+.mbody {
+  font-size: 0.82rem; line-height: 2; color: var(--text);
+  font-weight: 600;
+}
+.mbody .math { color: var(--purple); font-weight: 800; }
+.mbody b { color: var(--text); }
+.mclose {
+  margin-top: 14px; padding: 8px 20px;
+  background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: 9px; color: var(--text2);
+  font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; transition: all 0.13s;
+}
+.mclose:hover { border-color: var(--purple); color: var(--purple); background: var(--purpleL); }
+
+/* Mobile: show side panel as bottom sheet */
+@media(max-width:600px){
+  .side {
+    width: 100%;
+    border-left: none;
+    border-top: 2px solid var(--border);
+    max-height: 260px;
+  }
+  .main { flex-direction: column; }
+}
+
+/* End screen */
+.end {
+  position: fixed; inset: 0;
+  background: rgba(245,240,255,0.97);
+  display: none; align-items: center; justify-content: center;
+  z-index: 300; flex-direction: column; gap: 13px;
+  padding: 20px; text-align: center;
+}
+.end.on { display: flex; }
+.end-em { font-size: 3.5rem; }
+.end-title { font-family: 'Baloo 2', sans-serif; font-size: 1.8rem; font-weight: 800; }
+.end-title.win  { color: var(--green); }
+.end-title.lose { color: var(--red); }
+.end-sub { font-size: 0.9rem; color: var(--text2); font-weight: 600; max-width: 400px; line-height: 1.7; }
+.rbtn {
+  padding: 11px 30px; background: var(--purple); border: none;
+  border-radius: 13px; color: white;
+  font-family: 'Baloo 2', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: transform 0.15s;
+  box-shadow: 0 4px 14px rgba(122,80,216,0.3);
+}
+.rbtn:hover { transform: scale(1.04); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">☢ Dhoma e Bllokuar</div>
+  <div class="stats">
+    <div class="pill timer" id="TIMERPILL">⏱ <span id="TM">05:00</span></div>
+    <div class="pill notes">📄 <span id="NF">0</span>/4 shënime</div>
+    <div class="pill tries">🔑 <span id="TR">3</span> tentativa</div>
+  </div>
+</div>
+
+<div class="main">
+  <canvas id="c"></canvas>
+
+  <div class="side">
+    <div class="side-header">📋 Shënimet e Gjetura</div>
+    <div class="notes-area" id="NOTES">
+      <div class="note-card" id="NC0"><div class="ntitle">📄 [?] Shënim i fshehur</div>Klikoni objektet në dhomë.</div>
+      <div class="note-card" id="NC1"><div class="ntitle">📄 [?] Shënim i fshehur</div>Eksploroni dhomën.</div>
+      <div class="note-card" id="NC2"><div class="ntitle">📄 [?] Shënim i fshehur</div>Eksploroni dhomën.</div>
+      <div class="note-card" id="NC3"><div class="ntitle">📄 [?] Shënim i fshehur</div>Eksploroni dhomën.</div>
+    </div>
+
+    <div class="door-panel">
+      <div class="dp-title">🚪 Paneli i Derës</div>
+      <div class="dp-sub">Sa pjesë ka mbetur pas 4 orësh?<br>Zgjidh thyesën dhe shtyp HAP.</div>
+      <div class="frac-btns">
+        <button class="fb" onclick="selFrac('1/2')">1/2</button>
+        <button class="fb" onclick="selFrac('1/4')">1/4</button>
+        <button class="fb" onclick="selFrac('1/8')">1/8</button>
+        <button class="fb" onclick="selFrac('1/16')">1/16</button>
+      </div>
+      <button class="sub-btn" onclick="tryDoor()">▶ Hap Derën</button>
+      <div class="dp-fb" id="DPFB"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal" id="MOD">
+  <div class="mbox">
+    <div class="mtitle" id="MTITLE"></div>
+    <div class="mbody" id="MBODY"></div>
+    <button class="mclose" onclick="closeMod()">✕ Mbyll</button>
+  </div>
+</div>
+
+<!-- End Screen -->
+<div class="end" id="END">
+  <div class="end-em" id="EE"></div>
+  <div class="end-title" id="ET"></div>
+  <div class="end-sub" id="ES"></div>
+  <button class="rbtn" onclick="restart()">↻ Rifillo</button>
+</div>
+
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+let W, H;
+let timeLeft = 300;
+let tries = 3;
+let found = [false,false,false,false];
+let selFracVal = null;
+let running = true;
+let frame = 0;
+let parts = [];
+let clickables = [];
+let timerInt;
+
+const NOTES = [
+  {
+    title: '📄 Shënim i Shkencëtarit',
+    body: `<b>Materiali:</b> Izotop Radioaktiv X-42<br>
+<span class="math">Perioda e gjysmëzbërthimit: T₁/₂ = 2 orë</span><br><br>
+Ligji: <span class="math">N = N₀ · (½)^(t / T₁/₂)</span><br><br>
+Çdo <b>2 orë</b> → sasia <b>përgjysmohet</b>.`
+  },
+  {
+    title: '📄 Urdhëresë e Makinës',
+    body: `Sistemi aktivizohet <b>4 orë</b> pas mbylljes.<br><br>
+Fut thyesën <b>saktë</b> të materialit X-42<br>
+që ka mbetur pas 4 orëve.<br><br>
+<span class="math">⚠ 3 tentativa — gabim = alarm!</span>`
+  },
+  {
+    title: '📄 Llogaritja',
+    body: `<b>Pas 1 periudhe (2 orë):</b><br>
+<span class="math">N = N₀ · (½)¹ = N₀/2</span><br><br>
+<b>Pas 2 periudhave (4 orë):</b><br>
+<span class="math">N = N₀ · (½)² = N₀/4</span><br><br>
+✅ Mbetur: <span class="math">1/4</span> e sasisë fillestare!`
+  },
+  {
+    title: '📄 Formula e Përgjithshme',
+    body: `<span class="math">T₁/₂ = ln(2) / λ</span><br>
+ku λ = konstanta e zbërthimit<br><br>
+Periudha n = t / T₁/₂<br>
+t = 4 h, T₁/₂ = 2 h → <b>n = 2</b><br><br>
+<span class="math">(½)² = 1/4 = 25%</span><br><br>
+➡ <b>Plotëso me 1/4 !</b>`
+  }
+];
+
+const ITEM_DEFS = [
+  { id:0, emoji:'📂', label:'Dosje',     rx:.15, ry:.52, rw:.09, rh:.08, ni:0 },
+  { id:1, emoji:'📋', label:'Tabelë',    rx:.52, ry:.18, rw:.09, rh:.08, ni:1 },
+  { id:2, emoji:'💻', label:'Kompjuter', rx:.58, ry:.52, rw:.10, rh:.08, ni:2 },
+  { id:3, emoji:'📖', label:'Libër',     rx:.30, ry:.28, rw:.08, rh:.07, ni:3 },
+];
+
+function resize(){
+  cv.width  = cv.offsetWidth;
+  cv.height = cv.offsetHeight;
+  W = cv.width; H = cv.height;
+  buildClickables();
+}
+
+function buildClickables(){
+  clickables = ITEM_DEFS.map(d=>({
+    ...d,
+    x:d.rx*W, y:d.ry*H, w:d.rw*W, h:d.rh*H
+  }));
+}
+
+function startTimer(){
+  timerInt = setInterval(()=>{
+    if(!running) return;
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0) endGame(false,'timeout');
+  },1000);
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timeLeft/60), s=timeLeft%60;
+  const el=document.getElementById('TM');
+  el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const pill=document.getElementById('TIMERPILL');
+  pill.classList.toggle('warn', timeLeft<60);
+}
+
+function revealNote(idx){
+  if(found[idx]) return;
+  found[idx]=true;
+  const n=NOTES[idx], card=document.getElementById('NC'+idx);
+  card.classList.add('found');
+  card.innerHTML=`<div class="ntitle">${n.title}</div>${n.body}`;
+  card.onclick=()=>openMod(idx);
+  document.getElementById('NF').textContent=found.filter(Boolean).length;
+  burst(clickables[idx].x+clickables[idx].w/2, clickables[idx].y+clickables[idx].h/2, '#7a50d8', 18);
+}
+
+function openMod(idx){
+  document.getElementById('MTITLE').textContent=NOTES[idx].title;
+  document.getElementById('MBODY').innerHTML=NOTES[idx].body;
+  document.getElementById('MOD').classList.add('on');
+}
+function closeMod(){ document.getElementById('MOD').classList.remove('on'); }
+
+function selFrac(f){
+  selFracVal=f;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('sel',b.textContent===f));
+}
+
+function tryDoor(){
+  if(!selFracVal){ showDpFb('Zgjidh një thyesë!',false); return; }
+  tries--;
+  document.getElementById('TR').textContent=tries;
+  if(selFracVal==='1/4'){
+    showDpFb('✓ Saktë! N = N₀·(½)² = N₀/4 → Dera u hap!',true);
+    running=false;
+    setTimeout(()=>endGame(true),1600);
+  } else {
+    const hints={'1/2':'Pas 2 orësh = 1 periudhë. Kemi 4 orë = 2 periudha!',
+                 '1/8':'Kjo = 3 periudha (6 orë). Ne kemi vetëm 2.',
+                 '1/16':'Kjo = 4 periudha (8 orë). Shumë tepër!'};
+    showDpFb('✗ '+(hints[selFracVal]||'Gabim. Rilexoni shënimet.'),false);
+    if(tries<=0) setTimeout(()=>endGame(false,'attempts'),1400);
+  }
+}
+
+function showDpFb(msg,ok){
+  const el=document.getElementById('DPFB');
+  el.className='dp-fb on '+(ok?'ok':'bad');
+  el.textContent=msg;
+}
+
+function burst(x,y,col,n){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2, s=1+Math.random()*3;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,col,life:50+Math.random()*25,r:3+Math.random()*3});
+  }
+}
+
+cv.addEventListener('click',e=>{
+  if(!running) return;
+  const r=cv.getBoundingClientRect();
+  const mx=e.clientX-r.left, my=e.clientY-r.top;
+  clickables.forEach(c=>{
+    if(mx>c.x&&mx<c.x+c.w&&my>c.y&&my<c.y+c.h){
+      revealNote(c.ni); openMod(c.ni);
+    }
+  });
+});
+
+cv.addEventListener('touchend',e=>{
+  if(!running) return;
+  const r=cv.getBoundingClientRect(), t=e.changedTouches[0];
+  const mx=t.clientX-r.left, my=t.clientY-r.top;
+  clickables.forEach(c=>{
+    if(mx>c.x&&mx<c.x+c.w&&my>c.y&&my<c.y+c.h){
+      revealNote(c.ni); openMod(c.ni);
+    }
+  });
+});
+
+// ── DRAW ──
+function drawRoom(){
+  // Wall
+  const wall=ctx.createLinearGradient(0,0,0,H*.72);
+  wall.addColorStop(0,'#f0eaff'); wall.addColorStop(1,'#e8e0fa');
+  ctx.fillStyle=wall; ctx.fillRect(0,0,W,H*.72);
+
+  // Floor
+  const floor=ctx.createLinearGradient(0,H*.72,0,H);
+  floor.addColorStop(0,'#ddd4f0'); floor.addColorStop(1,'#ccc0e8');
+  ctx.fillStyle=floor; ctx.fillRect(0,H*.72,W,H*.28);
+
+  // Floor line
+  ctx.strokeStyle='rgba(150,130,200,0.3)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0,H*.72); ctx.lineTo(W,H*.72); ctx.stroke();
+
+  // Ceiling light
+  const lg=ctx.createRadialGradient(W/2,0,0,W/2,H*.5,H*.55);
+  lg.addColorStop(0,'rgba(200,180,255,0.15)');
+  lg.addColorStop(1,'transparent');
+  ctx.fillStyle=lg; ctx.fillRect(0,0,W,H);
+
+  // Light fixture
+  ctx.beginPath(); ctx.arc(W/2,8,10,0,Math.PI*2);
+  ctx.fillStyle='#c8a8ff'; ctx.fill();
+  ctx.beginPath(); ctx.arc(W/2,8,30,0,Math.PI*2);
+  ctx.fillStyle='rgba(200,160,255,0.12)'; ctx.fill();
+
+  // Radiation symbol (subtle background)
+  ctx.save(); ctx.globalAlpha=0.06;
+  ctx.fillStyle='#7a50d8'; ctx.font=`${H*.15}px serif`;
+  ctx.textAlign='center'; ctx.fillText('☢',W*.5,H*.52);
+  ctx.restore();
+
+  drawWindow();
+  drawDoor();
+  drawGeiger();
+}
+
+function drawWindow(){
+  const x=W*.08, y=H*.14, w=W*.16, h=H*.28;
+  ctx.fillStyle='#c8dcf8';
+  ctx.strokeStyle='#9090c0'; ctx.lineWidth=3;
+  ctx.fillRect(x,y,w,h); ctx.strokeRect(x,y,w,h);
+  ctx.strokeStyle='rgba(144,144,192,0.5)'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(x+w/2,y); ctx.lineTo(x+w/2,y+h);
+  ctx.moveTo(x,y+h/2); ctx.lineTo(x+w,y+h/2);
+  ctx.stroke();
+  // Moon
+  ctx.fillStyle='#a8c8f0';
+  ctx.beginPath(); ctx.arc(x+w/2,y+h/2,12,0,Math.PI*2); ctx.fill();
+}
+
+function drawDoor(){
+  const x=W*.76, y=H*.32, w=W*.14, h=H*.38;
+  ctx.fillStyle='#d8d0f0';
+  ctx.strokeStyle='#9080c8'; ctx.lineWidth=3;
+  ctx.fillRect(x,y,w,h); ctx.strokeRect(x,y,w,h);
+  // Panels
+  ctx.strokeStyle='rgba(144,128,200,0.35)'; ctx.lineWidth=1.2;
+  ctx.strokeRect(x+7,y+7,w-14,h/2-12);
+  ctx.strokeRect(x+7,y+h/2+5,w-14,h/2-16);
+  // Handle
+  ctx.beginPath(); ctx.arc(x+w*.2,y+h*.5,5,0,Math.PI*2);
+  ctx.fillStyle='#9070c0'; ctx.fill();
+  // Keypad
+  const kp_open = selFracVal==='1/4'&&!running;
+  ctx.fillStyle='#f0eeff';
+  ctx.strokeStyle=kp_open?'#3ab870':'#e05060';
+  ctx.lineWidth=2;
+  ctx.fillRect(x-18,y+h*.35,14,28);
+  ctx.strokeRect(x-18,y+h*.35,14,28);
+  ctx.beginPath(); ctx.arc(x-11,y+h*.35+14,4,0,Math.PI*2);
+  ctx.fillStyle=kp_open?'#3ab870':'#e05060'; ctx.fill();
+
+  ctx.fillStyle='#7a50d8';
+  ctx.font='bold 10px Nunito'; ctx.textAlign='center';
+  ctx.fillText('🚪 DALJE',x+w/2,y-10);
+}
+
+function drawGeiger(){
+  const x=W*.38, y=H*.66;
+  ctx.fillStyle='#e8e0f8'; ctx.strokeStyle='#b0a0d8'; ctx.lineWidth=1.5;
+  rr(ctx,x-32,y-14,64,22,6); ctx.fill(); ctx.stroke();
+  const tick=frame%100<8;
+  ctx.beginPath(); ctx.arc(x-18,y-3,4,0,Math.PI*2);
+  ctx.fillStyle=tick?'#e05060':'#d0c0e8'; ctx.fill();
+  ctx.fillStyle='#7a60a0'; ctx.font='bold 9px Nunito'; ctx.textAlign='left';
+  ctx.fillText('GEIGER',x-12,y+1);
+}
+
+function drawClickables(){
+  clickables.forEach((c,i)=>{
+    const fd=found[c.ni];
+    const pulse=0.7+0.3*Math.sin(frame*.06+i*1.5);
+    ctx.save();
+    ctx.shadowColor=fd?'rgba(122,80,216,0.4)':'rgba(122,80,216,0.2)';
+    ctx.shadowBlur=fd?18:8+pulse*6;
+    ctx.globalAlpha=fd?1:0.6+pulse*.15;
+    ctx.font=`${Math.min(c.w,c.h)*1.2}px serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(c.emoji,c.x+c.w/2,c.y+c.h/2);
+    // Label
+    ctx.globalAlpha=fd?0.85:0.4;
+    ctx.shadowBlur=0;
+    ctx.fillStyle='#7a60a0'; ctx.font='bold 10px Nunito';
+    ctx.textBaseline='alphabetic';
+    ctx.fillText(c.label,c.x+c.w/2,c.y+c.h+13);
+    ctx.restore();
+  });
+}
+
+function drawParts(){
+  parts.forEach(p=>{
+    ctx.save(); ctx.globalAlpha=(p.life/75)*.8;
+    ctx.fillStyle=p.col;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  drawRoom();
+  drawClickables();
+  drawParts();
+}
+
+function update(){
+  frame++;
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.08;p.life--;p.vx*=.94;});
+  parts=parts.filter(p=>p.life>0);
+}
+
+function loop(){ update(); draw(); requestAnimationFrame(loop); }
+
+function endGame(win,reason){
+  running=false;
+  clearInterval(timerInt);
+  document.getElementById('EE').textContent=win?'🎉':'🔒';
+  const t=document.getElementById('ET');
+  t.className='end-title '+(win?'win':'lose');
+  t.textContent=win?'U shpëtove!':'Dështoi!';
+  document.getElementById('ES').textContent = win
+    ? 'Saktë! Pas 4 orëve (2 periudha) ka mbetur 1/4.\nN = N₀·(½)² = N₀/4 ✓'
+    : (reason==='timeout'
+      ? 'Koha mbaroi! Përgjigja: 1/4\nT₁/₂=2h, t=4h → n=2 → (½)²=1/4'
+      : 'Tentativat u shteruan! Përgjigja: 1/4');
+  document.getElementById('END').classList.add('on');
+}
+
+function restart(){
+  timeLeft=300; tries=3; found=[false,false,false,false];
+  selFracVal=null; running=true; frame=0; parts=[];
+  updateTimerDisplay();
+  document.getElementById('TR').textContent=3;
+  document.getElementById('NF').textContent=0;
+  document.querySelectorAll('.note-card').forEach((c,i)=>{
+    c.className='note-card'; c.onclick=null;
+    c.innerHTML=`<div class="ntitle">📄 [?] Shënim i fshehur</div>Eksploroni dhomën.`;
+  });
+  document.getElementById('DPFB').className='dp-fb';
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('END').classList.remove('on');
+  document.getElementById('MOD').classList.remove('on');
+  clearInterval(timerInt); startTimer();
+}
+
+function rr(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r); c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h); c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r); c.closePath();
+}
+
+window.addEventListener('resize',resize);
+resize(); startTimer(); loop();
+</script>
+</body>
+</html>

@@ -555,3 +555,197 @@
   75% { transform: translateX(-50%) rotate(80deg); }
   100% { transform: translateX(-50%) rotate(-80deg); }
 }
+
+/* ════════════════════════════════════
+   INSTRUMENT ANIMATIONS (QUANTUM)
+   ════════════════════════════════════ */
+
+/* ── 1. SPEKTROMETRI ── */
+.spec-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.spec-prism {
+  width:0; height:0;
+  border-left:35px solid transparent;
+  border-right:35px solid transparent;
+  border-bottom:60px solid rgba(196,181,253,.5);
+  filter:drop-shadow(0 4px 12px rgba(139,92,246,.3));
+  position:relative;
+}
+.spec-beam-in {
+  width:3px; height:40px;
+  background:linear-gradient(to bottom,rgba(255,255,255,.9),rgba(255,255,255,.3));
+  border-radius:2px;
+  box-shadow:0 0 10px rgba(255,255,255,.8);
+  animation:beamPulse 2s ease-in-out infinite alternate;
+}
+@keyframes beamPulse{from{opacity:.6}to{opacity:1}}
+.spec-rainbow {
+  display:flex; gap:2px;
+  animation:rainbowShift 3s ease-in-out infinite alternate;
+}
+@keyframes rainbowShift{from{transform:scaleX(1)}to{transform:scaleX(1.1)}}
+.spec-line {
+  width:7px; height:38px; border-radius:4px;
+  animation:lineGlow 2s ease-in-out infinite alternate;
+}
+@keyframes lineGlow{from{opacity:.6;filter:blur(1px)}to{opacity:1;filter:blur(0px)}}
+
+/* ── 2. QELIZA FOTOELEKTRIKE ── */
+.photo-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.photo-cell {
+  width:130px; height:70px;
+  background:linear-gradient(135deg,rgba(186,230,253,.3),rgba(233,213,255,.3));
+  border:3px solid var(--lav-mid, #c4b5fd); border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  box-shadow:0 4px 16px rgba(196,181,253,.3);
+}
+.photo-cathode {
+  width:40px; height:50px;
+  background:linear-gradient(135deg,var(--lav-mid, #c4b5fd),var(--pink, #f9a8d4));
+  border-radius:8px; position:relative;
+}
+.photo-anode {
+  width:12px; height:50px;
+  background:linear-gradient(135deg,var(--blue-mid, #7dd3fc),var(--blue-deep, #38bdf8));
+  border-radius:6px; margin-left:20px;
+}
+.photo-photon {
+  position:absolute; top:8px; left:-2px;
+  font-size:.7rem; animation:photonFly 2s ease-in-out infinite;
+}
+@keyframes photonFly{
+  0%{transform:translateX(-10px);opacity:0}
+  30%{opacity:1}
+  60%{transform:translateX(30px);opacity:.8}
+  100%{transform:translateX(50px);opacity:0}
+}
+.photo-electron {
+  position:absolute; width:8px; height:8px; border-radius:50%;
+  background:var(--blue-deep, #38bdf8); bottom:14px;
+  animation:electronJump 2s ease-in-out infinite;
+  box-shadow:0 0 8px var(--blue-deep, #38bdf8);
+}
+@keyframes electronJump{
+  0%{left:38px;bottom:14px;opacity:0}
+  40%{opacity:1}
+  70%{left:90px;bottom:34px;opacity:.8}
+  100%{left:110px;bottom:14px;opacity:0}
+}
+.photo-arrow {
+  font-size:.65rem; font-weight:700; color:var(--blue-deep, #38bdf8);
+  display:flex; align-items:center; gap:4px;
+  animation:arrowPulse 1.5s ease-in-out infinite alternate;
+}
+@keyframes arrowPulse{from{opacity:.5}to{opacity:1}}
+.photo-galv {
+  width:70px; height:28px;
+  background:var(--cream, #fff8fd); border:2.5px solid var(--lav-mid, #c4b5fd);
+  border-radius:50px; display:flex; align-items:center; justify-content:center;
+  font-size:.65rem; font-weight:700; color:var(--lav-deep, #8b5cf6);
+  box-shadow:0 3px 10px rgba(196,181,253,.25);
+  animation:galvGlow 2s ease-in-out infinite alternate;
+}
+@keyframes galvGlow{from{box-shadow:0 3px 10px rgba(196,181,253,.25)}to{box-shadow:0 3px 18px rgba(139,92,246,.45)}}
+
+/* ── 3. DIFRAKTOMETRI ELEKTRONËSH ── */
+.diffr-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.diffr-gun {
+  width:28px; height:44px;
+  background:linear-gradient(135deg,var(--lav-mid, #c4b5fd),var(--pink, #f9a8d4));
+  border-radius:8px 8px 4px 4px;
+  box-shadow:0 3px 12px rgba(196,181,253,.35);
+}
+.diffr-beam-row {
+  display:flex; gap:3px; align-items:center;
+}
+.diffr-beam-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--blue-deep, #38bdf8);
+  animation:beamDotFly 1.8s linear infinite;
+  box-shadow:0 0 6px var(--blue-deep, #38bdf8);
+}
+.diffr-beam-dot:nth-child(2){animation-delay:.3s;background:var(--lav-deep, #8b5cf6)}
+.diffr-beam-dot:nth-child(3){animation-delay:.6s;background:var(--pink-deep, #ec4899)}
+.diffr-beam-dot:nth-child(4){animation-delay:.9s;background:var(--blue-deep, #38bdf8)}
+.diffr-beam-dot:nth-child(5){animation-delay:1.2s;background:var(--lav-deep, #8b5cf6)}
+@keyframes beamDotFly{0%{transform:translateX(-20px);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(20px);opacity:0}}
+.diffr-crystal {
+  width:44px; height:44px;
+  background:linear-gradient(135deg,rgba(186,230,253,.4),rgba(233,213,255,.4));
+  border:3px solid var(--blue-mid, #7dd3fc); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem;
+  box-shadow:0 0 16px rgba(125,211,252,.3);
+  animation:crystalSpin 8s linear infinite;
+}
+@keyframes crystalSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.diffr-rings-svg { overflow:visible; }
+.diffr-ring {
+  fill:none; stroke-width:2; stroke-linecap:round;
+  animation:ringAppear 2s ease-in-out infinite;
+}
+.diffr-ring:nth-child(1){animation-delay:0s}
+.diffr-ring:nth-child(2){animation-delay:.4s}
+.diffr-ring:nth-child(3){animation-delay:.8s}
+@keyframes ringAppear{
+  0%{stroke-dashoffset:300;opacity:0}
+  40%{opacity:1}
+  100%{stroke-dashoffset:0;opacity:.5}
+}
+
+/* ── 4. GEIGER-MÜLLER ── */
+.geiger-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.geiger-tube {
+  width:120px; height:32px;
+  background:linear-gradient(135deg,var(--lavender, #e9d5ff),#fff);
+  border:3px solid var(--lav-mid, #c4b5fd); border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 14px rgba(196,181,253,.35);
+  position:relative; overflow:hidden;
+}
+.geiger-tube::after {
+  content:'';
+  position:absolute; top:0; left:-100%;
+  width:60%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+  animation:tubeShine 3s linear infinite;
+}
+@keyframes tubeShine{from{left:-100%}to{left:200%}}
+.geiger-label {
+  position:absolute; font-size:.55rem; font-weight:700; color:var(--lav-deep, #8b5cf6); letter-spacing:1px;
+}
+.geiger-clicks {
+  display:flex; gap:8px; align-items:center;
+}
+.g-dot {
+  width:9px; height:9px; border-radius:50%;
+  animation:gClick 1.4s ease-in-out infinite;
+}
+.g-dot:nth-child(1){background:var(--pink-deep, #ec4899);animation-delay:0s}
+.g-dot:nth-child(2){background:var(--lav-deep, #8b5cf6);animation-delay:.28s}
+.g-dot:nth-child(3){background:var(--blue-deep, #38bdf8);animation-delay:.56s}
+.g-dot:nth-child(4){background:var(--pink-deep, #ec4899);animation-delay:.84s}
+.g-dot:nth-child(5){background:var(--lav-deep, #8b5cf6);animation-delay:1.12s}
+@keyframes gClick{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.7);opacity:1}}
+.geiger-display {
+  background:linear-gradient(135deg,var(--cream, #fff8fd),var(--pink-light, #fce7f3));
+  border:2.5px solid var(--pink, #f9a8d4); border-radius:16px;
+  padding:7px 18px;
+  display:flex; align-items:center; gap:8px;
+  font-weight:700; font-size:.88rem;
+  box-shadow:0 3px 12px rgba(249,168,212,.25);
+}
+.geiger-num {
+  font-family:'Pacifico',cursive; font-size:1.1rem; color:var(--pink-deep, #ec4899);
+}
+.geiger-radi {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+.radi-wave {
+  width:40px; height:4px; border-radius:2px;
+  background:linear-gradient(90deg,var(--pink, #f9a8d4),var(--lav-mid, #c4b5fd),var(--blue-mid, #7dd3fc));
+  animation:radiWave 1s ease-in-out infinite alternate;
+}
+.radi-wave:nth-child(2){animation-delay:.2s;opacity:.7;width:30px}
+.radi-wave:nth-child(3){animation-delay:.4s;opacity:.4;width:20px}
+@keyframes radiWave{from{transform:scaleX(1)}to{transform:scaleX(1.25)}}

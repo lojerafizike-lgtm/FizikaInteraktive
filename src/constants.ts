@@ -54,7 +54,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
         { id: 2, catName: "Elektriciteti", name: "2. Rezistenca elektrike", sym: "R", form: "R=U/I, R=g×L/S ", unit: "Ω", otherUnits: "kΩ, MΩ, 1r=1V/A", teTjera: "", nature: "Skalare", desc: "Pengesa qe lënda i paraqet kalimit të rrymës elektrike.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://www.electrical4u.com/wp-content/uploads/What-is-Electrical-Resistance-1.png", vid: "https://www.youtube.com/embed/kM72Xa4cOVQ", gameUrl: "/loja-rezistenca.html" },
         { id: 3, catName: "Elektriciteti", name: "3. Fuqia e rrymes", sym: "P", form: "P=UI", unit: "W", otherUnits: "kW, MW", teTjera: "", nature: "Skalare", desc: "Puna e kryer nga rryma elektrike në njësinë e kohës në një pjesë të qarkut.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://www.electronics-tutorials.ws/wp-content/uploads/2018/05/dccircuits-dcp1.gif", vid: "https://www.youtube.com/embed/LdYNNRKgP9U", gameUrl: "/loja-fuqia-rrymes.html" },
         { id: 4, catName: "Elektriciteti", name: "4. Tensioni", sym: "U", form: "U=IR", unit: "V", otherUnits: "kV, mV", teTjera: "", nature: "Skalare", desc: "Sasi elektronesh që i merr ose i jep trupi.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/9VBatteryWithMeter.jpg/250px-9VBatteryWithMeter.jpg", vid: "https://www.youtube.com/embed/v6uEbMc5HaU", gameUrl: "/loja-tensioni.html" },
-        { id: 5, catName: "Elektriciteti", name: "5. Ngarkese elektrike", sym: "q", form: "q=ne", unit: "C", otherUnits: "μC, nC", teTjera: "", nature: "Skalare", desc: "Vetia fizike e lëndës që bën që ajo të përjetojë një forcë kur vendoset në një fushë elektromagnetike.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://www.physicsclassroom.com/Class/estatics/u8l1c1.gif", vid: "https://www.youtube.com/embed/kq34-EKUWUw" },
+        { id: 5, catName: "Elektriciteti", name: "5. Ngarkesa elektrike", sym: "q", form: "q=ne", unit: "C", otherUnits: "μC, nC", teTjera: "", nature: "Skalare", desc: "Vetia fizike e lëndës që bën që ajo të përjetojë një forcë kur vendoset në një fushë elektromagnetike.", phetUrl: "https://phet.colorado.edu/en/simulation/circuit-construction-kit-dc", img: "https://www.physicsclassroom.com/Class/estatics/u8l1c1.gif", vid: "https://www.youtube.com/embed/kq34-EKUWUw" },
         { id: 6, catName: "Elektriciteti", name: "6. Intensiteti i fushes elektrike", sym: "E", form: "E=F/q", unit: "N/C", otherUnits: "V/m", teTjera: "", nature: "Vektoriale", desc: "Tregon forcën mbi ngarkesën provë ne 1 pikë te fushës.", phetUrl: "https://phet.colorado.edu/en/simulations/charges-and-fields", img: "https://www.physicsclassroom.com/Class/estatics/u8l4a1.gif", vid: "https://www.youtube.com/embed/mRDx78oJisY", gameUrl: "/loja-fusha-elektrike.html" },
         { id: 7, catName: "Elektriciteti", name: "7. Kapaciteti elektrik", sym: "C", form: "C=q/V", unit: "F", otherUnits: "μF, nF, pF", teTjera: "", nature: "Skalare", desc: "Tregon aftësine për të nxënë ngarkesa.", phetUrl: "https://phet.colorado.edu/en/simulations/capacitor-lab-basics", img: "https://www.electronics-tutorials.ws/wp-content/uploads/2018/05/capacitor-cap1.gif", vid: "https://www.youtube.com/embed/dXSJ0xuN14g", gameUrl: "/loja-kapaciteti.html" },
         { id: 8, catName: "Elektriciteti", name: "8. Potenciali elektrik", sym: "V", form: "V=Ep/q", unit: "V", otherUnits: "1V=1J/C", teTjera: "", nature: "Skalare", desc: "Tregon energjine potenciale te ngarkesës provë ne 1 pikë te fushës.", phetUrl: "https://phet.colorado.edu/sims/html/circuit-construction-kit-ac/latest/circuit-construction-kit-ac_all.html", img: "https://www.electrical4u.com/wp-content/uploads/What-is-Electric-Potential.png", vid: "https://www.youtube.com/embed/16Z_QNZmxOs" }
@@ -65,6 +65,126 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
         { id: 3, catName: "Magnetizmi", name: "3. Fluksi Magnetik", sym: "Φ ", form: "Φ=BScosa", unit: "Wb", otherUnits: "Mx (Maxwell), 1W=1T×m²", teTjera: "", nature: "Skalare", desc: "Numri i vijave të forcës së fushës magnetike që përshkojnë një sipërfaqe të caktuar.", phetUrl: "https://phet.colorado.edu/en/simulation/faradays-law", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Surface_normal.png/330px-Surface_normal.png", vid: "https://www.youtube.com/embed/60h8RAqX3Yc" },
         { id: 4, catName: "Magnetizmi", name: "4. F.e.m. e induktuar", sym: "ε", form: "ε=-NΔΦ/Δt", unit: "V", otherUnits: "mV", teTjera: "", nature: "Skalare", desc: "Tensioni elektrik që lind në një qark të mbyllur si pasojë e ndryshimit të fluksit magnetik.", phetUrl: "https://phet.colorado.edu/en/simulation/faradays-law", img: "https://i.ytimg.com/vi/CAKnbju_0jo/sddefault.jpg", vid: "https://www.youtube.com/embed/FoXIrSy5akw" },
         { id: 5, catName: "Magnetizmi", name: "5. Rryme e induktuar", sym: "Iin", form: "I=ε/R", unit: "A", otherUnits: "mA", teTjera: "", nature: "Skalare", desc: "Rryma elektrike që lind në një përcjellës të mbyllur kur ai ndodhet në një fushë magnetike të ndryshueshme.", phetUrl: "https://phet.colorado.edu/en/simulation/faradays-law", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqk5jc32xKcLRo2y10dfbSwmELAekKYKdSSw&s", vid: "https://www.youtube.com/embed/fOeWUbvqRgY" }
+    ],
+    "Fizika Kuantike": [
+        { 
+            id: 1, 
+            catName: "Fizika Kuantike", 
+            name: "1. Energjia e fotonit", 
+            sym: "E", 
+            form: "E = hf", 
+            unit: "J", 
+            otherUnits: "eV  (1eV = 1.6×10⁻¹⁹ J)", 
+            teTjera: "Drita ka natyrë të dyfishtë: valore dhe grimcore. Ajo nuk rrezatohet në mënyrë të vazhdueshme por të ndërprerë me kuante. Për N grimca. E= N•h•f.", 
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left">
+  <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+    <p class="font-bold text-blue-800 mb-2">Ushtrim:</p>
+    <p>Një rrezatim ka frekuencën f = 4.0 &times; 10<sup>18</sup> Hz.</p>
+    <p>Gjeni energjinë e fotonit duke ditur se konstanta e Plankut është h = 6.63 &times; 10<sup>-34</sup> J&middot;s.</p>
+  </div>
+</div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Një rrezatim ka frekuencën f = 4.0 × 10¹⁸ Hz. Gjeni energjinë e fotonit duke ditur se konstanta e Plankut është h = 6.63 × 10⁻³⁴ J·s.",
+              zgjidhja: "2.7*10^-15",
+              hapi1: "Zgjidh formulën: E = hf",
+              hapi2: "Zëvendëso vlerat: E = 6.63 × 10⁻³⁴ × 4.0 × 10¹⁸",
+              hapi3: "Llogarit: E = 26.52 × 10⁻¹⁶ ≈ 2.7 × 10⁻¹⁵ J"
+            },
+            nature: "Skalare", 
+            desc: "Drita përbëhet nga fotonet të cilat kanë energji.",
+            phetUrl: "https://phet.colorado.edu/en/simulation/photoelectric", 
+            img: "http://light.physics.auth.gr/images/enc/photon.gif", 
+            vid: "https://www.youtube.com/embed/ZhXCMoa6j58", 
+            gameUrl: "/loja4-energjia-fotonit.html" 
+        },
+        { 
+            id: 2, 
+            catName: "Fizika Kuantike", 
+            name: "2. Puna e daljes", 
+            sym: "A<sub>d</sub>", 
+            form: "A<sub>d</sub> = h f<sub>prag</sub>", 
+            unit: "J", 
+            otherUnits: "eV", 
+            teTjera: "E = A_d + E_k është ekuacioni i Ajnshtajnit për fotoefektin. Për E ≥ A_d ndodh fotoefekti.", 
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left">
+  <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+    <p class="font-bold text-blue-800 mb-2">Ushtrim mbi fotoefektin:</p>
+    <p>Mbi një pllakë metali bie rrezatim elektromagnetik. Duhet të gjendet gjatësia valore maksimale që shkakton fotoefekt.</p>
+    <p>Jepet: A<sub>d</sub> = 3 eV, h = 6.63 &times; 10<sup>-34</sup> J&middot;s, c = 3 &times; 10<sup>8</sup> m/s, e = 1.6 &times; 10<sup>-19</sup> C</p>
+  </div>
+</div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Mbi një pllakë metali bie rrezatim elektromagnetik. Duhet të gjendet gjatësia valore maksimale që shkakton fotoefekt. Jepet: A_d = 3 eV, h = 6.63 × 10⁻³⁴ J·s, c = 3 × 10⁸ m/s, e = 1.6 × 10⁻¹⁹ C. (Jep përgjigjen në μm)",
+              zgjidhja: "0.4",
+              hapi1: "Zgjidh formulën: A_d = hf = hc / λ  =>  λ = hc / A_d",
+              hapi2: "Zëvendëso vlerat: A_d = 3 × 1.6 × 10⁻¹⁹ = 4.8 × 10⁻¹⁹ J. λ = (6.63 × 10⁻³⁴ × 3 × 10⁸) / (4.8 × 10⁻¹⁹)",
+              hapi3: "Llogarit: λ = 0.4 × 10⁻⁶ m = 0.4 μm"
+            },
+            nature: "Skalare", 
+            desc: "Energjia minimale që i duhet elektronit për t'u shkëputur nga atomi.", 
+            phetUrl: "https://phet.colorado.edu/en/simulation/photoelectric", 
+            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Photoelectric_effect_in_a_solid_-_diagram.svg/1280px-Photoelectric_effect_in_a_solid_-_diagram.svg.png", 
+            vid: "https://www.youtube.com/embed/JNR4aQSGetg", 
+            gameUrl: "" 
+        },
+        { 
+            id: 3, 
+            catName: "Fizika Kuantike", 
+            name: "3. Gjatësia e valës së De Brojit", 
+            sym: "λ", 
+            form: "λ = h / mv", 
+            unit: "m", 
+            otherUnits: "nm", 
+            teTjera: "Vetëm për grimcat elementare shfaqet dukshëm vetia valore. Pra grimcat kanë natyrë të dyfishtë.", 
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left">
+  <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+    <p class="font-bold text-blue-800 mb-2">Ushtrim:</p>
+    <p>Një elektron ka energji kinetike E<sub>k</sub> = 2 eV. Gjej gjatësinë e valës së De Brojit. (Jep përgjigjen në nm)</p>
+  </div>
+</div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Një elektron ka energji kinetike E_k = 2 eV. Gjej gjatësinë e valës së De Brojit. (Jep përgjigjen në nm)",
+              zgjidhja: "0.87",
+              hapi1: "Zgjidh formulën: λ = h / (mv) dhe E_k = mv² / 2 => v = √(2E_k / m)",
+              hapi2: "Zëvendëso vlerat: λ = h / √(2mE_k)",
+              hapi3: "Llogarit: Pas zëvendësimit të masës së elektronit dhe h, λ ≈ 0.87 nm"
+            },
+            nature: "Skalare", 
+            desc: "Çdo grimcë me masë m që lëviz me shpejtësi v i përket një procesi valor.", 
+            phetUrl: "https://phet.colorado.edu/en/simulation/quantum-wave-interference", 
+            img: "https://www.sciencefacts.net/wp-content/uploads/2023/10/de-Broglie-Wavelength.jpg", 
+            vid: "https://www.youtube.com/embed/cYyFPFU6s_A", 
+            gameUrl: "/loja2-de-broglie.html" 
+        },
+        { 
+            id: 4, 
+            catName: "Fizika Kuantike", 
+            name: "4. Perioda e gjysmëzbërthimit", 
+            sym: "T<sub>1/2</sub>", 
+            form: "T<sub>1/2</sub> = ln2 / λ", 
+            unit: "s", 
+            otherUnits: "min, h, vite", 
+            teTjera: "Ligji i zbërthimit radioaktiv: N = N₀ e^(-λt).", 
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left">
+  <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+    <p class="font-bold text-blue-800 mb-2">Ushtrim:</p>
+    <p>Një izotop radioaktiv e ka periodën e gjysmëzbërthimit 2 orë. Sa pjesë ka mbetur pas 4 orësh?</p>
+  </div>
+</div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Një izotop radioaktiv e ka periodën e gjysmëzbërthimit 2 orë. Sa pjesë ka mbetur pas 4 orësh? (Shkruaj si thyesë p.sh. 1/4)",
+              zgjidhja: "1/4",
+              hapi1: "Zgjidh formulën: N = N_0 / 2^(t/T)",
+              hapi2: "Zëvendëso vlerat: Pas 1 periode (2 orë): N = N_0 / 2. Pas 2 periodash (4 orë = 2T).",
+              hapi3: "Llogarit: N = (N_0 / 2) / 2 = N_0 / 4. Pra ka mbetur 1/4"
+            },
+            nature: "Skalare", 
+            desc: "Koha gjatë së cilës zbërthehet gjysma e bërthamave radioaktive të lëndës së dhëne.", 
+            phetUrl: "https://phet.colorado.edu/en/simulation/alpha-decay", 
+            img: "https://assets-us-01.kc-usercontent.com/9dd25524-761a-000d-d79f-86a5086d4774/7e6a0ff6-374a-454d-891e-a7377ce7e211/half-life_lg.jpg?w=659&h=800&auto=format&q=75&fit=crop", 
+            vid: "https://www.youtube.com/embed/egT-BjjR1kc", 
+            gameUrl: "/loja3-gjysmezberthimi.html" 
+        }
     ]
 };
 
@@ -221,5 +341,9 @@ export const MEDIA_MAPPING: Record<string, { img: string, vid: string }> = {
     "Magnetizmi": { 
         img: "https://thumbs.dreamstime.com/b/physics-electricity-magnetism-phenomena-25074870.jpg",
         vid: "https://www.youtube.com/embed/YpXpU5y-U-0" 
+    },
+    "Fizika Kuantike": {
+        img: "https://www.sciencefacts.net/wp-content/uploads/2023/10/de-Broglie-Wavelength.jpg",
+        vid: "https://www.youtube.com/embed/ZhXCMoa6j58"
     }
 };

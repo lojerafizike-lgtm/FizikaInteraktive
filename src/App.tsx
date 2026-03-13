@@ -70,6 +70,7 @@ const App: React.FC = () => {
       case 'Energjia': return { icon: 'fa-fire-flame-curved', color: 'bg-[#ffafcc]', text: 'text-[#fb6f92]' };
       case 'Elektriciteti': return { icon: 'fa-bolt-lightning', color: 'bg-[#cdb4db]', text: 'text-[#8e7dbe]' };
       case 'Magnetizmi': return { icon: 'fa-magnet', color: 'bg-[#a2d2ff]', text: 'text-[#4895ef]' };
+      case 'Fizika Kuantike': return { icon: 'fa-atom', color: 'bg-[#a7f3d0]', text: 'text-[#059669]' };
       case 'Libri Interaktiv': return { icon: 'fa-book-open', color: 'bg-[#ffc8dd]', text: 'text-[#ff758f]' };
       default: return { icon: 'fa-atom', color: 'bg-slate-100', text: 'text-slate-400' };
     }
@@ -183,8 +184,22 @@ const App: React.FC = () => {
       <nav className="hidden md:flex sticky top-0 z-40 px-8 py-6 bg-white/60 backdrop-blur-3xl border-b border-white/40 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
           <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate('home')}>
-            <div className="w-14 h-14 bg-gradient-to-br from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0">
-              <i className="fas fa-atom text-xl"></i>
+            <div className="w-14 h-14 bg-gradient-to-br from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0 overflow-hidden">
+              <img 
+                src="logoja-jote.png" 
+                alt="Logo" 
+                className="w-full h-full object-cover" 
+                referrerPolicy="no-referrer" 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const parent = e.currentTarget.parentElement;
+                  if (parent && !parent.querySelector('.fa-atom')) {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-atom text-xl';
+                    parent.appendChild(icon);
+                  }
+                }} 
+              />
             </div>
             <h1 className="text-xl lg:text-2xl font-black tracking-tight">Fizika<span className="text-[#ffafcc]">Interaktive</span></h1>
           </div>
@@ -296,7 +311,10 @@ const App: React.FC = () => {
                   onClick={() => navigate('details', term)}
                   className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border border-transparent hover:border-[#ffafcc]/20 group flex flex-col h-32 md:h-60 justify-between card-fusha"
                 >
-                  <div className="text-[7px] md:text-[10px] font-black text-[#ffafcc] uppercase tracking-[0.2em] md:tracking-[0.4em] truncate">{term.sym}</div>
+                  <div 
+                    className="text-[7px] md:text-[10px] font-black text-[#ffafcc] uppercase tracking-[0.2em] md:tracking-[0.4em] truncate"
+                    dangerouslySetInnerHTML={{ __html: term.sym }}
+                  />
                   <h4 className="text-sm md:text-3xl font-black group-hover:text-[#ffafcc] transition-colors leading-tight tracking-tighter line-clamp-2">{term.name}</h4>
                   <div className="flex items-center gap-1 md:gap-2 text-slate-300 font-black uppercase text-[7px] md:text-[9px] tracking-[0.1em] md:tracking-[0.2em] group-hover:text-slate-800 transition-colors mt-2">
                     DETAJET <i className="fas fa-arrow-right text-[6px] md:text-[7px] ml-1"></i>
@@ -354,7 +372,10 @@ const App: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
                         <div className="bg-[#fcfcff] p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
                             <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-2 md:mb-4">Simboli</p>
-                            <p className="text-4xl md:text-6xl font-mono font-black text-[#ffafcc]">{selectedTerm.sym}</p>
+                            <p 
+                              className="text-4xl md:text-6xl font-mono font-black text-[#ffafcc]"
+                              dangerouslySetInnerHTML={{ __html: selectedTerm.sym }}
+                            />
                         </div>
                         <div className="bg-[#fcfcff] p-6 md:p-8 rounded-3xl md:rounded-[3rem] border border-slate-50 flex flex-col items-center justify-center text-center shadow-inner">
                             <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-2 md:mb-4">Njësia SI</p>
@@ -375,7 +396,10 @@ const App: React.FC = () => {
 
                     <div className="bg-[#4a4e69] text-white p-8 md:p-16 rounded-3xl md:rounded-[3.5rem] mb-10 md:mb-16 text-center shadow-2xl relative">
                         <p className="text-[8px] md:text-[10px] font-black text-white/30 uppercase tracking-[0.3em] md:tracking-[0.6em] mb-4 md:mb-6">Formula Kryesore</p>
-                        <code className="text-3xl md:text-7xl font-mono font-black text-[#ffc8dd] break-all">{selectedTerm.form}</code>
+                        <code 
+                          className="text-3xl md:text-7xl font-mono font-black text-[#ffc8dd] break-all"
+                          dangerouslySetInnerHTML={{ __html: selectedTerm.form }}
+                        />
                     </div>
                     <div className="mb-12 md:mb-20">
                         <h4 className="text-xs md:text-sm font-black text-[#ffafcc] uppercase tracking-[0.3em] md:tracking-[0.5em] mb-4 md:mb-6">Kuptimi fizik</h4>
@@ -422,7 +446,7 @@ const App: React.FC = () => {
                             
                             {selectedTerm.teTjera && (
                               <div className="bg-[#fcfdfe] p-8 rounded-[2rem] border border-slate-50 shadow-inner mb-8">
-                                  <p className="text-2xl font-bold text-slate-600 leading-relaxed">
+                                  <p className="text-2xl font-serif italic text-[#4a4e69] leading-relaxed whitespace-pre-wrap">
                                       {selectedTerm.teTjera}
                                   </p>
                               </div>
