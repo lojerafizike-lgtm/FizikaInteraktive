@@ -283,9 +283,8 @@ physicists.forEach(p => {
     const div = document.createElement('div');
     div.className = 'card';
     
-    // Përdorim URL-në direkte si burim parësor, me referrerpolicy no-referrer
-    // Ruajmë URL-në origjinale për fallback në rast dështimi
-    const displayImg = p.img;
+    // Përdorim proxy-n si burim parësor për të shmangur problemet me CORS/Referrer
+    const displayImg = `${imgProxy}${encodeURIComponent(p.img)}&w=300&h=300&fit=cover`;
     
     div.onclick = () => {
         document.getElementById('modalTitle').innerText = p.name;
@@ -293,7 +292,8 @@ physicists.forEach(p => {
         const modalImg = document.getElementById('modalImg');
         modalImg.alt = p.name;
         modalImg.setAttribute('data-original', p.img);
-        modalImg.src = p.img;
+        // Përdorim proxy-n edhe në modal
+        modalImg.src = `${imgProxy}${encodeURIComponent(p.img)}&w=400&h=400&fit=cover`;
         modalImg.onerror = function() { handleImageError(this); };
         document.getElementById('bioModal').style.display = 'flex';
     };
