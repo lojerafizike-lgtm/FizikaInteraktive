@@ -77,6 +77,24 @@
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
         }
 
+        .back-home-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-navy);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: 2px solid var(--primary-navy);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .back-home-btn:hover {
+            background: var(--primary-navy);
+            color: var(--white);
+        }
+
         /* --- NEWS OUTLET STYLING --- */
         #news-outlet {
             display: none;
@@ -263,9 +281,10 @@
 <div class="container">
     
     <div id="start-view">
+        <a href="/" class="back-home-btn">← Kthehu tek Fizika</a>
         <h1 class="hero-title">Revista e Fizikës</h1>
         <p class="hero-subtitle">Eksploroni lajmet, studimet dhe përparimet më të fundit nga Universiteti dhe Agjencitë Kryesore (Shqip & Anglisht)</p>
-        <button class="main-btn" onclick="openNewsOutlet()">Fillo Lëximin e Artikujve →</button>
+        <button class="main-btn" onclick="openNewsOutlet()">Fillo Leximin e Artikujve →</button>
     </div>
 
     <!-- Përmirësim i Pamjes së Loader -->
@@ -276,7 +295,10 @@
 
     <div id="news-outlet">
         <div class="header">
-            <h1>Daily Physics News</h1>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="/" style="color: white; text-decoration: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: background 0.3s;" title="Kthehu mbrapa" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">←</a>
+                <h1>Daily Physics News</h1>
+            </div>
             <button class="refresh-btn" onclick="location.reload()">↺ Rifresko Lajmet</button>
         </div>
         
@@ -340,6 +362,14 @@
             newsOutlet.style.display = 'block';
             setTimeout(() => { newsOutlet.style.opacity = '1'; }, 50);
 
+            if (articlesToShow.length === 0) {
+                feed.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-gray);">
+                    <h3>Nuk u gjetën artikuj për momentin.</h3>
+                    <p>Ndoshta burimi i lajmeve është i padisponueshëm ose keni problem me internetin.</p>
+                </div>`;
+                return;
+            }
+
             // Gjurmuesi bazë i imazhit defalut, në rast se lajmi RSS vjen pa një foto.
             const fallbackImage = 'https://images.unsplash.com/photo-1636819488524-1f019ce5e855?auto=format&fit=crop&w=400&q=80';
 
@@ -358,7 +388,8 @@
                 
                 // Mbrojtje shtesë - nëse phys.org ofron link ne regex, e kërkojmë nga 'description'
                 if(!imageSrc) {
-                    const match = item.description.match(/src=["'](.*?)["']/);
+                    const desc = item.description || "";
+                    const match = desc.match(/src=["'](.*?)["']/);
                     imageSrc = match ? match[1] : fallbackImage;
                 }
 
@@ -385,8 +416,13 @@
             });
 
         } catch (err) {
-            document.querySelector('.spinner').style.display = 'none';
-            loader.innerHTML = `<span style="color:red">Fatkeqësisht, pati një gabim në internet gjatë marrjes së shkrimeve shkencore. Provoni përsëri!</span>`;
+            const spinner = document.querySelector('.spinner');
+            if (spinner) spinner.style.display = 'none';
+            loader.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--accent-red);">
+                <h3>Fatkeqësisht, pati një gabim në internet gjatë marrjes së shkrimeve shkencore.</h3>
+                <p>Provoni përsëri ose kontrolloni lidhjen tuaj të internetit!</p>
+                <button class="refresh-btn" onclick="location.reload()" style="margin-top: 15px;">↺ Rifresko</button>
+            </div>`;
             console.error("Fetch API error: ", err);
         }
     }

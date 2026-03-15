@@ -1,0 +1,35 @@
+{
+  "entities": {
+    "UserPrivate": {
+      "title": "User Private",
+      "description": "Private data for a user.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" }
+      },
+      "required": ["email"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Public profile and score for the leaderboard.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "totalScore": { "type": "number" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["displayName", "totalScore"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserPrivate",
+      "description": "Private user data."
+    },
+    "/profiles/{userId}": {
+      "schema": "UserProfile",
+      "description": "Public user profiles for leaderboard."
+    }
+  }
+}

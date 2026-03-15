@@ -9,11 +9,16 @@ import BlurText from './components/BlurText';
 import MoviesSection from './components/MoviesSection';
 import InstrumentsSection from './components/InstrumentsSection';
 import BubbleMenu from './components/BubbleMenu';
+import { AuthButton } from './components/AuthButton';
+import { Leaderboard } from './components/Leaderboard';
+import { useFirebase } from './contexts/FirebaseContext';
+import { updateUserScore } from './firebase';
 
 const App: React.FC = () => {
+  const { user, login } = useFirebase();
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
-  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard'>('home');
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
@@ -31,7 +36,7 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists', data?: CategoryName | PhysicsTerm | null) => {
+  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard', data?: CategoryName | PhysicsTerm | null) => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
@@ -42,6 +47,10 @@ const App: React.FC = () => {
 
   const handlePlayGame = (game: DigitalGame) => {
     setPlayingGame(game);
+    if (user) {
+      // Award 10 points for playing a game
+      updateUserScore(user.uid, 10);
+    }
   };
 
   const searchResults = useMemo(() => {
@@ -75,6 +84,68 @@ const App: React.FC = () => {
       default: return { icon: 'fa-atom', color: 'bg-slate-100', text: 'text-slate-400' };
     }
   };
+
+  const mobileMenuItems = useMemo(() => {
+    const items = [
+      {
+        label: 'Fillimi',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('home'); },
+        rotation: -4,
+        hoverStyles: { bgColor: '#4a4e69', textColor: '#ffffff' }
+      }
+    ];
+
+    if (!user) {
+      items.push({
+        label: 'Hyr',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); login(); },
+        rotation: -8,
+        hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
+      });
+    }
+
+    items.push(
+      {
+        label: 'Lojërat',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('games'); },
+        rotation: 4,
+        hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
+      },
+      {
+        label: 'Filmat',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('movies'); },
+        rotation: 8,
+        hoverStyles: { bgColor: '#a2d2ff', textColor: '#ffffff' }
+      },
+      {
+        label: 'Shkencëtarët',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('scientists'); },
+        rotation: -2,
+        hoverStyles: { bgColor: '#cdb4db', textColor: '#ffffff' }
+      },
+      {
+        label: 'Revista',
+        href: '/revista.html',
+        onClick: () => {},
+        rotation: 6,
+        hoverStyles: { bgColor: '#ffc8dd', textColor: '#ffffff' }
+      },
+      {
+        label: 'Renditja',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('leaderboard'); },
+        rotation: -6,
+        hoverStyles: { bgColor: '#cdb4db', textColor: '#ffffff' }
+      }
+    );
+
+    return items;
+  }, [user, login]);
 
   if (showSplash) {
     return (
@@ -115,44 +186,6 @@ const App: React.FC = () => {
       </div>
     );
   }
-
-  const mobileMenuItems = [
-    {
-      label: 'Shkencëtarët',
-      href: '#',
-      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('scientists'); },
-      rotation: -12,
-      hoverStyles: { bgColor: '#a2d2ff', textColor: '#ffffff' }
-    },
-    {
-      label: 'Fillimi',
-      href: '#',
-      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('home'); },
-      rotation: -8,
-      hoverStyles: { bgColor: '#4a4e69', textColor: '#ffffff' }
-    },
-    {
-      label: 'Filmat',
-      href: '#',
-      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('movies'); },
-      rotation: 4,
-      hoverStyles: { bgColor: '#cdb4db', textColor: '#ffffff' }
-    },
-    {
-      label: 'Lojërat',
-      href: '#',
-      onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('games'); },
-      rotation: 8,
-      hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
-    },
-    {
-      label: 'Revista',
-      href: '/revista.html',
-      onClick: (e: React.MouseEvent) => { e.preventDefault(); window.location.href = '/revista.html'; },
-      rotation: -4,
-      hoverStyles: { bgColor: '#bde0fe', textColor: '#4a4e69' }
-    }
-  ];
 
   return (
     <ClickSpark sparkColor='#ffafcc' sparkSize={12} sparkRadius={20} sparkCount={10} duration={600}>
@@ -205,15 +238,47 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
-            <button onClick={() => navigate('scientists')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Shkencëtarët</button>
-            <button onClick={() => navigate('movies')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Filmat</button>
-            <a href="/revista.html" className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Revista e Fizikës</a>
-            <button 
-              onClick={() => navigate('games')} 
-              className="bg-[#4a4e69] text-white px-6 lg:px-10 py-3 lg:py-4 rounded-[1.8rem] text-xs lg:text-sm font-black shadow-xl hover:scale-110 active:scale-95 transition-all uppercase tracking-widest flex items-center gap-3 shrink-0"
-            >
-              <i className="fas fa-gamepad"></i> LOJËRAT
-            </button>
+            <button onClick={() => navigate('leaderboard')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Renditja</button>
+            
+            <div className="hidden md:block">
+              <AuthButton />
+            </div>
+
+            {/* Të tjera Dropdown */}
+            <div className="hidden md:block group relative">
+              <button 
+                className="bg-[#4a4e69] text-white px-6 lg:px-10 py-3 lg:py-4 rounded-[1.8rem] text-xs lg:text-sm font-black shadow-xl hover:scale-110 active:scale-95 transition-all uppercase tracking-widest flex items-center gap-3 shrink-0"
+              >
+                <i className="fas fa-ellipsis-h"></i> TË TJERA
+              </button>
+              
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 p-2">
+                <button 
+                  onClick={() => navigate('games')}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
+                >
+                  <i className="fas fa-gamepad w-5"></i> Lojërat
+                </button>
+                <button 
+                  onClick={() => navigate('movies')}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
+                >
+                  <i className="fas fa-film w-5"></i> Filmat
+                </button>
+                <button 
+                  onClick={() => navigate('scientists')}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
+                >
+                  <i className="fas fa-user-tie w-5"></i> Shkencëtarët
+                </button>
+                <a 
+                  href="/revista.html"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
+                >
+                  <i className="fas fa-book-open w-5"></i> Revista
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -611,6 +676,14 @@ const App: React.FC = () => {
         {activePage === 'instruments' && (
           <InstrumentsSection onBack={() => navigate('home')} />
         )}
+        {activePage === 'leaderboard' && (
+          <div className="animate__animated animate__fadeIn max-w-2xl mx-auto">
+            <button onClick={() => navigate('home')} className="mb-8 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
+              <i className="fas fa-arrow-left"></i> Kthehu te Fillimi
+            </button>
+            <Leaderboard />
+          </div>
+        )}
       </main>
 
       <footer className="bg-white text-slate-600 py-16 md:py-24 mt-32 rounded-t-[3rem] md:rounded-t-[5rem] border-t-8 border-[#ffafcc] relative overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
@@ -873,17 +946,42 @@ const App: React.FC = () => {
       
       {/* Full Screen Game Overlay */}
       {playingGame && (
-        <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col">
-          <div className="bg-slate-800 text-white p-4 flex justify-between items-center shadow-md">
-            <h2 className="text-xl font-bold font-['Orbitron']">{playingGame.title}</h2>
-            <button 
-              onClick={() => setPlayingGame(null)} 
-              className="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center transition-colors"
-            >
-              <i className="fas fa-times text-xl"></i>
-            </button>
+        <div id="game-overlay-container" className="fixed top-0 left-0 w-full h-[100dvh] z-[9999] bg-slate-900 flex flex-col">
+          <div className="bg-slate-800 text-white p-2 md:p-4 flex justify-between items-center shadow-md shrink-0">
+            <h2 className="text-sm md:text-xl font-bold font-['Orbitron'] truncate pr-2">{playingGame.title}</h2>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  const elem = document.getElementById('game-overlay-container');
+                  if (!elem) return;
+                  if (!document.fullscreenElement) {
+                    elem.requestFullscreen().catch(err => {
+                      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+                  } else {
+                    document.exitFullscreen();
+                  }
+                }} 
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center transition-colors"
+                title="Hap në Full Screen"
+              >
+                <i className="fas fa-expand text-sm md:text-xl"></i>
+              </button>
+              <button 
+                onClick={() => {
+                  if (document.fullscreenElement) {
+                    document.exitFullscreen().catch(() => {});
+                  }
+                  setPlayingGame(null);
+                }} 
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center transition-colors"
+                title="Mbyll Lojën"
+              >
+                <i className="fas fa-times text-sm md:text-xl"></i>
+              </button>
+            </div>
           </div>
-          <div className="flex-1 w-full relative bg-white">
+          <div className="flex-1 w-full relative bg-white overflow-hidden">
             {playingGame.url ? (
               <iframe src={playingGame.url} className="w-full h-full border-none" title={playingGame.title} allowFullScreen></iframe>
             ) : playingGame.html ? (
