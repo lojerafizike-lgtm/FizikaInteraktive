@@ -6,6 +6,7 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -33,13 +34,19 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   const login = async () => {
+    setAuthError(null);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      if (error && typeof error === 'object' && 'code' in error && error.code === 'auth/popup-closed-by-user') {
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
+      if (firebaseError.code === 'auth/popup-closed-by-user') {
         console.log("User closed the login popup.");
+      } else if (firebaseError.code === 'auth/popup-blocked') {
+        setAuthError("Shfletuesi bllokoi dritaren e hyrjes. Ju lutem lejoni pop-ups për këtë faqe dhe provoni përsëri.");
+        console.error("Popup blocked:", firebaseError);
       } else {
-        console.error("Login failed:", error);
+        setAuthError("Dështoi hyrja me Google. Ju lutem provoni përsëri.");
+        console.error("Login failed:", firebaseError);
       }
     }
   };
@@ -52,8 +59,10 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const clearAuthError = () => setAuthError(null);
+
   return (
-    <FirebaseContext.Provider value={{ user, profile, loading, login, logout }}>
+    <FirebaseContext.Provider value={{ user, profile, loading, authError, login, logout, clearAuthError }}>
       {children}
     </FirebaseContext.Provider>
   );

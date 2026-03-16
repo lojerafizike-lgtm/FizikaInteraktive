@@ -152,9 +152,9 @@ const DEBATE_TOPICS = [
 ];
 
 const WORKSHEETS = [
-  { n: "Ushtrime: Kinematika", l: "https://example.com/w1.pdf" },
-  { n: "Laborator: Tingulli", l: "https://example.com/w2.pdf" },
-  { n: "Test: Drita & Optika", l: "https://example.com/w3.pdf" }
+  { n: "Ushtrime: Kinematika", l: "flete-pune-fizika.html" },
+  { n: "Laborator: Tingulli", l: "flete-pune-fizika.html" },
+  { n: "Test: Drita & Optika", l: "flete-pune-fizika.html" }
 ];
 
 // --- COMPONENT ---

@@ -14,14 +14,14 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     title: "Mësojmë Impulsin dhe Momentin",
     category: "Dinamika",
     type: "digital",
-    html: "<!DOCTYPE html>\n<html lang=\"sq\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mësojmë Impulsin dhe Momentin</title>\n    <style>\n        :root {\n            --primary: #00f2fe;\n            --secondary: #4facfe;\n            --accent: #f093fb;\n            --bg: #0f172a;\n            --card: #1e293b;\n            --text: #f8fafc;\n            --success: #22c55e;\n            --error: #ef4444;\n        }\n\n        body {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            background-color: var(--bg);\n            color: var(--text);\n            margin: 0;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            min-height: 100vh;\n        }\n\n        .game-header {\n            margin: 20px 0;\n            text-align: center;\n        }\n\n        .container {\n            width: 900px;\n            background: var(--card);\n            padding: 30px;\n            border-radius: 20px;\n            box-shadow: 0 20px 50px rgba(0,0,0,0.5);\n            border: 1px solid rgba(255,255,255,0.1);\n        }\n\n        canvas {\n            background: #020617;\n            border-radius: 15px;\n            width: 100%;\n            height: 300px;\n            border: 2px solid var(--secondary);\n            margin-bottom: 20px;\n        }\n\n        .interface {\n            display: grid;\n            grid-template-columns: 1.2fr 0.8fr;\n            gap: 25px;\n        }\n\n        .level-info {\n            background: rgba(255,255,255,0.03);\n            padding: 20px;\n            border-radius: 12px;\n            border-left: 5px solid var(--primary);\n        }\n\n        .control-panel {\n            background: rgba(255,255,255,0.03);\n            padding: 20px;\n            border-radius: 12px;\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n        }\n\n        h2 { color: var(--primary); margin-top: 0; }\n        \n        .formula-box {\n            background: #000;\n            padding: 10px;\n            border-radius: 8px;\n            color: var(--accent);\n            font-family: 'Courier New', Courier, monospace;\n            font-size: 1.2rem;\n            margin: 10px 0;\n            text-align: center;\n        }\n\n        input {\n            background: #334155;\n            border: 2px solid var(--secondary);\n            color: white;\n            padding: 12px;\n            border-radius: 8px;\n            font-size: 1.1rem;\n            margin-bottom: 10px;\n            outline: none;\n        }\n\n        button {\n            background: linear-gradient(135deg, var(--secondary), var(--primary));\n            border: none;\n            color: white;\n            padding: 15px;\n            border-radius: 8px;\n            font-weight: bold;\n            cursor: pointer;\n            transition: 0.3s;\n            text-transform: uppercase;\n        }\n\n        button:hover {\n            transform: translateY(-2px);\n            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);\n        }\n\n        #feedback {\n            margin-top: 15px;\n            font-weight: bold;\n            height: 20px;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"game-header\">\n        <h1>🚀 Laboratori Virtual i Fizikës</h1>\n        <p>Mjeshtëro Impulsin dhe Momentin përmes sfidave</p>\n    </div>\n\n    <div class=\"container\">\n        <canvas id=\"gameCanvas\" width=\"800\" height=\"300\"></canvas>\n\n        <div class=\"interface\">\n            <div class=\"level-info\">\n                <h2 id=\"lvl-title\">Niveli 1</h2>\n                <p id=\"lvl-desc\">Përshkrimi po ngarkohet...</p>\n                <div class=\"formula-box\" id=\"lvl-formula\">p = m × v</div>\n                <p id=\"lvl-data\">Të dhënat: ...</p>\n            </div>\n\n            <div class=\"control-panel\">\n                <label style=\"margin-bottom: 8px;\">Rezultati yt:</label>\n                <input type=\"number\" id=\"user-input\" placeholder=\"Shëno vlerën...\" step=\"any\">\n                <button onclick=\"checkAnswer()\">Verifiko Fizikën</button>\n                <div id=\"feedback\"></div>\n            </div>\n        </div>\n    </div>\n\n<script>\n    const canvas = document.getElementById(\"gameCanvas\");\n    const ctx = canvas.getContext(\"2d\");\n    let level = 1;\n    let animFrame = 0;\n    let isMoving = false;\n\n    const levels = [\n        {\n            title: \"Niveli 1: Impulsi i Trupit\",\n            desc: \"Një makinë ka masën 1200kg dhe lëviz me shpejtësi 20m/s. Sa është impulsi i saj (p)?\",\n            formula: \"p = m \\u00d7 v\",\n            data: \"m = 1200 kg | v = 20 m/s\",\n            goal: 24000,\n            unit: \"kg·m/s\"\n        },\n        {\n            title: \"Niveli 2: Ruajtja e Impulsit\",\n            desc: \"Sfera A (4kg, 6m/s) godet sferën B (2kg) që është në prehje. Pas goditjes ato lëvizin bashkë. Gjej shpejtësinë finale (V).\",\n            formula: \"m1v1 + m2v2 = (m1+m2)V\",\n            data: \"m1=4kg, v1=6 | m2=2kg, v2=0\",\n            goal: 4,\n            unit: \"m/s\"\n        },\n        {\n            title: \"Niveli 3: Momenti i Forcës\",\n            desc: \"Për të balancuar një levë, një forcë prej 60N vendoset 2m larg qendrës. Sa duhet të jetë forca tjetër në distancë 1.5m?\",\n            formula: \"F1 \\u00d7 d1 = F2 \\u00d7 d2\",\n            data: \"F1=60N, d1=2m | d2=1.5m\",\n            goal: 80,\n            unit: \"N\"\n        },\n        {\n            title: \"Niveli 4: Impulsi i Forcës (Impulsi)\",\n            desc: \"Një lojtar godet topin me një forcë 150N për një kohë prej 0.2 sekonda. Sa është ndryshimi i impulsit (\\u0394p)?\",\n            formula: \"I = F \\u00d7 \\u0394t = \\u0394p\",\n            data: \"F = 150 N | \\u0394t = 0.2 s\",\n            goal: 30,\n            unit: \"kg·m/s\"\n        },\n        {\n            title: \"Niveli 5: Ekuilibri i Momenteve\",\n            desc: \"Një dërrasë 4m e gjatë ka mbështetjen në mes. Një gur 10kg është në skajin e majtë (2m). Sa kg duhet të jetë guri në distancën 1m djathtas?\",\n            formula: \"m1 \\u00d7 d1 = m2 \\u00d7 d2\",\n            data: \"m1=10kg, d1=2m | d2=1m\",\n            goal: 20,\n            unit: \"kg\"\n        }\n    ];\n\n    function draw() {\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        const l = levels[level-1];\n\n        if(level === 3 || level === 5) { // Vizatimi i Levës\n            ctx.strokeStyle = \"white\"; ctx.lineWidth = 6;\n            ctx.beginPath(); ctx.moveTo(150, 200); ctx.lineTo(650, 200); ctx.stroke();\n            ctx.fillStyle = \"#475569\";\n            ctx.beginPath(); ctx.moveTo(400, 200); ctx.lineTo(375, 250); ctx.lineTo(425, 250); ctx.fill();\n        } else { // Vizatimi i Impulsit\n            ctx.fillStyle = \"#334155\";\n            ctx.fillRect(0, 250, 800, 50);\n            ctx.fillStyle = varColor();\n            ctx.beginPath();\n            ctx.arc(100 + animFrame, 230, 20, 0, Math.PI*2);\n            ctx.fill();\n            ctx.fillStyle = \"#ef4444\";\n            ctx.fillRect(750, 180, 15, 70);\n        }\n    }\n\n    function varColor() {\n        return level % 2 === 0 ? \"#a855f7\" : \"#00f2fe\";\n    }\n\n    function checkAnswer() {\n        const val = parseFloat(document.getElementById(\"user-input\").value);\n        const current = levels[level-1];\n        const feedback = document.getElementById(\"feedback\");\n\n        if(val === current.goal) {\n            feedback.style.color = \"var(--success)\";\n            feedback.innerText = \"Saktë! Rezultati: \" + current.goal + \" \" + current.unit;\n            animateSuccess();\n        } else {\n            feedback.style.color = \"var(--error)\";\n            feedback.innerText = \"E gabuar. Rishiko formulën!\";\n        }\n    }\n\n    function animateSuccess() {\n        isMoving = true;\n        let start = Date.now();\n        let timer = setInterval(() => {\n            let timePassed = Date.now() - start;\n            if (timePassed >= 1000) {\n                clearInterval(timer);\n                isMoving = false;\n                animFrame = 0;\n                nextLevel();\n            }\n            animFrame += 15;\n            draw();\n        }, 20);\n    }\n\n    function nextLevel() {\n        if(level < levels.length) {\n            level++;\n            initLevel();\n        } else {\n            alert(\"Urime! Ti i kalove të gjitha sfidat e fizikës!\");\n            level = 1;\n            initLevel();\n        }\n    }\n\n    function initLevel() {\n        const l = levels[level-1];\n        document.getElementById(\"lvl-title\").innerText = l.title;\n        document.getElementById(\"lvl-desc\").innerText = l.desc;\n        document.getElementById(\"lvl-formula\").innerText = l.formula;\n        document.getElementById(\"lvl-data\").innerText = \"Të dhënat: \" + l.data;\n        document.getElementById(\"user-input\").value = \"\";\n        document.getElementById(\"feedback\").innerText = \"\";\n        animFrame = 0;\n        draw();\n    }\n\n    initLevel();\n</script>\n</body>\n</html>\n"
+    html: "<!DOCTYPE html>\n<html lang=\"sq\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mësojmë Impulsin dhe Momentin</title>\n    <style>\n        :root {\n            --primary: #00f2fe;\n            --secondary: #4facfe;\n            --accent: #f093fb;\n            --bg: #0f172a;\n            --card: #1e293b;\n            --text: #f8fafc;\n            --success: #22c55e;\n            --error: #ef4444;\n        }\n\n        body {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            background-color: var(--bg);\n            color: var(--text);\n            margin: 0;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            min-height: 100vh;\n        }\n\n        .game-header {\n            margin: 20px 0;\n            text-align: center;\n        }\n\n        .container {\n            width: 90%; max-width: 900px;\n            background: var(--card);\n            padding: 30px;\n            border-radius: 20px;\n            box-shadow: 0 20px 50px rgba(0,0,0,0.5);\n            border: 1px solid rgba(255,255,255,0.1);\n        }\n\n        canvas {\n            background: #020617;\n            border-radius: 15px;\n            width: 100%;\n            height: 300px;\n            border: 2px solid var(--secondary);\n            margin-bottom: 20px;\n        }\n\n        .interface {\n            display: grid;\n            grid-template-columns: 1.2fr 0.8fr;\n            gap: 25px;\n        }\n\n        .level-info {\n            background: rgba(255,255,255,0.03);\n            padding: 20px;\n            border-radius: 12px;\n            border-left: 5px solid var(--primary);\n        }\n\n        .control-panel {\n            background: rgba(255,255,255,0.03);\n            padding: 20px;\n            border-radius: 12px;\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n        }\n\n        h2 { color: var(--primary); margin-top: 0; }\n        \n        .formula-box {\n            background: #000;\n            padding: 10px;\n            border-radius: 8px;\n            color: var(--accent);\n            font-family: 'Courier New', Courier, monospace;\n            font-size: 1.2rem;\n            margin: 10px 0;\n            text-align: center;\n        }\n\n        input {\n            background: #334155;\n            border: 2px solid var(--secondary);\n            color: white;\n            padding: 12px;\n            border-radius: 8px;\n            font-size: 1.1rem;\n            margin-bottom: 10px;\n            outline: none;\n        }\n\n        button {\n            background: linear-gradient(135deg, var(--secondary), var(--primary));\n            border: none;\n            color: white;\n            padding: 15px;\n            border-radius: 8px;\n            font-weight: bold;\n            cursor: pointer;\n            transition: 0.3s;\n            text-transform: uppercase;\n        }\n\n        button:hover {\n            transform: translateY(-2px);\n            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);\n        }\n\n        #feedback {\n            margin-top: 15px;\n            font-weight: bold;\n            height: 20px;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"game-header\">\n        <h1>🚀 Laboratori Virtual i Fizikës</h1>\n        <p>Mjeshtëro Impulsin dhe Momentin përmes sfidave</p>\n    </div>\n\n    <div class=\"container\">\n        <canvas id=\"gameCanvas\" width=\"800\" height=\"300\"></canvas>\n\n        <div class=\"interface\">\n            <div class=\"level-info\">\n                <h2 id=\"lvl-title\">Niveli 1</h2>\n                <p id=\"lvl-desc\">Përshkrimi po ngarkohet...</p>\n                <div class=\"formula-box\" id=\"lvl-formula\">p = m × v</div>\n                <p id=\"lvl-data\">Të dhënat: ...</p>\n            </div>\n\n            <div class=\"control-panel\">\n                <label style=\"margin-bottom: 8px;\">Rezultati yt:</label>\n                <input type=\"number\" id=\"user-input\" placeholder=\"Shëno vlerën...\" step=\"any\">\n                <button onclick=\"checkAnswer()\">Verifiko Fizikën</button>\n                <div id=\"feedback\"></div>\n            </div>\n        </div>\n    </div>\n\n<script>\n    const canvas = document.getElementById(\"gameCanvas\");\n    const ctx = canvas.getContext(\"2d\");\n    let level = 1;\n    let animFrame = 0;\n    let isMoving = false;\n\n    const levels = [\n        {\n            title: \"Niveli 1: Impulsi i Trupit\",\n            desc: \"Një makinë ka masën 1200kg dhe lëviz me shpejtësi 20m/s. Sa është impulsi i saj (p)?\",\n            formula: \"p = m \\u00d7 v\",\n            data: \"m = 1200 kg | v = 20 m/s\",\n            goal: 24000,\n            unit: \"kg·m/s\"\n        },\n        {\n            title: \"Niveli 2: Ruajtja e Impulsit\",\n            desc: \"Sfera A (4kg, 6m/s) godet sferën B (2kg) që është në prehje. Pas goditjes ato lëvizin bashkë. Gjej shpejtësinë finale (V).\",\n            formula: \"m1v1 + m2v2 = (m1+m2)V\",\n            data: \"m1=4kg, v1=6 | m2=2kg, v2=0\",\n            goal: 4,\n            unit: \"m/s\"\n        },\n        {\n            title: \"Niveli 3: Momenti i Forcës\",\n            desc: \"Për të balancuar një levë, një forcë prej 60N vendoset 2m larg qendrës. Sa duhet të jetë forca tjetër në distancë 1.5m?\",\n            formula: \"F1 \\u00d7 d1 = F2 \\u00d7 d2\",\n            data: \"F1=60N, d1=2m | d2=1.5m\",\n            goal: 80,\n            unit: \"N\"\n        },\n        {\n            title: \"Niveli 4: Impulsi i Forcës (Impulsi)\",\n            desc: \"Një lojtar godet topin me një forcë 150N për një kohë prej 0.2 sekonda. Sa është ndryshimi i impulsit (\\u0394p)?\",\n            formula: \"I = F \\u00d7 \\u0394t = \\u0394p\",\n            data: \"F = 150 N | \\u0394t = 0.2 s\",\n            goal: 30,\n            unit: \"kg·m/s\"\n        },\n        {\n            title: \"Niveli 5: Ekuilibri i Momenteve\",\n            desc: \"Një dërrasë 4m e gjatë ka mbështetjen në mes. Një gur 10kg është në skajin e majtë (2m). Sa kg duhet të jetë guri në distancën 1m djathtas?\",\n            formula: \"m1 \\u00d7 d1 = m2 \\u00d7 d2\",\n            data: \"m1=10kg, d1=2m | d2=1m\",\n            goal: 20,\n            unit: \"kg\"\n        }\n    ];\n\n    function draw() {\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        const l = levels[level-1];\n\n        if(level === 3 || level === 5) { // Vizatimi i Levës\n            ctx.strokeStyle = \"white\"; ctx.lineWidth = 6;\n            ctx.beginPath(); ctx.moveTo(150, 200); ctx.lineTo(650, 200); ctx.stroke();\n            ctx.fillStyle = \"#475569\";\n            ctx.beginPath(); ctx.moveTo(400, 200); ctx.lineTo(375, 250); ctx.lineTo(425, 250); ctx.fill();\n        } else { // Vizatimi i Impulsit\n            ctx.fillStyle = \"#334155\";\n            ctx.fillRect(0, 250, 800, 50);\n            ctx.fillStyle = varColor();\n            ctx.beginPath();\n            ctx.arc(100 + animFrame, 230, 20, 0, Math.PI*2);\n            ctx.fill();\n            ctx.fillStyle = \"#ef4444\";\n            ctx.fillRect(750, 180, 15, 70);\n        }\n    }\n\n    function varColor() {\n        return level % 2 === 0 ? \"#a855f7\" : \"#00f2fe\";\n    }\n\n    function checkAnswer() {\n        const val = parseFloat(document.getElementById(\"user-input\").value);\n        const current = levels[level-1];\n        const feedback = document.getElementById(\"feedback\");\n\n        if(val === current.goal) {\n            feedback.style.color = \"var(--success)\";\n            feedback.innerText = \"Saktë! Rezultati: \" + current.goal + \" \" + current.unit;\n            animateSuccess();\n        } else {\n            feedback.style.color = \"var(--error)\";\n            feedback.innerText = \"E gabuar. Rishiko formulën!\";\n        }\n    }\n\n    function animateSuccess() {\n        isMoving = true;\n        let start = Date.now();\n        let timer = setInterval(() => {\n            let timePassed = Date.now() - start;\n            if (timePassed >= 1000) {\n                clearInterval(timer);\n                isMoving = false;\n                animFrame = 0;\n                nextLevel();\n            }\n            animFrame += 15;\n            draw();\n        }, 20);\n    }\n\n    function nextLevel() {\n        if(level < levels.length) {\n            level++;\n            initLevel();\n        } else {\n            alert(\"Urime! Ti i kalove të gjitha sfidat e fizikës!\");\n            level = 1;\n            initLevel();\n        }\n    }\n\n    function initLevel() {\n        const l = levels[level-1];\n        document.getElementById(\"lvl-title\").innerText = l.title;\n        document.getElementById(\"lvl-desc\").innerText = l.desc;\n        document.getElementById(\"lvl-formula\").innerText = l.formula;\n        document.getElementById(\"lvl-data\").innerText = \"Të dhënat: \" + l.data;\n        document.getElementById(\"user-input\").value = \"\";\n        document.getElementById(\"feedback\").innerText = \"\";\n        animFrame = 0;\n        draw();\n    }\n\n    initLevel();\n</script>\n</body>\n</html>\n"
   },
   {
     id: "energy-modul",
     title: "Energjia Fizike: Moduli 10",
     category: "Energjia",
     type: "digital",
-    html: "<!DOCTYPE html>\n<html lang=\"sq\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Energjia Fizike: Moduli 10</title>\n    <style>\n        :root {\n            --bg: #0b0e14;\n            --card: #161b22;\n            --accent-pink: #d4a5b2; \n            --accent-purple: #7c5cb2;\n            --text-main: #e6edf3;\n            --border: #30363d;\n            --success: #238636;\n        }\n\n        body {\n            font-family: 'Inter', sans-serif;\n            background-color: var(--bg);\n            color: var(--text-main);\n            margin: 0;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            padding: 40px;\n        }\n\n        .container {\n            width: 850px;\n            background: var(--card);\n            border: 1px solid var(--border);\n            border-radius: 12px;\n            padding: 35px;\n            box-shadow: 0 10px 30px rgba(0,0,0,0.5);\n        }\n\n        h1 {\n            color: var(--accent-pink);\n            font-weight: 300;\n            letter-spacing: 2px;\n            text-transform: uppercase;\n            font-size: 1.4rem;\n            margin-bottom: 25px;\n        }\n\n        canvas {\n            background: #0d1117;\n            border: 1px solid var(--border);\n            border-radius: 8px;\n            width: 100%;\n            height: 300px;\n        }\n\n        .interface {\n            display: grid;\n            grid-template-columns: 1.2fr 0.8fr;\n            gap: 25px;\n            margin-top: 30px;\n        }\n\n        .task-box {\n            background: rgba(255, 255, 255, 0.02);\n            padding: 20px;\n            border-radius: 8px;\n            border-left: 3px solid var(--accent-pink);\n        }\n\n        .formula-display {\n            display: block;\n            margin: 15px 0;\n            font-family: \"Times New Roman\", serif;\n            font-size: 1.4rem;\n            color: var(--accent-pink);\n            background: rgba(0,0,0,0.3);\n            padding: 10px;\n            border-radius: 5px;\n            text-align: center;\n        }\n\n        input {\n            background: #0d1117;\n            border: 1px solid var(--border);\n            color: white;\n            padding: 15px;\n            border-radius: 6px;\n            width: 100%;\n            margin-bottom: 15px;\n            box-sizing: border-box;\n            font-size: 1rem;\n        }\n\n        button {\n            background: transparent;\n            border: 1px solid var(--accent-pink);\n            color: var(--accent-pink);\n            padding: 15px;\n            width: 100%;\n            border-radius: 6px;\n            cursor: pointer;\n            transition: 0.3s;\n            text-transform: uppercase;\n            font-weight: bold;\n        }\n\n        button:hover {\n            background: var(--accent-pink);\n            color: var(--bg);\n        }\n\n        #feedback {\n            margin-top: 15px;\n            font-size: 0.95rem;\n            font-weight: 500;\n        }\n    </style>\n</head>\n<body>\n\n    <h1>Laboratori Virtual i Energjisë</h1>\n\n    <div class=\"container\">\n        <canvas id=\"canvas\" width=\"800\" height=\"300\"></canvas>\n\n        <div class=\"interface\">\n            <div class=\"task-box\">\n                <h2 id=\"lvl-name\" style=\"margin:0; font-size:1.1rem;\">Niveli 1</h2>\n                <p id=\"lvl-desc\" style=\"color: #8b949e;\"></p>\n                <div class=\"formula-display\" id=\"lvl-formula\"></div>\n                <p id=\"lvl-data\" style=\"font-weight: bold; color: var(--accent-purple);\"></p>\n            </div>\n\n            <div class=\"input-section\">\n                <input type=\"number\" id=\"answer\" placeholder=\"Shëno vlerën (J)...\">\n                <button onclick=\"check()\">Verifiko Rezultatin</button>\n                <div id=\"feedback\"></div>\n            </div>\n        </div>\n    </div>\n\n<script>\n    const canvas = document.getElementById(\"canvas\");\n    const ctx = canvas.getContext(\"2d\");\n    \n    let level = 1;\n    let animPos = 0;\n    let animId;\n\n    const levels = [\n        {\n            name: \"Niveli 1: Energjia Potenciale Gravitacionale\",\n            desc: \"Llogarit Ep për një sferë në lartësi.\",\n            formula: \"E_p = m \\u22c5 g \\u22c5 h\",\n            data: \"m = 5 kg | h = 8 m | g = 10 m/s\\u00b2\",\n            goal: 400,\n            type: \"p\"\n        },\n        {\n            name: \"Niveli 2: Energjia Kinetike\",\n            desc: \"Llogarit Ek për trupin në lëvizje.\",\n            formula: \"E_k = \\u00bd \\u22c5 m \\u22c5 v\\u00b2\",\n            data: \"m = 4 kg | v = 10 m/s\",\n            goal: 200, // 0.5 * 4 * 100\n            type: \"k\"\n        },\n        {\n            name: \"Niveli 3: Puna dhe Energjia\",\n            desc: \"Sa është lartësia (h) nëse E_p = 600 J?\",\n            formula: \"h = E_p / (m \\u22c5 g)\",\n            data: \"E_p = 600 J | m = 3 kg | g = 10 m/s\\u00b2\",\n            goal: 20,\n            type: \"p\"\n        },\n        {\n            name: \"Niveli 4: Shpejtësia nga Energjia\",\n            desc: \"Gjej shpejtësinë (v) duke përdorur E_k.\",\n            formula: \"v = \\u221a(2E_k / m)\",\n            data: \"E_k = 100 J | m = 2 kg\",\n            goal: 10, // sqrt(200/2)\n            type: \"k\"\n        },\n        {\n            name: \"Niveli 5: Ruajtja e Energjisë\",\n            desc: \"Gjej Ep nëse Ek = 150J dhe Etot = 500J.\",\n            formula: \"E_{tot} = E_k + E_p\",\n            data: \"E_{tot} = 500 J | E_k = 150 J\",\n            goal: 350,\n            type: \"p\"\n        }\n    ];\n\n    function draw(offset = 0) {\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        const l = levels[level-1];\n\n        // Toka\n        ctx.strokeStyle = \"#30363d\";\n        ctx.lineWidth = 2;\n        ctx.beginPath(); ctx.moveTo(50, 250); ctx.lineTo(750, 250); ctx.stroke();\n\n        ctx.fillStyle = \"#d4a5b2\";\n        if(l.type === \"p\") {\n            // Animimi i rënies (Potenciale)\n            ctx.beginPath();\n            ctx.arc(400, 60 + offset, 15, 0, Math.PI*2);\n            ctx.fill();\n            // Vijë lartësie\n            ctx.strokeStyle = \"#7c5cb2\";\n            ctx.setLineDash([5, 5]);\n            ctx.beginPath(); ctx.moveTo(400, 60 + offset); ctx.lineTo(400, 250); ctx.stroke();\n            ctx.setLineDash([]);\n        } else {\n            // Animimi i lëvizjes (Kinetike)\n            ctx.beginPath();\n            ctx.arc(100 + offset, 235, 15, 0, Math.PI*2);\n            ctx.fill();\n            // Efekti i shpejtësisë\n            ctx.fillStyle = \"rgba(212, 165, 178, 0.3)\";\n            ctx.fillRect(80 + offset, 230, -20, 10);\n        }\n    }\n\n    function check() {\n        const val = parseFloat(document.getElementById(\"answer\").value);\n        const current = levels[level-1];\n        const feedback = document.getElementById(\"feedback\");\n\n        if(Math.abs(val - current.goal) < 0.1) {\n            feedback.style.color = \"#238636\";\n            feedback.innerText = \"Saktë! Simulimi po ekzekutohet...\";\n            animateAction();\n        } else {\n            feedback.style.color = \"#f85149\";\n            feedback.innerText = \"E gabuar. Kontrollo llogaritjen e v\\u00b2 ose produktin mgh.\";\n        }\n    }\n\n    function animateAction() {\n        let start = 0;\n        cancelAnimationFrame(animId);\n        function step() {\n            start += 8;\n            draw(start);\n            if(start < 190) {\n                animId = requestAnimationFrame(step);\n            } else {\n                setTimeout(() => {\n                    level = (level < 5) ? level + 1 : 1;\n                    init();\n                }, 800);\n            }\n        }\n        step();\n    }\n\n    function init() {\n        const l = levels[level-1];\n        document.getElementById(\"lvl-name\").innerText = l.name;\n        document.getElementById(\"lvl-desc\").innerText = l.desc;\n        document.getElementById(\"lvl-formula\").innerText = l.formula;\n        document.getElementById(\"lvl-data\").innerText = l.data;\n        document.getElementById(\"answer\").value = \"\";\n        document.getElementById(\"feedback\").innerText = \"\";\n        draw();\n    }\n\n    init();\n</script>\n</body>\n</html>\n"
+    html: "<!DOCTYPE html>\n<html lang=\"sq\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Energjia Fizike: Moduli 10</title>\n    <style>\n        :root {\n            --bg: #0b0e14;\n            --card: #161b22;\n            --accent-pink: #d4a5b2; \n            --accent-purple: #7c5cb2;\n            --text-main: #e6edf3;\n            --border: #30363d;\n            --success: #238636;\n        }\n\n        body {\n            font-family: 'Inter', sans-serif;\n            background-color: var(--bg);\n            color: var(--text-main);\n            margin: 0;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            padding: 40px;\n        }\n\n        .container {\n            width: 90%; max-width: 850px;\n            background: var(--card);\n            border: 1px solid var(--border);\n            border-radius: 12px;\n            padding: 35px;\n            box-shadow: 0 10px 30px rgba(0,0,0,0.5);\n        }\n\n        h1 {\n            color: var(--accent-pink);\n            font-weight: 300;\n            letter-spacing: 2px;\n            text-transform: uppercase;\n            font-size: 1.4rem;\n            margin-bottom: 25px;\n        }\n\n        canvas {\n            background: #0d1117;\n            border: 1px solid var(--border);\n            border-radius: 8px;\n            width: 100%;\n            height: 300px;\n        }\n\n        .interface {\n            display: grid;\n            grid-template-columns: 1.2fr 0.8fr;\n            gap: 25px;\n            margin-top: 30px;\n        }\n\n        .task-box {\n            background: rgba(255, 255, 255, 0.02);\n            padding: 20px;\n            border-radius: 8px;\n            border-left: 3px solid var(--accent-pink);\n        }\n\n        .formula-display {\n            display: block;\n            margin: 15px 0;\n            font-family: \"Times New Roman\", serif;\n            font-size: 1.4rem;\n            color: var(--accent-pink);\n            background: rgba(0,0,0,0.3);\n            padding: 10px;\n            border-radius: 5px;\n            text-align: center;\n        }\n\n        input {\n            background: #0d1117;\n            border: 1px solid var(--border);\n            color: white;\n            padding: 15px;\n            border-radius: 6px;\n            width: 100%;\n            margin-bottom: 15px;\n            box-sizing: border-box;\n            font-size: 1rem;\n        }\n\n        button {\n            background: transparent;\n            border: 1px solid var(--accent-pink);\n            color: var(--accent-pink);\n            padding: 15px;\n            width: 100%;\n            border-radius: 6px;\n            cursor: pointer;\n            transition: 0.3s;\n            text-transform: uppercase;\n            font-weight: bold;\n        }\n\n        button:hover {\n            background: var(--accent-pink);\n            color: var(--bg);\n        }\n\n        #feedback {\n            margin-top: 15px;\n            font-size: 0.95rem;\n            font-weight: 500;\n        }\n    </style>\n</head>\n<body>\n\n    <h1>Laboratori Virtual i Energjisë</h1>\n\n    <div class=\"container\">\n        <canvas id=\"canvas\" width=\"800\" height=\"300\"></canvas>\n\n        <div class=\"interface\">\n            <div class=\"task-box\">\n                <h2 id=\"lvl-name\" style=\"margin:0; font-size:1.1rem;\">Niveli 1</h2>\n                <p id=\"lvl-desc\" style=\"color: #8b949e;\"></p>\n                <div class=\"formula-display\" id=\"lvl-formula\"></div>\n                <p id=\"lvl-data\" style=\"font-weight: bold; color: var(--accent-purple);\"></p>\n            </div>\n\n            <div class=\"input-section\">\n                <input type=\"number\" id=\"answer\" placeholder=\"Shëno vlerën (J)...\">\n                <button onclick=\"check()\">Verifiko Rezultatin</button>\n                <div id=\"feedback\"></div>\n            </div>\n        </div>\n    </div>\n\n<script>\n    const canvas = document.getElementById(\"canvas\");\n    const ctx = canvas.getContext(\"2d\");\n    \n    let level = 1;\n    let animPos = 0;\n    let animId;\n\n    const levels = [\n        {\n            name: \"Niveli 1: Energjia Potenciale Gravitacionale\",\n            desc: \"Llogarit Ep për një sferë në lartësi.\",\n            formula: \"E_p = m \\u22c5 g \\u22c5 h\",\n            data: \"m = 5 kg | h = 8 m | g = 10 m/s\\u00b2\",\n            goal: 400,\n            type: \"p\"\n        },\n        {\n            name: \"Niveli 2: Energjia Kinetike\",\n            desc: \"Llogarit Ek për trupin në lëvizje.\",\n            formula: \"E_k = \\u00bd \\u22c5 m \\u22c5 v\\u00b2\",\n            data: \"m = 4 kg | v = 10 m/s\",\n            goal: 200, // 0.5 * 4 * 100\n            type: \"k\"\n        },\n        {\n            name: \"Niveli 3: Puna dhe Energjia\",\n            desc: \"Sa është lartësia (h) nëse E_p = 600 J?\",\n            formula: \"h = E_p / (m \\u22c5 g)\",\n            data: \"E_p = 600 J | m = 3 kg | g = 10 m/s\\u00b2\",\n            goal: 20,\n            type: \"p\"\n        },\n        {\n            name: \"Niveli 4: Shpejtësia nga Energjia\",\n            desc: \"Gjej shpejtësinë (v) duke përdorur E_k.\",\n            formula: \"v = \\u221a(2E_k / m)\",\n            data: \"E_k = 100 J | m = 2 kg\",\n            goal: 10, // sqrt(200/2)\n            type: \"k\"\n        },\n        {\n            name: \"Niveli 5: Ruajtja e Energjisë\",\n            desc: \"Gjej Ep nëse Ek = 150J dhe Etot = 500J.\",\n            formula: \"E_{tot} = E_k + E_p\",\n            data: \"E_{tot} = 500 J | E_k = 150 J\",\n            goal: 350,\n            type: \"p\"\n        }\n    ];\n\n    function draw(offset = 0) {\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        const l = levels[level-1];\n\n        // Toka\n        ctx.strokeStyle = \"#30363d\";\n        ctx.lineWidth = 2;\n        ctx.beginPath(); ctx.moveTo(50, 250); ctx.lineTo(750, 250); ctx.stroke();\n\n        ctx.fillStyle = \"#d4a5b2\";\n        if(l.type === \"p\") {\n            // Animimi i rënies (Potenciale)\n            ctx.beginPath();\n            ctx.arc(400, 60 + offset, 15, 0, Math.PI*2);\n            ctx.fill();\n            // Vijë lartësie\n            ctx.strokeStyle = \"#7c5cb2\";\n            ctx.setLineDash([5, 5]);\n            ctx.beginPath(); ctx.moveTo(400, 60 + offset); ctx.lineTo(400, 250); ctx.stroke();\n            ctx.setLineDash([]);\n        } else {\n            // Animimi i lëvizjes (Kinetike)\n            ctx.beginPath();\n            ctx.arc(100 + offset, 235, 15, 0, Math.PI*2);\n            ctx.fill();\n            // Efekti i shpejtësisë\n            ctx.fillStyle = \"rgba(212, 165, 178, 0.3)\";\n            ctx.fillRect(80 + offset, 230, -20, 10);\n        }\n    }\n\n    function check() {\n        const val = parseFloat(document.getElementById(\"answer\").value);\n        const current = levels[level-1];\n        const feedback = document.getElementById(\"feedback\");\n\n        if(Math.abs(val - current.goal) < 0.1) {\n            feedback.style.color = \"#238636\";\n            feedback.innerText = \"Saktë! Simulimi po ekzekutohet...\";\n            animateAction();\n        } else {\n            feedback.style.color = \"#f85149\";\n            feedback.innerText = \"E gabuar. Kontrollo llogaritjen e v\\u00b2 ose produktin mgh.\";\n        }\n    }\n\n    function animateAction() {\n        let start = 0;\n        cancelAnimationFrame(animId);\n        function step() {\n            start += 8;\n            draw(start);\n            if(start < 190) {\n                animId = requestAnimationFrame(step);\n            } else {\n                setTimeout(() => {\n                    level = (level < 5) ? level + 1 : 1;\n                    init();\n                }, 800);\n            }\n        }\n        step();\n    }\n\n    function init() {\n        const l = levels[level-1];\n        document.getElementById(\"lvl-name\").innerText = l.name;\n        document.getElementById(\"lvl-desc\").innerText = l.desc;\n        document.getElementById(\"lvl-formula\").innerText = l.formula;\n        document.getElementById(\"lvl-data\").innerText = l.data;\n        document.getElementById(\"answer\").value = \"\";\n        document.getElementById(\"feedback\").innerText = \"\";\n        draw();\n    }\n\n    init();\n</script>\n</body>\n</html>\n"
   },
   {
     id: "zhvendosja-quiz",
@@ -324,7 +324,7 @@ export const DIGITAL_GAMES: DigitalGame[] = [
         #zone-A { border-color: var(--blue); box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.1); }
         #zone-B { border-color: var(--red); box-shadow: inset 0 0 30px rgba(255, 0, 85, 0.1); }
         .zone-title { font-family: 'Orbitron'; font-size: 1.5rem; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; }
-        .pool { width: 300px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 12px; background: rgba(255,255,255,0.03); border-radius: 30px; }
+        .pool { width: 100%; max-width: 300px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 12px; background: rgba(255,255,255,0.03); border-radius: 30px; }
         .item { padding: 18px 22px; background: white; color: #000; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; touch-action: none; user-select: none; box-shadow: 0 6px 0 #bbb; transition: 0.1s; z-index: 100; text-align: center; }
         .slot { display: inline-block; padding: 10px 15px; margin: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; font-size: 0.9rem; color: #fff; animation: emerge 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes emerge { from { transform: scale(0) rotate(-10deg); } to { transform: scale(1) rotate(0); } }
@@ -1624,7 +1624,7 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     <title>Mbrojtësi i Rezistencës</title>
     <style>
         body { margin: 0; background: #0a0a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #game-container { position: relative; width: 600px; height: 400px; border: 2px solid #00f2fe; border-radius: 15px; background: rgba(0,0,0,0.5); overflow: hidden; }
+        #game-container { position: relative; width: 100%; max-width: 600px; height: 60vh; max-height: 400px; border: 2px solid #00f2fe; border-radius: 15px; background: rgba(0,0,0,0.5); overflow: hidden; }
         .enemy { position: absolute; width: 40px; height: 40px; background: #ff0055; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: top 0.1s linear; }
         #player { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 20px; background: #00f2fe; border-radius: 5px; }
         #score { position: absolute; top: 10px; left: 10px; font-size: 20px; }
@@ -1772,8 +1772,8 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     <title>Mjeshtri i Rrjetit</title>
     <style>
         body { background: #111; color: #0f0; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; }
-        .node { width: 100px; height: 100px; border: 2px solid #0f0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.3s; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 90%; max-width: 320px; }
+        .node { aspect-ratio: 1/1; width: 100%; border: 2px solid #0f0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.3s; }
         .node.active { background: #0f0; color: #000; box-shadow: 0 0 20px #0f0; }
         #status { margin-top: 20px; font-size: 20px; }
     </style>
@@ -1817,7 +1817,7 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     <title>Stabilizuesi i Tensionit</title>
     <style>
         body { background: #000; color: #00ff00; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        #meter { width: 300px; height: 30px; border: 2px solid #00ff00; position: relative; }
+        #meter { width: 100%; max-width: 300px; height: 30px; border: 2px solid #00ff00; position: relative; }
         #pointer { width: 4px; height: 40px; background: red; position: absolute; top: -5px; left: 50%; transition: left 0.1s; }
         #target { width: 40px; height: 30px; background: rgba(0,255,0,0.3); position: absolute; left: 130px; }
         button { margin-top: 20px; padding: 10px 20px; background: #00ff00; border: none; cursor: pointer; font-weight: bold; }
@@ -2293,7 +2293,7 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     <style>
         body { background: #000; color: #0ff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         h1 { text-shadow: 0 0 10px #0ff; }
-        .game-area { width: 400px; height: 400px; border: 2px solid #0ff; position: relative; overflow: hidden; }
+        .game-area { width: 100%; max-width: 400px; height: 90vw; max-height: 400px; border: 2px solid #0ff; position: relative; overflow: hidden; }
         .player { width: 20px; height: 20px; background: #0f0; position: absolute; bottom: 10px; left: 190px; border-radius: 50%; box-shadow: 0 0 10px #0f0; }
         .enemy { width: 20px; height: 20px; background: #f00; position: absolute; border-radius: 50%; box-shadow: 0 0 10px #f00; }
         #score { font-size: 1.5rem; margin-top: 10px; }
@@ -2387,7 +2387,7 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     <title>Laboratori i Saktësisë</title>
     <style>
         body { background: #e0e5ec; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .container { background: #e0e5ec; padding: 40px; border-radius: 20px; box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5); text-align: center; }
+        .container { background: #e0e5ec; padding: 40px; border-radius: 20px; box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5); text-align: center; width: 90%; max-width: 500px; }
         h1 { color: #2c3e50; }
         .target { width: 100px; height: 100px; background: #e74c3c; border-radius: 50%; margin: 20px auto; cursor: pointer; transition: transform 0.1s; box-shadow: inset 5px 5px 10px rgba(0,0,0,0.2), inset -5px -5px 10px rgba(255,255,255,0.2); }
         .target:active { transform: scale(0.9); }
@@ -2437,6 +2437,2165 @@ export const DIGITAL_GAMES: DigitalGame[] = [
             startBtn.style.display = 'inline-block';
             startBtn.innerText = 'Provo Përsëri';
         }
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "electric-field-master",
+    title: "Electric Field Master",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Field Master</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --accent: #38bdf8;
+            --positive: #ef4444;
+            --negative: #3b82f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            margin-top: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            background: radial-gradient(circle, #1e293b 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        canvas { display: block; cursor: crosshair; }
+
+        .ui-panel {
+            background: var(--panel);
+            padding: 15px 25px;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            border: 1px solid #334155;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-pos { background: var(--positive); color: white; }
+        .btn-neg { background: var(--negative); color: white; }
+        .btn-start { background: #10b981; color: white; }
+        .btn-reset { background: #64748b; color: white; }
+        .btn:hover { opacity: 0.8; transform: scale(1.05); }
+
+        .stats { font-size: 1.1rem; color: var(--accent); }
+        
+        #instructions {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-panel">
+        <div class="stats">Niveli: <span id="lvl">1</span></div>
+        <button class="btn btn-pos" onclick="setMode('pos')">+ Shto Pozitive</button>
+        <button class="btn btn-neg" onclick="setMode('neg')">- Shto Negative</button>
+        <button class="btn btn-start" onclick="startSim()">Lësho Protonin!</button>
+        <button class="btn btn-reset" onclick="resetLevel()">Reset</button>
+    </div>
+
+    <div id="game-container">
+        <div id="instructions">Klikoni në fushë për të vendosur ngarkesat.<br>Drejtoni protonin te rrethi i gjelbër!</div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 500;
+
+    let level = 1;
+    let mode = 'pos';
+    let charges = [];
+    let particle = { x: 50, y: 250, vx: 0, vy: 0, active: false };
+    let target = { x: 750, y: 250, r: 20 };
+    let walls = [];
+    let animationId;
+
+    const levels = [
+        { walls: [], target: {x: 750, y: 250} },
+        { walls: [{x: 400, y: 150, w: 20, h: 200}], target: {x: 750, y: 250} },
+        { walls: [{x: 300, y: 0, w: 20, h: 300}, {x: 500, y: 200, w: 20, h: 300}], target: {x: 750, y: 50} }
+    ];
+
+    function setMode(m) { mode = m; }
+
+    canvas.addEventListener('mousedown', (e) => {
+        if (particle.active) return;
+        const rect = canvas.getBoundingClientRect();
+        charges.push({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+            type: mode,
+            q: mode === 'pos' ? 1 : -1
+        });
+        draw();
+    });
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Vizato Targetin
+        ctx.beginPath();
+        ctx.arc(target.x, target.y, target.r, 0, Math.PI*2);
+        ctx.fillStyle = '#10b981';
+        ctx.fill();
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#10b981';
+
+        // Vizato Muret
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#475569';
+        walls.forEach(w => ctx.fillRect(w.x, w.y, w.w, w.h));
+
+        // Vizato Ngarkesat e vendosura
+        charges.forEach(c => {
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = c.type === 'pos' ? '#ef4444' : '#3b82f6';
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.fillText(c.type === 'pos' ? "+" : "-", c.x-3, c.y+4);
+        });
+
+        // Vizato Protonin
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, 6, 0, Math.PI*2);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fill();
+    }
+
+    function update() {
+        if (!particle.active) return;
+
+        let fx = 0;
+        let fy = 0;
+        const k = 5000; // Konstanta e lojës
+
+        charges.forEach(c => {
+            let dx = particle.x - c.x;
+            let dy = particle.y - c.y;
+            let distSq = dx*dx + dy*dy;
+            let dist = Math.sqrt(distSq);
+            if (dist < 15) dist = 15; // Parandalon shpërthimin e forcës
+
+            let force = (k * c.q) / distSq;
+            fx += (dx / dist) * force;
+            fy += (dy / dist) * force;
+        });
+
+        particle.vx += fx;
+        particle.vy += fy;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        // Kontrolli i përplasjeve
+        if (particle.x < 0 || particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
+            resetAttempt();
+        }
+
+        walls.forEach(w => {
+            if (particle.x > w.x && particle.x < w.x + w.w && particle.y > w.y && particle.y < w.y + w.h) {
+                resetAttempt();
+            }
+        });
+
+        // Fitore
+        let distToTarget = Math.hypot(particle.x - target.x, particle.y - target.y);
+        if (distToTarget < target.r) {
+            alert("Bravo! Niveli u kalua.");
+            level++;
+            loadLevel(level);
+            return;
+        }
+
+        draw();
+        animationId = requestAnimationFrame(update);
+    }
+
+    function startSim() {
+        if (particle.active) return;
+        particle.active = true;
+        update();
+    }
+
+    function resetAttempt() {
+        cancelAnimationFrame(animationId);
+        particle = { x: 50, y: 250, vx: 0, vy: 0, active: false };
+        particle.active = false;
+        draw();
+    }
+
+    function resetLevel() {
+        charges = [];
+        resetAttempt();
+    }
+
+    function loadLevel(n) {
+        if (n > levels.length) {
+            alert("Ti je një Gjini i Fizikës! I fitove të gjitha.");
+            level = 1;
+            n = 1;
+        }
+        document.getElementById('lvl').innerText = n;
+        const config = levels[n-1];
+        walls = config.walls;
+        target.x = config.target.x;
+        target.y = config.target.y;
+        resetLevel();
+    }
+
+    loadLevel(1);
+</script>
+</body>
+</html>`
+  },
+  {
+    id: "potential-master",
+    title: "Potential Master",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Potential Master - Final Fixed</title>
+    <style>
+        :root {
+            --cyan: #00f3ff;
+            --rose: #ff0055;
+            --dark: #050505;
+        }
+
+        body {
+            margin: 0;
+            background: var(--dark);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #ui {
+            width: 300px;
+            background: #0a0a0a;
+            border-right: 1px solid #222;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .level-card {
+            background: #111;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--cyan);
+        }
+
+        #game-area { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; cursor: crosshair; }
+
+        .btn {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #151515;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn:hover { border-color: var(--cyan); }
+        .active-q { border-color: var(--cyan) !important; background: #002222; }
+
+        /* RREGULLIMI I FORMULES NE FUND */
+        .formula-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #222;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .math-fraction {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        .fraction-top { border-bottom: 1px solid white; padding: 0 5px; }
+        .fraction-bottom { padding: 0 5px; }
+
+        #multimeter {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--cyan);
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            pointer-events: none;
+            display: none;
+        }
+
+        .success-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #00ff88;
+            color: black;
+            padding: 25px 50px;
+            border-radius: 10px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <h2 style="color: var(--cyan); margin: 0; letter-spacing: 1px;">POTENTIAL LAB</h2>
+        
+        <div class="level-card">
+            <div id="lvlNum" style="font-weight: bold;">Niveli 1</div>
+            <div id="lvlGoal" style="font-size: 0.85rem; color: #ffcc00;">Synimi: V > 100V</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button id="posBtn" class="btn active-q" onclick="setQ(1)">+ Pozitive</button>
+            <button id="negBtn" class="btn" onclick="setQ(-1)">- Negative</button>
+            <button class="btn" onclick="resetLevel()" style="margin-top: 10px;">Reset</button>
+        </div>
+
+        <div class="formula-footer">
+            Formula: 
+            <div class="math-fraction">
+                V = 
+                <div style="display: inline-block; vertical-align: middle;">
+                    <div class="fraction-top">E<sub>p</sub></div>
+                    <div class="fraction-bottom">q</div>
+                </div>
+            </div>
+            <br><br>
+            Shtyp mbi fushë për të vendosur burimin.
+        </div>
+    </div>
+
+    <div id="game-area">
+        <canvas id="canvas"></canvas>
+        <div id="multimeter">V: 0.00V</div>
+        <div id="success" class="success-overlay">
+            <h3>NIVELI U KALUA!</h3>
+            <button class="btn" onclick="nextLevel()" style="background: black; border: none;">VAZHDO</button>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const multi = document.getElementById('multimeter');
+    const successDiv = document.getElementById('success');
+
+    let currentLevel = 0;
+    let charges = [];
+    let qType = 1;
+    let width, height;
+
+    const levels = [
+        { goalV: 100, target: {x: 0.7, y: 0.5}, walls: [] },
+        { goalV: -150, target: {x: 0.8, y: 0.2}, walls: [{x: 0.5, y: 0, w: 0.02, h: 0.7}] },
+        { goalV: 200, target: {x: 0.5, y: 0.5}, walls: [{x: 0.3, y: 0.3, w: 0.4, h: 0.02}, {x: 0.3, y: 0.7, w: 0.4, h: 0.02}] }
+    ];
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function setQ(v) {
+        qType = v;
+        document.getElementById('posBtn').classList.toggle('active-q', v > 0);
+        document.getElementById('negBtn').classList.toggle('active-q', v < 0);
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        multi.style.display = 'block';
+        multi.style.left = (mx + 15) + 'px';
+        multi.style.top = (my + 15) + 'px';
+        let V = calculatePotential(mx, my);
+        multi.innerText = 'V: ' + V.toFixed(1) + 'V';
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        if(successDiv.style.display === 'block') return;
+        const rect = canvas.getBoundingClientRect();
+        charges.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, q: qType * 200 });
+    });
+
+    function calculatePotential(px, py) {
+        let V = 0;
+        charges.forEach(c => {
+            let r = Math.hypot(px - c.x, py - c.y) + 20;
+            V += (c.q * 10) / (r * 0.1);
+        });
+        return V;
+    }
+
+    function resetLevel() { charges = []; successDiv.style.display = 'none'; }
+
+    function nextLevel() {
+        currentLevel++;
+        if(currentLevel >= levels.length) { alert("Urime! Keni fituar."); currentLevel = 0; }
+        document.getElementById('lvlNum').innerText = "Niveli " + (currentLevel + 1);
+        document.getElementById('lvlGoal').innerText = 'Synimi: V > ' + levels[currentLevel].goalV + 'V';
+        resetLevel();
+    }
+
+    function draw() {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, width, height);
+        const lvl = levels[currentLevel];
+        ctx.fillStyle = "#222";
+        lvl.walls.forEach(w => ctx.fillRect(w.x * width, w.y * height, w.w * width, w.h * height));
+        const tx = lvl.target.x * width;
+        const ty = lvl.target.y * height;
+        const currentV = calculatePotential(tx, ty);
+        const reached = Math.abs(currentV) >= Math.abs(lvl.goalV);
+        ctx.beginPath();
+        ctx.arc(tx, ty, 35, 0, Math.PI*2);
+        ctx.strokeStyle = reached ? "#00ff88" : "#ffcc00";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText('SENSOR: ' + currentV.toFixed(0) + 'V', tx, ty - 45);
+        charges.forEach(c => {
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = c.q > 0 ? "#ff0055" : "#0088ff";
+            ctx.fill();
+        });
+        if (reached && successDiv.style.display !== 'block') successDiv.style.display = 'block';
+        requestAnimationFrame(draw);
+    }
+    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    draw();
+</script>
+</body>
+</html>`
+  },
+  {
+    id: "induction-master",
+    title: "Induction Master",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Induction Master - I = ε/R</title>
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-red: #ff0077;
+            --grid-color: #1a1a2e;
+        }
+
+        body {
+            margin: 0;
+            background: #050505;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 300px;
+            background: rgba(10, 10, 25, 0.9);
+            border-right: 2px solid var(--neon-blue);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+
+        .level-box {
+            border: 1px solid var(--neon-blue);
+            padding: 15px;
+            background: rgba(0, 242, 255, 0.05);
+            text-align: center;
+        }
+
+        .gauge-container {
+            background: #000;
+            border: 2px solid #333;
+            height: 30px;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        #gauge-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--neon-blue);
+            transition: width 0.1s;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        input[type=range] { width: 100%; accent-color: var(--neon-red); }
+
+        /* FORMULA E SAKTË NË FUND */
+        .formula-card {
+            margin-top: auto;
+            padding: 15px;
+            background: rgba(0,0,0,0.8);
+            border-top: 2px solid var(--neon-red);
+            text-align: center;
+        }
+
+        .math-style {
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        .fraction {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .top { border-bottom: 1px solid var(--neon-blue); padding: 0 5px; }
+        .bottom { padding: 0 5px; }
+
+        #main-view { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; }
+
+        .btn {
+            background: var(--neon-blue);
+            color: #000;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h2 style="color: var(--neon-blue); margin: 0; font-size: 1.2rem;">GEN-CONTROLLER</h2>
+        
+        <div class="level-box">
+            <div id="lvlNum">NIVELI 1</div>
+            <div style="font-size: 0.7rem; margin-top: 5px;">TARGET I: <span id="targetVal">2.00</span> A</div>
+        </div>
+
+        <div class="control-unit">
+            <label style="font-size: 0.7rem;">REZISTENCA (R)</label>
+            <input type="range" id="resistor" min="1" max="10" step="0.5" value="5">
+            <div id="rVal" style="text-align: center;">5.0 Ω</div>
+        </div>
+
+        <div class="gauge-container">
+            <div id="gauge-fill"></div>
+        </div>
+        <div style="text-align: center; font-size: 0.8rem;">RRYMA AKTUALE (I)</div>
+
+        <div class="formula-card">
+            <div style="font-size: 0.7rem; opacity: 0.6;">LIGJI I INDUKSIONIT</div>
+            <div class="math-style">
+                I = 
+                <div class="fraction">
+                    <div class="top">ε</div>
+                    <div class="bottom">R</div>
+                </div>
+            </div>
+            <p style="font-size: 0.7rem;">Lëviz magnetin me shpejtësi për të gjeneruar ε (tension)!</p>
+        </div>
+    </div>
+
+    <div id="main-view">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const resSlider = document.getElementById('resistor');
+    const gauge = document.getElementById('gauge-fill');
+
+    let width, height;
+    let magnetX = 100;
+    let lastMagnetX = 100;
+    let velocity = 0;
+    let currentLevel = 0;
+
+    const levels = [
+        { target: 2.0, r: 5 },
+        { target: 4.5, r: 2 },
+        { target: 1.5, r: 8 }
+    ];
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        magnetX = e.clientX - rect.left;
+    });
+
+    function draw() {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, width, height);
+
+        // Grid background
+        ctx.strokeStyle = "#111";
+        for(let i=0; i<width; i+=50) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
+        }
+
+        // Llogarit ε (FEM) bazuar në shpejtësinë e magnetit
+        velocity = Math.abs(magnetX - lastMagnetX);
+        lastMagnetX = magnetX;
+
+        const epsilon = velocity * 0.5;
+        const R = parseFloat(resSlider.value);
+        const I = epsilon / R;
+
+        document.getElementById('rVal').innerText = R.toFixed(1) + " Ω";
+        gauge.style.width = Math.min(I * 20, 100) + "%";
+
+        // Vizato Spirën (Coil)
+        ctx.strokeStyle = "#555";
+        ctx.lineWidth = 5;
+        for(let i=0; i<5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(width/2, height/2, 40, 100, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Vizato Magnetin
+        ctx.fillStyle = "#ff0077";
+        ctx.fillRect(magnetX - 40, height/2 - 20, 40, 40);
+        ctx.fillStyle = "#ccc";
+        ctx.fillRect(magnetX, height/2 - 20, 40, 40);
+        ctx.fillStyle = "white";
+        ctx.fillText("N", magnetX - 25, height/2 + 5);
+        ctx.fillText("S", magnetX + 15, height/2 + 5);
+
+        // Kontrollo shënjestrën e nivelit
+        const target = levels[currentLevel].target;
+        document.getElementById('targetVal').innerText = target.toFixed(2);
+        
+        if(Math.abs(I - target) < 0.2) {
+            ctx.fillStyle = "#00f2ff";
+            ctx.font = "20px Orbitron";
+            ctx.fillText("STABILIZUAR!", width/2 - 80, 100);
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+</script>
+</body>
+</html>`
+  },
+  {
+    id: "flux-master",
+    title: "Flux Master",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Flux Master - Levels</title>
+    <style>
+        :root {
+            --orange: #ff6b00;
+            --bg: #050505;
+            --card: #111;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #ui {
+            width: 300px;
+            background: #0a0a0a;
+            border-right: 1px solid #222;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .level-card {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--orange);
+        }
+
+        .goal-text { color: var(--orange); font-weight: bold; font-size: 1.1rem; }
+
+        input[type=range] { width: 100%; accent-color: var(--orange); cursor: pointer; }
+
+        /* FORMULA E SAKTË DHE E PASTER */
+        .formula-footer {
+            margin-top: auto;
+            padding: 20px;
+            background: #000;
+            border-radius: 8px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        .math-text {
+            font-size: 1.4rem;
+            color: var(--orange);
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        #viewport { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; }
+
+        .overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            border: 2px solid var(--orange);
+            padding: 30px;
+            text-align: center;
+            display: none;
+            border-radius: 12px;
+        }
+
+        .btn {
+            background: var(--orange);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <h2 style="margin:0; color:var(--orange)">FLUX STATIONS</h2>
+        
+        <div class="level-card">
+            <div id="lvlNum">Niveli 1</div>
+            <div style="font-size: 0.8rem; opacity: 0.6;">OBJEKTIVI:</div>
+            <div id="targetFlux" class="goal-text">3.00 Wb</div>
+        </div>
+
+        <div style="background:#151515; padding:15px; border-radius:8px;">
+            <label style="font-size: 0.7rem; opacity: 0.5;">KONTROLLI I KËNDIT (α)</label>
+            <input type="range" id="angleSlider" min="0" max="90" step="1" value="45">
+            <div id="angleVal" style="text-align:center; margin-top:5px;">45°</div>
+        </div>
+
+        <div style="padding:10px; background:#000; border-radius:8px; font-family:monospace;">
+            Φ Real: <span id="currentFlux">0.00</span> Wb
+        </div>
+
+        <div class="formula-footer">
+            Formula:
+            <div class="math-text">Φ = B · S · cos(α)</div>
+            <p style="font-size: 0.75rem; color: #666;">Përshtat këndin për të kapur fluksin e duhur.</p>
+        </div>
+    </div>
+
+    <div id="viewport">
+        <canvas id="mainCanvas"></canvas>
+        <div id="winOverlay" class="overlay">
+            <h2 style="color:var(--orange)">STACIONI U AKTIVIZUA!</h2>
+            <p>Fluksi magnetik është brenda normës.</p>
+            <button class="btn" onclick="nextLevel()">NIVELI TJETËR</button>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('angleSlider');
+    const winOverlay = document.getElementById('winOverlay');
+
+    let width, height;
+    let currentLevel = 0;
+    
+    // Parametrat e fushës
+    const B = 1.0; 
+    const S = 4.0;
+
+    const levels = [
+        { target: 4.00, desc: "Maksimizo kapjen (0°)" },
+        { target: 2.83, desc: "Kap gjysmën (45°)" },
+        { target: 0.00, desc: "Izolo plotësisht (90°)" }
+    ];
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function nextLevel() {
+        currentLevel++;
+        if(currentLevel >= levels.length) {
+            alert("Urime! Je një Inxhinier i Fluksit!");
+            currentLevel = 0;
+        }
+        document.getElementById('lvlNum').innerText = "Niveli " + (currentLevel + 1);
+        document.getElementById('targetFlux').innerText = levels[currentLevel].target.toFixed(2) + " Wb";
+        winOverlay.style.display = 'none';
+    }
+
+    function draw() {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, width, height);
+
+        const alpha = parseInt(slider.value);
+        document.getElementById('angleVal').innerText = alpha + "°";
+        
+        const rad = alpha * Math.PI / 180;
+        const flux = B * S * Math.cos(rad);
+        document.getElementById('currentFlux').innerText = flux.toFixed(2);
+
+        // Vizato vijat e fushës B
+        ctx.strokeStyle = "rgba(255, 107, 0, 0.15)";
+        for(let i=0; i<height; i+=40) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(width, i);
+            ctx.stroke();
+        }
+
+        // Vizato Spirën (Panelin)
+        ctx.save();
+        ctx.translate(width/2, height/2);
+        ctx.rotate(rad);
+        
+        ctx.fillStyle = "#222";
+        ctx.strokeStyle = "#ff6b00";
+        ctx.lineWidth = 4;
+        ctx.fillRect(-10, -120, 20, 240);
+        ctx.strokeRect(-10, -120, 20, 240);
+        
+        // Vektori Normal S
+        ctx.beginPath();
+        ctx.strokeStyle = "white";
+        ctx.setLineDash([5, 3]);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(100, 0);
+        ctx.stroke();
+        ctx.restore();
+
+        // Kontrollo Fitoren
+        const diff = Math.abs(flux - levels[currentLevel].target);
+        if(diff < 0.05 && winOverlay.style.display !== 'block') {
+            winOverlay.style.display = 'block';
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+</script>
+</body>
+</html>`
+  },
+  {
+    id: "lorentz-force-lab",
+    title: "Lorentz Force Lab",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Lorentz Force Lab</title>
+    <style>
+        :root {
+            --accent: #f0abfc; /* Pink/Purple Astro */
+            --bg: #020617;
+            --panel: rgba(15, 23, 42, 0.8);
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+
+        #sidebar {
+            width: 320px;
+            background: var(--panel);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(240, 171, 252, 0.2);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .level-display {
+            background: linear-gradient(45deg, #2e1065, #701a75);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--accent);
+        }
+
+        .control-group {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        input[type=range] { width: 100%; accent-color: var(--accent); }
+
+        /* FORMULA E SAKTË NË FUND */
+        .formula-footer {
+            margin-top: auto;
+            background: rgba(240, 171, 252, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--accent);
+        }
+
+        .formula-text {
+            font-size: 1.3rem;
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        #viewport { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; }
+
+        .btn {
+            background: var(--accent);
+            color: black;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover { opacity: 0.8; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h2 style="margin: 0; color: var(--accent);">LORENTZ PRO</h2>
+        
+        <div class="level-display">
+            <div style="font-size: 0.8rem; opacity: 0.8;">SITUATA</div>
+            <div id="lvlName" style="font-size: 1.2rem; font-weight: bold;">Niveli 1: Devijimi</div>
+        </div>
+
+        <div class="control-group">
+            <label class="label">Fusha Magnetike (B)</label>
+            <input type="range" id="bRange" min="-5" max="5" step="0.1" value="0">
+            <div id="bVal" style="text-align: center; color: var(--accent);">0.00 T</div>
+        </div>
+
+        <button class="btn" onclick="fireParticle()">LËSHO GRIMCËN</button>
+        <button class="btn" onclick="resetLevel()" style="background: transparent; color: white; border: 1px solid white;">RESET</button>
+
+        <div class="formula-footer">
+            <div style="font-size: 0.7rem; opacity: 0.7; margin-bottom: 5px;">FORCA E LORENCIT:</div>
+            <div class="formula-text">F = q · v · B · sin(α)</div>
+            <p style="font-size: 0.75rem; margin-top: 10px;">Gjej fushën B që grimca të godasë cakun!</p>
+        </div>
+    </div>
+
+    <div id="viewport">
+        <canvas id="canvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const bRange = document.getElementById('bRange');
+    
+    let width, height;
+    let particle = { x: 50, y: 0, vx: 5, vy: 0, active: false, path: [] };
+    let target = { x: 0, y: 0, r: 25 };
+    let currentLevel = 0;
+    
+    const levels = [
+        { y: 0.5, ty: 0.2, v: 6 },
+        { y: 0.8, ty: 0.3, v: 8 },
+        { y: 0.2, ty: 0.8, v: 10 }
+    ];
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+        loadLevel();
+    }
+    window.addEventListener('resize', resize);
+
+    function loadLevel() {
+        const l = levels[currentLevel];
+        particle.y = l.y * height;
+        particle.vx = l.v;
+        target.x = width - 100;
+        target.y = l.ty * height;
+        resetParticle();
+    }
+
+    function resetParticle() {
+        particle.x = 50;
+        particle.y = levels[currentLevel].y * height;
+        particle.vy = 0;
+        particle.active = false;
+        particle.path = [];
+    }
+
+    function fireParticle() {
+        resetParticle();
+        particle.active = true;
+    }
+
+    function resetLevel() { resetParticle(); }
+
+    function draw() {
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, width, height);
+
+        // Vizato targetin
+        ctx.beginPath();
+        ctx.arc(target.x, target.y, target.r, 0, Math.PI*2);
+        ctx.strokeStyle = "#f0abfc";
+        ctx.setLineDash([5, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Vizato B field (Crosses or Dots)
+        const B = parseFloat(bRange.value);
+        document.getElementById('bVal').innerText = B.toFixed(2) + " T";
+        
+        ctx.fillStyle = "rgba(240, 171, 252, 0.05)";
+        if(B !== 0) {
+            for(let i=0; i<width; i+=100) {
+                for(let j=0; j<height; j+=100) {
+                    ctx.fillText(B > 0 ? "×" : "•", i, j);
+                }
+            }
+        }
+
+        if(particle.active) {
+            // Logjika e Fizikës: F = qvB (sin alfa këtu është 1 sepse B është pingul me ekranin)
+            // r = mv/qB -> për thjeshtësi, ndryshojmë drejtimin e vy
+            const force = particle.vx * B * 0.05;
+            particle.vy += force;
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.path.push({x: particle.x, y: particle.y});
+
+            // Vizato rrugëtimin
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(240, 171, 252, 0.5)";
+            particle.path.forEach((p, i) => {
+                if(i===0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            });
+            ctx.stroke();
+
+            // Kontrolli i goditjes
+            let dist = Math.hypot(particle.x - target.x, particle.y - target.y);
+            if(dist < target.r) {
+                alert("GODITJE E SAKTË!");
+                currentLevel = (currentLevel + 1) % levels.length;
+                loadLevel();
+            }
+            
+            if(particle.x > width || particle.y < 0 || particle.y > height) {
+                particle.active = false;
+            }
+        }
+
+        // Vizato grimcën
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, 6, 0, Math.PI*2);
+        ctx.fillStyle = "#fff";
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "#f0abfc";
+        ctx.fill();
+
+        requestAnimationFrame(draw);
+    }
+
+    resize();
+    draw();
+</script>
+</body>
+</html>`
+  },
+  {
+    id: "amperes-force-defender",
+    title: "Ampere's Force Defender",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Ampere's Force Defender</title>
+    <style>
+        :root {
+            --neon-green: #00ff9d;
+            --radar-bg: #0b1110;
+            --wire-gold: #ffcc33;
+        }
+
+        body {
+            margin: 0;
+            background: var(--radar-bg);
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            height: 100vh;
+        }
+
+        #ui-sidebar {
+            width: 300px;
+            background: rgba(0, 20, 20, 0.9);
+            border-right: 2px solid var(--neon-green);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 20px rgba(0, 255, 157, 0.1);
+        }
+
+        .display-panel {
+            background: #000;
+            border: 1px solid #004422;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .label { font-size: 0.75rem; color: var(--neon-green); opacity: 0.7; }
+        .value { font-size: 1.4rem; color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
+
+        /* Formula e pastër në fund */
+        .formula-box {
+            margin-top: auto;
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border: 1px dashed var(--neon-green);
+            text-align: center;
+        }
+
+        .math-fraction {
+            font-size: 1.4rem;
+            color: white;
+            margin: 10px 0;
+        }
+
+        #game-container { flex-grow: 1; position: relative; overflow: hidden; }
+        canvas { width: 100%; height: 100%; }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .btn:hover { background: var(--neon-green); color: black; }
+    </style>
+</head>
+<body>
+
+    <div id="ui-sidebar">
+        <h2 style="color: var(--neon-green); margin: 0 0 20px 0;">FORCE RADAR</h2>
+
+        <div class="display-panel">
+            <div class="label">KËNDI (α)</div>
+            <div id="angle-val" class="value">0°</div>
+        </div>
+
+        <div class="display-panel">
+            <div class="label">FORCA E AMPERIT (F)</div>
+            <div id="force-val" class="value">0.00 N</div>
+        </div>
+
+        <div style="font-size: 0.8rem; color: #888;">
+            Udhëzim: Rrotulloni përcjellësin me miun. Forca është maksimale kur ai është pingul me fushën (B).
+        </div>
+
+        <div class="formula-box">
+            <div style="font-size: 0.7rem; color: var(--neon-green);">FORMULA:</div>
+            <div class="math-fraction">
+                F = B · I · L · sin(α)
+            </div>
+            <div style="font-size: 0.7rem;">Përcaktoni forcën mbi përcjellës</div>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="radarCanvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('radarCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    
+    // Konstante Fizike
+    const B = 0.5; // Fusha Magnetike (Tesla)
+    const I = 10;  // Rryma (Amper)
+    const L = 2;   // Gjatësia (Metra)
+    
+    let angle = 0; // Këndi në gradë
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        
+        // Llogarit këndin në raport me fushën B (horizontale)
+        const dx = mx - width/2;
+        const dy = my - height/2;
+        angle = Math.abs(Math.atan2(dy, dx) * 180 / Math.PI);
+        if (angle > 180) angle = 180;
+    });
+
+    function draw() {
+        ctx.fillStyle = "#0b1110";
+        ctx.fillRect(0, 0, width, height);
+
+        // Vizato fushën magnetike B (Vija paralele horizontale)
+        ctx.strokeStyle = "rgba(0, 255, 157, 0.1)";
+        ctx.lineWidth = 1;
+        for(let i=0; i<height; i+=40) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(width, i);
+            ctx.stroke();
+            // Shigjetat e fushës
+            ctx.fillStyle = "rgba(0, 255, 157, 0.2)";
+            ctx.fillText("B →", 10, i - 5);
+        }
+
+        // Llogarit Forcën
+        const rad = angle * Math.PI / 180;
+        const F = B * I * L * Math.abs(Math.sin(rad));
+
+        document.getElementById('angle-val').innerText = Math.round(angle) + "°";
+        document.getElementById('force-val').innerText = F.toFixed(2) + " N";
+
+        // Vizato Përcjellësin (Wire)
+        ctx.save();
+        ctx.translate(width/2, height/2);
+        ctx.rotate(rad);
+        
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "#ffcc33";
+        ctx.strokeStyle = "#ffcc33";
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(-100, 0);
+        ctx.lineTo(100, 0);
+        ctx.stroke();
+        
+        // Shënimi i rrymës I
+        ctx.fillStyle = "white";
+        ctx.fillText("I ➔", 20, -15);
+        ctx.restore();
+
+        // Vizato Vektorin e Forcës (F)
+        if (F > 0.1) {
+            ctx.beginPath();
+            ctx.strokeStyle = "#ff0055";
+            ctx.lineWidth = 4;
+            ctx.moveTo(width/2, height/2);
+            // Forca e Amperit është pingul me B dhe I
+            ctx.lineTo(width/2, height/2 - (F * 20)); 
+            ctx.stroke();
+            ctx.fillStyle = "#ff0055";
+            ctx.fillText("F (Forca)", width/2 + 10, height/2 - (F * 20));
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+</script>
+</body>
+</html>`
+  },
+  {
+    id: "magnetic-induction-master",
+    title: "Magnetic Induction Master",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Magnetic Induction Master</title>
+    <style>
+        :root {
+            --gold: #ffb800;
+            --magnetic-blue: #00d1ff;
+            --industrial-gray: #1a1a1a;
+            --neon-green: #39ff14;
+        }
+
+        body {
+            margin: 0;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar UI Moderne */
+        #control-panel {
+            width: 320px;
+            background: var(--industrial-gray);
+            border-right: 2px solid #333;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+        }
+
+        .header-box {
+            border-bottom: 1px solid #444;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 { font-size: 1.2rem; color: var(--gold); letter-spacing: 2px; margin: 0; }
+
+        .stat-group {
+            background: #252525;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+
+        .label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
+        .value { font-size: 1.2rem; font-family: 'Courier New', monospace; color: var(--magnetic-blue); }
+
+        .btn {
+            background: #333;
+            color: white;
+            border: 1px solid #444;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover { background: var(--gold); color: black; }
+        .active { border-color: var(--magnetic-blue); box-shadow: 0 0 10px rgba(0,209,255,0.3); }
+
+        /* Formula e rregulluar ne fund */
+        .formula-container {
+            margin-top: auto;
+            padding: 20px;
+            background: #000;
+            border-radius: 8px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        .math-fraction {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .frac-top { border-bottom: 1px solid var(--gold); padding: 0 5px; }
+        .frac-bottom { padding: 0 5px; }
+
+        #game-viewport { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; cursor: crosshair; }
+
+        .notification {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: var(--neon-green);
+            color: black;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="control-panel">
+        <div class="header-box">
+            <h1>MAG-INDUCTION v1.0</h1>
+        </div>
+
+        <div class="stat-group">
+            <div class="label">Induksioni (B)</div>
+            <div id="b-val" class="value">0.00 T</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="label">Forca (Fmax)</div>
+            <div id="f-val" class="value">0.00 N</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <button id="northBtn" class="btn active" onclick="setPole(1)">Shto Polin Veri (N)</button>
+            <button id="southBtn" class="btn" onclick="setPole(-1)">Shto Polin Jug (S)</button>
+            <button class="btn" onclick="resetField()" style="margin-top: 20px; border-color: #ff4444; color: #ff4444;">Reset Fushën</button>
+        </div>
+
+        <div class="formula-footer">
+            <p style="font-size: 0.8rem; color: #888;">Relacioni:</p>
+            <div class="math-fraction">
+                B = 
+                <div style="display: inline-block; vertical-align: middle;">
+                    <div class="frac-top">F<sub>max</sub></div>
+                    <div class="frac-bottom">I · L</div>
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 10px;">Vendos magnetët për të devijuar rrymën.</p>
+        </div>
+    </div>
+
+    <div id="game-viewport">
+        <div id="success-msg" class="notification">OBJEKTIVI U ARRI!</div>
+        <canvas id="canvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let magnets = [];
+    let poleType = 1; // 1 for North, -1 for South
+    let currentI = 2.5; // Amper
+    let lengthL = 0.5; // Metra
+    
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function setPole(type) {
+        poleType = type;
+        document.getElementById('northBtn').classList.toggle('active', type === 1);
+        document.getElementById('southBtn').classList.toggle('active', type === -1);
+    }
+
+    function resetField() { magnets = []; }
+
+    canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        magnets.push({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+            type: poleType
+        });
+    });
+
+    function calculateB(px, py) {
+        let totalB = 0;
+        magnets.forEach(m => {
+            let d = Math.hypot(px - m.x, py - m.y) + 50;
+            totalB += (m.type * 5000) / (d * d);
+        });
+        return totalB;
+    }
+
+    function draw() {
+        ctx.fillStyle = "#0a0a0a";
+        ctx.fillRect(0, 0, width, height);
+
+        // Vizato përcjellësin (Current Wire)
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 20;
+        ctx.beginPath();
+        ctx.moveTo(width/2, 0);
+        ctx.lineTo(width/2, height);
+        ctx.stroke();
+
+        // Llogarit B dhe F në mes të përcjellësit
+        let B = calculateB(width/2, height/2);
+        let F = Math.abs(B * currentI * lengthL);
+
+        document.getElementById('b-val').innerText = Math.abs(B).toFixed(2) + " T";
+        document.getElementById('f-val').innerText = F.toFixed(2) + " N";
+
+        // Vizato grimcat e rrymës (I)
+        let offset = (Date.now() % 1000) / 1000 * 50;
+        ctx.fillStyle = "#00d1ff";
+        for(let i=0; i<height; i+=50) {
+            ctx.beginPath();
+            ctx.arc(width/2, i + offset, 4, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        // Vizato magnetët
+        magnets.forEach(m => {
+            ctx.fillStyle = m.type === 1 ? "#ff4444" : "#4444ff";
+            ctx.fillRect(m.x - 20, m.y - 30, 40, 60);
+            ctx.fillStyle = "white";
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(m.type === 1 ? "N" : "S", m.x, m.y + 5);
+        });
+
+        // Kontrollo fitoren (Duhet forcë > 10N)
+        if(F > 10) {
+            document.getElementById('success-msg').style.display = 'block';
+        } else {
+            document.getElementById('success-msg').style.display = 'none';
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+</script>
+</body>
+</html>`
+  },
+  {
+    id: "ohms-law-challenge",
+    title: "Ohm's Law Challenge",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Ohm's Law Challenge</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --bg: #0f172a;
+            --card: #1e293b;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            background: var(--bg);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .game-box {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .circuit-display {
+            background: #000;
+            height: 200px;
+            margin: 20px 0;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border: 2px solid #334155;
+        }
+        .wire {
+            position: absolute;
+            background: #64748b;
+        }
+        .resistor {
+            width: 60px;
+            height: 30px;
+            background: #94a3b8;
+            border: 2px solid #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+            font-weight: bold;
+            z-index: 2;
+        }
+        .battery {
+            width: 40px;
+            height: 60px;
+            background: #ef4444;
+            border: 2px solid #fff;
+            position: absolute;
+            left: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 0.5rem;
+            font-size: 1.2rem;
+        }
+        .formula {
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: var(--primary);
+        }
+        .goal {
+            color: #fbbf24;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-box">
+        <h1>Ligji i Ohmit</h1>
+        <div id="goal-text" class="goal">Objektivi: Arri rrymën I = 2.00 A</div>
+        
+        <div class="circuit-display">
+            <div class="battery">
+                <div style="text-align:center">+</div>
+                <div id="v-label" style="font-size:0.8rem">10V</div>
+                <div style="text-align:center">-</div>
+            </div>
+            <div class="resistor" id="r-box">5Ω</div>
+            <!-- Simple wire visualization -->
+            <div class="wire" style="width:300px; height:2px; top:100px;"></div>
+            <div class="wire" style="width:2px; height:100px; left:50px; top:50px;"></div>
+            <div class="wire" style="width:2px; height:100px; left:350px; top:50px;"></div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Tensioni (U): <span id="u-val">10</span>V</label>
+                <input type="range" id="u-slider" min="1" max="50" value="10">
+            </div>
+            <div class="control-group">
+                <label>Rezistenca (R): <span id="r-val">5</span>Ω</label>
+                <input type="range" id="r-slider" min="1" max="100" value="5">
+            </div>
+        </div>
+
+        <div class="stats">
+            Intensiteti i rrymës (I): <span id="i-val">2.00</span> A
+        </div>
+
+        <div class="formula">I = U / R</div>
+        
+        <button id="next-btn" style="display:none; margin-top:20px; padding:10px 20px; background:#10b981; color:white; border:none; border-radius:5px; cursor:pointer;" onclick="nextLevel()">Niveli Tjetër</button>
+    </div>
+
+    <script>
+        const uSlider = document.getElementById('u-slider');
+        const rSlider = document.getElementById('r-slider');
+        const uVal = document.getElementById('u-val');
+        const rVal = document.getElementById('r-val');
+        const iVal = document.getElementById('i-val');
+        const vLabel = document.getElementById('v-label');
+        const rBox = document.getElementById('r-box');
+        const goalText = document.getElementById('goal-text');
+        const nextBtn = document.getElementById('next-btn');
+
+        let currentLevel = 0;
+        const levels = [
+            { target: 2.00 },
+            { target: 0.50 },
+            { target: 5.00 },
+            { target: 1.25 }
+        ];
+
+        function update() {
+            const u = parseFloat(uSlider.value);
+            const r = parseFloat(rSlider.value);
+            const i = u / r;
+
+            uVal.innerText = u;
+            rVal.innerText = r;
+            iVal.innerText = i.toFixed(2);
+            vLabel.innerText = u + "V";
+            rBox.innerText = r + "Ω";
+
+            if (Math.abs(i - levels[currentLevel].target) < 0.01) {
+                goalText.innerText = "SUKSES! Objektivi u arrit.";
+                goalText.style.color = "#10b981";
+                nextBtn.style.display = "inline-block";
+            } else {
+                goalText.innerText = "Objektivi: Arri rrymën I = " + levels[currentLevel].target.toFixed(2) + " A";
+                goalText.style.color = "#fbbf24";
+                nextBtn.style.display = "none";
+            }
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            if (currentLevel >= levels.length) {
+                alert("Urime! Ke përfunduar të gjitha nivelet e Ligjit të Ohmit.");
+                currentLevel = 0;
+            }
+            update();
+        }
+
+        uSlider.addEventListener('input', update);
+        rSlider.addEventListener('input', update);
+        update();
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "power-grid-manager",
+    title: "Power Grid Manager",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Power Grid Manager</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #020617;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        .house {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #334155;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .house.powered {
+            border-color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+        }
+        .house.overloaded {
+            border-color: #ef4444;
+            background: #450a0a;
+        }
+        .stats-panel {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-around;
+            border: 1px solid #1e293b;
+            margin-bottom: 20px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #fbbf24; }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .formula {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Menaxheri i Rrjetit Elektrik</h1>
+    <p>Shpërndaj fuqinë nëpër shtëpi pa e mbingarkuar rrjetin!</p>
+
+    <div class="stats-panel">
+        <div class="stat">
+            <div class="stat-label">Fuqia Totale (P)</div>
+            <div id="total-p" class="stat-value">0 W</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Tensioni (U)</div>
+            <div id="u-val" class="stat-value">220 V</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Rryma Totale (I)</div>
+            <div id="total-i" class="stat-value">0.00 A</div>
+        </div>
+    </div>
+
+    <div class="grid-container" id="grid">
+        <!-- Houses will be generated here -->
+    </div>
+
+    <div class="formula">P = U · I</div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="addHouse()">Shto Pajisje</button>
+        <button class="btn" style="background:#ef4444; color:white;" onclick="resetGrid()">Reset</button>
+    </div>
+
+    <script>
+        let houses = [];
+        const U = 220;
+        const maxI = 25; // Limiti i siguresës
+
+        function addHouse() {
+            if (houses.length >= 9) return;
+            
+            const power = Math.floor(Math.random() * 1000) + 200;
+            houses.push({ power, id: Date.now() });
+            render();
+        }
+
+        function resetGrid() {
+            houses = [];
+            render();
+        }
+
+        function render() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            let totalP = 0;
+            houses.forEach(h => {
+                totalP += h.power;
+                const div = document.createElement('div');
+                div.className = 'house powered';
+                div.innerHTML = '<div style="font-size:1.5rem">🏠</div>' +
+                    '<div style="font-weight:bold">' + h.power + ' W</div>' +
+                    '<div style="font-size:0.7rem; color:#94a3b8">' + (h.power/U).toFixed(2) + ' A</div>';
+                grid.appendChild(div);
+            });
+
+            const totalI = totalP / U;
+            document.getElementById('total-p').innerText = totalP + " W";
+            document.getElementById('total-i').innerText = totalI.toFixed(2) + " A";
+
+            if (totalI > maxI) {
+                document.getElementById('total-i').style.color = "#ef4444";
+                alert("SIGURESA U DOGJ! Mbingarkesë në rrjet.");
+                resetGrid();
+            } else {
+                document.getElementById('total-i').style.color = "#fbbf24";
+            }
+        }
+    </script>
+</body>
+</html>`
+  },
+  {
+    id: "capacitor-challenge",
+    title: "Capacitor Challenge",
+    category: "Elektriciteti",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Capacitor Challenge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .capacitor-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 40px 0;
+            height: 200px;
+        }
+        .plate {
+            width: 20px;
+            height: 150px;
+            background: #64748b;
+            border-radius: 5px;
+            position: relative;
+            transition: 0.3s;
+        }
+        .plate.positive { background: #ef4444; }
+        .plate.negative { background: #3b82f6; }
+        .charge {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .controls {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 10px;
+            background: #0f172a;
+            border-radius: 8px;
+        }
+        .formula {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: #3b82f6;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sfidë me Kondensatorë</h1>
+    <p>Rregullo sipërfaqen dhe distancën për të ndryshuar kapacitetin!</p>
+
+    <div class="capacitor-container">
+        <div id="plate-left" class="plate positive"></div>
+        <div id="plate-right" class="plate negative"></div>
+    </div>
+
+    <div class="controls">
+        <div>
+            <label>Sipërfaqja (S): <span id="s-val">100</span> cm²</label>
+            <input type="range" id="s-slider" min="10" max="500" value="100" style="width:100%">
+        </div>
+        <div>
+            <label>Distanca (d): <span id="d-val">5</span> mm</label>
+            <input type="range" id="d-slider" min="1" max="20" value="5" style="width:100%">
+        </div>
+        <div class="stat-box">
+            <div style="font-size:0.8rem; color:#94a3b8">Kapaciteti (C)</div>
+            <div id="c-val" style="font-size:1.2rem; font-weight:bold; color:#10b981">0.18 pF</div>
+        </div>
+        <div class="stat-box">
+            <div style="font-size:0.8rem; color:#94a3b8">Ngarkesa (Q)</div>
+            <div id="q-val" style="font-size:1.2rem; font-weight:bold; color:#fbbf24">1.80 pC</div>
+        </div>
+    </div>
+
+    <div class="formula">C = ε₀ · S / d</div>
+
+    <script>
+        const sSlider = document.getElementById('s-slider');
+        const dSlider = document.getElementById('d-slider');
+        const sVal = document.getElementById('s-val');
+        const dVal = document.getElementById('d-val');
+        const cVal = document.getElementById('c-val');
+        const qVal = document.getElementById('q-val');
+        const plateLeft = document.getElementById('plate-left');
+        const plateRight = document.getElementById('plate-right');
+
+        const epsilon0 = 8.854; // simplified
+        const Voltage = 10; // fixed battery
+
+        function update() {
+            const S = parseFloat(sSlider.value);
+            const d = parseFloat(dSlider.value);
+            
+            // C = epsilon0 * S / d
+            const C = (epsilon0 * S) / (d * 100); // scaled for display
+            const Q = C * Voltage;
+
+            sVal.innerText = S;
+            dVal.innerText = d;
+            cVal.innerText = C.toFixed(2) + " pF";
+            qVal.innerText = Q.toFixed(2) + " pC";
+
+            // Visual updates
+            plateLeft.style.height = (50 + S/5) + "px";
+            plateRight.style.height = (50 + S/5) + "px";
+            
+            const gap = d * 10;
+            document.querySelector('.capacitor-container').style.gap = gap + "px";
+            
+            // Add charges visually
+            renderCharges(plateLeft, 'positive', Math.floor(Q));
+            renderCharges(plateRight, 'negative', Math.floor(Q));
+        }
+
+        function renderCharges(plate, type, count) {
+            plate.innerHTML = '';
+            const limitedCount = Math.min(count, 20);
+            for(let i=0; i<limitedCount; i++) {
+                const c = document.createElement('div');
+                c.className = 'charge';
+                c.style.top = (Math.random() * 90) + "%";
+                c.style.left = type === 'positive' ? "15px" : "-10px";
+                c.innerText = type === 'positive' ? "+" : "-";
+                c.style.color = type === 'positive' ? "#fee2e2" : "#dbeafe";
+                plate.appendChild(c);
+            }
+        }
+
+        sSlider.addEventListener('input', update);
+        dSlider.addEventListener('input', update);
+        update();
     </script>
 </body>
 </html>`

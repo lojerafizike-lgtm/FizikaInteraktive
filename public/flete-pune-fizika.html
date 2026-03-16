@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fletë Pune - Fizika Interaktive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #ffafcc;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #4a4e69;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #888;
+            font-size: 14px;
+        }
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .student-info div {
+            border-bottom: 1px solid #ccc;
+            padding: 5px 10px;
+            min-width: 200px;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #fcf9ff;
+            border-radius: 10px;
+            border-left: 5px solid #ffafcc;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .options li {
+            margin-bottom: 5px;
+        }
+        .options li::before {
+            content: "☐ ";
+        }
+        .open-ended {
+            height: 60px;
+            border: 1px solid #eee;
+            margin-top: 10px;
+            background-color: #fff;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+            .question {
+                break-inside: avoid;
+            }
+        }
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ffafcc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 175, 204, 0.3);
+            transition: transform 0.2s;
+        }
+        .print-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">Shkarko / Printo si PDF</button>
+
+    <div class="header">
+        <h1>Testi i Përgjithshëm i Fizikës</h1>
+        <p>Fizika Interaktive - Materiale Didaktike</p>
+    </div>
+
+    <div class="student-info">
+        <div>Emri: _____________________</div>
+        <div>Data: ____/____/2026</div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">1. Cila nga këto madhësi është vektoriale?</div>
+        <ul class="options">
+            <li>Masa</li>
+            <li>Koha</li>
+            <li>Zhvendosja</li>
+            <li>Rruga</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-text">2. Njësia matëse e forcës në sistemin SI është:</div>
+        <ul class="options">
+            <li>Kilogram (kg)</li>
+            <li>Njuton (N)</li>
+            <li>Xhaul (J)</li>
+            <li>Vat (W)</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-text">3. Ligji i parë i Njutonit njihet ndryshe si ligji i:</div>
+        <ul class="options">
+            <li>Veprimit dhe kundërveprimit</li>
+            <li>Inercisë</li>
+            <li>Gravitetit</li>
+            <li>Përshpejtimit</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-text">4. Shpjegoni shkurtimisht ndryshimin midis masës dhe peshës.</div>
+        <div class="open-ended"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">5. Një makinë lëviz me shpejtësi konstante 20 m/s për 10 sekonda. Sa rrugë përshkon ajo?</div>
+        <div class="open-ended"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">6. Çfarë ndodh me energjinë kinetike të një trupi nëse shpejtësia e tij dyfishohet?</div>
+        <ul class="options">
+            <li>Dyfishohet</li>
+            <li>Mbetet e njëjtë</li>
+            <li>Katërfishohet</li>
+            <li>Përgjysmohet</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-text">7. Përcaktoni vlerën e nxitimit të rënies së lirë (g) në sipërfaqen e Tokës.</div>
+        <div class="open-ended"></div>
+    </div>
+
+    <div class="footer">
+        © 2026 Fizika Interaktive. Të gjitha të drejtat e rezervuara.
+    </div>
+</body>
+</html>

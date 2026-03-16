@@ -3,19 +3,31 @@ import { useFirebase } from '../contexts/FirebaseContext';
 import { LogIn, LogOut, User as UserIcon, Trophy } from 'lucide-react';
 
 export const AuthButton: React.FC = () => {
-  const { user, profile, login, logout, loading } = useFirebase();
+  const { user, profile, login, logout, loading, authError, clearAuthError } = useFirebase();
 
   if (loading) return <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />;
 
   if (!user) {
     return (
-      <button 
-        onClick={login}
-        className="flex items-center gap-2 px-4 py-2 bg-[#ffafcc] text-white rounded-full font-bold text-sm hover:bg-[#fbafcc] transition-all shadow-sm"
-      >
-        <LogIn className="w-4 h-4" />
-        <span>HYR ME GOOGLE</span>
-      </button>
+      <div className="relative">
+        <button 
+          onClick={login}
+          className="flex items-center gap-2 px-4 py-2 bg-[#ffafcc] text-white rounded-full font-bold text-sm hover:bg-[#fbafcc] transition-all shadow-sm"
+        >
+          <LogIn className="w-4 h-4" />
+          <span>HYR ME GOOGLE</span>
+        </button>
+        {authError && (
+          <div className="absolute top-full right-0 mt-2 w-64 bg-red-50 border border-red-200 text-red-600 text-[10px] p-3 rounded-xl shadow-xl z-[9999] animate__animated animate__fadeIn">
+            <div className="flex justify-between items-start gap-2">
+              <p className="font-bold leading-tight">{authError}</p>
+              <button onClick={clearAuthError} className="text-red-400 hover:text-red-600">
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     );
   }
 

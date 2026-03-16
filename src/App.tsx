@@ -1,6 +1,6 @@
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { ALL_PHYSICS_DATA, GAMES } from './constants';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { ALL_PHYSICS_DATA } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
 import ClickSpark from './components/ClickSpark';
@@ -11,24 +11,38 @@ import InstrumentsSection from './components/InstrumentsSection';
 import BubbleMenu from './components/BubbleMenu';
 import { AuthButton } from './components/AuthButton';
 import { Leaderboard } from './components/Leaderboard';
+import { OnboardingModal } from './components/OnboardingModal';
+import { ProfileSetupModal } from './components/ProfileSetupModal';
+import MaterialsSection from './components/MaterialsSection';
+import AddMaterialModal from './components/AddMaterialModal';
 import { useFirebase } from './contexts/FirebaseContext';
 import { updateUserScore } from './firebase';
 
 const App: React.FC = () => {
-  const { user, login } = useFirebase();
+  const { user, profile, login } = useFirebase();
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
-  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'calendar'>('home');
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [isAddMaterialOpen, setIsAddMaterialOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedTerm, setSelectedTerm] = useState<PhysicsTerm | null>(null);
-  const [gameFilter, setGameFilter] = useState<'home' | 'school' | 'digital'>('digital');
   const [searchTerm, setSearchTerm] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [mobileMenuSelectionOpen, setMobileMenuSelectionOpen] = useState(false);
   const [playingGame, setPlayingGame] = useState<{ title: string, url?: string, html?: string } | null>(null);
   
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data === 'closeMagazine') {
+        setActivePage('home');
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const handleStart = () => {
     setIsWarping(true);
     setTimeout(() => {
@@ -36,7 +50,7 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard', data?: CategoryName | PhysicsTerm | null) => {
+  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'calendar', data?: CategoryName | PhysicsTerm | null) => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
@@ -47,7 +61,7 @@ const App: React.FC = () => {
 
   const handlePlayGame = (game: DigitalGame) => {
     setPlayingGame(game);
-    if (user) {
+    if (user && profile?.role !== 'mesues') {
       // Award 10 points for playing a game
       updateUserScore(user.uid, 10);
     }
@@ -108,6 +122,13 @@ const App: React.FC = () => {
 
     items.push(
       {
+        label: 'Materiale',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('materials'); },
+        rotation: -4,
+        hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
+      },
+      {
         label: 'Lojërat',
         href: '#',
         onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('games'); },
@@ -122,6 +143,13 @@ const App: React.FC = () => {
         hoverStyles: { bgColor: '#a2d2ff', textColor: '#ffffff' }
       },
       {
+        label: 'Kalendari',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('calendar'); },
+        rotation: -3,
+        hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
+      },
+      {
         label: 'Shkencëtarët',
         href: '#',
         onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('scientists'); },
@@ -130,8 +158,8 @@ const App: React.FC = () => {
       },
       {
         label: 'Revista',
-        href: '/revista.html',
-        onClick: () => {},
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('magazine'); },
         rotation: 6,
         hoverStyles: { bgColor: '#ffc8dd', textColor: '#ffffff' }
       },
@@ -190,6 +218,8 @@ const App: React.FC = () => {
   return (
     <ClickSpark sparkColor='#ffafcc' sparkSize={12} sparkRadius={20} sparkCount={10} duration={600}>
       <div className="min-h-screen bg-[#fcf9ff] text-[#4a4e69] font-sans">
+        <OnboardingModal />
+        <ProfileSetupModal />
         {/* Mobile Bubble Menu */}
         <div className="md:hidden">
           <BubbleMenu
@@ -239,6 +269,8 @@ const App: React.FC = () => {
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
             <button onClick={() => navigate('leaderboard')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Renditja</button>
+            <button onClick={() => navigate('movies')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Filmat</button>
+            <button onClick={() => navigate('calendar')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Kalendari</button>
             
             <div className="hidden md:block">
               <AuthButton />
@@ -254,16 +286,16 @@ const App: React.FC = () => {
               
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 p-2">
                 <button 
+                  onClick={() => navigate('materials')}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
+                >
+                  <i className="fas fa-book-open w-5"></i> Materiale
+                </button>
+                <button 
                   onClick={() => navigate('games')}
                   className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
                 >
                   <i className="fas fa-gamepad w-5"></i> Lojërat
-                </button>
-                <button 
-                  onClick={() => navigate('movies')}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
-                >
-                  <i className="fas fa-film w-5"></i> Filmat
                 </button>
                 <button 
                   onClick={() => navigate('scientists')}
@@ -271,12 +303,12 @@ const App: React.FC = () => {
                 >
                   <i className="fas fa-user-tie w-5"></i> Shkencëtarët
                 </button>
-                <a 
-                  href="/revista.html"
+                <button 
+                  onClick={() => navigate('magazine')}
                   className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
                 >
                   <i className="fas fa-book-open w-5"></i> Revista
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -517,7 +549,7 @@ const App: React.FC = () => {
                               </div>
                             )}
 
-                            <TermDetailsTabs term={selectedTerm} />
+                            <TermDetailsTabs term={selectedTerm} onPlayDigitalGame={handlePlayGame} />
                         </div>
                     </div>
 
@@ -579,29 +611,14 @@ const App: React.FC = () => {
               <i className="fas fa-arrow-left"></i> Kthehu mbrapa
             </button>
             <div className="text-center mb-12 md:mb-24">
-                <h2 className="text-5xl md:text-9xl font-black mb-8 md:mb-12 tracking-tighter text-slate-800 leading-none">Sfida & Lojëra</h2>
-                <div className="flex flex-row flex-wrap justify-center p-2 md:p-4 bg-white/60 backdrop-blur-2xl rounded-3xl md:rounded-[4.5rem] w-full md:w-fit mx-auto border-4 border-white shadow-2xl gap-2 md:gap-0">
-                    <button onClick={() => setGameFilter('digital')} className={`flex-1 md:flex-none px-4 py-3 md:px-14 md:py-7 rounded-2xl md:rounded-[3.5rem] font-black text-[9px] md:text-[11px] tracking-[0.2em] md:tracking-[0.4em] transition-all ${gameFilter === 'digital' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>DIGJITALE</button>
-                    <button onClick={() => setGameFilter('home')} className={`flex-1 md:flex-none px-4 py-3 md:px-14 md:py-7 rounded-2xl md:rounded-[3.5rem] font-black text-[9px] md:text-[11px] tracking-[0.2em] md:tracking-[0.4em] transition-all ${gameFilter === 'home' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>EKSPERIMENTE</button>
-                    <button onClick={() => setGameFilter('school')} className={`flex-1 md:flex-none px-4 py-3 md:px-14 md:py-7 rounded-2xl md:rounded-[3.5rem] font-black text-[9px] md:text-[11px] tracking-[0.2em] md:tracking-[0.4em] transition-all ${gameFilter === 'school' ? 'bg-[#4a4e69] text-white shadow-2xl' : 'text-slate-400 hover:text-[#4a4e69]'}`}>SHKOLLË</button>
-                </div>
+                <h2 className="text-5xl md:text-9xl font-black mb-8 md:mb-12 tracking-tighter text-slate-800 leading-none">Lojërat Smartboard</h2>
+                <p className="text-slate-400 text-lg md:text-2xl font-medium max-w-2xl mx-auto">
+                  Eksploro fizikën përmes sfidave interaktive të dizajnuara për klasën.
+                </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
-                {gameFilter === 'digital' ? DIGITAL_GAMES.filter(g => g.type !== 'school').map((game, i) => (
-                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#bde0fe]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
-                        <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
-                            {game.category}
-                        </div>
-                        <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
-                            <div className="w-16 h-16 md:w-32 md:h-32 bg-[#bde0fe]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
-                                <i className="fas fa-gamepad"></i>
-                            </div>
-                            <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
-                        </div>
-                        <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ffafcc] group-hover:text-white transition-all">LUAJ TANI</button>
-                    </div>
-                )) : gameFilter === 'school' ? DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
+                {DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
                     <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
                         <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
                             {game.category}
@@ -614,48 +631,6 @@ const App: React.FC = () => {
                         </div>
                         <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
                     </div>
-                )) : GAMES.filter(g => g.type === 'home').map((game, i) => (
-                    <div key={i} className="bg-white p-6 md:p-20 rounded-3xl md:rounded-[6rem] shadow-sm border-4 border-white hover:shadow-2xl transition-all card-fusha">
-                         <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-16">
-                            <div className="w-16 h-16 md:w-32 md:h-32 bg-[#fdf2f8] text-[#ffafcc] rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-6xl shadow-inner border border-white shrink-0">
-                                <i className="fas fa-vial-circle-check"></i>
-                            </div>
-                            <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
-                        </div>
-                        <p className="text-slate-400 mb-8 md:mb-12 text-lg md:text-3xl leading-relaxed font-medium italic">"{game.description}"</p>
-                        
-                        <div className="mb-8 md:mb-12">
-                            <h5 className="text-[8px] md:text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-4 md:mb-6">Materialet:</h5>
-                            <div className="flex flex-wrap gap-2 md:gap-4">
-                                {game.materials.map((m, idx) => (
-                                    <span key={idx} className="px-3 py-1.5 md:px-6 md:py-2 bg-[#f8fafc] text-slate-600 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold border border-slate-50">{m}</span>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="space-y-4 md:space-y-8">
-                            <h5 className="text-[8px] md:text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-4 md:mb-6">Hapat:</h5>
-                            {game.steps.map((s, idx) => (
-                                <div key={idx} className="flex gap-4 md:gap-8 items-start">
-                                    <span className="w-6 h-6 md:w-10 md:h-10 bg-[#ffafcc] text-white rounded-lg md:rounded-[1rem] flex items-center justify-center text-xs md:text-sm font-black shadow-lg shrink-0">{idx+1}</span>
-                                    <p className="text-sm md:text-xl font-bold text-slate-600/90 leading-tight">{s}</p>
-                                </div>
-                            ))}
-                        </div>
-                        {game.url && (
-                            <div className="mt-8 md:mt-12">
-                                <div className="relative w-full h-[400px] rounded-2xl md:rounded-[2rem] overflow-hidden border-4 border-slate-100 mb-4 shadow-inner">
-                                    <iframe src={game.url} className="w-full h-full border-none" title={game.title}></iframe>
-                                </div>
-                                <button 
-                                    onClick={() => setPlayingGame(game)}
-                                    className="w-full py-4 md:py-6 bg-[#ffafcc] text-white rounded-xl md:rounded-[2rem] font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#ff758f] transition-all shadow-xl flex items-center justify-center gap-3"
-                                >
-                                    HAP FULL SCREEN <i className="fas fa-expand"></i>
-                                </button>
-                            </div>
-                        )}
-                    </div>
                 ))}
             </div>
           </div>
@@ -665,8 +640,46 @@ const App: React.FC = () => {
             <button onClick={() => navigate('home')} className="mb-4 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors shrink-0">
               <i className="fas fa-arrow-left"></i> Kthehu mbrapa
             </button>
+            <div className="flex-1 bg-[#fcf9ff] rounded-[2rem] shadow-2xl overflow-hidden">
+              <iframe src="/fizikaaa.html" className="w-full h-full border-none" title="Shkencëtarët" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+            </div>
+          </div>
+        )}
+        {activePage === 'magazine' && (
+          <div className="animate__animated animate__fadeIn h-full flex flex-col overflow-hidden relative">
+            <div className="flex items-center justify-between mb-4 shrink-0">
+              <button onClick={() => navigate('home')} className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
+                <i className="fas fa-arrow-left"></i> Kthehu mbrapa
+              </button>
+              <button 
+                onClick={() => navigate('home')} 
+                className="w-10 h-10 bg-white text-slate-400 rounded-full flex items-center justify-center shadow-md hover:bg-[#ffafcc] hover:text-white transition-all"
+                title="Mbyll Revistën"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
             <div className="flex-1 bg-white rounded-[2rem] shadow-2xl overflow-hidden">
-              <iframe src="/fizikaaa.html" className="w-full h-full border-none" title="Shkencëtarët"></iframe>
+              <iframe src="/revista.html" className="w-full h-full border-none" title="Revista" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+            </div>
+          </div>
+        )}
+        {activePage === 'calendar' && (
+          <div className="animate__animated animate__fadeIn h-full flex flex-col overflow-hidden relative">
+            <div className="flex items-center justify-between mb-4 shrink-0">
+              <button onClick={() => navigate('home')} className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
+                <i className="fas fa-arrow-left"></i> Kthehu mbrapa
+              </button>
+              <button 
+                onClick={() => navigate('home')} 
+                className="w-10 h-10 bg-white text-slate-400 rounded-full flex items-center justify-center shadow-md hover:bg-[#ffafcc] hover:text-white transition-all"
+                title="Mbyll Kalendarin"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="flex-1 bg-white rounded-[2rem] shadow-2xl overflow-hidden">
+              <iframe src="/kalendari.html" className="w-full h-full border-none" title="Kalendari" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
             </div>
           </div>
         )}
@@ -683,6 +696,9 @@ const App: React.FC = () => {
             </button>
             <Leaderboard />
           </div>
+        )}
+        {activePage === 'materials' && (
+          <MaterialsSection onPlayGame={handlePlayGame} />
         )}
       </main>
 
@@ -895,32 +911,44 @@ const App: React.FC = () => {
           </button>
           <h2 className="text-3xl font-black text-slate-800 mb-10 text-center">Zgjidhni një opsion</h2>
           <div className="flex flex-col gap-6 w-full max-w-sm">
-            <button 
-              onClick={() => { setMobileMenuSelectionOpen(false); setIsChatOpen(true); }}
-              className="w-full py-6 bg-gradient-to-r from-[#bde0fe] to-[#a2d2ff] text-white rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
-            >
-              <i className="fas fa-comments text-3xl"></i> FORUMI
-            </button>
+            {profile?.role !== 'mesues' && (
+              <button 
+                onClick={() => { setMobileMenuSelectionOpen(false); setIsChatOpen(true); }}
+                className="w-full py-6 bg-gradient-to-r from-[#bde0fe] to-[#a2d2ff] text-white rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
+              >
+                <i className="fas fa-comments text-3xl"></i> FORUMI
+              </button>
+            )}
             <button 
               onClick={() => { setMobileMenuSelectionOpen(false); setIsNotesOpen(true); }}
               className="w-full py-6 bg-gradient-to-r from-[#ffc8dd] to-[#ffafcc] text-white rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
             >
               <i className="fas fa-pen-nib text-3xl"></i> SHËNIMET
             </button>
+            {profile?.role === 'mesues' && (
+              <button 
+                onClick={() => { setMobileMenuSelectionOpen(false); setIsAddMaterialOpen(true); }}
+                className="w-full py-6 bg-gradient-to-r from-[#a2d2ff] to-[#bde0fe] text-white rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
+              >
+                <i className="fas fa-plus text-3xl"></i> SHTO MATERIAL
+              </button>
+            )}
           </div>
         </div>
       )}
       
       {!isChatOpen && !isNotesOpen && (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
-          <button 
-            onClick={() => setIsCalculatorOpen(true)}
-            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] border-4 border-white relative group"
-            title="Kalkulatori"
-          >
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
-            <i className="fas fa-calculator text-2xl text-white drop-shadow-md"></i>
-          </button>
+          {profile?.role !== 'mesues' && (
+            <button 
+              onClick={() => setIsCalculatorOpen(true)}
+              className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] border-4 border-white relative group"
+              title="Kalkulatori"
+            >
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
+              <i className="fas fa-calculator text-2xl text-white drop-shadow-md"></i>
+            </button>
+          )}
           <button 
             onClick={() => setIsNotesOpen(true)}
             className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#a2d2ff] to-[#bde0fe] border-4 border-white relative group hidden md:flex"
@@ -929,19 +957,35 @@ const App: React.FC = () => {
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
             <i className="fas fa-pen-nib text-2xl text-white drop-shadow-md"></i>
           </button>
-          <button 
-            onClick={() => setIsChatOpen(true)}
-            className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] border-4 border-white relative group hidden md:flex"
-            title="Forumi"
-          >
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
-            <i className="fas fa-comment-dots text-3xl text-white drop-shadow-md"></i>
-          </button>
+          {profile?.role !== 'mesues' && (
+            <button 
+              onClick={() => setIsChatOpen(true)}
+              className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] border-4 border-white relative group hidden md:flex"
+              title="Forumi"
+            >
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
+              <i className="fas fa-comment-dots text-3xl text-white drop-shadow-md"></i>
+            </button>
+          )}
+          {profile?.role === 'mesues' && (
+            <button 
+              onClick={() => setIsAddMaterialOpen(true)}
+              className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#a2d2ff] to-[#bde0fe] border-4 border-white relative group"
+              title="Shto Material"
+            >
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-full"></div>
+              <i className="fas fa-plus text-2xl text-white drop-shadow-md"></i>
+            </button>
+          )}
         </div>
       )}
 
       {isCalculatorOpen && (
         <DraggableCalculator onClose={() => setIsCalculatorOpen(false)} />
+      )}
+      
+      {isAddMaterialOpen && (
+        <AddMaterialModal onClose={() => setIsAddMaterialOpen(false)} />
       )}
       
       {/* Full Screen Game Overlay */}

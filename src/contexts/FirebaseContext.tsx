@@ -3,6 +3,9 @@ import { User } from '../firebase';
 
 export interface Profile {
   displayName: string;
+  username?: string;
+  role?: 'mesues' | 'nxenes';
+  school?: string;
   photoURL: string;
   totalScore: number;
 }
@@ -11,8 +14,10 @@ export interface FirebaseContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  authError: string | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  clearAuthError: () => void;
 }
 
 export const FirebaseContext = createContext<FirebaseContextType | undefined>(undefined);

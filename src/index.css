@@ -178,3 +178,29 @@ body {
     transform: translateY(-15px);
     box-shadow: 0 40px 80px rgba(0,0,0,0.06);
 }
+
+.ikona-fizika {
+  /* Përmasat e jashtme të ikonës */
+  width: 100px; 
+  height: 100px;
+  
+  /* Gradienti i ngjyrave pastel sipas imazhit */
+  background: linear-gradient(135deg, #d3e0f5 0%, #f7c8d9 100%);
+  
+  /* Harkimi i këndeve për formën 'squircle' */
+  border-radius: 26px; 
+  
+  /* Qendërzimi i ikonës së bardhë */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* Një hije e lehtë poshtë për t'u dukur bukur në faqe */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.ikona-svg {
+  /* Përmasat e atomit të bardhë brenda */
+  width: 56px; 
+  height: 56px;
+}

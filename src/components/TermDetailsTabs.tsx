@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { PhysicsTerm } from '../types';
+import { PhysicsTerm, DigitalGame } from '../types';
 import { instrumentsData, buildSim } from '../instrumentsData';
 import '../instruments.css';
+import { DIGITAL_GAMES } from '../gameContent';
 import DinamikaGameContainer from './DinamikaGameContainer';
 import KinematikaGameContainer from './KinematikaGameContainer';
 import GameWrapper from './GameWrapper';
 
 interface TermDetailsTabsProps {
   term: PhysicsTerm;
+  onPlayDigitalGame?: (game: DigitalGame) => void;
 }
 
-const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
+const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term, onPlayDigitalGame }) => {
   const [activeTab, setActiveTab] = useState<'mjet' | 'video' | 'foto' | 'ushtrime' | 'loje'>('mjet');
   const [showSolutionPanel, setShowSolutionPanel] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
@@ -323,7 +325,26 @@ const TermDetailsTabs: React.FC<TermDetailsTabsProps> = ({ term }) => {
         {/* 4. LOJË */}
         {activeTab === 'loje' && (
           <div className="animate__animated animate__fadeInUp text-center py-12">
-            {term.catName === 'Dinamika' && term.id !== undefined && term.id >= 1 && term.id <= 15 ? (
+            {term.digitalGameId && onPlayDigitalGame ? (
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-24 h-24 bg-[#4a4e69] rounded-[2rem] flex items-center justify-center text-4xl text-white shadow-xl mb-4">
+                  <i className="fas fa-gamepad"></i>
+                </div>
+                <h3 className="text-2xl font-black text-slate-800 tracking-tighter">Lojë Digjitale Interaktive</h3>
+                <p className="text-slate-500 max-w-md mx-auto mb-6">
+                  Kemi përgatitur një lojë speciale digjitale për të testuar njohuritë tuaja mbi <strong>{term.name}</strong>.
+                </p>
+                <button 
+                  onClick={() => {
+                    const game = DIGITAL_GAMES.find((g: DigitalGame) => g.id === term.digitalGameId);
+                    if (game) onPlayDigitalGame(game);
+                  }}
+                  className="px-12 py-5 bg-[#4a4e69] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-[#2b2d42] hover:scale-105 transition-all duration-300 flex items-center gap-3"
+                >
+                  <i className="fas fa-play"></i> Fillo Lojën
+                </button>
+              </div>
+            ) : term.catName === 'Dinamika' && term.id !== undefined && term.id >= 1 && term.id <= 15 ? (
               <DinamikaGameContainer termId={term.id} termName={term.name} formula={term.form} />
             ) : term.catName === 'Kinematika' && term.id !== undefined && [9, 10, 11, 12, 13, 14, 15, 16].includes(term.id) ? (
               <KinematikaGameContainer termId={term.id} termName={term.name} />

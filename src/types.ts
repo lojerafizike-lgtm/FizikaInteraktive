@@ -24,6 +24,7 @@ export interface PhysicsTerm {
   img?: string;
   vid?: string;
   gameUrl?: string;
+  digitalGameId?: string;
 }
 
 export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Fizika Kuantike" | "Libri Interaktiv" | "Fizika 8";
@@ -52,7 +53,7 @@ export interface DigitalGame {
   id: string;
   title: string;
   category: string;
-  html: string;
+  html?: string;
   type?: 'digital' | 'school';
   url?: string;
 }
