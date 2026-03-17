@@ -67,7 +67,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
         { name: "5. Rryme e induktuar", sym: "Iin", form: "I=ε/R", unit: "A", otherUnits: "mA", teTjera: "", nature: "Skalare", desc: "Rryma elektrike që lind në një përcjellës të mbyllur kur ai ndodhet në një fushë magnetike të ndryshueshme.", phetUrl: "https://phet.colorado.edu/en/simulation/faradays-law", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqk5jc32xKcLRo2y10dfbSwmELAekKYKdSSw&s", vid: "https://www.youtube.com/embed/fOeWUbvqRgY" }
     ]
 };
-    "Fizika Kuantike": [
+"Fizika Kuantike": [
         { 
             id: 1, 
             catName: "Fizika Kuantike", 
