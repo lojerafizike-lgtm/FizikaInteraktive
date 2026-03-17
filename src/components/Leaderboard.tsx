@@ -25,11 +25,9 @@ function normalizeSchool(school?: string): string {
     .trim()
     .toLowerCase();
 
-  // Nëse përmban "hydajet lezha" (me ose pa gjimnazi), normalizon
-  if (s.includes('hydajet') && s.includes('lezha')) {
-    const prefix = s.includes('gjimnazi') ? 'Gjimnazi' : '';
-    if (prefix) return 'Gjimnazi \u201CHydajet Lezha\u201D';
-    return 'Hydajet Lezha';
+  // Nëse përmban "hydajet" ose "lezha" — gjithmonë del si Gjimnazi "Hydajet Lezha"
+  if (s.includes('hydajet') || s.includes('lezha')) {
+    return 'Gjimnazi \u201CHydajet Lezha\u201D';
   }
 
   // Shkolla të tjera — çdo fjalë me shkronjë të madhe
