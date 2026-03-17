@@ -10,7 +10,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
         { name: "6. Shpejtësia mesatare", sym: "Vmes", form: "v.mes = l/t", unit: "m/s", otherUnits: "km/h", teTjera: "", nature: "Vektoriale", desc: "Raporti i zhvendosjes me intervalin e kohës gjatë të cilit ka ndodhur kjo zhvendosje.", phetUrl: "https://phet.colorado.edu/en/simulation/moving-man", img: "https://study.com/cimages/videopreview/screencapture_measuringspeed_140291.jpg", vid: "https://www.youtube.com/embed/UVKbAAw07Bg", gameUrl: "/loja-shpejtesia-mesatare.html" },
         { name: "7. Shpejtësia e castit", sym: "v", form: "v =Δx / Δt", unit: "m/s", otherUnits: "km/h  c=3 x 10⁸m/s eshte shpejtesia e drites ne zbrazeti (shpejtesia me e madhe ne natyre)", teTjera: "", nature: "Vektoriale", desc: "Shpejtësia e trupit në një çast të caktuar të kohës ose në një pikë të dhënë të trajektores.", phetUrl: "https://phet.colorado.edu/en/simulation/moving-man", img: "https://upload.wikimedia.org/wikipedia/sq/e/e2/Shpejt%C3%ABsia_e_castit.png", vid: "https://www.youtube.com/embed/9fWp9nlEJHo", gameUrl: "/loja-shpejtesia-castit.html" },
         { name: "8. Nxitimi", sym: "a", form: "a = Δv / Δt  a=F/m", unit: "m/s²", otherUnits: "N/kg", teTjera: "Te grafiku v(t) pjerrtësia tregon nxitimin.    Në lëvizje të përshpejtuar a dhe vo kanë shenjë të njëjtë.  Në lëvizje të ngadalësuar a dhe vo kanë shenjë të kundërt.", nature: "Vektoriale", desc: "Madhësia që tregon ndryshimin e shpejtësisë në njësinë e kohë.", phetUrl: "https://phet.colorado.edu/en/simulation/moving-man", img: "https://bayernboy025.wordpress.com/wp-content/uploads/2025/03/image-7.png?w=929", vid: "https://www.youtube.com/embed/ks-yBHtiRqM", gameUrl: "/nxitimi.html" },
-        { name: "9. Nxitimi i renies se lire", sym: "g", form: "g =GM/R²  G=6,67 x 10⁻¹¹Nm²/kg²  G → γ", unit: "N/kg", otherUnits: "m/s²", teTjera: " Afër tokës g=9,8 m/s². Në pole g rritet pak. Në lartësi h nga planeti → g= M/(R+h)² ", nature: "Vektoriale", desc: "Nxitimi me të cilin bien trupat në afërsi të sipërfaqes së Tokës nën veprimin e gravitetit.", phetUrl: "https://phet.colorado.edu/en/simulation/projectile-motion", img: "https://upload.wikimedia.org/wikipedia/commons/7/7d/Levizja_e_projektilit.jpg", vid: "https://www.youtube.com/embed/Mr-KXDD6-5g", gameURL: "/nxitimi i renies se lire.html" },
+        { name: "9. Nxitimi i renies se lire", sym: "g", form: "g =GM/R²  G=6,67 x 10⁻¹¹Nm²/kg²  G → γ", unit: "N/kg", otherUnits: "m/s²", teTjera: " Afër tokës g=9,8 m/s². Në pole g rritet pak. Në lartësi h nga planeti → g= M/(R+h)² ", nature: "Vektoriale", desc: "Nxitimi me të cilin bien trupat në afërsi të sipërfaqes së Tokës nën veprimin e gravitetit.", phetUrl: "https://phet.colorado.edu/en/simulation/projectile-motion", img: "https://upload.wikimedia.org/wikipedia/commons/7/7d/Levizja_e_projektilit.jpg", vid: "https://www.youtube.com/embed/Mr-KXDD6-5g" },
         { name: "10. Perioda", sym: "T", form: "T = 1/f ose T=t/N", unit: "s", otherUnits: "min, h", teTjera: "", nature: "Skalare", desc: "Koha e nevojshme për të kryer një rrotullim të plotë ose një lëkundje të plotë.", phetUrl: "https://phet.colorado.edu/en/simulation/pendulum-lab", img: "https://upload.wikimedia.org/wikipedia/commons/5/56/Simple_harmonic_motion.svg", vid: "https://www.youtube.com/embed/_LPGBHpSZpA" },
         { name: "11. Frekuenca", sym: "f", form: "f = 1/T  f=N/t", unit: "Hz", otherUnits: "s⁻¹, rrotullime/s ose lëkundje/s ", teTjera: "", nature: "Skalare", desc: "Numri i lëkundjeve (ose rrotullimeve) në njësinë e kohës.", phetUrl: "https://phet.colorado.edu/en/simulation/pendulum-lab", img: "https://www.guiahardware.es/wp-content/uploads/2023/07/frecuencia-1024x530.png", vid: "https://www.youtube.com/embed/TT4oSP4VdkA" },
         { name: "12. Shpejtësia këndore", sym: "ω", form: "ω = θ / t", unit: "rad/s", otherUnits: "-", teTjera: " w=2Π/T=2Πf ose w=V/R (L.RR.NS)", nature: "Vektoriale", desc: "Këndi në njësinë e kohës.", phetUrl: "https://phet.colorado.edu/en/simulation/pendulum-lab", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Angular_velocity.svg/1280px-Angular_velocity.svg.png", vid: "https://www.youtube.com/embed/WQ9AH2S8B6Y" },
@@ -184,7 +184,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             vid: "https://www.youtube.com/embed/egT-BjjR1kc", 
             gameUrl: "/loja3-gjysmezberthimi.html" 
         },
-        { id: 5, catName: "Fizika Kuantike", name: "5. Energjia bërthamore", sym: "E", form: "E = mc²", unit: "J", otherUnits: "MeV,1 MeV=10⁶ • 1,6•10⁻¹⁹J", teTjera: "", nature: "Skalare", desc: "Energjia e çliruar gjatë proceseve të fisionit ose fuzionit të bërthamave atomike.", phetUrl: "https://phet.colorado.edu/en/simulation/nuclear-fission", img: "https://cdn1.byjus.com/wp-content/uploads/2018/01/Nuclear-Energy2-700x416.png", vid: "https://www.youtube.com/embed/fuDOxIveHA4", gameUrl: "/loja-energjia-berthamore.html" }
+        { id: 5, catName: "Fizika Kuantike", name: "5. Energjia bërthamore", sym: "E", form: "E = mc²", unit: "J", otherUnits: "MeV,1 MeV=10⁶ • 1,6•10⁻¹⁹J", teTjera: "", nature: "Skalare", desc: "Energjia e çliruar gjatë proceseve të fisionit ose fuzionit të bërthamave atomike.", phetUrl: "https://phet.colorado.edu/en/simulation/nuclear-fission", img: "https://cdn1.byjus.com/wp-content/uploads/2018/01/Nuclear-Energy2-700x416.png", vid: "https://www.youtube.com/embed/fuDOxIveHA4", gameUrl: "/energjia berthamore.html" }
     ]
 };
 
@@ -237,7 +237,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko masën dhe shpejtësinë e bombës.", "Llogarit Ek = ½mv².", "Shëno rezultatin dhe gjuaj!"],
     type: 'digital',
-    url: '/loja-energjia-kinetike.html'
+    url: '/energjiakinetike1.html'
   },
   {
     title: "Eksperimenti i Gravitetit",
@@ -245,7 +245,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko masën e objektit dhe lartësinë.", "Llogarit Ep = mgh (g=10).", "Shëno rezultatin dhe lësho objektin!"],
     type: 'digital',
-    url: '/loja-energjia-potenciale-gravitacionale.html'
+    url: '/energjiapotencialegravitacionale.html'
   },
   {
     title: "Gjuajtësi Elastik",
@@ -253,7 +253,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko konstantin k dhe shtypjen x.", "Llogarit Epe = ½kx².", "Shëno rezultatin dhe lësho topin!"],
     type: 'digital',
-    url: '/loja-energjia-potenciale-elastike.html'
+    url: '/energjia potenciale elastike.html'
   },
   {
     title: "Roller Coaster",
@@ -261,7 +261,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko lartësinë h dhe shpejtësinë v.", "Llogarit Em = mgh + ½mv².", "Shëno rezultatin dhe nis trenin!"],
     type: 'digital',
-    url: '/loja-energjia-mekanike.html'
+    url: '/energjia mekanike.html'
   },
   {
     title: "Eksperimenti i Punës",
@@ -277,7 +277,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko masën m, lartësinë h dhe kohën t.", "Llogarit P = (mgh) / t.", "Shëno rezultatin dhe aktivizo ashensorin!"],
     type: 'digital',
-    url: '/loja-fuqia.html'
+    url: '/fuqia1.html'
   },
   {
     title: "Laboratori Termik",
@@ -285,7 +285,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko masën m dhe ndryshimin e temperaturës ΔT.", "Llogarit Q = m · c · ΔT.", "Shëno rezultatin dhe furnizo nxehtësi!"],
     type: 'digital',
-    url: '/loja-energjia-termike.html'
+    url: '/energjia e brendshme termike.html'
   },
   {
     title: "Qarku Elektrik",
@@ -293,7 +293,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko tensionin U, rrymën I dhe kohën t.", "Llogarit E = U · I · t.", "Shëno rezultatin dhe ndiz llambën!"],
     type: 'digital',
-    url: '/loja-energjia-elektrike.html'
+    url: '/energjia elektrike.html'
   },
   {
     title: "Karburanti i Trupit",
@@ -301,7 +301,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko sasinë e ushqimit dhe vlerën e tij energjetike.", "Llogarit E = sasia · vlera.", "Shëno rezultatin dhe hani vaktin!"],
     type: 'digital',
-    url: '/loja-energjia-kimike.html'
+    url: '/energjia kimike.html'
   },
   {
     title: "Reaktori Bërthamor",
@@ -309,7 +309,7 @@ export const GAMES: PhysicsGame[] = [
     materials: ["Kompjuter ose Telefon"],
     steps: ["Shiko masën e lëndës dhe rendimentin.", "Llogarit E = m · rendimenti.", "Shëno rezultatin dhe shkakto fisionin!"],
     type: 'digital',
-    url: '/loja-energjia-berthamore.html'
+    url: '/energjia berthamore.html'
   },
   {
     title: "Dinamika",
