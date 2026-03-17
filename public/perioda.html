@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonia e Fizikës</title>
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --primary: #a3cdf1;
+            --secondary: #ffcfd2;
+            --accent: #b9fbc0;
+            --text: #4a5568;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        h1 { font-size: 1.5rem; color: #718096; margin-bottom: 10px; }
+
+        .formula {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        /* Zona e lëkundjes */
+        .oscillator-box {
+            height: 100px;
+            background: #f8fafc;
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 2px solid #edf2f7;
+            overflow: hidden;
+        }
+
+        .ball {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            box-shadow: 0 4px 10px rgba(255, 207, 210, 0.6);
+        }
+
+        .target-box {
+            background: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #2d3748;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        /* Mesazhi përfundimtar */
+        #result {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Rrjedha Harmonike</h1>
+        
+        <div class="formula">
+            Formula: $$T = \frac{1}{f}$$
+        </div>
+
+        <div class="target-box">
+            Synimi: Perioda T = <span id="target-T">0.50</span>s
+        </div>
+
+        <div class="oscillator-box">
+            <div class="ball" id="ball"></div>
+        </div>
+
+        <div class="stats">
+            <span>f = <span id="f-val">1.0</span> Hz</span>
+            <span>T ≈ <span id="t-calc">1.00</span>s</span>
+        </div>
+
+        <div class="slider-container">
+            <input type="range" id="f-slider" min="0.5" max="4.0" step="0.1" value="1.0">
+        </div>
+
+        <button class="btn" onclick="kontrollo()">KONTROLLO</button>
+    </div>
+
+    <div id="result">
+        <h2 id="res-title"></h2>
+        <p id="res-msg"></p>
+        <button class="btn" style="width: auto; background: var(--primary);" onclick="mbyll()">Vazhdo</button>
+    </div>
+
+    <script>
+        const nivelet = [0.50, 0.25, 1.00, 0.40, 0.80];
+        let niveliAktual = 0;
+        let f = 1.0;
+        const ball = document.getElementById('ball');
+        const slider = document.getElementById('f-slider');
+
+        // Animacioni i lëvizjes
+        let nisja = Date.now();
+        function lëviz() {
+            let tani = Date.now();
+            let koha = (tani - nisja) / 1000;
+            // Pozicioni x: Qendra (140) + Amplituda (120) * sin(2 * PI * f * koha)
+            let x = 140 + 120 * Math.sin(2 * Math.PI * f * koha);
+            ball.style.left = x + "px";
+            requestAnimationFrame(lëviz);
+        }
+        lëviz();
+
+        slider.addEventListener('input', (e) => {
+            f = parseFloat(e.target.value);
+            document.getElementById('f-val').innerText = f.toFixed(1);
+            document.getElementById('t-calc').innerText = (1/f).toFixed(2);
+        });
+
+        function kontrollo() {
+            const synimi = nivelet[niveliAktual];
+            const kohaIme = 1 / f;
+            const diferenca = Math.abs(kohaIme - synimi);
+            
+            const overlay = document.getElementById('result');
+            const titulli = document.getElementById('res-title');
+            const mesazhi = document.getElementById('res-msg');
+
+            overlay.style.display = "flex";
+
+            if (diferenca < 0.05) {
+                titulli.innerText = "Saktë!";
+                mesazhi.innerText = `Llogaritja jote është e saktë për periodën ${synimi}s.`;
+                window.fitore = true;
+            } else {
+                titulli.innerText = "Gabim";
+                mesazhi.innerText = `Perioda jote doli ${kohaIme.toFixed(2)}s. Provo përsëri!`;
+                window.fitore = false;
+            }
+        }
+
+        function mbyll() {
+            if (window.fitore) {
+                niveliAktual = (niveliAktual + 1) % nivelet.length;
+                document.getElementById('target-T').innerText = nivelet[niveliAktual].toFixed(2);
+            }
+            document.getElementById('result').style.display = "none";
+        }
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
