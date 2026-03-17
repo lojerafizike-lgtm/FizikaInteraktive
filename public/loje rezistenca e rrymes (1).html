@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Resistance Guard - Loja e Rezistencës</title>
+    <style>
+        :root { --main-bg: #2c3e50; --wire-copper: #d35400; --wire-silver: #bdc3c7; --wire-gold: #f1c40f; }
+        body { background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; }
+        #game-box { background: #34495e; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; width: 600px; }
+        canvas { background: #1a1a1a; border-radius: 8px; margin: 20px 0; border: 2px solid #555; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #2c3e50; padding: 15px; border-radius: 10px; }
+        .slider-group { display: flex; flex-direction: column; align-items: flex-start; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        select { padding: 5px; border-radius: 5px; width: 100%; cursor: pointer; }
+        .status { font-size: 1.2em; margin: 10px 0; color: #3498db; font-weight: bold; }
+        .danger { color: #e74c3c; animation: blink 0.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        button { grid-column: span 2; padding: 12px; background: #27ae60; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.1em; }
+        button:hover { background: #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <h1>🛡️ Resistance Guard</h1>
+    <p>Rregullo parametrat e telit për të arritur <b>Rezistencën Target</b>!</p>
+
+    <div id="game-box">
+        <div id="levelDisplay">Niveli: 1</div>
+        <div class="status" id="targetDisplay">Target R: 15.00 Ω</div>
+        
+        <canvas id="wireCanvas" width="550" height="150"></canvas>
+        
+        <div class="status" id="currentR">R aktuale: 0.00 Ω</div>
+
+        <div class="controls">
+            <div class="slider-group">
+                <label>Materiali (ρ):</label>
+                <select id="materialSelect" onchange="updateWire()">
+                    <option value="0.017">Bakër (Bakër)</option>
+                    <option value="0.016">Argjend (Më pak rezistent)</option>
+                    <option value="0.024">Ar (Mesatar)</option>
+                    <option value="0.10">Hekur (Më shumë rezistent)</option>
+                </select>
+            </div>
+            <div class="slider-group">
+                <label>Gjatësia (l): <span id="lVal">10</span>m</label>
+                <input type="range" id="lInput" min="1" max="100" value="10" oninput="updateWire()">
+            </div>
+            <div class="slider-group" style="grid-column: span 2;">
+                <label>Trashësia/Prerja (S): <span id="sVal">1.0</span> mm²</label>
+                <input type="range" id="sInput" min="0.1" max="5.0" step="0.1" value="1.0" oninput="updateWire()">
+            </div>
+            <button onclick="checkResult()">TESTO QARKUN</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('wireCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let level = 1;
+        let targetR = 8.5;
+
+        function updateWire() {
+            const rho = parseFloat(document.getElementById('materialSelect').value);
+            const l = parseFloat(document.getElementById('lInput').value);
+            const s = parseFloat(document.getElementById('sInput').value);
+            
+            // Formula: R = rho * (l / s)
+            // (Shënim: Multiplikojmë me 100 për ta bërë vlerën më "lojë")
+            const r = (rho * (l / s) * 100).toFixed(2);
+            
+            document.getElementById('lVal').innerText = l;
+            document.getElementById('sVal').innerText = s;
+            document.getElementById('currentR').innerText = `R aktuale: ${r} Ω`;
+
+            drawWire(l, s, rho);
+            return r;
+        }
+
+        function drawWire(l, s, rho) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Ngjyra sipas materialit
+            if(rho == 0.017) ctx.fillStyle = "#d35400"; // Baker
+            else if(rho == 0.016) ctx.fillStyle = "#bdc3c7"; // Argjend
+            else if(rho == 0.024) ctx.fillStyle = "#f1c40f"; // Ar
+            else ctx.fillStyle = "#7f8c8d"; // Hekur
+
+            const wireHeight = s * 10;
+            const wireWidth = l * 5;
+            
+            ctx.fillRect(275 - wireWidth/2, 75 - wireHeight/2, wireWidth, wireHeight);
+            
+            // Shkëlqimi i telit
+            ctx.fillStyle = "rgba(255,255,255,0.2)";
+            ctx.fillRect(275 - wireWidth/2, 75 - wireHeight/2, wireWidth, wireHeight/3);
+        }
+
+        function checkResult() {
+            const currentR = parseFloat(updateWire());
+            const diff = Math.abs(currentR - targetR);
+
+            if (diff < 0.5) {
+                alert("SUKSES! Rezistenca është e saktë për pajisjen.");
+                level++;
+                targetR = (Math.random() *

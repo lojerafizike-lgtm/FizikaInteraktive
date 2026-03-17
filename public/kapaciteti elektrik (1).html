@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Capacitor Master - Fizika Lab</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #game-ui {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid #4e4e6a;
+            margin-bottom: 20px;
+            width: 600px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        canvas {
+            background: #16213e;
+            border: 3px solid #0f3460;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,210,255,0.2);
+        }
+
+        .stat-box { text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #00d2ff; }
+        .controls { margin-top: 15px; color: #aaa; font-size: 0.8rem; }
+        
+        #message {
+            position: absolute;
+            top: 20%;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-ui">
+        <div class="stat-box">
+            <div>Kapaciteti (C)</div>
+            <div id="cap-val" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+            <div>Ngarkesa (Q)</div>
+            <div id="charge-val" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+            <div>Energjia (W)</div>
+            <div id="energy-val" class="stat-value">0</div>
+        </div>
+    </div>
+
+    <div id="message"></div>
+    <canvas id="capCanvas" width="700" height="400"></canvas>
+
+    <div class="controls">
+        Lëviz MIUN lart/poshtë për të ndryshuar distancën (d) | Mbaj shtypur BUTONIN e miut për të shtuar dielektrikun (ε)
+    </div>
+
+    <script>
+        const canvas = document.getElementById('capCanvas');
+        const ctx = canvas.getContext('2d');
+        const capDisp = document.getElementById('cap-val');
+        const qDisp = document.getElementById('charge-val');
+        const wDisp = document.getElementById('energy-val');
+        const msgDisp = document.getElementById('message');
+
+        let d = 100; // Distanca mes pllakave
+        let epsilon = 1; // Dielektriku
+        let area = 200; // Sipërfaqja e pllakave
+        let charge = 0;
+        let isPressing = false;
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            let mouseY = e.clientY - rect.top;
+            // Ndryshimi i distancës d bazuar në lartësinë e miut
+            d = Math.max(20, Math.min(180, mouseY - 100));
+        });
+
+        window.addEventListener('mousedown', () => isPressing = true);
+        window.addEventListener('mouseup', () => isPressing = false);
+
+        function update() {
+            // Formula: C = ε * (A / d)
+            if (isPressing) epsilon = Math.min(5, epsilon + 0.05);
+            else epsilon = Math.max(1, epsilon - 0.05);
+
+            let C = (epsilon * area) / d;
+            
+            // Ngarkesa rritet gradualisht nëse kapaciteti është i lartë
+            charge += C * 0.01;
+            
+            // Energjia: W = 0.5 * Q^2 / C
+            let W = 0.5 * (charge * charge) / C;
+
+            // UI Update
+            capDisp.innerText = C.toFixed(1) + " μF";
+            qDisp.innerText = charge.toFixed(0) + " nC";
+            wDisp.innerText = W.toFixed(0) + " J";
+
+            // Kushti i humbjes (Mbingarkesa)
+            if (W > 5000) {
+                msgDisp.innerText = "KONDENSATORI SHPËRTHEU! 💥";
+                msgDisp.style.color = "#ff4d4d";
+                charge = 0;
+                setTimeout(() => msgDisp.innerText = "", 2000);
+            } else if (W > 3000) {
+                msgDisp.innerText = "QYTETI U NNDIZ! ⚡🏙️";
+                msgDisp.style.color = "#00ff88";
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let centerY = canvas.height / 2;
+            let plateWidth = 300;
+            let startX = (canvas.width - plateWidth) / 2;
+
+            // Vizatimi i Dielektrikut (mushkëria mes pllakave)
+            ctx.fillStyle = `rgba(0, 210, 255, ${epsilon / 10})`;
+            ctx.fillRect(startX, centerY - d/2, plateWidth, d);
+
+            // Pllaka e sipërme (Pozitive)
+            ctx.fillStyle = "#ff4d4d";
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#ff4d4d";
+            ctx.fillRect(startX, centerY - d/2 - 10, plateWidth, 10);
+
+            // Pllaka e poshtme (Negative)
+            ctx.fillStyle = "#4d79ff";
+            ctx.shadowColor = "#4d79ff";
+            ctx.fillRect(startX, centerY + d/2, plateWidth, 10);
+            
+            // Vizatimi i ngarkesave (Grimcat që lëvizin)
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "white";
+            for(let i=0; i < charge/10; i++) {
+                let rx = startX + (Math.random() * plateWidth);
+                let ry = (centerY - d/2 - 5) + (Math.random() > 0.5 ? 0 : d + 10);
+                ctx.beginPath();
+                ctx.arc(rx, ry, 2, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            // Etiketat e formulës
+            ctx.fillStyle = "#aaa";
+            ctx.font = "12px Arial";
+            ctx.fillText("Distanca (d): " + d.toFixed(0) + "px", 20, 380);
+            ctx.fillText("Permitiviteti (ε): " + epsilon.toFixed(1), 200, 380);
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>

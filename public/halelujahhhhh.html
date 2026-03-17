@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Induction Master - I = ε/R</title>
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-red: #ff0077;
+            --grid-color: #1a1a2e;
+        }
+
+        body {
+            margin: 0;
+            background: #050505;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 300px;
+            background: rgba(10, 10, 25, 0.9);
+            border-right: 2px solid var(--neon-blue);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+
+        .level-box {
+            border: 1px solid var(--neon-blue);
+            padding: 15px;
+            background: rgba(0, 242, 255, 0.05);
+            text-align: center;
+        }
+
+        .gauge-container {
+            background: #000;
+            border: 2px solid #333;
+            height: 30px;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        #gauge-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--neon-blue);
+            transition: width 0.1s;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        input[type=range] { width: 100%; accent-color: var(--neon-red); }
+
+        /* FORMULA E SAKTË NË FUND */
+        .formula-card {
+            margin-top: auto;
+            padding: 15px;
+            background: rgba(0,0,0,0.8);
+            border-top: 2px solid var(--neon-red);
+            text-align: center;
+        }
+
+        .math-style {
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        .fraction {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .top { border-bottom: 1px solid var(--neon-blue); padding: 0 5px; }
+        .bottom { padding: 0 5px; }
+
+        #main-view { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; }
+
+        .btn {
+            background: var(--neon-blue);
+            color: #000;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h2 style="color: var(--neon-blue); margin: 0; font-size: 1.2rem;">GEN-CONTROLLER</h2>
+        
+        <div class="level-box">
+            <div id="lvlNum">NIVELI 1</div>
+            <div style="font-size: 0.7rem; margin-top: 5px;">TARGET I: <span id="targetVal">2.00</span> A</div>
+        </div>
+
+        <div class="control-unit">
+            <label style="font-size: 0.7rem;">REZISTENCA (R)</label>
+            <input type="range" id="resistor" min="1" max="10" step="0.5" value="5">
+            <div id="rVal" style="text-align: center;">5.0 Ω</div>
+        </div>
+
+        <div class="gauge-container">
+            <div id="gauge-fill"></div>
+        </div>
+        <div style="text-align: center; font-size: 0.8rem;">RRYMA AKTUALE (I)</div>
+
+        <div class="formula-card">
+            <div style="font-size: 0.7rem; opacity: 0.6;">LIGJI I INDUKSIONIT</div>
+            <div class="math-style">
+                I = 
+                <div class="fraction">
+                    <div class="top">ε</div>
+                    <div class="bottom">R</div>
+                </div>
+            </div>
+            <p style="font-size: 0.7rem;">Lëviz magnetin me shpejtësi për të gjeneruar ε (tension)!</p>
+        </div>
+    </div>
+
+    <div id="main-view">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const resSlider = document.getElementById('resistor');
+    const gauge = document.getElementById('gauge-fill');
+
+    let width, height;
+    let magnetX = 100;
+    let lastMagnetX = 100;
+    let velocity = 0;
+    let currentLevel = 0;
+
+    const levels = [
+        { target: 2.0, r: 5 },
+        { target: 4.5, r: 2 },
+        { target: 1.5, r: 8 }
+    ];
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        magnetX = e.clientX - rect.left;
+    });
+
+    function draw() {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, width, height);
+
+        // Grid background
+        ctx.strokeStyle = "#111";
+        for(let i=0; i<width; i+=50) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
+        }
+
+        // Llogarit ε (FEM) bazuar në shpejtësinë e magnetit
+        velocity = Math.abs(magnetX - lastMagnetX);
+        lastMagnetX = magnetX;
+
+        const epsilon = velocity * 0.5;
+        const R = parseFloat(resSlider.value);
+        const I = epsilon / R;
+
+        document.getElementById('rVal').innerText = R.toFixed(1) + " Ω";
+        gauge.style.width = Math.min(I * 20, 100) + "%";
+
+        // Vizato Spirën (Coil)
+        ctx.strokeStyle = "#555";
+        ctx.lineWidth = 5;
+        for(let i=0; i<5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(width/2, height/2, 40, 100, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Vizato Magnetin
+        ctx.fillStyle = varProp('--neon-red');
+        ctx.fillRect(magnetX - 40, height/2 - 20, 40, 40);
+        ctx.fillStyle = "#ccc";
+        ctx.fillRect(magnetX, height/2 - 20, 40, 40);
+        ctx.fillStyle = "white";
+        ctx.fillText("N", magnetX - 25, height/2 + 5);
+        ctx.fillText("S", magnetX + 15, height/2 + 5);
+
+        // Kontrollo shënjestrën e nivelit
+        const target = levels[currentLevel].target;
+        document.getElementById('targetVal').innerText = target.toFixed(2);
+        
+        if(Math.abs(I - target) < 0.2) {
+            ctx.fillStyle = varProp('--neon-blue');
+            ctx.font = "20px Orbitron";
+            ctx.fillText("STABILIZUAR!", width/2 - 80, 100);
+            // Këtu mund të shtohet kalimi i nivelit me timeout
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    draw();
+</script>
+</body>
+</html>

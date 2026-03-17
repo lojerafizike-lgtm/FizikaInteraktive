@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Magnetic Induction Master</title>
+    <style>
+        :root {
+            --gold: #ffb800;
+            --magnetic-blue: #00d1ff;
+            --industrial-gray: #1a1a1a;
+            --neon-green: #39ff14;
+        }
+
+        body {
+            margin: 0;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar UI Moderne */
+        #control-panel {
+            width: 320px;
+            background: var(--industrial-gray);
+            border-right: 2px solid #333;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+        }
+
+        .header-box {
+            border-bottom: 1px solid #444;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 { font-size: 1.2rem; color: var(--gold); letter-spacing: 2px; margin: 0; }
+
+        .stat-group {
+            background: #252525;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+
+        .label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
+        .value { font-size: 1.2rem; font-family: 'Courier New', monospace; color: var(--magnetic-blue); }
+
+        .btn {
+            background: #333;
+            color: white;
+            border: 1px solid #444;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover { background: var(--gold); color: black; }
+        .active { border-color: var(--magnetic-blue); box-shadow: 0 0 10px rgba(0,209,255,0.3); }
+
+        /* Formula e rregulluar ne fund */
+        .formula-container {
+            margin-top: auto;
+            padding: 20px;
+            background: #000;
+            border-radius: 8px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        .math-fraction {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .frac-top { border-bottom: 1px solid var(--gold); padding: 0 5px; }
+        .frac-bottom { padding: 0 5px; }
+
+        #game-viewport { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; cursor: crosshair; }
+
+        .notification {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: var(--neon-green);
+            color: black;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="control-panel">
+        <div class="header-box">
+            <h1>MAG-INDUCTION v1.0</h1>
+        </div>
+
+        <div class="stat-group">
+            <div class="label">Induksioni (B)</div>
+            <div id="b-val" class="value">0.00 T</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="label">Forca (Fmax)</div>
+            <div id="f-val" class="value">0.00 N</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <button id="northBtn" class="btn active" onclick="setPole(1)">Shto Polin Veri (N)</button>
+            <button id="southBtn" class="btn" onclick="setPole(-1)">Shto Polin Jug (S)</button>
+            <button class="btn" onclick="resetField()" style="margin-top: 20px; border-color: #ff4444; color: #ff4444;">Reset Fushën</button>
+        </div>
+
+        <div class="formula-footer">
+            <p style="font-size: 0.8rem; color: #888;">Relacioni:</p>
+            <div class="math-fraction">
+                B = 
+                <div style="display: inline-block; vertical-align: middle;">
+                    <div class="frac-top">F<sub>max</sub></div>
+                    <div class="frac-bottom">I · L</div>
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 10px;">Vendos magnetët për të devijuar rrymën.</p>
+        </div>
+    </div>
+
+    <div id="game-viewport">
+        <div id="success-msg" class="notification">OBJEKTIVI U ARRI!</div>
+        <canvas id="canvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let magnets = [];
+    let poleType = 1; // 1 for North, -1 for South
+    let currentI = 2.5; // Amper
+    let lengthL = 0.5; // Metra
+    
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function setPole(type) {
+        poleType = type;
+        document.getElementById('northBtn').classList.toggle('active', type === 1);
+        document.getElementById('southBtn').classList.toggle('active', type === -1);
+    }
+
+    function resetField() { magnets = []; }
+
+    canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        magnets.push({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+            type: poleType
+        });
+    });
+
+    function calculateB(px, py) {
+        let totalB = 0;
+        magnets.forEach(m => {
+            let d = Math.hypot(px - m.x, py - m.y) + 50;
+            totalB += (m.type * 5000) / (d * d);
+        });
+        return totalB;
+    }
+
+    function draw() {
+        ctx.fillStyle = "#0a0a0a";
+        ctx.fillRect(0, 0, width, height);
+
+        // Vizato përcjellësin (Current Wire)
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 20;
+        ctx.beginPath();
+        ctx.moveTo(width/2, 0);
+        ctx.lineTo(width/2, height);
+        ctx.stroke();
+
+        // Llogarit B dhe F në mes të përcjellësit
+        let B = calculateB(width/2, height/2);
+        let F = Math.abs(B * currentI * lengthL);
+
+        document.getElementById('b-val').innerText = Math.abs(B).toFixed(2) + " T";
+        document.getElementById('f-val').innerText = F.toFixed(2) + " N";
+
+        // Vizato grimcat e rrymës (I)
+        let offset = (Date.now() % 1000) / 1000 * 50;
+        ctx.fillStyle = varProp('--magnetic-blue');
+        for(let i=0; i<height; i+=50) {
+            ctx.beginPath();
+            ctx.arc(width/2, i + offset, 4, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        // Vizato magnetët
+        magnets.forEach(m => {
+            ctx.fillStyle = m.type === 1 ? "#ff4444" : "#4444ff";
+            ctx.fillRect(m.x - 20, m.y - 30, 40, 60);
+            ctx.fillStyle = "white";
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(m.type === 1 ? "N" : "S", m.x, m.y + 5);
+        });
+
+        // Kontrollo fitoren (Duhet forcë > 10N)
+        if(F > 10) {
+            document.getElementById('success-msg').style.display = 'block';
+        } else {
+            document.getElementById('success-msg').style.display = 'none';
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    draw();
+</script>
+</body>
+</html>

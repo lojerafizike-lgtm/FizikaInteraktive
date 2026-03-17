@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Potential Master - Final Fixed</title>
+    <style>
+        :root {
+            --cyan: #00f3ff;
+            --rose: #ff0055;
+            --dark: #050505;
+        }
+
+        body {
+            margin: 0;
+            background: var(--dark);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #ui {
+            width: 300px;
+            background: #0a0a0a;
+            border-right: 1px solid #222;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .level-card {
+            background: #111;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--cyan);
+        }
+
+        #game-area { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; cursor: crosshair; }
+
+        .btn {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #151515;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn:hover { border-color: var(--cyan); }
+        .active-q { border-color: var(--cyan) !important; background: #002222; }
+
+        /* RREGULLIMI I FORMULES NE FUND */
+        .formula-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #222;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .math-fraction {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        .fraction-top { border-bottom: 1px solid white; padding: 0 5px; }
+        .fraction-bottom { padding: 0 5px; }
+
+        #multimeter {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--cyan);
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            pointer-events: none;
+            display: none;
+        }
+
+        .success-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #00ff88;
+            color: black;
+            padding: 25px 50px;
+            border-radius: 10px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <h2 style="color: var(--cyan); margin: 0; letter-spacing: 1px;">POTENTIAL LAB</h2>
+        
+        <div class="level-card">
+            <div id="lvlNum" style="font-weight: bold;">Niveli 1</div>
+            <div id="lvlGoal" style="font-size: 0.85rem; color: #ffcc00;">Synimi: V > 100V</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button id="posBtn" class="btn active-q" onclick="setQ(1)">+ Pozitive</button>
+            <button id="negBtn" class="btn" onclick="setQ(-1)">- Negative</button>
+            <button class="btn" onclick="resetLevel()" style="margin-top: 10px;">Reset</button>
+        </div>
+
+        <div class="formula-footer">
+            Formula: 
+            <div class="math-fraction">
+                V = 
+                <div style="display: inline-block; vertical-align: middle;">
+                    <div class="fraction-top">E<sub>p</sub></div>
+                    <div class="fraction-bottom">q</div>
+                </div>
+            </div>
+            <br><br>
+            Shtyp mbi fushë për të vendosur burimin.
+        </div>
+    </div>
+
+    <div id="game-area">
+        <canvas id="canvas"></canvas>
+        <div id="multimeter">V: 0.00V</div>
+        <div id="success" class="success-overlay">
+            <h3>NIVELI U KALUA!</h3>
+            <button class="btn" onclick="nextLevel()" style="background: black; border: none;">VAZHDO</button>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const multi = document.getElementById('multimeter');
+    const successDiv = document.getElementById('success');
+
+    let currentLevel = 0;
+    let charges = [];
+    let qType = 1;
+    let width, height;
+
+    const levels = [
+        { goalV: 100, target: {x: 0.7, y: 0.5}, walls: [] },
+        { goalV: -150, target: {x: 0.8, y: 0.2}, walls: [{x: 0.5, y: 0, w: 0.02, h: 0.7}] },
+        { goalV: 200, target: {x: 0.5, y: 0.5}, walls: [{x: 0.3, y: 0.3, w: 0.4, h: 0.02}, {x: 0.3, y: 0.7, w: 0.4, h: 0.02}] }
+    ];
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function setQ(v) {
+        qType = v;
+        document.getElementById('posBtn').classList.toggle('active-q', v > 0);
+        document.getElementById('negBtn').classList.toggle('active-q', v < 0);
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        multi.style.display = 'block';
+        multi.style.left = (mx + 15) + 'px';
+        multi.style.top = (my + 15) + 'px';
+        let V = calculatePotential(mx, my);
+        multi.innerText = `V: ${V.toFixed(1)}V`;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        if(successDiv.style.display === 'block') return;
+        const rect = canvas.getBoundingClientRect();
+        charges.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, q: qType * 200 });
+    });
+
+    function calculatePotential(px, py) {
+        let V = 0;
+        charges.forEach(c => {
+            let r = Math.hypot(px - c.x, py - c.y) + 20;
+            V += (c.q * 10) / (r * 0.1);
+        });
+        return V;
+    }
+
+    function resetLevel() { charges = []; successDiv.style.display = 'none'; }
+
+    function nextLevel() {
+        currentLevel++;
+        if(currentLevel >= levels.length) { alert("Urime! Keni fituar."); currentLevel = 0; }
+        document.getElementById('lvlNum').innerText = "Niveli " + (currentLevel + 1);
+        document.getElementById('lvlGoal').innerText = `Synimi: V > ${levels[currentLevel].goalV}V`;
+        resetLevel();
+    }
+
+    function draw() {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, width, height);
+        const lvl = levels[currentLevel];
+        ctx.fillStyle = "#222";
+        lvl.walls.forEach(w => ctx.fillRect(w.x * width, w.y * height, w.w * width, w.h * height));
+        const tx = lvl.target.x * width;
+        const ty = lvl.target.y * height;
+        const currentV = calculatePotential(tx, ty);
+        const reached = Math.abs(currentV) >= Math.abs(lvl.goalV);
+        ctx.beginPath();
+        ctx.arc(tx, ty, 35, 0, Math.PI*2);
+        ctx.strokeStyle = reached ? "#00ff88" : "#ffcc00";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText(`SENSOR: ${currentV.toFixed(0)}V`, tx, ty - 45);
+        charges.forEach(c => {
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = c.q > 0 ? varProp('--rose') : "#0088ff";
+            ctx.fill();
+        });
+        if (reached && successDiv.style.display !== 'block') successDiv.style.display = 'block';
+        requestAnimationFrame(draw);
+    }
+    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    draw();
+</script>
+</body>
+</html>

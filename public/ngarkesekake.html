@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Field Master</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --accent: #38bdf8;
+            --positive: #ef4444;
+            --negative: #3b82f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            margin-top: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            background: radial-gradient(circle, #1e293b 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        canvas { display: block; cursor: crosshair; }
+
+        .ui-panel {
+            background: var(--panel);
+            padding: 15px 25px;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            border: 1px solid #334155;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-pos { background: var(--positive); color: white; }
+        .btn-neg { background: var(--negative); color: white; }
+        .btn-start { background: #10b981; color: white; }
+        .btn-reset { background: #64748b; color: white; }
+        .btn:hover { opacity: 0.8; transform: scale(1.05); }
+
+        .stats { font-size: 1.1rem; color: var(--accent); }
+        
+        #instructions {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-panel">
+        <div class="stats">Niveli: <span id="lvl">1</span></div>
+        <button class="btn btn-pos" onclick="setMode('pos')">+ Shto Pozitive</button>
+        <button class="btn btn-neg" onclick="setMode('neg')">- Shto Negative</button>
+        <button class="btn btn-start" onclick="startSim()">Lësho Protonin!</button>
+        <button class="btn btn-reset" onclick="resetLevel()">Reset</button>
+    </div>
+
+    <div id="game-container">
+        <div id="instructions">Klikoni në fushë për të vendosur ngarkesat.<br>Drejtoni protonin te rrethi i gjelbër!</div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 500;
+
+    let level = 1;
+    let mode = 'pos';
+    let charges = [];
+    let particle = { x: 50, y: 250, vx: 0, vy: 0, active: false };
+    let target = { x: 750, y: 250, r: 20 };
+    let walls = [];
+    let animationId;
+
+    const levels = [
+        { walls: [], target: {x: 750, y: 250} },
+        { walls: [{x: 400, y: 150, w: 20, h: 200}], target: {x: 750, y: 250} },
+        { walls: [{x: 300, y: 0, w: 20, h: 300}, {x: 500, y: 200, w: 20, h: 300}], target: {x: 750, y: 50} }
+    ];
+
+    function setMode(m) { mode = m; }
+
+    canvas.addEventListener('mousedown', (e) => {
+        if (particle.active) return;
+        const rect = canvas.getBoundingClientRect();
+        charges.push({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+            type: mode,
+            q: mode === 'pos' ? 1 : -1
+        });
+        draw();
+    });
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Vizato Targetin
+        ctx.beginPath();
+        ctx.arc(target.x, target.y, target.r, 0, Math.PI*2);
+        ctx.fillStyle = '#10b981';
+        ctx.fill();
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#10b981';
+
+        // Vizato Muret
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#475569';
+        walls.forEach(w => ctx.fillRect(w.x, w.y, w.w, w.h));
+
+        // Vizato Ngarkesat e vendosura
+        charges.forEach(c => {
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = c.type === 'pos' ? '#ef4444' : '#3b82f6';
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.fillText(c.type === 'pos' ? "+" : "-", c.x-3, c.y+4);
+        });
+
+        // Vizato Protonin
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, 6, 0, Math.PI*2);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fill();
+    }
+
+    function update() {
+        if (!particle.active) return;
+
+        let fx = 0;
+        let fy = 0;
+        const k = 5000; // Konstanta e lojës
+
+        charges.forEach(c => {
+            let dx = particle.x - c.x;
+            let dy = particle.y - c.y;
+            let distSq = dx*dx + dy*dy;
+            let dist = Math.sqrt(distSq);
+            if (dist < 15) dist = 15; // Parandalon shpërthimin e forcës
+
+            let force = (k * c.q) / distSq;
+            fx += (dx / dist) * force;
+            fy += (dy / dist) * force;
+        });
+
+        particle.vx += fx;
+        particle.vy += fy;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        // Kontrolli i përplasjeve
+        if (particle.x < 0 || particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
+            resetAttempt();
+        }
+
+        walls.forEach(w => {
+            if (particle.x > w.x && particle.x < w.x + w.w && particle.y > w.y && particle.y < w.y + w.h) {
+                resetAttempt();
+            }
+        });
+
+        // Fitore
+        let distToTarget = Math.hypot(particle.x - target.x, particle.y - target.y);
+        if (distToTarget < target.r) {
+            alert("Bravo! Niveli u kalua.");
+            level++;
+            loadLevel(level);
+            return;
+        }
+
+        draw();
+        animationId = requestAnimationFrame(update);
+    }
+
+    function startSim() {
+        if (particle.active) return;
+        particle.active = true;
+        update();
+    }
+
+    function resetAttempt() {
+        cancelAnimationFrame(animationId);
+        particle = { x: 50, y: 250, vx: 0, vy: 0, active: false };
+        particle.active = false;
+        draw();
+    }
+
+    function resetLevel() {
+        charges = [];
+        resetAttempt();
+    }
+
+    function loadLevel(n) {
+        if (n > levels.length) {
+            alert("Ti je një Gjini i Fizikës! I fitove të gjitha.");
+            level = 1;
+            n = 1;
+        }
+        document.getElementById('lvl').innerText = n;
+        const config = levels[n-1];
+        walls = config.walls;
+        target.x = config.target.x;
+        target.y = config.target.y;
+        resetLevel();
+    }
+
+    loadLevel(1);
+</script>
+</body>
+</html>

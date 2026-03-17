@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Flux Master - Levels</title>
+    <style>
+        :root {
+            --orange: #ff6b00;
+            --bg: #050505;
+            --card: #111;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #ui {
+            width: 300px;
+            background: #0a0a0a;
+            border-right: 1px solid #222;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .level-card {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--orange);
+        }
+
+        .goal-text { color: var(--orange); font-weight: bold; font-size: 1.1rem; }
+
+        input[type=range] { width: 100%; accent-color: var(--orange); cursor: pointer; }
+
+        /* FORMULA E SAKTË DHE E PASTER */
+        .formula-footer {
+            margin-top: auto;
+            padding: 20px;
+            background: #000;
+            border-radius: 8px;
+            border: 1px dashed #333;
+            text-align: center;
+        }
+
+        .math-text {
+            font-size: 1.4rem;
+            color: var(--orange);
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        #viewport { flex-grow: 1; position: relative; }
+        canvas { width: 100%; height: 100%; }
+
+        .overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            border: 2px solid var(--orange);
+            padding: 30px;
+            text-align: center;
+            display: none;
+            border-radius: 12px;
+        }
+
+        .btn {
+            background: var(--orange);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <h2 style="margin:0; color:var(--orange)">FLUX STATIONS</h2>
+        
+        <div class="level-card">
+            <div id="lvlNum">Niveli 1</div>
+            <div style="font-size: 0.8rem; opacity: 0.6;">OBJEKTIVI:</div>
+            <div id="targetFlux" class="goal-text">3.00 Wb</div>
+        </div>
+
+        <div style="background:#151515; padding:15px; border-radius:8px;">
+            <label style="font-size: 0.7rem; opacity: 0.5;">KONTROLLI I KËNDIT (α)</label>
+            <input type="range" id="angleSlider" min="0" max="90" step="1" value="45">
+            <div id="angleVal" style="text-align:center; margin-top:5px;">45°</div>
+        </div>
+
+        <div style="padding:10px; background:#000; border-radius:8px; font-family:monospace;">
+            Φ Real: <span id="currentFlux">0.00</span> Wb
+        </div>
+
+        <div class="formula-footer">
+            Formula:
+            <div class="math-text">Φ = B · S · cos(α)</div>
+            <p style="font-size: 0.75rem; color: #666;">Përshtat këndin për të kapur fluksin e duhur.</p>
+        </div>
+    </div>
+
+    <div id="viewport">
+        <canvas id="mainCanvas"></canvas>
+        <div id="winOverlay" class="overlay">
+            <h2 style="color:var(--orange)">STACIONI U AKTIVIZUA!</h2>
+            <p>Fluksi magnetik është brenda normës.</p>
+            <button class="btn" onclick="nextLevel()">NIVELI TJETËR</button>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('angleSlider');
+    const winOverlay = document.getElementById('winOverlay');
+
+    let width, height;
+    let currentLevel = 0;
+    
+    // Parametrat e fushës
+    const B = 1.0; 
+    const S = 4.0;
+
+    const levels = [
+        { target: 4.00, desc: "Maksimizo kapjen (0°)" },
+        { target: 2.83, desc: "Kap gjysmën (45°)" },
+        { target: 0.00, desc: "Izolo plotësisht (90°)" }
+    ];
+
+    function resize() {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function nextLevel() {
+        currentLevel++;
+        if(currentLevel >= levels.length) {
+            alert("Urime! Je një Inxhinier i Fluksit!");
+            currentLevel = 0;
+        }
+        document.getElementById('lvlNum').innerText = "Niveli " + (currentLevel + 1);
+        document.getElementById('targetFlux').innerText = levels[currentLevel].target.toFixed(2) + " Wb";
+        winOverlay.style.display = 'none';
+    }
+
+    function draw() {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, width, height);
+
+        const alpha = parseInt(slider.value);
+        document.getElementById('angleVal').innerText = alpha + "°";
+        
+        const rad = alpha * Math.PI / 180;
+        const flux = B * S * Math.cos(rad);
+        document.getElementById('currentFlux').innerText = flux.toFixed(2);
+
+        // Vizato vijat e fushës B
+        ctx.strokeStyle = "rgba(255, 107, 0, 0.15)";
+        for(let i=0; i<height; i+=40) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(width, i);
+            ctx.stroke();
+        }
+
+        // Vizato Spirën (Panelin)
+        ctx.save();
+        ctx.translate(width/2, height/2);
+        ctx.rotate(rad);
+        
+        ctx.fillStyle = "#222";
+        ctx.strokeStyle = varProp('--orange');
+        ctx.lineWidth = 4;
+        ctx.fillRect(-10, -120, 20, 240);
+        ctx.strokeRect(-10, -120, 20, 240);
+        
+        // Vektori Normal S
+        ctx.beginPath();
+        ctx.strokeStyle = "white";
+        ctx.setLineDash([5, 3]);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(100, 0);
+        ctx.stroke();
+        ctx.restore();
+
+        // Kontrollo Fitoren
+        const diff = Math.abs(flux - levels[currentLevel].target);
+        if(diff < 0.05 && winOverlay.style.display !== 'block') {
+            winOverlay.style.display = 'block';
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    draw();
+</script>
+</body>
+</html>
