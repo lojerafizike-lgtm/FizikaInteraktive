@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sfida e Frekuencës</title>
+    <style>
+        :root {
+            --bg: #fdfbfb;
+            --card: #ffffff;
+            --mint: #c1e1c1;
+            --peach: #ffdac1;
+            --lavender: #e2f0cb;
+            --text: #5f6368;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .game-card {
+            background: var(--card);
+            padding: 35px;
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.03);
+            width: 85%;
+            max-width: 360px;
+            text-align: center;
+            border: 1px solid #f1f1f1;
+        }
+
+        .formula-display {
+            background: var(--lavender);
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Laboratori i lëkundjes */
+        .wave-area {
+            height: 120px;
+            background: #fafafa;
+            border-radius: 25px;
+            position: relative;
+            margin-bottom: 25px;
+            border: 2px dashed #eee;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .pulsar {
+            width: 45px;
+            height: 45px;
+            background: var(--mint);
+            border-radius: 12px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 15px rgba(193, 225, 193, 0.5);
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        input[type="number"] {
+            width: 100px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid var(--mint);
+            text-align: center;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        .btn-check {
+            background: var(--mint);
+            color: #444;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            margin-top: 15px;
+            opacity: 0.7;
+        }
+
+        #modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-card">
+        <div class="formula-display">
+            $$f = \frac{1}{T}$$
+        </div>
+
+        <p style="font-weight: bold;">Vëzhgo periodën (T) dhe llogarit frekuencën (f):</p>
+
+        <div class="wave-area">
+            <div class="pulsar" id="objekt"></div>
+        </div>
+
+        <div id="info-perioda" style="margin-bottom: 15px; color: #888;">
+            Perioda aktuale: <b>T = <span id="val-T">1.00</span>s</b>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="f-user" step="0.01" placeholder="f = ?">
+            <span style="font-weight: bold; margin-left: 5px;">Hz</span>
+        </div>
+
+        <button class="btn-check" onclick="verifiko()">KONTROLLO</button>
+        
+        <p class="hint">Nëse një lëkundje zgjat T sekonda, sa herë lëkundet objekti brenda 1 sekonde?</p>
+    </div>
+
+    <div id="modal">
+        <h1 id="mod-titulli"></h1>
+        <p id="mod-teksti"></p>
+        <button class="btn-check" style="width: auto; background: var(--peach);" onclick="vazhdo()">Vazhdo</button>
+    </div>
+
+    <script>
+        const nivelet = [
+            { t: 1.00, f: 1.00 },
+            { t: 0.50, f: 2.00 },
+            { t: 2.00, f: 0.50 },
+            { t: 0.25, f: 4.00 },
+            { t: 0.80, f: 1.25 }
+        ];
+
+        let idx = 0;
+        const objekt = document.getElementById('objekt');
+
+        function animo() {
+            let tani = Date.now();
+            let T = nivelet[idx].t;
+            // Lëkundje vertikale e bazuar në Periodë
+            // y = sin(2 * PI * (1/T) * koha)
+            let y = Math.sin(2 * Math.PI * (1 / T) * (tani / 1000)) * 35;
+            objekt.style.transform = `translate(-50%, ${y}px)`;
+            requestAnimationFrame(animo);
+        }
+        animo();
+
+        function verifiko() {
+            const userF = parseFloat(document.getElementById('f-user').value);
+            const saktF = nivelet[idx].f;
+            const diff = Math.abs(userF - saktF);
+            
+            const modal = document.getElementById('modal');
+            modal.style.display = "flex";
+
+            if (diff < 0.1) {
+                document.getElementById('mod-titulli').innerText = "Saktë!";
+                document.getElementById('mod-teksti').innerText = `Bravo! Kur perioda është ${nivelet[idx].t}s, frekuenca është fiks ${saktF}Hz.`;
+                window.isCorrect = true;
+            } else {
+                document.getElementById('mod-titulli').innerText = "Jo plotësisht...";
+                document.getElementById('mod-teksti').innerText = `Llogaritja doli pak jashtë. Provo të pjestosh 1 me ${nivelet[idx].t}.`;
+                window.isCorrect = false;
+            }
+        }
+
+        function vazhdo() {
+            if (window.isCorrect) {
+                idx = (idx + 1) % nivelet.length;
+                document.getElementById('val-T').innerText = nivelet[idx].t.toFixed(2);
+                document.getElementById('f-user').value = "";
+            }
+            document.getElementById('modal').style.display = "none";
+        }
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
