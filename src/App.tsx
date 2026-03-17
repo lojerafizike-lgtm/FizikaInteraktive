@@ -907,6 +907,22 @@ const App: React.FC = () => {
                     <p className="text-xs text-slate-400">Materiale mbështetëse mësimore</p>
                   </div>
                 </div>
+                {/* Ref 7 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#ffafcc] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#ffafcc] transition-colors">07</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1 flex items-center gap-2"><span>📺</span> Video nga RTSH Shkollë</h4>
+                    <p className="text-xs text-slate-400">Leksione dhe demonstrime</p>
+                  </div>
+                </div>
+                {/* Ref 8 */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#a2d2ff] hover:shadow-lg transition-all flex gap-4 group shadow-sm">
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#a2d2ff] transition-colors">08</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1 flex items-center gap-2"><span>📘</span> Cambridge Resources</h4>
+                    <p className="text-xs text-slate-400">Ushtrime dhe burime mësimore</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
