@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja - Pesha</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0f0a1a; --surface:#1a1028; --accent:#ce93d8; --accent2:#ff8a65; --gold:#ffd600; --text:#f3e5f5; --muted:#ba68c8; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:20px; }
+  h1 { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--accent); text-shadow:0 0 20px var(--accent); margin-bottom:4px; letter-spacing:2px; }
+  .subtitle { color:var(--muted); font-size:1.1rem; margin-bottom:24px; }
+  .card { background:var(--surface); border:1px solid #2a1a4a; border-radius:16px; padding:24px; width:100%; max-width:700px; margin-bottom:20px; position:relative; overflow:hidden; }
+  .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+  .scene { background:#080510; border-radius:12px; height:200px; position:relative; margin-bottom:16px; border:1px solid #2a1a4a; overflow:hidden; }
+  .formula-box { background:#080510; border:1px solid var(--accent); border-radius:10px; padding:16px; text-align:center; font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--accent); margin-bottom:16px; }
+  label { font-size:1rem; color:var(--muted); display:block; margin-bottom:6px; }
+  .slider-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  input[type=range] { flex:1; -webkit-appearance:none; height:6px; border-radius:3px; background:#2a1a4a; outline:none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); cursor:pointer; }
+  .val { min-width:70px; text-align:right; font-family:'Orbitron',sans-serif; font-size:0.9rem; color:var(--gold); }
+  .results { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+  .result-item { background:#080510; border-radius:10px; padding:12px; text-align:center; border:1px solid #2a1a4a; }
+  .result-item .rlabel { font-size:0.8rem; color:var(--muted); margin-bottom:4px; }
+  .result-item .rval { font-family:'Orbitron',sans-serif; font-size:1.2rem; color:var(--gold); }
+  .tab-row { display:flex; gap:8px; margin-bottom:20px; }
+  .tab { padding:8px 20px; border-radius:8px; border:1px solid #2a1a4a; background:transparent; color:var(--muted); font-family:'Rajdhani',sans-serif; font-size:1rem; cursor:pointer; transition:all 0.2s; }
+  .tab.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:600; }
+  .panel { display:none; } .panel.active { display:block; }
+  .question { font-size:1.1rem; color:var(--text); margin-bottom:14px; line-height:1.5; }
+  .options { display:flex; flex-direction:column; gap:10px; }
+  .opt-btn { background:#080510; border:1px solid #2a1a4a; border-radius:10px; color:var(--text); padding:12px 16px; font-family:'Rajdhani',sans-serif; font-size:1rem; cursor:pointer; text-align:left; transition:all 0.2s; }
+  .opt-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .opt-btn.correct { border-color:#4caf50; background:#1a3a1a; color:#81c784; }
+  .opt-btn.wrong { border-color:var(--accent2); background:#2a0a0a; color:#ef9a9a; }
+  .feedback { margin-top:14px; padding:12px; border-radius:8px; font-size:1rem; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:#1a3a1a; border:1px solid #4caf50; color:#81c784; }
+  .feedback.bad { background:#2a0a0a; border:1px solid var(--accent2); color:#ef9a9a; }
+  .next-btn { margin-top:14px; background:linear-gradient(135deg,var(--accent),#6a0080); border:none; border-radius:10px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.9rem; padding:12px 24px; cursor:pointer; display:none; font-weight:bold; }
+  .next-btn.show { display:inline-block; }
+  .score-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .score-badge { background:#2a1a4a; border:1px solid var(--accent); border-radius:8px; padding:6px 14px; font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--accent); }
+  .progress-bar { flex:1; height:6px; background:#2a1a4a; border-radius:3px; margin:0 12px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:3px; transition:width 0.4s; }
+  .victory { text-align:center; padding:30px; display:none; }
+  .victory.show { display:block; }
+  .victory-title { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--gold); text-shadow:0 0 20px var(--gold); margin-bottom:10px; }
+  .stars { font-size:2.5rem; margin:10px 0; }
+  .restart-btn { margin-top:16px; background:var(--gold); border:none; border-radius:10px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.9rem; padding:12px 28px; cursor:pointer; font-weight:bold; }
+  /* Pesha specific */
+  .hanging-obj { position:absolute; top:20px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; }
+  .rope { width:4px; background:linear-gradient(180deg,#9e9e9e,#616161); border-radius:2px; transition:height 0.4s; }
+  .hung-block { width:80px; height:60px; background:linear-gradient(135deg,#4a148c,#7b1fa2); border:2px solid var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; font-size:0.9rem; color:var(--accent); }
+  .support-bar { position:absolute; top:0; left:0; right:0; height:16px; background:linear-gradient(180deg,#37474f,#263238); border-radius:0 0 4px 4px; }
+  .arrow-down { position:absolute; font-size:1.5rem; color:var(--accent2); }
+  .arrow-up { position:absolute; font-size:1.5rem; color:#4caf50; }
+  .planet-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
+  .planet-btn { background:#080510; border:1px solid #2a1a4a; border-radius:10px; padding:10px; text-align:center; cursor:pointer; transition:all 0.2s; }
+  .planet-btn:hover,.planet-btn.active { border-color:var(--accent); background:#1a0a2a; }
+  .planet-icon { font-size:1.5rem; }
+  .planet-name { font-size:0.8rem; color:var(--muted); }
+  .planet-g { font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--gold); }
+</style>
+</head>
+<body>
+<h1>🔩 PESHA</h1>
+<p class="subtitle">P = N &nbsp;|&nbsp; Forca mbi Mbështetësen</p>
+
+<div class="tab-row">
+  <button class="tab active" onclick="switchTab('sim',event)">🔬 Simulim</button>
+  <button class="tab" onclick="switchTab('quiz',event)">🧠 Kuiz</button>
+</div>
+
+<div class="panel active" id="panel-sim">
+  <div class="card">
+    <div style="font-size:0.95rem;color:var(--muted);margin-bottom:10px;">Zgjidh planetin dhe ndrysho masën:</div>
+    <div class="planet-row">
+      <div class="planet-btn active" onclick="setPlanet(this,'Tokë',9.81)"><div class="planet-icon">🌍</div><div class="planet-name">Tokë</div><div class="planet-g">g=9.81</div></div>
+      <div class="planet-btn" onclick="setPlanet(this,'Hënë',1.62)"><div class="planet-icon">🌕</div><div class="planet-name">Hënë</div><div class="planet-g">g=1.62</div></div>
+      <div class="planet-btn" onclick="setPlanet(this,'Mars',3.72)"><div class="planet-icon">🔴</div><div class="planet-name">Mars</div><div class="planet-g">g=3.72</div></div>
+      <div class="planet-btn" onclick="setPlanet(this,'Jupiter',24.8)"><div class="planet-icon">🟠</div><div class="planet-name">Jupiter</div><div class="planet-g">g=24.8</div></div>
+      <div class="planet-btn" onclick="setPlanet(this,'Saturn',10.4)"><div class="planet-icon">🪐</div><div class="planet-name">Saturn</div><div class="planet-g">g=10.4</div></div>
+      <div class="planet-btn" onclick="setPlanet(this,'Hapësirë',0)"><div class="planet-icon">✨</div><div class="planet-name">Hapësirë</div><div class="planet-g">g=0</div></div>
+    </div>
+    <div class="scene" id="scene">
+      <div class="support-bar"></div>
+      <div class="hanging-obj" id="hangObj">
+        <div class="rope" id="rope" style="height:40px;"></div>
+        <div class="hung-block" id="hungBlock">70 kg</div>
+      </div>
+      <div class="arrow-down" id="arrowDown" style="left:50%;bottom:30px;transform:translateX(-50%);">⬇️</div>
+      <div style="position:absolute;bottom:8px;left:12px;font-size:0.8rem;color:var(--muted);">Pesha = Forca Normale (N) mbi mbështetëse</div>
+    </div>
+    <div class="formula-box">P = N &nbsp;&nbsp;|&nbsp;&nbsp; G = m × g</div>
+    <div class="slider-row">
+      <label style="min-width:80px">Masa (kg)</label>
+      <input type="range" id="massSlider" min="1" max="200" value="70" oninput="updateSim()">
+      <span class="val" id="massVal">70 kg</span>
+    </div>
+    <div class="results">
+      <div class="result-item"><div class="rlabel">Forca e Rëndësës G</div><div class="rval" id="r1">686.7 N</div></div>
+      <div class="result-item"><div class="rlabel">Pesha = N</div><div class="rval" id="r2">686.7 N</div></div>
+    </div>
+    <div style="background:#080510;border:1px solid #2a1a4a;border-radius:10px;padding:12px;font-size:0.95rem;color:var(--muted);line-height:1.6;">
+      💡 <strong style="color:var(--accent)">Dallimi:</strong> Pesha (P=N) është forca mbi mbështetëse. Forca e Rëndësës (G=mg) është forca që Toka tërheq trupin. Në prehje P=G, por në nxitim P≠G!
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-quiz">
+  <div class="card">
+    <div class="score-row">
+      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+      <span class="score-badge"><span id="qnum">1</span>/7</span>
+    </div>
+    <div id="quiz-content">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+    </div>
+    <div class="victory" id="victory">
+      <div class="victory-title">🏆 BRAVO!</div>
+      <div class="stars" id="stars"></div>
+      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentG = 9.81;
+
+function setPlanet(el, name, g) {
+  document.querySelectorAll('.planet-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentG = g;
+  updateSim();
+}
+
+function updateSim() {
+  const m = parseFloat(document.getElementById('massSlider').value);
+  document.getElementById('massVal').textContent = m + ' kg';
+  document.getElementById('hungBlock').textContent = m + ' kg';
+  const G = m * currentG;
+  document.getElementById('r1').textContent = G.toFixed(1) + ' N';
+  document.getElementById('r2').textContent = G.toFixed(1) + ' N';
+  const ropeH = Math.min(20 + m * 0.4, 100);
+  document.getElementById('rope').style.height = ropeH + 'px';
+  const ad = document.getElementById('arrowDown');
+  if (currentG === 0) { ad.textContent = ''; } else { ad.textContent = '⬇️'; }
+}
+
+updateSim();
+
+const questions = [
+  { q: "Pesha e trupit është:", opts: ["Masa e trupit", "Forca mbi mbështetëse ose fija", "Nxitimi i trupit", "Vëllimi i trupit"], ans: 1 },
+  { q: "Nëse nxitimi i ashensorit është zero, pesha P krahasuar me G:", opts: ["P > G", "P < G", "P = G", "P = 0"], ans: 2 },
+  { q: "Njësia e peshës është:", opts: ["kg", "N", "Pa", "m/s"], ans: 1 },
+  { q: "Në hapësirë larg tokës, pesha e astronautit është:", opts: ["E njëjtë si në Tokë", "0 N", "Dyfishi", "E trefishtë"], ans: 1 },
+  { q: "Masa 10 kg, g=9.81. Sa është G?", opts: ["0.981 N", "9.81 N", "98.1 N", "981 N"], ans: 2 },
+  { q: "Çfarë ndodh me peshën kur ashensori bie lirisht?", opts: ["Rritet", "Mbetet e njëjtë", "Bëhet zero", "Dyfishohet"], ans: 2 },
+  { q: "Dallimi midis Peshës dhe Forcës së Rëndësës:", opts: ["Janë gjëra identike", "Pesha=forca mbi mbështetëse, G=forca e tërheqjes tokësore", "Pesha matet në kg", "Nuk ka dallim"], ans: 1 }
+];
+
+let qi = 0, score = 0;
+function loadQ() {
+  const q = questions[qi];
+  document.getElementById('question').textContent = (qi+1) + '. ' + q.q;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').className = 'next-btn';
+  document.getElementById('qnum').textContent = qi + 1;
+  document.getElementById('progress').style.width = (qi/questions.length*100) + '%';
+  const opts = document.getElementById('options'); opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = String.fromCharCode(65+i) + '. ' + o;
+    btn.onclick = () => checkAns(i, btn);
+    opts.appendChild(btn);
+  });
+}
+function checkAns(i, btn) {
+  const q = questions[qi];
+  document.querySelectorAll('.opt-btn').forEach(b => b.onclick = null);
+  const fb = document.getElementById('feedback');
+  if (i === q.ans) { btn.className = 'opt-btn correct'; score++; document.getElementById('score').textContent = score; fb.className = 'feedback ok show'; fb.textContent = '✅ Saktë!'; }
+  else { btn.className = 'opt-btn wrong'; document.querySelectorAll('.opt-btn')[q.ans].className = 'opt-btn correct'; fb.className = 'feedback bad show'; fb.textContent = '❌ Jo! Saktë: ' + String.fromCharCode(65+q.ans) + '. ' + q.opts[q.ans]; }
+  document.getElementById('nextBtn').className = 'next-btn show';
+}
+function nextQ() {
+  qi++;
+  if (qi >= questions.length) {
+    document.getElementById('quiz-content').style.display = 'none';
+    document.getElementById('victory').className = 'victory show';
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('stars').textContent = score >= 6 ? '⭐⭐⭐' : score >= 4 ? '⭐⭐' : '⭐';
+  } else { loadQ(); }
+}
+function restartQuiz() { qi=0; score=0; document.getElementById('score').textContent=0; document.getElementById('victory').className='victory'; document.getElementById('quiz-content').style.display='block'; loadQ(); }
+function switchTab(t, e) { document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); e.target.classList.add('active'); document.getElementById('panel-'+t).classList.add('active'); }
+loadQ();
+</script>
+</body>
+</html>

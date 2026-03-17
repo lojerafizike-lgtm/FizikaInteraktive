@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja - Forca e Fërkimit</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0f0a05; --surface:#1a1208; --accent:#ff9800; --accent2:#f44336; --gold:#ffd600; --text:#fff8e1; --muted:#ffb74d; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:20px; }
+  h1 { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--accent); text-shadow:0 0 20px var(--accent); margin-bottom:4px; letter-spacing:2px; }
+  .subtitle { color:var(--muted); font-size:1.1rem; margin-bottom:24px; }
+  .card { background:var(--surface); border:1px solid #3a2800; border-radius:16px; padding:24px; width:100%; max-width:700px; margin-bottom:20px; position:relative; overflow:hidden; }
+  .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+  .scene { background:#080502; border-radius:12px; height:180px; position:relative; margin-bottom:16px; border:1px solid #3a2800; overflow:hidden; }
+  .surface-layer { position:absolute; bottom:0; left:0; right:0; height:40px; }
+  .surface-label { position:absolute; bottom:42px; right:10px; font-size:0.75rem; color:var(--muted); }
+  .block-f { position:absolute; bottom:40px; width:70px; height:55px; border:2px solid var(--accent); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; font-size:0.7rem; transition:left 0.05s linear; }
+  .arrow-right { position:absolute; height:6px; background:var(--accent); border-radius:3px; }
+  .arrow-right::after { content:'▶'; position:absolute; right:-14px; top:-7px; font-size:16px; color:var(--accent); }
+  .arrow-left { position:absolute; height:6px; background:var(--accent2); border-radius:3px; }
+  .arrow-left::before { content:'◀'; position:absolute; left:-14px; top:-7px; font-size:16px; color:var(--accent2); }
+  .surface-options { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+  .surf-btn { background:#080502; border:1px solid #3a2800; border-radius:10px; padding:10px; text-align:center; cursor:pointer; transition:all 0.2s; }
+  .surf-btn:hover,.surf-btn.active { border-color:var(--accent); background:#1a0e00; }
+  .surf-icon { font-size:1.5rem; }
+  .surf-name { font-size:0.8rem; color:var(--muted); }
+  .surf-mu { font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--gold); }
+  .formula-box { background:#080502; border:1px solid var(--accent); border-radius:10px; padding:16px; text-align:center; font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--accent); margin-bottom:16px; }
+  label { font-size:1rem; color:var(--muted); display:block; margin-bottom:6px; }
+  .slider-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  input[type=range] { flex:1; -webkit-appearance:none; height:6px; border-radius:3px; background:#3a2800; outline:none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); cursor:pointer; }
+  .val { min-width:70px; text-align:right; font-family:'Orbitron',sans-serif; font-size:0.9rem; color:var(--gold); }
+  .results { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px; }
+  .result-item { background:#080502; border-radius:10px; padding:12px; text-align:center; border:1px solid #3a2800; }
+  .rlabel { font-size:0.8rem; color:var(--muted); margin-bottom:4px; }
+  .rval { font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--gold); }
+  .rval.red { color:var(--accent2); }
+  .tab-row { display:flex; gap:8px; margin-bottom:20px; }
+  .tab { padding:8px 20px; border-radius:8px; border:1px solid #3a2800; background:transparent; color:var(--muted); font-family:'Rajdhani',sans-serif; font-size:1rem; cursor:pointer; transition:all 0.2s; }
+  .tab.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:600; }
+  .panel { display:none; } .panel.active { display:block; }
+  .question { font-size:1.1rem; color:var(--text); margin-bottom:14px; line-height:1.5; }
+  .options { display:flex; flex-direction:column; gap:10px; }
+  .opt-btn { background:#080502; border:1px solid #3a2800; border-radius:10px; color:var(--text); padding:12px 16px; font-family:'Rajdhani',sans-serif; font-size:1rem; cursor:pointer; text-align:left; transition:all 0.2s; }
+  .opt-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .opt-btn.correct { border-color:#4caf50; background:#1a3a1a; color:#81c784; }
+  .opt-btn.wrong { border-color:var(--accent2); background:#2a0a0a; color:#ef9a9a; }
+  .feedback { margin-top:14px; padding:12px; border-radius:8px; font-size:1rem; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:#1a3a1a; border:1px solid #4caf50; color:#81c784; }
+  .feedback.bad { background:#2a0a0a; border:1px solid var(--accent2); color:#ef9a9a; }
+  .next-btn { margin-top:14px; background:linear-gradient(135deg,var(--accent),#bf360c); border:none; border-radius:10px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.9rem; padding:12px 24px; cursor:pointer; display:none; font-weight:bold; }
+  .next-btn.show { display:inline-block; }
+  .score-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .score-badge { background:#3a2800; border:1px solid var(--accent); border-radius:8px; padding:6px 14px; font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--accent); }
+  .progress-bar { flex:1; height:6px; background:#3a2800; border-radius:3px; margin:0 12px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:3px; transition:width 0.4s; }
+  .victory { text-align:center; padding:30px; display:none; }
+  .victory.show { display:block; }
+  .victory-title { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--gold); text-shadow:0 0 20px var(--gold); margin-bottom:10px; }
+  .stars { font-size:2.5rem; margin:10px 0; }
+  .restart-btn { margin-top:16px; background:var(--gold); border:none; border-radius:10px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.9rem; padding:12px 28px; cursor:pointer; font-weight:bold; }
+  .run-btn { background:linear-gradient(135deg,var(--accent),#bf360c); border:none; border-radius:10px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.9rem; padding:10px 20px; cursor:pointer; font-weight:bold; }
+  .motion-status { display:inline-block; padding:4px 12px; border-radius:6px; font-family:'Orbitron',sans-serif; font-size:0.8rem; margin-left:10px; }
+  .moving { background:#1a3a00; border:1px solid #4caf50; color:#81c784; }
+  .stopped { background:#2a0a0a; border:1px solid var(--accent2); color:#ef9a9a; }
+</style>
+</head>
+<body>
+<h1>🔥 FORCA E FËRKIMIT</h1>
+<p class="subtitle">F_f = μN &nbsp;|&nbsp; Rezistenca e Sipërfaqeve</p>
+
+<div class="tab-row">
+  <button class="tab active" onclick="switchTab('sim',event)">🔬 Simulim</button>
+  <button class="tab" onclick="switchTab('quiz',event)">🧠 Kuiz</button>
+</div>
+
+<div class="panel active" id="panel-sim">
+  <div class="card">
+    <div style="font-size:0.95rem;color:var(--muted);margin-bottom:10px;">Zgjidh sipërfaqen:</div>
+    <div class="surface-options">
+      <div class="surf-btn active" onclick="setSurf(this,0.1,'Akull','🧊')"><div class="surf-icon">🧊</div><div class="surf-name">Akull</div><div class="surf-mu">μ=0.1</div></div>
+      <div class="surf-btn" onclick="setSurf(this,0.3,'Parket','🪵')"><div class="surf-icon">🪵</div><div class="surf-name">Parket</div><div class="surf-mu">μ=0.3</div></div>
+      <div class="surf-btn" onclick="setSurf(this,0.6,'Beton','🧱')"><div class="surf-icon">🧱</div><div class="surf-name">Beton</div><div class="surf-mu">μ=0.6</div></div>
+      <div class="surf-btn" onclick="setSurf(this,0.8,'Gome','⚫')"><div class="surf-icon">⚫</div><div class="surf-name">Gome</div><div class="surf-mu">μ=0.8</div></div>
+      <div class="surf-btn" onclick="setSurf(this,0.04,'Vaj','🛢')"><div class="surf-icon">🛢</div><div class="surf-name">Me Vaj</div><div class="surf-mu">μ=0.04</div></div>
+      <div class="surf-btn" onclick="setSurf(this,1.0,'Rëre','🏖')"><div class="surf-icon">🏖</div><div class="surf-name">Rëre</div><div class="surf-mu">μ=1.0</div></div>
+    </div>
+    <div class="scene" id="scene">
+      <div class="surface-layer" id="surfLayer" style="background:linear-gradient(180deg,#1a1a1a,#0a0a0a);border-top:2px solid #444;"></div>
+      <div class="surface-label" id="surfLabel">Akull μ=0.1</div>
+      <div class="block-f" id="blockF" style="left:50px;background:linear-gradient(135deg,#e65100,#bf360c);color:#fff8e1;">
+        <span id="blockMass">10kg</span>
+        <span style="font-size:0.6rem;color:var(--muted);">Ff→</span>
+      </div>
+      <div class="arrow-right" id="arrowF" style="bottom:72px;left:130px;width:60px;"></div>
+      <div class="arrow-left" id="arrowFf" style="bottom:65px;left:40px;width:40px;"></div>
+      <div style="position:absolute;top:10px;left:12px;font-size:0.75rem;color:var(--muted);">F=push (portokalli) | Ff=fërkimi (kuq)</div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <button class="run-btn" onclick="runSim()">▶ SHTYJ BLLOKUN</button>
+      <span class="motion-status stopped" id="motionStatus">NDALO</span>
+    </div>
+    <div class="formula-box">F_f = μ × N &nbsp;&nbsp;|&nbsp;&nbsp; N = m × g</div>
+    <div class="slider-row">
+      <label style="min-width:80px">Masa (kg)</label>
+      <input type="range" id="massSlider" min="1" max="50" value="10" oninput="updateSim()">
+      <span class="val" id="massVal">10 kg</span>
+    </div>
+    <div class="slider-row">
+      <label style="min-width:80px">Forca Push (N)</label>
+      <input type="range" id="pushSlider" min="0" max="200" value="50" oninput="updateSim()">
+      <span class="val" id="pushVal">50 N</span>
+    </div>
+    <div class="results">
+      <div class="result-item"><div class="rlabel">Forca Normale N</div><div class="rval" id="r1">98.1 N</div></div>
+      <div class="result-item"><div class="rlabel">Ff = μN</div><div class="rval rval red" id="r2">9.8 N</div></div>
+      <div class="result-item"><div class="rlabel">Forca Neto</div><div class="rval" id="r3">40.2 N</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-quiz">
+  <div class="card">
+    <div class="score-row">
+      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+      <span class="score-badge"><span id="qnum">1</span>/7</span>
+    </div>
+    <div id="quiz-content">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+    </div>
+    <div class="victory" id="victory">
+      <div class="victory-title">🏆 BRAVO!</div>
+      <div class="stars" id="stars"></div>
+      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let mu = 0.1, surfColor = 'linear-gradient(180deg,#1a2a3a,#0a1520)', surfName = 'Akull μ=0.1';
+let blockX = 50, blockVel = 0, animID = null;
+
+function setSurf(el, m, name, icon) {
+  document.querySelectorAll('.surf-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  mu = m;
+  surfName = name + ' μ=' + m;
+  const colors = { 'Akull':'linear-gradient(180deg,#b3e5fc,#81d4fa)', 'Parket':'linear-gradient(180deg,#a1887f,#795548)', 'Beton':'linear-gradient(180deg,#9e9e9e,#616161)', 'Gome':'linear-gradient(180deg,#212121,#000)', 'Me Vaj':'linear-gradient(180deg,#f9a825,#f57f17)', 'Rëre':'linear-gradient(180deg,#ffe082,#ffca28)' };
+  document.getElementById('surfLayer').style.background = colors[name] || 'linear-gradient(180deg,#1a1a1a,#0a0a0a)';
+  document.getElementById('surfLabel').textContent = surfName;
+  updateSim();
+}
+
+function updateSim() {
+  const m = parseFloat(document.getElementById('massSlider').value);
+  const F = parseFloat(document.getElementById('pushSlider').value);
+  document.getElementById('massVal').textContent = m + ' kg';
+  document.getElementById('pushVal').textContent = F + ' N';
+  document.getElementById('blockMass').textContent = m + 'kg';
+  const N = m * 9.81;
+  const Ff = mu * N;
+  const Fnet = F - Ff;
+  document.getElementById('r1').textContent = N.toFixed(1) + ' N';
+  document.getElementById('r2').textContent = Ff.toFixed(1) + ' N';
+  document.getElementById('r3').textContent = Fnet.toFixed(1) + ' N';
+  document.getElementById('arrowF').style.width = Math.min(F * 0.8, 150) + 'px';
+  document.getElementById('arrowFf').style.width = Math.min(Ff * 0.8, 150) + 'px';
+  const status = document.getElementById('motionStatus');
+  if (Fnet > 0) { status.textContent = 'LËVIZ ▶'; status.className = 'motion-status moving'; }
+  else { status.textContent = 'NDALO ■'; status.className = 'motion-status stopped'; }
+}
+
+function runSim() {
+  if (animID) { cancelAnimationFrame(animID); animID=null; blockX=50; blockVel=0; document.getElementById('blockF').style.left=blockX+'px'; return; }
+  const m = parseFloat(document.getElementById('massSlider').value);
+  const F = parseFloat(document.getElementById('pushSlider').value);
+  const Ff = mu * m * 9.81;
+  const Fnet = F - Ff;
+  if (Fnet <= 0) return;
+  blockX = 50; blockVel = 0;
+  let last = null;
+  function step(ts) {
+    if (!last) last = ts;
+    const dt = Math.min((ts-last)/1000,0.05); last = ts;
+    const a = (F - mu*m*9.81) / m;
+    blockVel += a * dt;
+    blockX += blockVel * dt * 20;
+    document.getElementById('blockF').style.left = blockX + 'px';
+    document.getElementById('arrowF').style.left = (blockX + 80) + 'px';
+    document.getElementById('arrowFf').style.left = (blockX - 50) + 'px';
+    if (blockX < 580) animID = requestAnimationFrame(step);
+    else { blockX=50; blockVel=0; document.getElementById('blockF').style.left='50px'; animID=null; }
+  }
+  animID = requestAnimationFrame(step);
+}
+
+updateSim();
+
+const questions = [
+  { q: "Formula e forcës së fërkimit është:", opts: ["Ff = ma", "Ff = μN", "Ff = F/S", "Ff = mg"], ans: 1 },
+  { q: "Çfarë tregon koeficienti μ (miu)?", opts: ["Masën e trupit", "Nxitimin", "Ashpërsinë e sipërfaqeve takuese", "Forcat e jashtme"], ans: 2 },
+  { q: "Forca e fërkimit është:", opts: ["Paralele me lëvizjen dhe në të njëjtin kah", "Pingule me lëvizjen", "Kundër kahut të lëvizjes", "Lart"], ans: 2 },
+  { q: "Trupi lëviz nëse:", opts: ["F_push < Ff", "F_push = Ff", "F_push > Ff", "Ff = 0"], ans: 2 },
+  { q: "μ = 0.5, N = 100N. Sa është Ff?", opts: ["0.05 N", "50 N", "200 N", "5 N"], ans: 1 },
+  { q: "Si mund të zvogëlojmë fërkimin?", opts: ["Duke rritur masën", "Duke lubrifikuar sipërfaqet", "Duke rritur sipërfaqen", "Duke shtuar forca"], ans: 1 },
+  { q: "Njësia e forcës së fërkimit është:", opts: ["kg", "Pa", "N", "μ"], ans: 2 }
+];
+
+let qi=0,score=0;
+function loadQ(){const q=questions[qi];document.getElementById('question').textContent=(qi+1)+'. '+q.q;document.getElementById('feedback').className='feedback';document.getElementById('nextBtn').className='next-btn';document.getElementById('qnum').textContent=qi+1;document.getElementById('progress').style.width=(qi/questions.length*100)+'%';const opts=document.getElementById('options');opts.innerHTML='';q.opts.forEach((o,i)=>{const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=String.fromCharCode(65+i)+'. '+o;btn.onclick=()=>checkAns(i,btn);opts.appendChild(btn);});}
+function checkAns(i,btn){const q=questions[qi];document.querySelectorAll('.opt-btn').forEach(b=>b.onclick=null);const fb=document.getElementById('feedback');if(i===q.ans){btn.className='opt-btn correct';score++;document.getElementById('score').textContent=score;fb.className='feedback ok show';fb.textContent='✅ Saktë!';}else{btn.className='opt-btn wrong';document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn correct';fb.className='feedback bad show';fb.textContent='❌ Jo! Saktë: '+String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];}document.getElementById('nextBtn').className='next-btn show';}
+function nextQ(){qi++;if(qi>=questions.length){document.getElementById('quiz-content').style.display='none';document.getElementById('victory').className='victory show';document.getElementById('finalScore').textContent=score;document.getElementById('stars').textContent=score>=6?'⭐⭐⭐':score>=4?'⭐⭐':'⭐';}else loadQ();}
+function restartQuiz(){qi=0;score=0;document.getElementById('score').textContent=0;document.getElementById('victory').className='victory';document.getElementById('quiz-content').style.display='block';loadQ();}
+function switchTab(t,e){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));e.target.classList.add('active');document.getElementById('panel-'+t).classList.add('active');}
+loadQ();
+</script>
+</body>
+</html>

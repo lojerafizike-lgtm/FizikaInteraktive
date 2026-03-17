@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momenti i Forcës — Loja Fizike</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0d1a; --bg2:#121220; --accent:#a855f7; --accent2:#c084fc;
+  --text:#e2e8f0; --muted:#64748b; --card:#161626; --border:#252540;
+  --green:#22c55e; --red:#ef4444; --gold:#f59e0b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+header{background:linear-gradient(135deg,#0d0020,var(--bg2));border-bottom:2px solid var(--accent);padding:16px 24px;display:flex;align-items:center;gap:16px;}
+.sym{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);font-weight:900;}
+.title-block h1{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);letter-spacing:2px;}
+.title-block p{color:var(--muted);font-size:.9rem;}
+.formula-badge{margin-left:auto;background:rgba(168,85,247,.15);border:1px solid var(--accent);padding:8px 20px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent2);}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);}
+.tab{padding:14px 28px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;color:var(--muted);border-bottom:3px solid transparent;transition:.3s;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.panel{display:none;padding:24px;max-width:900px;margin:0 auto;}
+.panel.active{display:block;}
+.formula-box{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:14px 18px;margin:14px 0;}
+.formula-box .f{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent2);margin-bottom:6px;}
+.formula-box p{color:var(--muted);font-size:.85rem;line-height:1.6;}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0;}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.info-card label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;}
+.info-card .val{font-family:'Orbitron',sans-serif;font-size:1.3rem;}
+.slider-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.slider-row label{min-width:180px;font-size:.9rem;color:var(--text);}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent);}
+.slider-row .sv{min-width:80px;text-align:right;font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--accent2);}
+canvas{background:#09091a;border-radius:12px;border:1px solid var(--border);display:block;width:100%;}
+.balance-status{text-align:center;padding:10px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.85rem;letter-spacing:1px;margin-top:10px;transition:.3s;}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;cursor:pointer;}
+.btn:hover{opacity:.85;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+/* quiz */
+.progress-bar{background:var(--border);border-radius:99px;height:6px;margin-bottom:20px;}
+.progress-fill{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:99px;transition:.4s;}
+.q-counter{font-size:.8rem;color:var(--muted);margin-bottom:8px;font-family:'Orbitron',sans-serif;}
+.question{font-size:1.1rem;color:var(--text);margin-bottom:20px;line-height:1.5;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.opt-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:1rem;text-align:left;transition:.25s;}
+.opt-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.opt-btn.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--green);}
+.opt-btn.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red);}
+.feedback{background:var(--card);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.9rem;line-height:1.5;border-left:3px solid var(--accent);display:none;}
+.next-btn{display:none;}
+.score-screen{text-align:center;padding:40px 20px;display:none;}
+.score-screen h2{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);margin-bottom:12px;}
+.stars{font-size:2.5rem;margin:16px 0;}
+.score-num{font-family:'Orbitron',sans-serif;font-size:1.4rem;}
+</style>
+</head>
+<body>
+<header>
+  <div class="sym">M</div>
+  <div class="title-block">
+    <h1>Momenti i Forcës</h1>
+    <p>Efekti rrotullues i një force</p>
+  </div>
+  <div class="formula-badge">M = F·d</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('sim')">🔬 Simulim</div>
+  <div class="tab" onclick="switchTab('quiz')">🧠 Kuiz</div>
+</div>
+
+<div id="sim" class="panel active">
+  <div class="formula-box">
+    <div class="f">M = F · d &nbsp;[N·m] &nbsp;&nbsp; Ekuilibri: ΣM_orar = ΣM_kundërorar</div>
+    <p>Momenti i forcës mat efektin rrotullues. Rrotullimi orar → M (+). Rrotullimi kundërorar → M (−). Ekuilibri arrihet kur M_rezultante = 0.</p>
+  </div>
+
+  <canvas id="simCanvas" height="260"></canvas>
+
+  <div class="two-col" style="margin-top:16px">
+    <div>
+      <div style="font-size:.8rem;color:#f87171;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'Orbitron',sans-serif;">⬅ Krahut Majtas</div>
+      <div class="slider-row">
+        <label>Forca F₁</label>
+        <input type="range" id="sF1" min="10" max="200" value="60" oninput="updateSim()">
+        <span class="sv" id="vF1">60 N</span>
+      </div>
+      <div class="slider-row">
+        <label>Krahu d₁</label>
+        <input type="range" id="sD1" min="0.5" max="4" value="2" step="0.1" oninput="updateSim()">
+        <span class="sv" id="vD1">2.0 m</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.8rem;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'Orbitron',sans-serif;">Krahut Djathtas ➡</div>
+      <div class="slider-row">
+        <label>Forca F₂</label>
+        <input type="range" id="sF2" min="10" max="200" value="60" oninput="updateSim()">
+        <span class="sv" id="vF2">60 N</span>
+      </div>
+      <div class="slider-row">
+        <label>Krahu d₂</label>
+        <input type="range" id="sD2" min="0.5" max="4" value="2" step="0.1" oninput="updateSim()">
+        <span class="sv" id="vD2">2.0 m</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card"><label>M₁ (kundërorar)</label><div class="val" style="color:#f87171" id="resM1">120 N·m</div></div>
+    <div class="info-card"><label>M₂ (orar)</label><div class="val" style="color:#34d399" id="resM2">120 N·m</div></div>
+    <div class="info-card"><label>M_rezultante</label><div class="val" id="resMR">0 N·m</div></div>
+  </div>
+
+  <div id="balanceStatus" class="balance-status" style="background:rgba(34,197,94,.1);border:1px solid #22c55e;color:#22c55e;">
+    ⚖️ EKUILIBËR — M₁ = M₂
+  </div>
+</div>
+
+<div id="quiz" class="panel">
+  <div id="quizArea">
+    <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+    <div class="q-counter" id="qCounter">Pyetja 1 / 7</div>
+    <div class="question" id="qText"></div>
+    <div class="opts" id="opts"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër →</button>
+  </div>
+  <div class="score-screen" id="scoreScreen">
+    <div class="stars" id="stars"></div>
+    <h2>Rezultati Yt</h2>
+    <div class="score-num" id="scoreNum"></div>
+    <button class="btn" style="margin-top:20px" onclick="startQuiz()">🔄 Rifillo Kuizin</button>
+  </div>
+</div>
+
+<script>
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((tb,i)=>tb.classList.toggle('active',['sim','quiz'][i]===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  if(t==='quiz') startQuiz();
+}
+
+const canvas=document.getElementById('simCanvas');
+const ctx=canvas.getContext('2d');
+let tiltAngle=0, targetAngle=0, animId2=null;
+
+function updateSim(){
+  const F1=+document.getElementById('sF1').value;
+  const d1=+document.getElementById('sD1').value;
+  const F2=+document.getElementById('sF2').value;
+  const d2=+document.getElementById('sD2').value;
+  document.getElementById('vF1').textContent=F1+' N';
+  document.getElementById('vD1').textContent=d1.toFixed(1)+' m';
+  document.getElementById('vF2').textContent=F2+' N';
+  document.getElementById('vD2').textContent=d2.toFixed(1)+' m';
+  const M1=(F1*d1).toFixed(1), M2=(F2*d2).toFixed(1);
+  const MR=(M2-M1).toFixed(1);
+  document.getElementById('resM1').textContent=M1+' N·m';
+  document.getElementById('resM2').textContent=M2+' N·m';
+  document.getElementById('resMR').textContent=MR+' N·m';
+  const bs=document.getElementById('balanceStatus');
+  const diff=parseFloat(MR);
+  if(Math.abs(diff)<1){
+    bs.style.background='rgba(34,197,94,.1)'; bs.style.borderColor='#22c55e'; bs.style.color='#22c55e';
+    bs.textContent='⚖️ EKUILIBËR — M₁ = M₂';
+    targetAngle=0;
+  } else if(diff>0){
+    bs.style.background='rgba(52,211,153,.1)'; bs.style.borderColor='#34d399'; bs.style.color='#34d399';
+    bs.textContent='↘ Rrotullohet ORAR (djathtas peshon më shumë)';
+    targetAngle=Math.min(diff/50*0.35,0.4);
+  } else {
+    bs.style.background='rgba(248,113,113,.1)'; bs.style.borderColor='#f87171'; bs.style.color='#f87171';
+    bs.textContent='↙ Rrotullohet KUNDËRORAR (majtas peshon më shumë)';
+    targetAngle=Math.max(diff/50*0.35,-0.4);
+  }
+  animateTilt();
+}
+
+function animateTilt(){
+  if(animId2) cancelAnimationFrame(animId2);
+  function step(){
+    tiltAngle+=(targetAngle-tiltAngle)*0.1;
+    drawBalance();
+    if(Math.abs(tiltAngle-targetAngle)>0.005) animId2=requestAnimationFrame(step);
+    else { tiltAngle=targetAngle; drawBalance(); }
+  }
+  step();
+}
+
+function drawBalance(){
+  const w=canvas.offsetWidth; canvas.width=w; canvas.height=260;
+  ctx.clearRect(0,0,w,260);
+  const cx=w/2, cy=120;
+  const F1=+document.getElementById('sF1').value;
+  const d1=+document.getElementById('sD1').value;
+  const F2=+document.getElementById('sF2').value;
+  const d2=+document.getElementById('sD2').value;
+  const armPx=120;
+  const angle=tiltAngle;
+
+  // pivot
+  ctx.fillStyle='#a855f7';
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx-18,cy+30); ctx.lineTo(cx+18,cy+30); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#6b21a8'; ctx.fillRect(cx-30,cy+28,60,12);
+
+  // beam
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
+  ctx.strokeStyle='#c084fc'; ctx.lineWidth=6;
+  ctx.beginPath(); ctx.moveTo(-armPx*d1/2,0); ctx.lineTo(armPx*d2/2,0); ctx.stroke();
+
+  // left weight
+  const lh=Math.min(F1/10*20,80);
+  ctx.fillStyle='rgba(248,113,113,.25)'; ctx.strokeStyle='#f87171'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.roundRect(-armPx*d1/2-20,20,-40+40,lh,6); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#f87171'; ctx.font='11px Orbitron'; ctx.textAlign='center';
+  ctx.fillText('F₁='+F1+'N', -armPx*d1/2, 14);
+  ctx.fillText('d₁='+d1+'m', -armPx*d1/2, 35+lh*0.5);
+
+  // right weight
+  const rh=Math.min(F2/10*20,80);
+  ctx.fillStyle='rgba(52,211,153,.25)'; ctx.strokeStyle='#34d399'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.roundRect(armPx*d2/2-20,20,40,rh,6); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#34d399'; ctx.textAlign='center';
+  ctx.fillText('F₂='+F2+'N', armPx*d2/2, 14);
+  ctx.fillText('d₂='+d2+'m', armPx*d2/2, 35+rh*0.5);
+
+  // center marker
+  ctx.fillStyle='#c084fc';
+  ctx.beginPath(); ctx.arc(0,0,6,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // labels
+  ctx.fillStyle='#f87171'; ctx.font='12px Orbitron'; ctx.textAlign='center';
+  ctx.fillText('M₁='+(F1*d1).toFixed(0)+' N·m', cx-armPx-10, 230);
+  ctx.fillStyle='#34d399';
+  ctx.fillText('M₂='+(F2*d2).toFixed(0)+' N·m', cx+armPx+10, 230);
+}
+
+// QUIZ
+const questions=[
+  {q:"Formula e momentit të forcës është:",opts:["M = F·d","M = F/d","M = m·a","M = F+d"],ans:0,exp:"Momenti i forcës M = F·d, ku d është krahu i forcës (distanca pingul nga boshti i rrotullimit)."},
+  {q:"Njësia e momentit të forcës është:",opts:["N·m","N/m","kg·m","J/s"],ans:0,exp:"Njësia e momentit është N·m (Newton-metër)."},
+  {q:"Kushti i ekuilibrit të levës është:",opts:["ΣM_orar = ΣM_kundërorar","F₁ = F₂","d₁ = d₂","F₁d₁ > F₂d₂"],ans:0,exp:"Ekuilibri kërkon: shuma e momenteve orare = shuma e momenteve kundërorare."},
+  {q:"Rrotullimi orar shënon momentin me shenjën:",opts:["+","-","×","÷"],ans:0,exp:"Konvencioni: rrotullimi orar → moment pozitiv (+), kundërorar → negativ (−)."},
+  {q:"Krahu i forcës është:",opts:["Distanca pingul nga boshti deri te vija e veprimit","Distanca midis dy forcave","Gjatësia e forcës","Masa × shpejtësia"],ans:0,exp:"Krahu d është distanca më e shkurtër (pingule) nga boshti i rrotullimit deri te vija e veprimit të forcës."},
+  {q:"Forca 50 N vepron me krah 3 m. Sa është momenti?",opts:["150 N·m","53 N·m","16.7 N·m","47 N·m"],ans:0,exp:"M = F·d = 50×3 = 150 N·m."},
+  {q:"Nëse krahu dyfishohet dhe forca mbahet konstante, momenti:",opts:["Dyfishohet","Gjysmëzohet","Mbetet njëjtë","Zerohet"],ans:0,exp:"M = F·d, pra nëse d×2 dhe F=const, atëherë M dyfishohet."}
+];
+
+let cur=0, score=0;
+function startQuiz(){
+  cur=0; score=0;
+  document.getElementById('quizArea').style.display='block';
+  document.getElementById('scoreScreen').style.display='none';
+  showQ();
+}
+function showQ(){
+  const q=questions[cur];
+  document.getElementById('progFill').style.width=((cur/questions.length)*100)+'%';
+  document.getElementById('qCounter').textContent='Pyetja '+(cur+1)+' / '+questions.length;
+  document.getElementById('qText').textContent=q.q;
+  const oc=document.getElementById('opts'); oc.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='opt-btn'; b.textContent=o;
+    b.onclick=()=>answer(i); oc.appendChild(b);
+  });
+  document.getElementById('feedback').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+}
+function answer(i){
+  const q=questions[cur];
+  document.querySelectorAll('.opt-btn').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===q.ans) b.classList.add('correct');
+    else if(j===i) b.classList.add('wrong');
+  });
+  if(i===q.ans) score++;
+  const fb=document.getElementById('feedback');
+  fb.style.display='block';
+  fb.style.borderLeftColor=i===q.ans?'var(--green)':'var(--red)';
+  fb.textContent=(i===q.ans?'✅ ':'❌ ')+q.exp;
+  document.getElementById('nextBtn').style.display='inline-block';
+}
+function nextQ(){ cur++; if(cur<questions.length) showQ(); else showScore(); }
+function showScore(){
+  document.getElementById('quizArea').style.display='none';
+  const ss=document.getElementById('scoreScreen'); ss.style.display='block';
+  document.getElementById('scoreNum').textContent=score+' / '+questions.length+' pyetje të sakta';
+  const pct=score/questions.length;
+  document.getElementById('stars').textContent=pct>=0.86?'⭐⭐⭐':pct>=0.57?'⭐⭐':'⭐';
+}
+
+updateSim();
+startQuiz();
+</script>
+</body>
+</html>

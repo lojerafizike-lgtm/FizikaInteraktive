@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impulsi i Trupit — Loja Fizike</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#070d1a; --bg2:#0c1422; --accent:#06b6d4; --accent2:#22d3ee;
+  --text:#e2e8f0; --muted:#64748b; --card:#0f1c2e; --border:#1a2d42;
+  --green:#22c55e; --red:#ef4444;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+header{background:linear-gradient(135deg,#001a20,var(--bg2));border-bottom:2px solid var(--accent);padding:16px 24px;display:flex;align-items:center;gap:16px;}
+.sym{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);font-weight:900;}
+.title-block h1{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);letter-spacing:2px;}
+.title-block p{color:var(--muted);font-size:.9rem;}
+.formula-badge{margin-left:auto;background:rgba(6,182,212,.15);border:1px solid var(--accent);padding:8px 20px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent2);}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);}
+.tab{padding:14px 28px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;color:var(--muted);border-bottom:3px solid transparent;transition:.3s;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.panel{display:none;padding:24px;max-width:860px;margin:0 auto;}
+.panel.active{display:block;}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.info-card label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;}
+.info-card .val{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent);}
+.slider-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;}
+.slider-row label{min-width:160px;font-size:.9rem;color:var(--text);}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent);}
+.slider-row .sv{min-width:80px;text-align:right;font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--accent2);}
+canvas{background:linear-gradient(180deg,#020b14,#061422);border-radius:12px;border:1px solid var(--border);display:block;width:100%;}
+.formula-box{background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.3);border-radius:10px;padding:14px 18px;margin:14px 0;}
+.formula-box .f{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--accent2);margin-bottom:6px;}
+.formula-box p{color:var(--muted);font-size:.85rem;line-height:1.6;}
+.objects-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.obj-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:.25s;}
+.obj-btn:hover,.obj-btn.sel{border-color:var(--accent);background:rgba(6,182,212,.1);}
+.obj-btn .ico{font-size:1.8rem;display:block;margin-bottom:4px;}
+.obj-btn .nm{font-size:.8rem;color:var(--muted);font-family:'Orbitron',sans-serif;}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;padding:10px 24px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;cursor:pointer;font-weight:700;}
+.btn:hover{opacity:.85;}
+/* quiz */
+.progress-bar{background:var(--border);border-radius:99px;height:6px;margin-bottom:20px;}
+.progress-fill{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:99px;transition:.4s;}
+.q-counter{font-size:.8rem;color:var(--muted);margin-bottom:8px;font-family:'Orbitron',sans-serif;}
+.question{font-size:1.1rem;color:var(--text);margin-bottom:20px;line-height:1.5;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.opt-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:1rem;text-align:left;transition:.25s;}
+.opt-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.opt-btn.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--green);}
+.opt-btn.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red);}
+.feedback{background:var(--card);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.9rem;line-height:1.5;border-left:3px solid var(--accent);display:none;}
+.next-btn{display:none;}
+.score-screen{text-align:center;padding:40px 20px;display:none;}
+.score-screen h2{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);margin-bottom:12px;}
+.stars{font-size:2.5rem;margin:16px 0;}
+.score-num{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:var(--text);}
+</style>
+</head>
+<body>
+<header>
+  <div class="sym">p</div>
+  <div class="title-block">
+    <h1>Impulsi i Trupit</h1>
+    <p>Sasia e lëvizjes së trupit</p>
+  </div>
+  <div class="formula-badge">p = m·v</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('sim')">🔬 Simulim</div>
+  <div class="tab" onclick="switchTab('quiz')">🧠 Kuiz</div>
+</div>
+
+<div id="sim" class="panel active">
+  <div class="formula-box">
+    <div class="f">p = m · v &nbsp;&nbsp;&nbsp; [kg·m/s]</div>
+    <p>Sasia e lëvizjes (impulsi i trupit) varet nga masa dhe shpejtësia. Trup i rëndë me shpejtësi të ulët mund të ketë të njëjtën sasi lëvizjeje si trup i lehtë me shpejtësi të madhe.</p>
+  </div>
+
+  <div style="margin-bottom:14px">
+    <div style="font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'Orbitron',sans-serif;">Zgjidh objektin:</div>
+    <div class="objects-row">
+      <div class="obj-btn sel" id="obj0" onclick="selObj(0)"><span class="ico">⚽</span><span class="nm">Top</span></div>
+      <div class="obj-btn" id="obj1" onclick="selObj(1)"><span class="ico">🚗</span><span class="nm">Makinë</span></div>
+      <div class="obj-btn" id="obj2" onclick="selObj(2)"><span class="ico">🚂</span><span class="nm">Tren</span></div>
+      <div class="obj-btn" id="obj3" onclick="selObj(3)"><span class="ico">🪨</span><span class="nm">Gur</span></div>
+    </div>
+  </div>
+
+  <canvas id="simCanvas" height="200"></canvas>
+
+  <div style="margin-top:16px">
+    <div class="slider-row">
+      <label>Masa (m)</label>
+      <input type="range" id="sM" min="1" max="200" value="1" oninput="updateSim()">
+      <span class="sv" id="vM">1 kg</span>
+    </div>
+    <div class="slider-row">
+      <label>Shpejtësia (v)</label>
+      <input type="range" id="sV" min="1" max="100" value="10" oninput="updateSim()">
+      <span class="sv" id="vV">10 m/s</span>
+    </div>
+  </div>
+
+  <div class="info-grid" style="margin-top:16px">
+    <div class="info-card"><label>Masa m</label><div class="val" id="resM">1 kg</div></div>
+    <div class="info-card"><label>Shpejtësia v</label><div class="val" id="resV">10 m/s</div></div>
+    <div class="info-card"><label>Sasia e Lëvizjes p</label><div class="val" id="resP">10 kg·m/s</div></div>
+  </div>
+
+  <button class="btn" style="margin-top:16px" onclick="animateObj()">▶ Lëviz Objektin</button>
+</div>
+
+<div id="quiz" class="panel">
+  <div id="quizArea">
+    <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+    <div class="q-counter" id="qCounter">Pyetja 1 / 7</div>
+    <div class="question" id="qText"></div>
+    <div class="opts" id="opts"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër →</button>
+  </div>
+  <div class="score-screen" id="scoreScreen">
+    <div class="stars" id="stars"></div>
+    <h2>Rezultati Yt</h2>
+    <div class="score-num" id="scoreNum"></div>
+    <button class="btn" style="margin-top:20px" onclick="startQuiz()">🔄 Rifillo Kuizin</button>
+  </div>
+</div>
+
+<script>
+const objects=[
+  {emoji:'⚽',name:'Top',mDef:1,vDef:10,mMax:5,vMax:50},
+  {emoji:'🚗',name:'Makinë',mDef:1200,vDef:20,mMax:2000,vMax:80},
+  {emoji:'🚂',name:'Tren',mDef:50000,vDef:30,mMax:100000,vMax:100},
+  {emoji:'🪨',name:'Gur',mDef:5,vDef:5,mMax:50,vMax:30}
+];
+let curObj=0, animRunning=false, objX=60;
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((tb,i)=>tb.classList.toggle('active',['sim','quiz'][i]===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  if(t==='quiz') startQuiz();
+}
+
+function selObj(i){
+  curObj=i;
+  document.querySelectorAll('.obj-btn').forEach((b,j)=>b.classList.toggle('sel',j===i));
+  const o=objects[i];
+  const mSlider=document.getElementById('sM');
+  mSlider.max=o.mMax; mSlider.value=o.mDef;
+  const vSlider=document.getElementById('sV');
+  vSlider.max=o.vMax; vSlider.value=o.vDef;
+  updateSim();
+}
+
+const canvas=document.getElementById('simCanvas');
+const ctx=canvas.getContext('2d');
+
+function updateSim(){
+  const m=+document.getElementById('sM').value;
+  const v=+document.getElementById('sV').value;
+  document.getElementById('vM').textContent=m+' kg';
+  document.getElementById('vV').textContent=v+' m/s';
+  const p=(m*v).toFixed(1);
+  document.getElementById('resM').textContent=m+' kg';
+  document.getElementById('resV').textContent=v+' m/s';
+  document.getElementById('resP').textContent=p+' kg·m/s';
+  drawStatic();
+}
+
+function drawStatic(){
+  const w=canvas.offsetWidth; canvas.width=w; canvas.height=200;
+  ctx.clearRect(0,0,w,200);
+  ctx.fillStyle='#1a2a3a'; ctx.fillRect(0,155,w,45);
+  ctx.fillStyle='#243548'; ctx.fillRect(0,153,w,4);
+  // road dashes
+  ctx.strokeStyle='#2a4060'; ctx.lineWidth=2; ctx.setLineDash([20,20]);
+  ctx.beginPath(); ctx.moveTo(0,175); ctx.lineTo(w,175); ctx.stroke(); ctx.setLineDash([]);
+  // object
+  const o=objects[curObj];
+  ctx.font='52px serif'; ctx.textAlign='center';
+  ctx.fillText(o.emoji, objX+30, 153);
+  // velocity arrow
+  const v=+document.getElementById('sV').value;
+  const arLen=Math.min(v*1.5,w*0.4);
+  ctx.strokeStyle='#06b6d4'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(objX+60,130); ctx.lineTo(objX+60+arLen,130); ctx.stroke();
+  ctx.fillStyle='#06b6d4';
+  ctx.beginPath(); ctx.moveTo(objX+60+arLen,130); ctx.lineTo(objX+60+arLen-12,124); ctx.lineTo(objX+60+arLen-12,136); ctx.fill();
+  ctx.fillStyle='#06b6d4'; ctx.font='12px Orbitron'; ctx.textAlign='left';
+  ctx.fillText('v='+v+' m/s', objX+63, 118);
+  // momentum label
+  const m=+document.getElementById('sM').value;
+  const p=(m*v).toFixed(0);
+  ctx.fillStyle='#22d3ee'; ctx.font='bold 14px Orbitron'; ctx.textAlign='center';
+  ctx.fillText('p = '+p+' kg·m/s', w/2, 40);
+  // bar
+  const barW=Math.min(p/100,w-60);
+  const grad=ctx.createLinearGradient(30,0,30+barW,0);
+  grad.addColorStop(0,'#0e7490'); grad.addColorStop(1,'#22d3ee');
+  ctx.fillStyle=grad; ctx.fillRect(30,55,barW,18);
+  ctx.strokeStyle='#06b6d4'; ctx.lineWidth=1;
+  ctx.strokeRect(30,55,Math.min(w-60,200),18);
+}
+
+function animateObj(){
+  if(animRunning) return;
+  animRunning=true; objX=60;
+  const v=+document.getElementById('sV').value;
+  const speed=Math.min(v*0.3,14);
+  const w=canvas.offsetWidth;
+  function step(){
+    objX+=speed; drawStatic();
+    if(objX<w-130) requestAnimationFrame(step);
+    else { animRunning=false; objX=60; setTimeout(drawStatic,800); }
+  }
+  step();
+}
+
+// QUIZ
+const questions=[
+  {q:"Formula e sasisë së lëvizjes (impulsit të trupit) është:",opts:["p = m·v","p = F·t","p = m·a","p = m/v"],ans:0,exp:"Sasia e lëvizjes p = m·v (masë × shpejtësi)."},
+  {q:"Njësia e sasisë së lëvizjes është:",opts:["kg·m/s","N·m","kg·m/s²","J"],ans:0,exp:"Njësia është kg·m/s, ekuivalente me N·s."},
+  {q:"Sasia e lëvizjes është madhësi:",opts:["Vektoriale","Skalare","Relative","Negative"],ans:0,exp:"Sasia e lëvizjes është vektoriale — ka drejtim dhe kahje."},
+  {q:"Nëse masa dyfishohet dhe shpejtësia mbahet konstante, sasia e lëvizjes:",opts:["Dyfishohet","Gjysmëzohet","Mbetet njëjtë","Trefishohet"],ans:0,exp:"p = m·v, pra nëse m×2, atëherë p×2."},
+  {q:"Trup 2 kg me shpejtësi 5 m/s ka sasi lëvizjeje:",opts:["10 kg·m/s","7 kg·m/s","2.5 kg·m/s","3 kg·m/s"],ans:0,exp:"p = m·v = 2×5 = 10 kg·m/s."},
+  {q:"Impulsi i forcës (F·Δt) lidhet me:",opts:["Ndryshimin e sasisë së lëvizjes","Energjinë kinetike","Punën e forcës","Fuqinë"],ans:0,exp:"Teorema impuls-moment: F·Δt = Δp = m·Δv."},
+  {q:"Dy trupat kanë të njëjtën sasi lëvizjeje. Trupi i parë ka masë të dyfishtë. Si krahasohen shpejtësitë?",opts:["v₁ = v₂/2","v₁ = 2v₂","v₁ = v₂","v₁ = 4v₂"],ans:0,exp:"p = m·v = const. Nëse m₁=2m₂ atëherë v₁=v₂/2."}
+];
+
+let cur=0, score=0;
+function startQuiz(){
+  cur=0; score=0;
+  document.getElementById('quizArea').style.display='block';
+  document.getElementById('scoreScreen').style.display='none';
+  showQ();
+}
+function showQ(){
+  const q=questions[cur];
+  document.getElementById('progFill').style.width=((cur/questions.length)*100)+'%';
+  document.getElementById('qCounter').textContent='Pyetja '+(cur+1)+' / '+questions.length;
+  document.getElementById('qText').textContent=q.q;
+  const oc=document.getElementById('opts'); oc.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='opt-btn'; b.textContent=o;
+    b.onclick=()=>answer(i); oc.appendChild(b);
+  });
+  document.getElementById('feedback').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+}
+function answer(i){
+  const q=questions[cur];
+  document.querySelectorAll('.opt-btn').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===q.ans) b.classList.add('correct');
+    else if(j===i) b.classList.add('wrong');
+  });
+  if(i===q.ans) score++;
+  const fb=document.getElementById('feedback');
+  fb.style.display='block';
+  fb.style.borderLeftColor=i===q.ans?'var(--green)':'var(--red)';
+  fb.textContent=(i===q.ans?'✅ ':'❌ ')+q.exp;
+  document.getElementById('nextBtn').style.display='inline-block';
+}
+function nextQ(){ cur++; if(cur<questions.length) showQ(); else showScore(); }
+function showScore(){
+  document.getElementById('quizArea').style.display='none';
+  const ss=document.getElementById('scoreScreen'); ss.style.display='block';
+  document.getElementById('scoreNum').textContent=score+' / '+questions.length+' pyetje të sakta';
+  const pct=score/questions.length;
+  document.getElementById('stars').textContent=pct>=0.86?'⭐⭐⭐':pct>=0.57?'⭐⭐':'⭐';
+}
+
+selObj(0);
+startQuiz();
+</script>
+</body>
+</html>

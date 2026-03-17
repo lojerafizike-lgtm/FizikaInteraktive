@@ -1,63 +1,182 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koeficienti i Fërkimit (μ = Ff/N)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Nunito',sans-serif;background:#f5f0fb;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:1rem;}
-        .card{background:#fff;border-radius:24px;box-shadow:0 8px 40px rgba(80,60,140,.12);max-width:420px;width:100%;padding:2rem;text-align:center;}
-        .icon{font-size:2.5rem;margin-bottom:.5rem;}
-        h1{font-size:1.3rem;font-weight:900;color:#3a3058;margin-bottom:.3rem;}
-        .formula{background:#f0edf8;border-radius:12px;padding:.6rem 1rem;font-size:1rem;font-weight:700;color:#6c5ce7;margin:.8rem 0 1.2rem;}
-        p{color:#7a6ea0;font-size:.9rem;line-height:1.5;margin-bottom:1.2rem;}
-        .input-row{display:flex;gap:.5rem;margin-bottom:1rem;}
-        input{flex:1;border:2px solid #ddd8ee;border-radius:12px;padding:.7rem 1rem;font-size:1rem;font-family:'Nunito',sans-serif;outline:none;transition:.2s;}
-        input:focus{border-color:#9b7fe8;}
-        .unit{display:flex;align-items:center;background:#f0edf8;border-radius:12px;padding:0 .9rem;font-weight:700;color:#9b7fe8;font-size:.9rem;white-space:nowrap;}
-        button{width:100%;background:#9b7fe8;color:#fff;border:none;border-radius:12px;padding:.8rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;transition:.2s;}
-        button:hover{background:#7c5ce7;transform:translateY(-1px);}
-        #result{margin-top:1rem;font-weight:800;font-size:1rem;min-height:1.4rem;}
-        .ok{color:#00b894;}
-        .err{color:#d63031;}
-        .hint{margin-top:.8rem;font-size:.8rem;color:#b0a8d0;cursor:pointer;}
-        .hint-text{display:none;margin-top:.5rem;background:#ffeaa7;border-radius:10px;padding:.5rem .8rem;font-size:.82rem;color:#6c5ce7;font-weight:700;}
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja - Koeficienti i Fërkimit</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#050a0f;--surface:#0a1520;--accent:#29b6f6;--accent2:#ef5350;--gold:#ffd600;--text:#e1f5fe;--muted:#4fc3f7;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+  h1{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);text-shadow:0 0 20px var(--accent);margin-bottom:4px;letter-spacing:2px;}
+  .subtitle{color:var(--muted);font-size:1.1rem;margin-bottom:24px;}
+  .card{background:var(--surface);border:1px solid #0d2a3a;border-radius:16px;padding:24px;width:100%;max-width:700px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+  .formula-box{background:#05080f;border:1px solid var(--accent);border-radius:10px;padding:16px;text-align:center;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);margin-bottom:16px;}
+  label{font-size:1rem;color:var(--muted);display:block;margin-bottom:6px;}
+  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:#0d2a3a;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);cursor:pointer;}
+  .val{min-width:70px;text-align:right;font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--gold);}
+  .results{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
+  .result-item{background:#05080f;border-radius:10px;padding:12px;text-align:center;border:1px solid #0d2a3a;}
+  .rlabel{font-size:0.8rem;color:var(--muted);margin-bottom:4px;}
+  .rval{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--gold);}
+  .tab-row{display:flex;gap:8px;margin-bottom:20px;}
+  .tab{padding:8px 20px;border-radius:8px;border:1px solid #0d2a3a;background:transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:1rem;cursor:pointer;transition:all 0.2s;}
+  .tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600;}
+  .panel{display:none;}.panel.active{display:block;}
+  .question{font-size:1.1rem;color:var(--text);margin-bottom:14px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .opt-btn{background:#05080f;border:1px solid #0d2a3a;border-radius:10px;color:var(--text);padding:12px 16px;font-family:'Rajdhani',sans-serif;font-size:1rem;cursor:pointer;text-align:left;transition:all 0.2s;}
+  .opt-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .opt-btn.correct{border-color:#4caf50;background:#1a3a1a;color:#81c784;}
+  .opt-btn.wrong{border-color:var(--accent2);background:#2a0a0a;color:#ef9a9a;}
+  .feedback{margin-top:14px;padding:12px;border-radius:8px;font-size:1rem;display:none;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:#1a3a1a;border:1px solid #4caf50;color:#81c784;}
+  .feedback.bad{background:#2a0a0a;border:1px solid var(--accent2);color:#ef9a9a;}
+  .next-btn{margin-top:14px;background:linear-gradient(135deg,var(--accent),#01579b);border:none;border-radius:10px;color:#000;font-family:'Orbitron',sans-serif;font-size:0.9rem;padding:12px 24px;cursor:pointer;display:none;font-weight:bold;}
+  .next-btn.show{display:inline-block;}
+  .score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .score-badge{background:#0d2a3a;border:1px solid var(--accent);border-radius:8px;padding:6px 14px;font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--accent);}
+  .progress-bar{flex:1;height:6px;background:#0d2a3a;border-radius:3px;margin:0 12px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width 0.4s;}
+  .victory{text-align:center;padding:30px;display:none;}
+  .victory.show{display:block;}
+  .victory-title{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--gold);text-shadow:0 0 20px var(--gold);margin-bottom:10px;}
+  .stars{font-size:2.5rem;margin:10px 0;}
+  .restart-btn{margin-top:16px;background:var(--gold);border:none;border-radius:10px;color:#000;font-family:'Orbitron',sans-serif;font-size:0.9rem;padding:12px 28px;cursor:pointer;font-weight:bold;}
+  /* μ calculator */
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .input-group{background:#05080f;border:1px solid #0d2a3a;border-radius:10px;padding:14px;}
+  .input-group label{font-size:0.9rem;color:var(--muted);margin-bottom:8px;}
+  .num-input{width:100%;background:#020508;border:1px solid var(--accent);border-radius:6px;color:var(--text);font-family:'Orbitron',sans-serif;font-size:1.1rem;padding:8px 12px;outline:none;}
+  .calc-btn{background:linear-gradient(135deg,var(--accent),#01579b);border:none;border-radius:10px;color:#000;font-family:'Orbitron',sans-serif;font-size:0.9rem;padding:12px 24px;cursor:pointer;font-weight:bold;margin-bottom:14px;}
+  .mu-result{background:#05080f;border:1px solid var(--gold);border-radius:10px;padding:20px;text-align:center;margin-bottom:14px;}
+  .mu-val{font-family:'Orbitron',sans-serif;font-size:2.5rem;color:var(--gold);}
+  .mu-category{font-size:1rem;color:var(--muted);margin-top:8px;}
+  .mu-table{width:100%;border-collapse:collapse;margin-top:10px;}
+  .mu-table th,.mu-table td{padding:8px 12px;text-align:left;border-bottom:1px solid #0d2a3a;font-size:0.9rem;}
+  .mu-table th{color:var(--accent);font-family:'Orbitron',sans-serif;font-size:0.8rem;}
+  .mu-table tr.highlight td{color:var(--gold);background:#0d2a0d;}
+</style>
 </head>
 <body>
-<div class="card">
-    <div class="icon">🧪</div>
-    <h1>Koeficienti i Fërkimit (μ = Ff/N)</h1>
-    <div class="formula">μ = Ff / N</div>
-    <p>Forca e fërkimit Ff = 20 N dhe forca normale N = 80 N. Sa është koeficienti i fërkimit μ?</p>
-    <div class="input-row">
-        <input type="number" id="ans" placeholder="Shkruaj përgjigjen..." step="any">
-        <div class="unit">—</div>
-    </div>
-    <button onclick="check()">Kontrollo ✓</button>
-    <div id="result"></div>
-    <div class="hint" onclick="toggleHint()">💡 Shfaq ndihmë</div>
-    <div class="hint-text" id="hint">Pjesëto: μ = 20 ÷ 80 = 0.25 (pa njësi)</div>
+<h1>μ KOEFICIENTI I FËRKIMIT</h1>
+<p class="subtitle">μ = F_f / N &nbsp;|&nbsp; Pa Njësi</p>
+
+<div class="tab-row">
+  <button class="tab active" onclick="switchTab('sim',event)">🔬 Kalkulator</button>
+  <button class="tab" onclick="switchTab('quiz',event)">🧠 Kuiz</button>
 </div>
+
+<div class="panel active" id="panel-sim">
+  <div class="card">
+    <div class="formula-box">μ = F_f / N &nbsp;&nbsp;|&nbsp;&nbsp; N = m × g</div>
+    <div class="calc-grid">
+      <div class="input-group">
+        <label>Forca e Fërkimit F_f (N)</label>
+        <input type="number" class="num-input" id="ffInput" value="30" oninput="calcMu()">
+      </div>
+      <div class="input-group">
+        <label>Forca Normale N (N)</label>
+        <input type="number" class="num-input" id="nInput" value="100" oninput="calcMu()">
+      </div>
+    </div>
+    <div class="mu-result">
+      <div style="font-size:0.9rem;color:var(--muted);margin-bottom:6px;">Koeficienti i Fërkimit</div>
+      <div class="mu-val" id="muResult">0.30</div>
+      <div class="mu-category" id="muCategory">— Sipërfaqe e mesme (parket, beton)</div>
+    </div>
+    <div style="font-size:1rem;color:var(--muted);margin-bottom:8px;">OSE: Llogarit nga masa dhe forca:</div>
+    <div class="slider-row">
+      <label style="min-width:80px">Masa (kg)</label>
+      <input type="range" id="massSlider" min="1" max="100" value="10" oninput="calcFromSliders()">
+      <span class="val" id="massVal">10 kg</span>
+    </div>
+    <div class="slider-row">
+      <label style="min-width:80px">Ff (N)</label>
+      <input type="range" id="ffSlider" min="0" max="200" value="30" oninput="calcFromSliders()">
+      <span class="val" id="ffVal">30 N</span>
+    </div>
+    <div style="font-size:0.95rem;color:var(--muted);margin-bottom:10px;">Tabela e vlerave tipike të μ:</div>
+    <table class="mu-table" id="muTable">
+      <tr><th>Sipërfaqja</th><th>μ statik</th><th>μ kinetik</th></tr>
+      <tr><td>🧊 Akull-akull</td><td>0.05-0.15</td><td>0.02-0.09</td></tr>
+      <tr><td>🛢 Vaj-metal</td><td>0.05-0.1</td><td>0.03-0.06</td></tr>
+      <tr><td>🪵 Dru-dru</td><td>0.25-0.5</td><td>0.2-0.4</td></tr>
+      <tr><td>🧱 Gome-beton</td><td>0.6-0.8</td><td>0.5-0.7</td></tr>
+      <tr><td>⚫ Metal-metal</td><td>0.15-0.5</td><td>0.1-0.4</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="panel" id="panel-quiz">
+  <div class="card">
+    <div class="score-row">
+      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+      <span class="score-badge"><span id="qnum">1</span>/7</span>
+    </div>
+    <div id="quiz-content">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+    </div>
+    <div class="victory" id="victory">
+      <div class="victory-title">🏆 BRAVO!</div>
+      <div class="stars" id="stars"></div>
+      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+    </div>
+  </div>
+</div>
+
 <script>
-    const correct = 0.25;
-    function check(){
-        const v = parseFloat(document.getElementById('ans').value);
-        const r = document.getElementById('result');
-        if(isNaN(v)){r.className='err';r.innerText='Shkruaj një numër!';return;}
-        if(Math.abs(v - correct) < correct*0.01 + 0.01){
-            r.className='ok';r.innerText='Saktë! 🎉 Bravo!';
-        } else {
-            r.className='err';r.innerText='Gabim, provo përsëri! ❌';
-        }
-    }
-    document.getElementById('ans').addEventListener('keydown',e=>{if(e.key==='Enter')check();});
-    function toggleHint(){
-        const h=document.getElementById('hint');
-        h.style.display=h.style.display==='block'?'none':'block';
-    }
+function calcMu() {
+  const ff = parseFloat(document.getElementById('ffInput').value)||0;
+  const n = parseFloat(document.getElementById('nInput').value)||1;
+  const mu = ff/n;
+  document.getElementById('muResult').textContent = mu.toFixed(3);
+  let cat = '';
+  if (mu < 0.1) cat = '— Shumë e lëmuar (akull, vaj)';
+  else if (mu < 0.3) cat = '— E lëmuar (parket, metal)';
+  else if (mu < 0.6) cat = '— Normale (beton, dru)';
+  else if (mu < 0.8) cat = '— Ashpër (gome, rëre)';
+  else cat = '— Shumë ashpër (fërkimi i lartë)';
+  document.getElementById('muCategory').textContent = cat;
+}
+function calcFromSliders() {
+  const m = parseFloat(document.getElementById('massSlider').value);
+  const ff = parseFloat(document.getElementById('ffSlider').value);
+  document.getElementById('massVal').textContent = m + ' kg';
+  document.getElementById('ffVal').textContent = ff + ' N';
+  const N = m * 9.81;
+  document.getElementById('nInput').value = N.toFixed(1);
+  document.getElementById('ffInput').value = ff;
+  calcMu();
+}
+calcMu();
+
+const questions=[
+  {q:"Njësia e koeficientit të fërkimit μ është:",opts:["N","kg","Pa","Pa njësi (adimensional)"],ans:3},
+  {q:"Ff=40N, N=200N. Sa është μ?",opts:["0.02","0.2","2","8000"],ans:1},
+  {q:"Cili material ka μ më të vogël?",opts:["Gome-beton","Akull-akull","Metal-metal","Dru-dru"],ans:1},
+  {q:"Si ndikon rritja e sipërfaqes së kontaktit te Ff?",opts:["Rrit Ff shumë","Zvogëlon Ff","Nuk ndikon (sipas ligjit klasik)","Varet nga forma"],ans:2},
+  {q:"μ statik krahasuar me μ kinetik:",opts:["Është gjithmonë më i vogël","Është gjithmonë më i madh ose i barabartë","Janë të njëjtë","Nuk ka lidhje"],ans:1},
+  {q:"Cila është formula e saktë e koeficientit?",opts:["μ = N/Ff","μ = Ff × N","μ = Ff / N","μ = mg/Ff"],ans:2},
+  {q:"Nëse μ=0 (sipërfaqe perfekte), çfarë ndodh?",opts:["Trupi nuk lëviz","Trupi lëviz pa asnjë rezistencë","Trupi bie","Ff dyfishohet"],ans:1}
+];
+
+let qi=0,score=0;
+function loadQ(){const q=questions[qi];document.getElementById('question').textContent=(qi+1)+'. '+q.q;document.getElementById('feedback').className='feedback';document.getElementById('nextBtn').className='next-btn';document.getElementById('qnum').textContent=qi+1;document.getElementById('progress').style.width=(qi/questions.length*100)+'%';const opts=document.getElementById('options');opts.innerHTML='';q.opts.forEach((o,i)=>{const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=String.fromCharCode(65+i)+'. '+o;btn.onclick=()=>checkAns(i,btn);opts.appendChild(btn);});}
+function checkAns(i,btn){const q=questions[qi];document.querySelectorAll('.opt-btn').forEach(b=>b.onclick=null);const fb=document.getElementById('feedback');if(i===q.ans){btn.className='opt-btn correct';score++;document.getElementById('score').textContent=score;fb.className='feedback ok show';fb.textContent='✅ Saktë!';}else{btn.className='opt-btn wrong';document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn correct';fb.className='feedback bad show';fb.textContent='❌ Jo! Saktë: '+String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];}document.getElementById('nextBtn').className='next-btn show';}
+function nextQ(){qi++;if(qi>=questions.length){document.getElementById('quiz-content').style.display='none';document.getElementById('victory').className='victory show';document.getElementById('finalScore').textContent=score;document.getElementById('stars').textContent=score>=6?'⭐⭐⭐':score>=4?'⭐⭐':'⭐';}else loadQ();}
+function restartQuiz(){qi=0;score=0;document.getElementById('score').textContent=0;document.getElementById('victory').className='victory';document.getElementById('quiz-content').style.display='block';loadQ();}
+function switchTab(t,e){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));e.target.classList.add('active');document.getElementById('panel-'+t).classList.add('active');}
+loadQ();
 </script>
 </body>
 </html>

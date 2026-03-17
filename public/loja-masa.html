@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja - Masa</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0a0f0a; --surface:#101a10; --accent:#69f0ae; --accent2:#ff6e40; --gold:#ffd600; --text:#e8f5e9; --muted:#81c784; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:20px; }
+  h1 { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--accent); text-shadow:0 0 20px var(--accent); margin-bottom:4px; letter-spacing:2px; }
+  .subtitle { color:var(--muted); font-size:1.1rem; margin-bottom:24px; }
+  .card { background:var(--surface); border:1px solid #1a3a1a; border-radius:16px; padding:24px; width:100%; max-width:700px; margin-bottom:20px; position:relative; overflow:hidden; }
+  .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+  .scene { background:#050f05; border-radius:12px; height:200px; position:relative; margin-bottom:16px; border:1px solid #1a3a1a; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .scale-base { position:absolute; bottom:0; width:200px; height:20px; background:linear-gradient(180deg,#2e7d32,#1b5e20); border-radius:4px 4px 0 0; }
+  .scale-platform { position:absolute; bottom:20px; width:160px; height:12px; background:linear-gradient(180deg,#43a047,#2e7d32); border-radius:4px; }
+  .scale-pole { position:absolute; bottom:32px; left:50%; transform:translateX(-50%); width:8px; background:linear-gradient(180deg,#4caf50,#1b5e20); }
+  .scale-bowl { position:absolute; width:100px; height:40px; background:linear-gradient(135deg,#1a3a1a,#0d2a0d); border:2px solid var(--accent); border-radius:0 0 50px 50px; display:flex; align-items:center; justify-content:center; transition:bottom 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  .mass-display { font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--accent); }
+  .formula-box { background:#050f05; border:1px solid var(--accent); border-radius:10px; padding:16px; text-align:center; font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--accent); margin-bottom:16px; }
+  label { font-size:1rem; color:var(--muted); display:block; margin-bottom:6px; }
+  .slider-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  input[type=range] { flex:1; -webkit-appearance:none; height:6px; border-radius:3px; background:#1a3a1a; outline:none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); cursor:pointer; }
+  .val { min-width:70px; text-align:right; font-family:'Orbitron',sans-serif; font-size:0.9rem; color:var(--gold); }
+  .results { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px; }
+  .result-item { background:#050f05; border-radius:10px; padding:12px; text-align:center; border:1px solid #1a3a1a; }
+  .result-item .rlabel { font-size:0.8rem; color:var(--muted); margin-bottom:4px; }
+  .result-item .rval { font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--gold); }
+  .tab-row { display:flex; gap:8px; margin-bottom:20px; }
+  .tab { padding:8px 20px; border-radius:8px; border:1px solid #1a3a1a; background:transparent; color:var(--muted); font-family:'Rajdhani',sans-serif; font-size:1rem; cursor:pointer; transition:all 0.2s; }
+  .tab.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:600; }
+  .panel { display:none; } .panel.active { display:block; }
+  .question { font-size:1.1rem; color:var(--text); margin-bottom:14px; line-height:1.5; }
+  .options { display:flex; flex-direction:column; gap:10px; }
+  .opt-btn { background:#050f05; border:1px solid #1a3a1a; border-radius:10px; color:var(--text); padding:12px 16px; font-family:'Rajdhani',sans-serif; font-size:1rem; cursor:pointer; text-align:left; transition:all 0.2s; }
+  .opt-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .opt-btn.correct { border-color:#4caf50; background:#1a3a1a; color:#81c784; }
+  .opt-btn.wrong { border-color:var(--accent2); background:#2a0a0a; color:#ef9a9a; }
+  .feedback { margin-top:14px; padding:12px; border-radius:8px; font-size:1rem; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:#1a3a1a; border:1px solid #4caf50; color:#81c784; }
+  .feedback.bad { background:#2a0a0a; border:1px solid var(--accent2); color:#ef9a9a; }
+  .next-btn { margin-top:14px; background:linear-gradient(135deg,var(--accent),#005c35); border:none; border-radius:10px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.9rem; padding:12px 24px; cursor:pointer; display:none; font-weight:bold; }
+  .next-btn.show { display:inline-block; }
+  .score-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .score-badge { background:#1a3a1a; border:1px solid var(--accent); border-radius:8px; padding:6px 14px; font-family:'Orbitron',sans-serif; font-size:0.85rem; color:var(--accent); }
+  .progress-bar { flex:1; height:6px; background:#1a3a1a; border-radius:3px; margin:0 12px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:3px; transition:width 0.4s; }
+  .victory { text-align:center; padding:30px; display:none; }
+  .victory.show { display:block; }
+  .victory-title { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--gold); text-shadow:0 0 20px var(--gold); margin-bottom:10px; }
+  .stars { font-size:2.5rem; margin:10px 0; }
+  .restart-btn { margin-top:16px; background:var(--gold); border:none; border-radius:10px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.9rem; padding:12px 28px; cursor:pointer; font-weight:bold; }
+  .objects-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+  .obj-card { background:#050f05; border:1px solid #1a3a1a; border-radius:10px; padding:12px; text-align:center; cursor:pointer; transition:all 0.2s; }
+  .obj-card:hover,.obj-card.active { border-color:var(--accent); background:#0a1f0a; }
+  .obj-icon { font-size:2rem; margin-bottom:4px; }
+  .obj-name { font-size:0.85rem; color:var(--muted); }
+  .obj-mass { font-family:'Orbitron',sans-serif; font-size:0.9rem; color:var(--gold); }
+</style>
+</head>
+<body>
+<h1>⚖️ MASA</h1>
+<p class="subtitle">m = d × V &nbsp;|&nbsp; Sasia e Lëndës</p>
+
+<div class="tab-row">
+  <button class="tab active" onclick="switchTab('sim',event)">🔬 Simulim</button>
+  <button class="tab" onclick="switchTab('quiz',event)">🧠 Kuiz</button>
+</div>
+
+<div class="panel active" id="panel-sim">
+  <div class="card">
+    <div style="font-size:1rem;color:var(--muted);margin-bottom:10px;">Zgjidh një objekt ose vendos masën me rrëshqitës:</div>
+    <div class="objects-grid">
+      <div class="obj-card" onclick="selectObj(this,0.5)"><div class="obj-icon">🍎</div><div class="obj-name">Mollë</div><div class="obj-mass">0.5 kg</div></div>
+      <div class="obj-card" onclick="selectObj(this,5)"><div class="obj-icon">🐱</div><div class="obj-name">Mace</div><div class="obj-mass">5 kg</div></div>
+      <div class="obj-card" onclick="selectObj(this,70)"><div class="obj-icon">🧑</div><div class="obj-name">Njeri</div><div class="obj-mass">70 kg</div></div>
+      <div class="obj-card" onclick="selectObj(this,200)"><div class="obj-icon">🛵</div><div class="obj-name">Motorr</div><div class="obj-mass">200 kg</div></div>
+      <div class="obj-card" onclick="selectObj(this,1000)"><div class="obj-icon">🚗</div><div class="obj-name">Makinë</div><div class="obj-mass">1000 kg</div></div>
+      <div class="obj-card" onclick="selectObj(this,5000)"><div class="obj-icon">🐘</div><div class="obj-name">Elefant</div><div class="obj-mass">5000 kg</div></div>
+    </div>
+    <div class="scene" id="scene">
+      <div style="position:absolute;top:10px;color:var(--muted);font-size:0.85rem;">Pesha = m × g</div>
+      <div class="scale-bowl" id="bowl" style="bottom:70px;left:50%;transform:translateX(-50%);">
+        <span class="mass-display" id="massDisp">?</span>
+      </div>
+      <div class="scale-pole" id="pole" style="height:40px;"></div>
+      <div class="scale-platform"></div>
+      <div class="scale-base"></div>
+    </div>
+    <div class="formula-box">m = d × V &nbsp;&nbsp;|&nbsp;&nbsp; G = m × g</div>
+    <div class="slider-row">
+      <label style="min-width:80px">Masa (kg)</label>
+      <input type="range" id="massSlider" min="0.1" max="200" step="0.1" value="10" oninput="updateSim(this.value)">
+      <span class="val" id="massVal">10 kg</span>
+    </div>
+    <div class="results">
+      <div class="result-item"><div class="rlabel">Masa</div><div class="rval" id="r1">10 kg</div></div>
+      <div class="result-item"><div class="rlabel">Forca e rëndësës</div><div class="rval" id="r2">98 N</div></div>
+      <div class="result-item"><div class="rlabel">Masa në Hënë</div><div class="rval" id="r3">10 kg</div></div>
+    </div>
+    <div style="background:#050f05;border:1px solid #1a3a1a;border-radius:10px;padding:12px;font-size:0.95rem;color:var(--muted);line-height:1.6;">
+      💡 <strong style="color:var(--accent)">Kujdes:</strong> Masa NUK ndryshon kudo në univers! Por forca e rëndësës (G=mg) ndryshon, sepse g ndryshon. Në Hënë g=1.62 m/s².
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-quiz">
+  <div class="card">
+    <div class="score-row">
+      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+      <span class="score-badge"><span id="qnum">1</span>/7</span>
+    </div>
+    <div id="quiz-content">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+    </div>
+    <div class="victory" id="victory">
+      <div class="victory-title">🏆 BRAVO!</div>
+      <div class="stars" id="stars"></div>
+      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateSim(v) {
+  v = parseFloat(v);
+  document.getElementById('massVal').textContent = v + ' kg';
+  document.getElementById('massSlider').value = v;
+  document.getElementById('massDisp').textContent = v + ' kg';
+  document.getElementById('r1').textContent = v + ' kg';
+  document.getElementById('r2').textContent = (v * 9.81).toFixed(1) + ' N';
+  document.getElementById('r3').textContent = v + ' kg';
+  const poleH = Math.min(20 + v * 0.3, 120);
+  document.getElementById('pole').style.height = poleH + 'px';
+  const bowlBottom = 20 + poleH;
+  document.getElementById('bowl').style.bottom = bowlBottom + 'px';
+}
+
+function selectObj(el, m) {
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  updateSim(m);
+}
+
+updateSim(10);
+
+const questions = [
+  { q: "Masa tregon:", opts: ["Peshën e trupit", "Sasinë e lëndës dhe inertësinë", "Vëllimin e trupit", "Shpejtësinë e trupit"], ans: 1 },
+  { q: "Njësia SI e masës është:", opts: ["N", "Pa", "kg", "g"], ans: 2 },
+  { q: "Nëse masa e trupit në Tokë është 60 kg, sa do të jetë masa e tij në Hënë?", opts: ["10 kg", "60 kg", "360 kg", "0 kg"], ans: 1 },
+  { q: "Formula m = d × V tregon lidhjen midis masës me:", opts: ["Dendësinë dhe vëllimin", "Forcën dhe nxitimin", "Shpejtësinë dhe kohën", "Shtypjen dhe sipërfaqen"], ans: 0 },
+  { q: "1 ton është i barabartë me:", opts: ["100 kg", "500 kg", "1000 kg", "10000 kg"], ans: 2 },
+  { q: "Çfarë quhet 'inercia' e trupit?", opts: ["Rezistenca ndaj ndryshimit të lëvizjes", "Forca e rëndësës", "Masa shumë e madhe", "Shpejtësia maksimale"], ans: 0 },
+  { q: "Dendësia e ujit është 1000 kg/m³. Sa kg ka 2 m³ ujë?", opts: ["500 kg", "1000 kg", "2000 kg", "0.5 kg"], ans: 2 }
+];
+
+let qi = 0, score = 0;
+function loadQ() {
+  const q = questions[qi];
+  document.getElementById('question').textContent = (qi+1) + '. ' + q.q;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').className = 'next-btn';
+  document.getElementById('qnum').textContent = qi + 1;
+  document.getElementById('progress').style.width = (qi/questions.length*100) + '%';
+  const opts = document.getElementById('options'); opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = String.fromCharCode(65+i) + '. ' + o;
+    btn.onclick = () => checkAns(i, btn);
+    opts.appendChild(btn);
+  });
+}
+function checkAns(i, btn) {
+  const q = questions[qi];
+  document.querySelectorAll('.opt-btn').forEach(b => b.onclick = null);
+  const fb = document.getElementById('feedback');
+  if (i === q.ans) { btn.className = 'opt-btn correct'; score++; document.getElementById('score').textContent = score; fb.className = 'feedback ok show'; fb.textContent = '✅ Saktë! Bravo!'; }
+  else { btn.className = 'opt-btn wrong'; document.querySelectorAll('.opt-btn')[q.ans].className = 'opt-btn correct'; fb.className = 'feedback bad show'; fb.textContent = '❌ Jo! Përgjigja e saktë: ' + String.fromCharCode(65+q.ans) + '. ' + q.opts[q.ans]; }
+  document.getElementById('nextBtn').className = 'next-btn show';
+}
+function nextQ() {
+  qi++;
+  if (qi >= questions.length) {
+    document.getElementById('quiz-content').style.display = 'none';
+    document.getElementById('victory').className = 'victory show';
+    document.getElementById('finalScore').textContent = score;
+    const pct = score / questions.length;
+    document.getElementById('stars').textContent = pct >= 0.85 ? '⭐⭐⭐' : pct >= 0.6 ? '⭐⭐' : '⭐';
+  } else { loadQ(); }
+}
+function restartQuiz() {
+  qi = 0; score = 0;
+  document.getElementById('score').textContent = 0;
+  document.getElementById('victory').className = 'victory';
+  document.getElementById('quiz-content').style.display = 'block';
+  loadQ();
+}
+function switchTab(t, e) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('panel-' + t).classList.add('active');
+}
+loadQ();
+</script>
+</body>
+</html>

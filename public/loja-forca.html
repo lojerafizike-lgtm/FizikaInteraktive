@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja - Forca</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a1a;
+    --surface: #111130;
+    --accent: #00e5ff;
+    --accent2: #ff4081;
+    --gold: #ffd600;
+    --text: #e8eaf6;
+    --muted: #7986cb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent);
+    margin-bottom: 4px;
+    letter-spacing: 2px;
+  }
+  .subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 24px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid #1a1a4a;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .scene {
+    background: #050510;
+    border-radius: 12px;
+    height: 180px;
+    position: relative;
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 1px solid #1a1a4a;
+  }
+  .ground {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30px;
+    background: linear-gradient(180deg, #1a3a1a, #0d2a0d);
+    border-top: 2px solid #2d5a2d;
+  }
+  .block {
+    position: absolute;
+    bottom: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    color: var(--accent);
+    transition: left 0.1s linear;
+    box-shadow: 0 0 15px rgba(0,229,255,0.3);
+  }
+  .arrow {
+    position: absolute;
+    bottom: 55px;
+    height: 8px;
+    background: var(--accent2);
+    transform-origin: left center;
+    border-radius: 4px;
+    transition: width 0.2s;
+  }
+  .arrow::after {
+    content: '▶';
+    position: absolute;
+    right: -14px;
+    top: -7px;
+    font-size: 18px;
+    color: var(--accent2);
+  }
+  label { font-size: 1rem; color: var(--muted); display: block; margin-bottom: 6px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #1a1a4a;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    cursor: pointer;
+  }
+  .val {
+    min-width: 60px;
+    text-align: right;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+  }
+  .formula-box {
+    background: #050510;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .result-item {
+    background: #050510;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #1a1a4a;
+  }
+  .result-item .rlabel { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+  .result-item .rval {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+  }
+  .quiz-section { }
+  .question {
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn {
+    background: #050510;
+    border: 1px solid #1a1a4a;
+    border-radius: 10px;
+    color: var(--text);
+    padding: 12px 16px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .opt-btn:hover { border-color: var(--accent); color: var(--accent); background: #0a0a2a; }
+  .opt-btn.correct { border-color: #4caf50; background: #1a3a1a; color: #81c784; }
+  .opt-btn.wrong { border-color: var(--accent2); background: #2a0a1a; color: #ef9a9a; }
+  .feedback {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #1a3a1a; border: 1px solid #4caf50; color: #81c784; }
+  .feedback.bad { background: #2a0a1a; border: 1px solid var(--accent2); color: #ef9a9a; }
+  .next-btn {
+    margin-top: 14px;
+    background: linear-gradient(135deg, var(--accent), #006080);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    padding: 12px 24px;
+    cursor: pointer;
+    display: none;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  .next-btn.show { display: inline-block; }
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .score-badge {
+    background: #1a1a4a;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    color: var(--accent);
+  }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #1a1a4a;
+    border-radius: 3px;
+    margin: 0 12px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.4s;
+  }
+  .tab-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid #1a1a4a;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .victory {
+    text-align: center;
+    padding: 30px;
+    display: none;
+  }
+  .victory.show { display: block; }
+  .victory-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--gold);
+    margin-bottom: 10px;
+  }
+  .stars { font-size: 2.5rem; margin: 10px 0; }
+  .restart-btn {
+    margin-top: 16px;
+    background: var(--gold);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    padding: 12px 28px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<h1>⚡ FORCA</h1>
+<p class="subtitle">F = m × a &nbsp;|&nbsp; Ligjet e Njutonit</p>
+
+<div class="tab-row">
+  <button class="tab active" onclick="switchTab('sim')">🔬 Simulim</button>
+  <button class="tab" onclick="switchTab('quiz')">🧠 Kuiz</button>
+</div>
+
+<!-- SIMULATION PANEL -->
+<div class="panel active" id="panel-sim">
+  <div class="card">
+    <div class="scene" id="scene">
+      <div class="ground"></div>
+      <div class="block" id="block">m</div>
+      <div class="arrow" id="arrow" style="left:120px; width:0px;"></div>
+      <div style="position:absolute;top:10px;left:12px;font-size:0.8rem;color:var(--muted);">Lëvizja e bllokut sipas F=ma</div>
+    </div>
+    <div class="formula-box">F = m × a</div>
+    <div class="slider-row">
+      <label style="min-width:80px">Masa (kg)</label>
+      <input type="range" id="massSlider" min="1" max="20" value="5" oninput="updateSim()">
+      <span class="val" id="massVal">5 kg</span>
+    </div>
+    <div class="slider-row">
+      <label style="min-width:80px">Forca (N)</label>
+      <input type="range" id="forceSlider" min="0" max="100" value="25" oninput="updateSim()">
+      <span class="val" id="forceVal">25 N</span>
+    </div>
+    <div class="results">
+      <div class="result-item"><div class="rlabel">Nxitimi</div><div class="rval" id="accVal">5.0 m/s²</div></div>
+      <div class="result-item"><div class="rlabel">Forca Rezultante</div><div class="rval" id="fresVal">25 N</div></div>
+    </div>
+    <button class="next-btn show" id="animBtn" onclick="toggleAnim()" style="display:inline-block;">▶ LËVIZ</button>
+  </div>
+</div>
+
+<!-- QUIZ PANEL -->
+<div class="panel" id="panel-quiz">
+  <div class="card">
+    <div class="score-row">
+      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+      <span class="score-badge"><span id="qnum">1</span>/7</span>
+    </div>
+    <div id="quiz-content">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+    </div>
+    <div class="victory" id="victory">
+      <div class="victory-title">🏆 BRAVO!</div>
+      <div class="stars" id="stars"></div>
+      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- SIMULATION ----
+let animRunning = false;
+let animFrame;
+let blockX = 50;
+let velocity = 0;
+let lastTime = null;
+
+function updateSim() {
+  const m = parseFloat(document.getElementById('massSlider').value);
+  const F = parseFloat(document.getElementById('forceSlider').value);
+  const a = F / m;
+  document.getElementById('massVal').textContent = m + ' kg';
+  document.getElementById('forceVal').textContent = F + ' N';
+  document.getElementById('accVal').textContent = a.toFixed(2) + ' m/s²';
+  document.getElementById('fresVal').textContent = F + ' N';
+  const arrowW = Math.min(F * 1.5, 200);
+  document.getElementById('arrow').style.width = arrowW + 'px';
+  document.getElementById('block').textContent = m + 'kg';
+}
+
+function toggleAnim() {
+  if (animRunning) {
+    animRunning = false;
+    cancelAnimationFrame(animFrame);
+    document.getElementById('animBtn').textContent = '▶ LËVIZ';
+    blockX = 50; velocity = 0; lastTime = null;
+    document.getElementById('block').style.left = blockX + 'px';
+    document.getElementById('arrow').style.left = (blockX + 70) + 'px';
+  } else {
+    animRunning = true;
+    document.getElementById('animBtn').textContent = '⏹ NDALO';
+    blockX = 50; velocity = 0; lastTime = null;
+    animFrame = requestAnimationFrame(animStep);
+  }
+}
+
+function animStep(ts) {
+  if (!lastTime) lastTime = ts;
+  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+  const m = parseFloat(document.getElementById('massSlider').value);
+  const F = parseFloat(document.getElementById('forceSlider').value);
+  const a = F / m;
+  velocity += a * dt;
+  blockX += velocity * dt * 30;
+  const scene = document.getElementById('scene');
+  const maxX = scene.offsetWidth - 70;
+  if (blockX > maxX) { blockX = 50; velocity = 0; }
+  document.getElementById('block').style.left = blockX + 'px';
+  document.getElementById('arrow').style.left = (blockX + 70) + 'px';
+  if (animRunning) animFrame = requestAnimationFrame(animStep);
+}
+
+updateSim();
+
+// ---- QUIZ ----
+const questions = [
+  { q: "Çfarë thotë Ligji i Parë i Njutonit?", opts: ["F=ma", "Nëse Fʀ=0, trupi rri në prehje ose lëviz me L.D.NJ.", "F₁₂ = -F₂₁", "a = F/m"], ans: 1 },
+  { q: "Një trup me masë 10 kg ka nxitim 3 m/s². Sa është forca?", opts: ["0.3 N", "13 N", "30 N", "300 N"], ans: 2 },
+  { q: "Nëse forca dyfishohet dhe masa mbetet e njëjtë, nxitimi:", opts: ["Mbetet i njëjtë", "Përgjysmohet", "Dyfishohet", "Katërshohet"], ans: 2 },
+  { q: "Çfarë thotë Ligji i Tretë i Njutonit?", opts: ["F=ma", "Nxitimi varet nga forca", "Çdo forcë ka forcë të kundërt të barabartë", "Masa ruan inercë"], ans: 2 },
+  { q: "Njësia SI e forcës është:", opts: ["kg", "m/s²", "Pa", "N (Newton)"], ans: 3 },
+  { q: "Nëse masa trefishohet dhe forca mbetet e njëjtë, nxitimi:", opts: ["Trefishohet", "Mbetet i njëjtë", "Zvogëlohet 3 herë", "Bëhet zero"], ans: 2 },
+  { q: "1 Newton është i barabartë me:", opts: ["1 kg/s", "1 kg·m/s²", "1 kg·m/s", "1 J/m²"], ans: 1 }
+];
+
+let qi = 0, score = 0;
+
+function loadQ() {
+  const q = questions[qi];
+  document.getElementById('question').textContent = (qi+1) + '. ' + q.q;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').className = 'next-btn';
+  document.getElementById('qnum').textContent = qi + 1;
+  document.getElementById('progress').style.width = (qi/questions.length*100) + '%';
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = String.fromCharCode(65+i) + '. ' + o;
+    btn.onclick = () => checkAns(i, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function checkAns(i, btn) {
+  const q = questions[qi];
+  document.querySelectorAll('.opt-btn').forEach(b => b.onclick = null);
+  const fb = document.getElementById('feedback');
+  if (i === q.ans) {
+    btn.className = 'opt-btn correct';
+    score++;
+    document.getElementById('score').textContent = score;
+    fb.className = 'feedback ok show';
+    fb.textContent = '✅ Saktë! Bravo!';
+  } else {
+    btn.className = 'opt-btn wrong';
+    document.querySelectorAll('.opt-btn')[q.ans].className = 'opt-btn correct';
+    fb.className = 'feedback bad show';
+    fb.textContent = '❌ Jo! Përgjigja e saktë: ' + String.fromCharCode(65+q.ans) + '. ' + q.opts[q.ans];
+  }
+  document.getElementById('nextBtn').className = 'next-btn show';
+}
+
+function nextQ() {
+  qi++;
+  if (qi >= questions.length) {
+    document.getElementById('quiz-content').style.display = 'none';
+    const v = document.getElementById('victory');
+    v.className = 'victory show';
+    document.getElementById('finalScore').textContent = score;
+    const pct = score / questions.length;
+    document.getElementById('stars').textContent = pct >= 0.85 ? '⭐⭐⭐' : pct >= 0.6 ? '⭐⭐' : '⭐';
+  } else { loadQ(); }
+}
+
+function restartQuiz() {
+  qi = 0; score = 0;
+  document.getElementById('score').textContent = 0;
+  document.getElementById('victory').className = 'victory';
+  document.getElementById('quiz-content').style.display = 'block';
+  loadQ();
+}
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + t).classList.add('active');
+}
+
+loadQ();
+</script>
+</body>
+</html>
