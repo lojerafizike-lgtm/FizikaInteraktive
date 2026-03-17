@@ -2,6 +2,10 @@
 import { PhysicsData, Simulation, PhysicsGame } from './types';
 
 export const ALL_PHYSICS_DATA: PhysicsData = {
+    
+import { PhysicsData, Simulation, PhysicsGame } from './types';
+
+export const ALL_PHYSICS_DATA: PhysicsData = {
     "Kinematika": [
         { name: "1. Koordinata", sym: "x, y, z", form: "x=xo+vt (L.D.NJ)  x=xo+vot+at²/2 (L.D.Nj.ND)", unit: "m", otherUnits: "miles(1km=0.621milje), foot(1ft=30.48cm), inch(1ft=12inch)", teTjera: "", nature: "Vektoriale", desc: "Pozicioni i një pike materiale në hapësirë në raport me një sistem referimi të zgjedhur.", phetUrl: "https://phet.colorado.edu/en/simulation/graphing-lines", img: "https://d20khd7ddkh5ls.cloudfront.net/img11_66.jpg", vid: "https://www.youtube.com/embed/MCDL8EXYIFo", gameUrl: "/loja-koordinata.html" },
         { name: "2. Zhvendosja", sym: "Δx", form: "Δx = vt   Δx=vot + at²/2  v²-vo²=2aΔx  Δx=(v+vo)t/2", unit: "m", otherUnits: " miles(1milje=1.609km), 1 pash=1.5m, foot(1ft=30.48cm), inch(1 inch=`2.54 cm)", teTjera: "", nature: "Vektoriale", desc: "Vektori që bashkon pozicionin fillestar me atë përfundimtar të trupit gjatë lëvizjes.", phetUrl: "https://phet.colorado.edu/en/simulation/moving-man", img: "https://www.sciencefacts.net/wp-content/uploads/2022/10/Displacement-Formula.jpg", vid: "https://www.youtube.com/embed/m4jrhAckbK0", gameUrl: "/loja-zhvendosja.html" },
