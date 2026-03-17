@@ -10,9 +10,23 @@ export const ProfileSetupModal: React.FC = () => {
   const [school, setSchool] = useState('');
   const [role, setRole] = useState<'mesues' | 'nxenes' | ''>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [forceShow, setForceShow] = useState(false);
 
   // Show modal if user is logged in but profile is incomplete
-  const needsSetup = user && profile && (!profile.username || !profile.school || !profile.role);
+  const needsSetup = forceShow || (user && profile && (!profile.username || !profile.school || !profile.role));
+
+  React.useEffect(() => {
+    const handleOpen = () => {
+      if (profile) {
+        setUsername(profile.username || '');
+        setSchool(profile.school || '');
+        setRole(profile.role || '');
+      }
+      setForceShow(true);
+    };
+    window.addEventListener('open-profile-setup', handleOpen);
+    return () => window.removeEventListener('open-profile-setup', handleOpen);
+  }, [profile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +40,7 @@ export const ProfileSetupModal: React.FC = () => {
         school: school.trim(),
         role: role,
       });
+      setForceShow(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `profiles/${user.uid}`);
     } finally {
@@ -43,7 +58,15 @@ export const ProfileSetupModal: React.FC = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-4 border-white"
         >
-          <div className="bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] p-8 text-white text-center">
+          <div className="bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] p-8 text-white text-center relative">
+            {forceShow && (
+              <button 
+                onClick={() => setForceShow(false)}
+                className="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            )}
             <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center mx-auto mb-4 backdrop-blur-md">
               <i className="fas fa-user-edit text-3xl"></i>
             </div>
@@ -86,6 +109,7 @@ export const ProfileSetupModal: React.FC = () => {
                 >
                   <i className="fas fa-chalkboard-teacher mb-2 block text-lg"></i>
                   Mësues
+                  <span className="block text-[8px] opacity-60 mt-1 lowercase font-medium">(Zhbllokon Planet Mësimore)</span>
                 </button>
                 <button
                   type="button"

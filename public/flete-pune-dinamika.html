@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fletë Pune: Dinamika - Fizika Interaktive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #ffc8dd;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #4a4e69;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #888;
+            font-size: 14px;
+        }
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .student-info div {
+            border-bottom: 1px solid #ccc;
+            padding: 5px 10px;
+            min-width: 200px;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #fff5f8;
+            border-radius: 10px;
+            border-left: 5px solid #ffc8dd;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .options li {
+            margin-bottom: 5px;
+        }
+        .options li::before {
+            content: "☐ ";
+        }
+        .open-ended {
+            height: 80px;
+            border: 1px solid #eee;
+            margin-top: 10px;
+            background-color: #fff;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
+        }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+            .question { break-inside: avoid; }
+        }
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ffc8dd;
+            color: #4a4e69;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 200, 221, 0.3);
+            transition: transform 0.2s;
+        }
+        .print-btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">Shkarko / Printo si PDF</button>
+
+    <div class="header">
+        <h1>Fletë Pune: Dinamika</h1>
+        <p>Forcat dhe Ligjet e Njutonit - Fizika Interaktive</p>
+    </div>
+
+    <div class="student-info">
+        <div>Emri: _____________________</div>
+        <div>Data: ____/____/2026</div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">1. Shpjegoni Ligjin e Parë të Njutonit (Ligji i Inercisë).</div>
+        <div class="open-ended"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">2. Sa është forca që duhet për të përshpejtuar një trup me masë 5 kg me një nxitim 2 m/s²?</div>
+        <ul class="options">
+            <li>2.5 N</li>
+            <li>7 N</li>
+            <li>10 N</li>
+            <li>0.4 N</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-text">3. Forca e fërkimit varet nga:</div>
+        <ul class="options">
+            <li>Vetëm masa e trupit</li>
+            <li>Lloji i sipërfaqeve në kontakt dhe forca e shtypjes normale</li>
+            <li>Shpejtësia e lëvizjes</li>
+            <li>Ngjyra e trupit</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-text">4. Nëse një trup ushtron një forcë mbi një trup tjetër, çfarë thotë Ligji i Tretë i Njutonit?</div>
+        <div class="open-ended"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">5. Njësia matëse e forcës është Njutoni (N). Shpreheni atë përmes njësive bazë të sistemit SI.</div>
+        <ul class="options">
+            <li>kg · m / s</li>
+            <li>kg · m / s²</li>
+            <li>kg · s / m²</li>
+            <li>m / s²</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        © 2026 Fizika Interaktive. Materiale për Dinamikën.
+    </div>
+</body>
+</html>

@@ -1,18 +1,46 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import { db, collection, addDoc, serverTimestamp, handleFirestoreError, OperationType } from '../firebase';
+import { useFirebase } from '../contexts/FirebaseContext';
 
 export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
-  const [type, setType] = useState('Plane Mësimore');
+  const { user, profile } = useFirebase();
+  const [type, setType] = useState('Planet Mësimore');
   const [topic, setTopic] = useState('Kinematika');
   const [title, setTitle] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here we would normally upload the file and save to database
-    console.log('Uploading file:', file?.name);
-    alert('Materiali u shtua me sukses!');
-    onClose();
+    if (!user || !profile) return;
+
+    setIsSubmitting(true);
+    try {
+      // In a real app, we would upload the file to Firebase Storage first
+      // and get a download URL. Since we don't have Storage setup here,
+      // we'll just save the metadata and a placeholder URL.
+      
+      const materialData = {
+        type,
+        topic,
+        title,
+        authorId: user.uid,
+        authorName: profile.displayName || 'Mësues',
+        createdAt: serverTimestamp(),
+        fileUrl: file ? `https://placeholder-url.com/${file.name}` : ''
+      };
+
+      await addDoc(collection(db, 'materials'), materialData);
+      
+      alert('Materiali u shtua me sukses!');
+      onClose();
+    } catch (error) {
+      console.error('Error adding material:', error);
+      handleFirestoreError(error, OperationType.CREATE, 'materials');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -37,7 +65,7 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setType(e.target.value)}
               className="w-full p-3 rounded-xl border-2 border-slate-100 focus:border-[#a2d2ff] outline-none"
             >
-              <option value="Plane Mësimore">Plani Mësimor</option>
+              <option value="Planet Mësimore">Plani Mësimor</option>
               <option value="Lojëra">Lojëra</option>
               <option value="Kuize">Kuize</option>
               <option value="Fletë Pune">Fletë Pune</option>
@@ -83,9 +111,10 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
           
           <button 
             type="submit"
-            className="w-full py-4 mt-4 bg-gradient-to-r from-[#a2d2ff] to-[#bde0fe] text-white rounded-xl font-black text-lg shadow-lg hover:scale-105 transition-transform"
+            disabled={isSubmitting}
+            className="w-full py-4 mt-4 bg-gradient-to-r from-[#a2d2ff] to-[#bde0fe] text-white rounded-xl font-black text-lg shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:scale-100"
           >
-            SHTO MATERIALIN
+            {isSubmitting ? 'DUKE U SHTUAR...' : 'SHTO MATERIALIN'}
           </button>
         </form>
       </motion.div>

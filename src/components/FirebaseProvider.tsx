@@ -7,6 +7,7 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -34,13 +35,15 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   const login = async () => {
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
     setAuthError(null);
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error: unknown) {
       const firebaseError = error as { code?: string };
-      if (firebaseError.code === 'auth/popup-closed-by-user') {
-        console.log("User closed the login popup.");
+      if (firebaseError.code === 'auth/popup-closed-by-user' || firebaseError.code === 'auth/cancelled-popup-request') {
+        console.log("User closed the login popup or request was cancelled.");
       } else if (firebaseError.code === 'auth/popup-blocked') {
         setAuthError("Shfletuesi bllokoi dritaren e hyrjes. Ju lutem lejoni pop-ups për këtë faqe dhe provoni përsëri.");
         console.error("Popup blocked:", firebaseError);
@@ -48,6 +51,8 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setAuthError("Dështoi hyrja me Google. Ju lutem provoni përsëri.");
         console.error("Login failed:", firebaseError);
       }
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -62,7 +67,7 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const clearAuthError = () => setAuthError(null);
 
   return (
-    <FirebaseContext.Provider value={{ user, profile, loading, authError, login, logout, clearAuthError }}>
+    <FirebaseContext.Provider value={{ user, profile, loading, authError, isLoggingIn, login, logout, clearAuthError }}>
       {children}
     </FirebaseContext.Provider>
   );

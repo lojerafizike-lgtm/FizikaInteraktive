@@ -23,6 +23,21 @@
         "lastUpdated": { "type": "string", "format": "date-time" }
       },
       "required": ["displayName", "totalScore"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "Educational material added by a teacher.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "topic": { "type": "string" },
+        "title": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "fileUrl": { "type": "string" }
+      },
+      "required": ["type", "topic", "title", "authorId", "authorName", "createdAt"]
     }
   },
   "firestore": {
@@ -33,6 +48,10 @@
     "/profiles/{userId}": {
       "schema": "UserProfile",
       "description": "Public user profiles for leaderboard."
+    },
+    "/materials/{materialId}": {
+      "schema": "Material",
+      "description": "Collection of educational materials."
     }
   }
 }

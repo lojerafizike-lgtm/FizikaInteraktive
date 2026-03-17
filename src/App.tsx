@@ -664,25 +664,32 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
-        {activePage === 'calendar' && (
-          <div className="animate__animated animate__fadeIn h-full flex flex-col overflow-hidden relative">
-            <div className="flex items-center justify-between mb-4 shrink-0">
-              <button onClick={() => navigate('home')} className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
-                <i className="fas fa-arrow-left"></i> Kthehu mbrapa
-              </button>
-              <button 
-                onClick={() => navigate('home')} 
-                className="w-10 h-10 bg-white text-slate-400 rounded-full flex items-center justify-center shadow-md hover:bg-[#ffafcc] hover:text-white transition-all"
-                title="Mbyll Kalendarin"
-              >
-                <i className="fas fa-times"></i>
-              </button>
+      {activePage === 'calendar' && (
+        <div className="fixed inset-0 z-[100] bg-[#fcf9ff] animate__animated animate__fadeIn animate__faster flex flex-col">
+          <div className="bg-white p-4 flex items-center justify-between shadow-sm relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-[#ffafcc] text-white rounded-xl flex items-center justify-center shadow-lg">
+                <i className="fas fa-calendar-alt"></i>
+              </div>
+              <h2 className="text-xl font-black tracking-tighter">Kalendari i Fizikës</h2>
             </div>
-            <div className="flex-1 bg-white rounded-[2rem] shadow-2xl overflow-hidden">
-              <iframe src="/kalendari.html" className="w-full h-full border-none" title="Kalendari" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-            </div>
+            <button 
+              onClick={() => navigate('home')} 
+              className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
+            >
+              <i className="fas fa-times text-xl"></i>
+            </button>
           </div>
-        )}
+          <div className="flex-1 w-full relative bg-white overflow-hidden">
+            <iframe 
+              src="/kalendari.html" 
+              className="w-full h-full border-none" 
+              title="Kalendari" 
+              sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+            ></iframe>
+          </div>
+        </div>
+      )}
         {activePage === 'movies' && (
           <MoviesSection onBack={() => navigate('home')} />
         )}

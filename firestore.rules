@@ -36,6 +36,11 @@ service cloud.firestore {
           (request.auth.token.email == "lojerafizike@gmail.com" && request.auth.token.email_verified == true));
     }
 
+    function isTeacher() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'mesues';
+    }
+
     // Domain Validators
     function isValidUserPrivate(data) {
       return data.keys().hasOnly(['email']) &&
@@ -51,6 +56,15 @@ service cloud.firestore {
              (!('role' in data) || (data.role in ['mesues', 'nxenes'])) &&
              (!('school' in data) || (data.school is string && data.school.size() < 100)) &&
              (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() < 500));
+    }
+
+    function isValidMaterial(data) {
+      return data.keys().hasAll(['type', 'topic', 'title', 'authorId', 'authorName', 'createdAt']) &&
+             data.keys().hasOnly(['type', 'topic', 'title', 'authorId', 'authorName', 'createdAt', 'fileUrl']) &&
+             data.type is string && data.topic is string && data.title is string &&
+             data.authorId == request.auth.uid &&
+             data.authorName is string &&
+             data.createdAt is timestamp;
     }
 
     // Rules
@@ -75,6 +89,13 @@ service cloud.firestore {
       );
       
       allow delete: if isAdmin();
+    }
+
+    match /materials/{materialId} {
+      allow read: if true;
+      allow create: if isTeacher() && isValidMaterial(request.resource.data);
+      allow update: if (isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid)) && isValidMaterial(request.resource.data);
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
     }
   }
 }

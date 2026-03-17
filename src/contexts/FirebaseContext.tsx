@@ -15,6 +15,7 @@ export interface FirebaseContextType {
   profile: Profile | null;
   loading: boolean;
   authError: string | null;
+  isLoggingIn: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
   clearAuthError: () => void;

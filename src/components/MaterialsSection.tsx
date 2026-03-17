@@ -1,13 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_PHYSICS_DATA } from '../constants';
 import { gjeneroKuizPerKategorine } from '../utils/quizGenerator';
 import { PhysicsData, DigitalGame } from '../types';
 import { useFirebase } from '../contexts/FirebaseContext';
-import { updateUserScore } from '../firebase';
+import { updateUserScore, db, collection, onSnapshot, query, orderBy, handleFirestoreError, OperationType } from '../firebase';
 import { DIGITAL_GAMES } from '../gameContent';
 
-type MaterialType = 'Lojëra' | 'Kuize' | 'Fletë Pune' | 'Për Mësuesit';
+type MaterialType = 'Lojëra' | 'Kuize' | 'Fletë Pune' | 'Planet Mësimore';
 type MaterialTopic = 'Kinematika' | 'Dinamika' | 'Energjia' | 'Elektriciteti' | 'Magnetizmi' | 'Fizika Kuantike';
 
 interface Material {
@@ -22,6 +22,7 @@ interface Material {
   actionUrl: string;
   isFavorite?: boolean;
   gameData?: DigitalGame;
+  authorName?: string;
 }
 
 interface QuizQuestion {
@@ -42,10 +43,30 @@ const MOCK_MATERIALS: Material[] = [
     actionUrl: 'flete-pune-fizika.html',
     isFavorite: true
   },
+  { 
+    id: 'fp2', 
+    type: 'Fletë Pune', 
+    topic: 'Kinematika', 
+    title: 'Fletë Pune: Kinematika', 
+    description: 'Ushtrime mbi shpejtësinë, zhvendosjen dhe nxitimin.', 
+    icon: 'fa-file-alt', 
+    actionText: 'Hap Fletën', 
+    actionUrl: 'flete-pune-kinematika.html'
+  },
+  { 
+    id: 'fp3', 
+    type: 'Fletë Pune', 
+    topic: 'Dinamika', 
+    title: 'Fletë Pune: Dinamika', 
+    description: 'Ushtrime mbi forcat, fërkimin dhe ligjet e Njutonit.', 
+    icon: 'fa-file-alt', 
+    actionText: 'Hap Fletën', 
+    actionUrl: 'flete-pune-dinamika.html'
+  },
   // Kinematika
   { 
     id: 'k1', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Kinematika', 
     title: '1.1 Gjeometria e Lëvizjes', 
     description: 'Përcaktimi i pozicionit të një trupi dhe dallimi i rrugës nga zhvendosja.', 
@@ -79,7 +100,7 @@ Nxënësit vizatojnë një hartë të thjeshtë të rrugës së tyre nga shtëpi
   },
   { 
     id: 'k2', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Kinematika', 
     title: '1.2 Dinamika e Lëvizjes', 
     description: 'Llogaritja e shpejtësisë dhe nxitimit, përfshirë rënien e lirë.', 
@@ -114,7 +135,7 @@ Diskutim se pse gjethet dhe guri bien me shpejtësi të ndryshme në realitet (r
   },
   { 
     id: 'k3', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Kinematika', 
     title: '1.3 Lëvizja Rrethore dhe Lëkundjet', 
     description: 'Dallimi mes parametrave linearë dhe këndorë në lëvizjen rrethore.', 
@@ -150,7 +171,7 @@ Lidhja e formulave me dizajnin e thepisur të kthesave në autostrada ose pistat
   // Dinamika
   { 
     id: 'd1', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Dinamika', 
     title: '2.1 Inercia, Masa dhe Forca', 
     description: 'Zbatimi i Ligjit të Dytë të Njutonit dhe kuptimi i inercisë.', 
@@ -184,7 +205,7 @@ Diskutim se si inercia shpjegon arsyen pse na duhet rripi i sigurimit në makin�
   },
   { 
     id: 'd2', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Dinamika', 
     title: '2.2 Fërkimi dhe Elasticiteti', 
     description: 'Studimi i sipërfaqeve të kontaktit dhe aftësia e trupave për t\'u shformuar.', 
@@ -218,7 +239,7 @@ Vizatimi i grafikut Forcë-Zgjatim dhe gjetja e pikës ku susta prishet (Kufiri 
   },
   { 
     id: 'd3', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Dinamika', 
     title: '2.3 Goditjet dhe Ekuilibri', 
     description: 'Analizimi i sasisë së lëvizjes në goditje dhe kushtet e ekuilibrit statik.', 
@@ -254,7 +275,7 @@ Llogaritja e shtypjes që secili nxënës ushtron mbi dysheme kur qëndron me dy
   // Energjia
   { 
     id: 'e1', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Energjia', 
     title: '3.1 Ruajtja e Energjisë Mekanike', 
     description: 'Demonstrojmë se energjia nuk zhduket, por transferohet.', 
@@ -288,7 +309,7 @@ Llogaritja e fuqisë së një makine në Kuaj Fuqi (1 HP = 745.7 W).`,
   },
   { 
     id: 'e2', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Energjia', 
     title: '3.2 Nxehtësia dhe Format e Tjera të Energjisë', 
     description: 'Analizojmë dallimin midis temperaturës dhe energjisë termike.', 
@@ -324,7 +345,7 @@ Diskutim se si lidhet formula e Ajnshtajnit E = mc² me dritën e Diellit.`,
   // Elektriciteti
   { 
     id: 'el1', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Elektriciteti', 
     title: '4.1 Qarqet Elektrike', 
     description: 'Kuptojmë rrjedhën e elektroneve përmes një modeli hidraulik.', 
@@ -358,7 +379,7 @@ Leximi i etiketave të pajisjeve elektroshtëpiake për të llogaritur koston e 
   },
   { 
     id: 'el2', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Elektriciteti', 
     title: '4.2 Elektrostatika', 
     description: 'Zbulojmë forcat in distancë dhe mënyrën se si ruhet ngarkesa in izolatorë.', 
@@ -394,7 +415,7 @@ Shpjegimi se si energjia grumbullohet në re dhe shkarkohet në formën e rrufes
   // Magnetizmi
   { 
     id: 'm1', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Magnetizmi', 
     title: '5.1 Fusha Magnetike dhe Forca e Amperit', 
     description: 'Vizualizojmë format 3D të magnetizmit.', 
@@ -428,7 +449,7 @@ Si shfrytëzohet ky fenomen brenda altoparlantëve të celularëve tanë?`,
   },
   { 
     id: 'm2', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Magnetizmi', 
     title: '5.2 Induksioni Elektromagnetik', 
     description: 'Demonstrojmë se si prodhohet energjia elektrike pa përdorur bateri.', 
@@ -463,7 +484,7 @@ Skicimi i një hidrocentrali duke i treguar ujit rolin e manivelës që rrotullo
   // Fizika Kuantike
   { 
     id: 'q1_plan', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Fizika Kuantike', 
     title: '6.1 Fotoefekti dhe Energjia Kuantike', 
     description: 'Zbulojmë se drita vjen in formë paketash (foton).', 
@@ -499,7 +520,7 @@ Si shfrytëzohet ky parim në panelet diellore fotovoltaike.`,
   },
   { 
     id: 'q2_plan', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Fizika Kuantike', 
     title: '6.2 Valët e Lëndës (Hipoteza e Broglie)', 
     description: 'Çdo grimcë in lëvizje ka një valë të shoqëruar.', 
@@ -533,7 +554,7 @@ Si u zhvillua Mikroskopi Elektronik duke shfrytëzuar gjatësinë e shkurtër t�
   },
   { 
     id: 'q3_plan', 
-    type: 'Për Mësuesit', 
+    type: 'Planet Mësimore', 
     topic: 'Fizika Kuantike', 
     title: '6.3 Ligji i Zbërthimit dhe Radioaktiviteti', 
     description: 'Llogaritja e kohës gjatë së cilës zbërthehet gjysma e bërthamave radioaktive.', 
@@ -600,11 +621,38 @@ const PROJECTS = [
 ];
 
 export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: DigitalGame) => void }) {
+  const { profile } = useFirebase();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<MaterialType | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<MaterialTopic | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<{ topic: string, questions: QuizQuestion[] } | null>(null);
   const [selectedLessonPlan, setSelectedLessonPlan] = useState<Material | null>(null);
+  const [dynamicMaterials, setDynamicMaterials] = useState<Material[]>([]);
+
+  useEffect(() => {
+    const q = query(collection(db, 'materials'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const materials = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          type: data.type as MaterialType,
+          topic: data.topic as MaterialTopic,
+          title: data.title,
+          description: `Shtuar nga: ${data.authorName}`,
+          icon: data.type === 'Planet Mësimore' ? 'fa-chalkboard-user' : 'fa-file-alt',
+          actionText: 'Shiko Materialin',
+          actionUrl: data.fileUrl || '#',
+          authorName: data.authorName
+        } as Material;
+      });
+      setDynamicMaterials(materials);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'materials');
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const ALL_MATERIALS = useMemo(() => {
     const gameMaterials: Material[] = DIGITAL_GAMES
@@ -613,7 +661,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
         const isTeacherGame = game.type === 'school' || game.id.includes('challenge');
         return {
           id: game.id,
-          type: isTeacherGame ? 'Për Mësuesit' : 'Lojëra' as MaterialType,
+          type: isTeacherGame ? 'Planet Mësimore' : 'Lojëra' as MaterialType,
           topic: game.category as MaterialTopic,
           title: game.title,
           description: game.type === 'school' ? 'Sfidë për në klasë' : 'Lojë interaktive digjitale',
@@ -623,8 +671,15 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
           gameData: game
         };
       });
-    return [...MOCK_MATERIALS, ...gameMaterials];
-  }, []);
+    
+    const all = [...MOCK_MATERIALS, ...gameMaterials, ...dynamicMaterials];
+    // Filter out teacher materials if the user is not a teacher
+    // We use an explicit check to ensure students or unauthenticated users never see them
+    if (!profile || profile.role !== 'mesues') {
+      return all.filter(m => m.type !== 'Planet Mësimore');
+    }
+    return all;
+  }, [profile, dynamicMaterials]);
 
   const filteredMaterials = useMemo(() => {
     return ALL_MATERIALS.filter(m => {
@@ -676,7 +731,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
         <div className="max-w-5xl mx-auto space-y-6">
           <div className="flex flex-wrap justify-center gap-3">
             <span className="w-full text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mb-2">Sipas Llojit</span>
-            {['Lojëra', 'Kuize', 'Fletë Pune', 'Për Mësuesit'].map(type => (
+            {['Lojëra', 'Kuize', 'Fletë Pune', ...(profile?.role === 'mesues' ? ['Planet Mësimore'] : [])].map(type => (
               <button 
                 key={type}
                 onClick={() => setSelectedType(selectedType === type ? null : type as MaterialType)}
@@ -686,6 +741,15 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
               </button>
             ))}
           </div>
+
+          {(!profile || profile.role !== 'mesues') && (
+            <div className="bg-white/50 backdrop-blur-sm border border-dashed border-[#ffafcc]/30 rounded-2xl p-4 text-center">
+              <p className="text-[10px] font-black text-[#ffafcc] uppercase tracking-widest">
+                <i className="fas fa-lock mr-2"></i>
+                Planet Mësimore janë të disponueshme vetëm për mësuesit e loguar
+              </p>
+            </div>
+          )}
           <div className="flex flex-wrap justify-center gap-3">
             <span className="w-full text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mb-2">Sipas Fushës</span>
             {['Kinematika', 'Dinamika', 'Energjia', 'Elektriciteti', 'Magnetizmi', 'Fizika Kuantike'].map(topic => (
@@ -724,8 +788,14 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
-                  } else if (m.type === 'Për Mësuesit') {
-                    setSelectedLessonPlan(m);
+                  } else if (m.type === 'Planet Mësimore') {
+                    if (m.actionUrl && m.actionUrl !== '#') {
+                      window.open(m.actionUrl, '_blank');
+                    } else {
+                      setSelectedLessonPlan(m);
+                    }
+                  } else if (m.actionUrl && m.actionUrl !== '#') {
+                    window.open(m.actionUrl, '_blank');
                   }
                 }}
               />
@@ -762,8 +832,14 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
-                  } else if (m.type === 'Për Mësuesit') {
-                    setSelectedLessonPlan(m);
+                  } else if (m.type === 'Planet Mësimore') {
+                    if (m.actionUrl && m.actionUrl !== '#') {
+                      window.open(m.actionUrl, '_blank');
+                    } else {
+                      setSelectedLessonPlan(m);
+                    }
+                  } else if (m.actionUrl && m.actionUrl !== '#') {
+                    window.open(m.actionUrl, '_blank');
                   }
                 }}
               />
