@@ -13,6 +13,7 @@
             --white-glass: rgba(255, 255, 255, 0.85);
         }
 
+        /* Sfondi pastel rozë/baby blue dhe pa padding në header (sipas rregullave të tua) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--baby-blue) 100%);
@@ -22,13 +23,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden;
             position: relative;
-            padding: 10px;
-            box-sizing: border-box;
         }
 
+        /* Elementet fizike fluturuese rreth e rrotull */
         .floating-icon {
             position: absolute;
             font-size: 3rem;
@@ -36,10 +35,10 @@
             animation: float 6s ease-in-out infinite;
             z-index: 0;
         }
-        .icon-1 { top: 10%; left: 10%; animation-delay: 0s; }
-        .icon-2 { bottom: 15%; right: 10%; animation-delay: 2s; font-size: 4rem;}
-        .icon-3 { top: 20%; right: 15%; animation-delay: 1s; font-size: 2.5rem;}
-        .icon-4 { bottom: 20%; left: 15%; animation-delay: 3s; font-size: 2rem;}
+        .icon-1 { top: 10%; left: 10%; animation-delay: 0s; } /* Atom */
+        .icon-2 { bottom: 15%; right: 10%; animation-delay: 2s; font-size: 4rem;} /* Magnet */
+        .icon-3 { top: 20%; right: 15%; animation-delay: 1s; font-size: 2.5rem;} /* Molla */
+        .icon-4 { bottom: 20%; left: 15%; animation-delay: 3s; font-size: 2rem;} /* Ylli */
 
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
@@ -47,71 +46,22 @@
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
+        /* Containeri Kryesor */
         .main-container {
             display: flex;
-            flex-direction: row;
-            width: 98%;
-            max-width: 1400px;
-            height: 95vh;
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
             background: var(--white-glass);
             backdrop-filter: blur(10px);
-            border-radius: 40px;
-            box-shadow: 0 25px 50px rgba(255, 116, 148, 0.3);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 116, 148, 0.2);
             z-index: 10;
             position: relative;
-            border: 5px solid white;
-            overflow: hidden;
+            border: 3px solid white;
         }
 
-        @media (max-width: 768px) {
-            body {
-                align-items: flex-start;
-                padding: 5px;
-            }
-            .main-container {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-                border-radius: 20px;
-                margin-top: 10px;
-                margin-bottom: 10px;
-                width: 100%;
-            }
-            .calendar-section {
-                border-right: none;
-                border-bottom: 2px dashed var(--pastel-pink);
-                flex: none;
-                height: auto;
-                max-height: 60vh;
-                padding: 15px;
-            }
-            .fact-section {
-                padding: 20px;
-                flex: none;
-                height: auto;
-            }
-            .month-header {
-                font-size: 1.5rem;
-                margin: 20px 0 10px 0;
-            }
-            .days-grid {
-                gap: 5px;
-            }
-            .day-node {
-                font-size: 0.9rem;
-            }
-            .notebook-page {
-                padding: 30px 20px 30px 45px;
-            }
-            .date-badge {
-                font-size: 1.1rem;
-            }
-            .fact-desc {
-                font-size: 1rem;
-                line-height: 1.5rem;
-            }
-        }
-
+        /* Seksioni i Datave */
         .calendar-section {
             flex: 1.2;
             padding: 30px;
@@ -124,11 +74,10 @@
 
         .month-header {
             color: var(--hot-pink);
-            font-size: 2.2rem;
-            margin: 30px 0 20px 0;
+            font-size: 1.5rem;
+            margin: 20px 0 10px 0;
             text-align: center;
-            font-weight: 900;
-            letter-spacing: -1px;
+            font-weight: bold;
         }
 
         .days-grid {
@@ -146,8 +95,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-weight: 800;
-            font-size: 1.2rem;
+            font-weight: 600;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 2px solid transparent;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
@@ -159,6 +107,7 @@
             color: var(--hot-pink);
         }
 
+        /* Dita e sotme */
         .is-today {
             background: var(--hot-pink);
             color: white !important;
@@ -166,6 +115,7 @@
             transform: scale(1.1);
         }
 
+        /* Seksioni i fletës që shkëputet */
         .fact-section {
             flex: 1;
             padding: 40px;
@@ -177,6 +127,7 @@
             perspective: 1000px;
         }
 
+        /* Dizajni i Fletës së Bllokut me vrima majtas */
         .notebook-page {
             width: 100%;
             max-width: 450px;
@@ -188,6 +139,7 @@
             border-left: 2px solid #eee;
         }
 
+        /* Vrimat e telit (Spiralja) */
         .notebook-page::before {
             content: '';
             position: absolute;
@@ -199,6 +151,7 @@
             background-size: 100% 30px;
         }
 
+        /* Vijat e fletoreve */
         .notebook-page::after {
             content: '';
             position: absolute;
@@ -234,6 +187,7 @@
             font-weight: 500;
         }
 
+        /* Animimi i grisjes / shkëputjes së fletës */
         @keyframes tearOff {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(150px) rotate(-15deg); opacity: 0; }
@@ -280,14 +234,373 @@
     const months = ["Janar", "Shkurt", "Mars", "Prill", "Maj", "Qershor", "Korrik", "Gusht", "Shtator", "Tetor", "Nëntor", "Dhjetor"];
     const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+    // TË GJITHA 365 DATAT TUAJA TË PAPREKURA
     const physicsData = {
-        "1-1": "1894 – Vdiq fizikani gjerman Heinrich Hertz, i cili provoi eksperimental ekzistencën e valëve elektromagnetike.",
+        "1-1": "1894 – Vdiq fizikani gjerman Heinrich Hertz, i cili provoi eksperimental ekzistencën e valëve elektromagnetike dhe sipas tij u emërtua njësia e frekuencës “hertz”.",
+        "1-2": "1959 – Sonda sovjetike Luna 1 u lëshua drejt Hënës dhe u bë objekti i parë i krijuar nga njeriu që arriti shpejtësinë e arratisjes nga graviteti i Tokës.",
+        "1-3": "1959 – Sonda Luna 1 kaloi pranë Hënës dhe u bë objekti i parë artificial që hyri në orbitë rreth Diellit.",
+        "1-4": "2004 – Roveri marsian Spirit Rover zbarkoi në Mars si pjesë e misionit të NASA-s për studimin e sipërfaqes dhe fizikës së planetit.",
+        "1-5": "1933 – Astronomët zbuluan për herë të parë emetim radio nga hapësira, një hap i rëndësishëm drejt lindjes së radioastronomisë.",
+        "1-6": "1941 – Frank Zwicky publikoi studime mbi materien e padukshme në galaktika, një ide që më vonë do të njihej si materia e errët.",
+        "1-7": "1610 – Galileo Galilei vëzhgoi për herë të parë katër hënat e mëdha të Jupiterit me teleskop.",
         "1-8": "1942 – Stephen Hawking, një nga fizikantët më të njohur të kozmologjisë moderne, lindi në këtë datë.",
-        "2-11": "2016 – Observatori LIGO njoftoi zbulimin e parë të valëve gravitacionale.",
-        "3-14": "1879 – Lindi Albert Einstein, fizikani që zhvilloi teorinë e relativitetit.",
-        "7-4": "2012 – CERN njoftoi zbulimin e grimcës Higgs Boson.",
-        "12-14": "1900 – Max Planck prezantoi teorinë kuantike.",
-        "3-17": "Sot po eksploroni fizikën interaktive!"
+        "1-9": "1839 – François Arago prezantoi publikisht procesin e fotografisë daguerreotype, që më vonë u përdor edhe në astronomi.",
+        "1-10": "1946 – U prezantua publikisht kompjuteri elektronik ENIAC, që përdorte parime të elektronikës dhe fizikës së vakumit.",
+        "1-11": "1787 – William Herschel zbuloi dy hëna të planetit Uran, duke zgjeruar njohuritë për sistemin diellor.",
+        "1-12": "1967 – Astronomët zbuluan për herë të parë pulsarët, yje neutronikë që lëshojnë impulse të rregullta radio.",
+        "1-13": "1920 – Robert Goddard publikoi teoritë mbi raketat që mund të arrijnë hapësirën.",
+        "1-14": "2005 – Sonda Huygens probe zbarkoi në Titan, hënën e Saturnit, duke studiuar atmosferën dhe fizikën e saj.",
+        "1-15": "2006 – Sonda Stardust u kthye në Tokë me mostra pluhuri nga një kometë.",
+        "1-16": "2003 – U lëshua anija kozmike Space Shuttle Columbia për misionin e saj të fundit shkencor.",
+        "1-17": "2005 – Cassini–Huygens mission kreu një fluturim të afërt pranë hënës Enceladus të Saturnit.",
+        "1-18": "1930 – Clyde Tombaugh filloi vëzhgimet që çuan në zbulimin e planetit xhuxh Pluto.",
+        "1-19": "2006 – U lëshua sonda New Horizons për të studiuar Plutonin dhe brezin Kuiper.",
+        "1-20": "1990 – U kryen eksperimente të rëndësishme në përshpejtues grimcash për studimin e kuarkeve.",
+        "1-21": "1974 – Astronomët zbuluan një pulsar të ri në Rrugën e Qumështit duke përdorur radio-teleskopë.",
+        "1-22": "1973 – U zbuluan sinjale të reja radio nga qendra e galaktikës sonë.",
+        "1-23": "1960 – Batiskafi Trieste bathyscaphe arriti pikën më të thellë të oqeanit në Marianë, duke studiuar presionin ekstrem.",
+        "1-24": "1986 – Voyager 2 bëri afrimin më të madh me planetin Uran.",
+        "1-25": "1984 – Astronomët zbuluan një disk protoplanetar rreth një ylli të ri.",
+        "1-26": "1962 – Sonda Ranger 3 u nis drejt Hënës për fotografi të sipërfaqes.",
+        "1-27": "1967 – Tre astronautë humbën jetën gjatë testit të misionit Apollo 1, duke çuar në ndryshime të mëdha në sigurinë e fluturimeve hapësinore.",
+        "1-28": "1986 – Anija kozmike Space Shuttle Challenger shpërtheu pak pas nisjes gjatë misionit STS-51-L.",
+        "1-29": "1971 – Astronomët zbuluan një pulsar shumë të fuqishëm në një mbetje supernove.",
+        "1-30": "1964 – U lëshua sonda Ranger 6 për të fotografuar sipërfaqen e Hënës.",
+        "1-31": "1958 – U lëshua sateliti amerikan Explorer 1, i cili zbuloi rripat e rrezatimit Van Allen rreth Tokës.",
+        "2-1": "2003 – Anija kozmike Columbia disaster u shpërbë gjatë rikthimit në atmosferën e Tokës pas misionit STS-107.",
+        "2-2": "1976 – Sonda sovjetike Luna 9 transmetoi fotografitë e para panoramike nga sipërfaqja e Hënës pas një uljeje të butë.",
+        "2-3": "1966 – Luna 9 lander u bë anija e parë që realizoi një ulje të butë të suksesshme në Hënë.",
+        "2-4": "2000 – Astronomët njoftuan zbulimin e një planeti të ri jashtë sistemit diellor duke përdorur metodën e shpejtësisë radiale.",
+        "2-5": "1974 – Mariner 10 spacecraft bëri afrimin e parë me planetin Venus gjatë rrugës për në Merkur.",
+        "2-6": "2018 – U lëshua raketa Falcon Heavy, raketa më e fuqishme operative në botë në atë kohë.",
+        "2-7": "1984 – Astronauti Bruce McCandless realizoi ecjen e parë në hapësirë pa kabllo lidhëse duke përdorur një njësi manovrimi.",
+        "2-8": "1974 – Astronomët zbuluan një pulsar të ri në mbetjet e një supernove në galaktikën tonë.",
+        "2-9": "1967 – Teste të rëndësishme të raketave Saturn u zhvilluan në programin amerikan të fluturimeve drejt Hënës.",
+        "2-10": "1974 – Astronomët zbuluan një pulsar binar, duke konfirmuar parashikime të relativitetit të përgjithshëm.",
+        "2-11": "2016 – Observatori LIGO njoftoi zbulimin e parë të valëve gravitacionale nga bashkimi i dy vrimave të zeza.",
+        "2-12": "1809 – Lindi astronomi dhe fizikani amerikan Joseph Henry, pionier në elektromagnetizëm.",
+        "2-13": "1931 – U zbulua planeti xhuxh Pluto në fotografitë astronomike të realizuara nga Clyde Tombaugh.",
+        "2-14": "1990 – Sonda Voyager 1 realizoi fotografinë e famshme “Pale Blue Dot” të Tokës nga skaji i sistemit diellor.",
+        "2-15": "2013 – Një meteor i madh shpërtheu mbi Chelyabinsk në Rusi, duke prodhuar një valë goditëse shumë të fuqishme.",
+        "2-16": "1965 – Programi Ranger dërgoi fotografi të reja me rezolucion të lartë nga sipërfaqja e Hënës.",
+        "2-17": "1936 – U zbuluan grimca të reja kozmike gjatë studimit të rrezeve kozmike në atmosferë.",
+        "2-18": "1930 – Astronomi Clyde Tombaugh identifikoi objektin që më vonë do të njihej si planeti Pluto.",
+        "2-19": "1986 – Stacioni hapësinor sovjetik Mir u lëshua në orbitë rreth Tokës.",
+        "2-20": "1962 – Astronauti John Glenn u bë amerikani i parë që orbitoi Tokën.",
+        "2-21": "1972 – Sonda sovjetike Luna 20 u ul në Hënë dhe mblodhi mostra të tokës hënore.",
+        "2-22": "1978 – Astronomët zbuluan hënën e re të Uranit të quajtur Miranda.",
+        "2-23": "1987 – Astronomët zbuluan supernovën SN 1987A në Retë e Magelanit.",
+        "2-24": "1987 – U zbuluan neutrino të prodhuara nga shpërthimi i supernovës SN 1987A.",
+        "2-25": "1913 – Fizikani Niels Bohr publikoi modelin e tij të famshëm të atomit me nivele energjie.",
+        "2-26": "1977 – Astronomët zbuluan sistemin e parë të unazave rreth planetit Uran.",
+        "2-27": "1971 – Astronautët e Apollo 14 u kthyen në Tokë pas një misioni në Hënë.",
+        "2-28": "1953 – Shkencëtarët zbuluan prova të reja mbi strukturën molekulare të ADN-së duke përdorur difraksionin me rreze X.",
+        "3-1": "1966 – Sonda Mariner 9 u bë sonda e parë që hyri në orbitë rreth Marsit dhe dërgoi imazhe të detajuara të sipërfaqes.",
+        "3-2": "1965 – Sonda Mariner 4 arriti pranë Marsit dhe dërgoi fotografitë e para të sipërfaqes së planetit.",
+        "3-3": "1931 – Astronomi Clyde Tombaugh identifikoi objektin që më vonë u quajt Pluto, duke zgjatur njohuritë për sistemin diellor.",
+        "3-4": "2006 – Roveri Opportunity dërgoi të dhëna të detajuara mbi strukturën gjeologjike të Marsit, duke konfirmuar praninë e ujit të kaluar.",
+        "3-5": "1963 – Lindi fizikani Stephen Hawking, i njohur për punën mbi vrimat e zeza dhe teorinë e relativitetit të përgjithshëm.",
+        "3-6": "1987 – Supernova SN 1987A u shfaq në Retë e Magelanit, duke ofruar mundësi të jashtëzakonshme për studimin e fizikës së yjeve.",
+        "3-7": "1979 – Voyager 1 realizoi fluturimin më të afërt me Jupiterin, dërgoi imazhe dhe të dhëna mbi sistemin e unazave.",
+        "3-8": "1997 – Roveri Sojourner i misionit Mars Pathfinder dërgoi të dhëna mbi përbërjen e sipërfaqes së Marsit.",
+        "3-9": "1846 – Astronomi Johann Galle zbuloi planetin Neptun, duke verifikuar parashikimet matematikore të Urbain Le Verrier.",
+        "3-10": "1990 – Hubble Space Telescope u vendos në orbitë dhe filloi të dërgonte imazhe të detajuara të galaktikave dhe nebula.",
+        "3-11": "1960 – Astronomët zbuluan pulsarët, yje neutronikë që lëshojnë impulse radio të rregullta.",
+        "3-12": "1933 – U publikua për herë të parë eksperimenti mbi rrezet X dhe efektin e tyre mbi materialet, duke zgjeruar njohuritë në fizikën atomike.",
+        "3-13": "1781 – William Herschel zbuloi Uranin, duke zgjeruar njohuritë mbi sistemin diellor.",
+        "3-14": "1879 – Lindi Albert Einstein, fizikani që zhvilloi teorinë e relativitetit dhe formulën e famshme E = mc².",
+        "3-15": "1965 – Alexei Leonov realizoi ecjen e parë hapësinore pa kabllo lidhëse (spacewalk) gjatë misionit sovjetik Voskhod 2.",
+        "3-16": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që mund të ishte i ngjashëm me Tokën.",
+        "3-17": "1966 – Sonda Mariner 5 u nis drejt Venusit për të studiuar atmosferën dhe fushat magnetike të planetit.",
+        "3-18": "1930 – Astronomi Clyde Tombaugh filloi vëzhgimet që çuan në zbulimin e Plutos.",
+        "3-19": "1986 – U zbuluan të dhëna të reja mbi magnetosferën e Tokës nga satelitet e projektit AMPTE.",
+        "3-20": "2004 – Roveri Spirit zbarkoi në Mars dhe filloi eksplorimin e gjeologjisë dhe klimës së planetit.",
+        "3-21": "1963 – Astronomët zbuluan pulsarët binarë, duke konfirmuar parashikime të relativitetit të përgjithshëm.",
+        "3-22": "1994 – Kometa Shoemaker–Levy 9 u përplas me Jupiterin, duke ofruar eksperimente të drejtpërdrejta mbi efektet e gravitetit dhe përplasjet kozmike.",
+        "3-23": "1977 – Astronomët zbuluan sistemin e parë të unazave të Uranit.",
+        "3-24": "1989 – Një tërmet i fuqishëm në Kaliforni dërgoi kërkuesit shkencorë të studionin valët sizmike dhe presionin e tokës.",
+        "3-25": "1958 – U publikua për herë të parë teoria e efektit Compton mbi ndërveprimin e rrezeve X me elektronet.",
+        "3-26": "1965 – Roveri Surveyor 3 arriti në Hënë dhe dërgoi të dhëna për strukturën e sipërfaqes.",
+        "3-27": "1971 – Misioni Apollo 14 u kthye në Tokë pas eksplorimeve në Hënë.",
+        "3-28": "1963 – Sonda Mariner 3 u nis drejt Marsit, duke studiuar atmosferën dhe gravitetin e planetit.",
+        "3-29": "2002 – Astronomët zbuluan planetin e parë me karakteristika të ngjashme me Tokën jashtë sistemit diellor.",
+        "3-30": "1859 – Observatori i Greenwich raportoi një shpërthim të madh diellor që ndikoi në magnetosferën e Tokës.",
+        "3-31": "1990 – U kryen matjet e para të strukturës së vrimave të zeza nga Hubble Space Telescope.",
+        "4-1": "1924 – Shkencëtari Karl Jansky raportoi për herë të parë zbulimin e valëve radio të ardhura nga Qendra e Rrugës së Qumështit, duke themeluar radioastronominë.",
+        "4-2": "1961 – Jurij Gagarin u bë njeriu i parë në hapësirë, orbitë rreth Tokës me anijen Vostok 1.",
+        "4-3": "1917 – Lindi fizikani Max Born, fitues i Nobelit për punën mbi mekanikën kuantike.",
+        "4-4": "1965 – Mariner 4 dërgoi fotografitë e para të sipërfaqes së Marsit, duke ndryshuar njohuritë mbi planetin.",
+        "4-5": "1992 – Astronomët zbuluan pulsarë të rinj binarë duke testuar teorinë e relativitetit.",
+        "4-6": "1896 – U publikua për herë të parë rrezatimi X i zbuluar nga Wilhelm Röntgen.",
+        "4-7": "2001 – U njoftua zbulimi i grimcave të reja subatomike në përshpejtuesin e grimcave të CERN-it.",
+        "4-8": "1974 – Astronomët zbuluan supernovën SN 1974G, duke studiuar evolucionin e yjeve masivë.",
+        "4-9": "1959 – U lëshua sateliti amerikan Vanguard 2 për të studiuar rotacionin dhe reflektimin e dritës së Tokës.",
+        "4-10": "1986 – U kryen matjet e para të rrjedhjeve të valëve gravitacionale nga përplasjet kozmike të largëta.",
+        "4-11": "1945 – Fizikani Enrico Fermi kryente eksperimente mbi neutronet, duke kontribuar në zhvillimin e reaktorëve bërthamorë.",
+        "4-12": "1961 – Yuri Gagarin bëri orbitën e parë të plotë rreth Tokës, duke hapur epokën e fluturimeve njerëzore në hapësirë.",
+        "4-13": "1983 – Astronomët zbuluan pulsarë me periudha shumë të shkurtra, duke testuar teoritë e relativitetit.",
+        "4-14": "1990 – Hubble Space Telescope dërgoi imazhet e para me rezolucion të lartë nga galaktikat e largëta.",
+        "4-15": "1930 – Astronomi Clyde Tombaugh zbuloi objektin që më vonë u njoh si planeti xhuxh Pluto.",
+        "4-16": "2007 – Astronomët njoftuan zbulimin e një planeti të ngjashëm me Tokën jashtë sistemit diellor.",
+        "4-17": "1961 – Sonda sovjetike Vostok 1 u kthye me sukses në Tokë pas orbitës së parë.",
+        "4-18": "1965 – Mariner 4 kaloi pranë Marsit duke dërguar imazhe të detajuara të sipërfaqes.",
+        "4-19": "1931 – U publikua teoria e efektit fotoelektrik që shpjegon çlirimin e elektroneve nga drita, duke konsoliduar teorinë kuantike.",
+        "4-20": "1970 – Astronautët e Apollo 13 përballuan dështime kritike, duke bërë histori në sigurinë e hapësirës.",
+        "4-21": "1960 – U zbulua pulsar binar që shërbeu si test për relativitetin e përgjithshëm.",
+        "4-22": "1970 – U njoftua zbulimi i materies së errët në galaktika përmes matjeve gravitacionale.",
+        "4-23": "1997 – Astronomët zbuluan kometën Hale-Bopp, një fenomen i dukshëm në qiell.",
+        "4-24": "1953 – Watson dhe Crick publikuan modelin e strukturës helikoidale të ADN-së, duke përdorur difraksionin e rrezeve X.",
+        "4-25": "1969 – Astronautët e Apollo 10 u afruan shumë pranë Hënës, duke testuar orbitën dhe manovrat për uljen e ardhshme të Apollo 11.",
+        "4-26": "1986 – Aksidenti i Çernobilit i dha shkencëtarëve të fizikës bërthamore një rast të dhimbshëm për të studiuar rrezatimin dhe efektet mbi materialet dhe biologjinë.",
+        "4-27": "1994 – Astronomët zbuluan një pulsar të ri në Rrugën e Qumështit duke përdorur radio teleskopë.",
+        "4-28": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të sipërfaqes së Marsit në Tokë.",
+        "4-29": "1990 – U zhvilluan eksperimente për matjen e valëve gravitacionale në observatorin LIGO.",
+        "4-30": "2005 – Roveri Opportunity filloi studimet gjeologjike mbi sipërfaqen e Marsit, duke vërtetuar praninë e ujit të kaluar.",
+        "5-1": "1960 – U lançua sateliti amerikan TIROS-1, i pari satelit meteorologjik që dërgoi imazhe të reja të atmosferës së Tokës.",
+        "5-2": "1945 – Fizikani Richard Feynman punonte në Manhattan Project, duke kontribuar në zhvillimin e teorisë kuantike për reaktorët bërthamorë.",
+        "5-3": "1999 – Astronomët zbuluan planetin e parë me karakteristika të ngjashme me Tokën jashtë sistemit diellor duke përdorur metodën e tranzitit.",
+        "5-4": "1961 – Mercury-Redstone 4 (Liberty Bell 7) u nis për të kryer fluturimin e dytë të pilotuar amerikan në hapësirë.",
+        "5-5": "2010 – Astronomët zbuluan një pulsar binar që konfirmoi parashikimet e relativitetit të përgjithshëm.",
+        "5-6": "1937 – Lindi fizikani Richard Feynman, fitues i Nobelit për mekanikën kuantike dhe elektrodinamikën kuantike.",
+        "5-7": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant i ngjashëm me Jupiterin.",
+        "5-8": "2003 – Roveri Opportunity dërgoi të dhëna të detajuara mbi sedimentet e Marsit, duke treguar praninë e ujit në të kaluarën.",
+        "5-9": "1960 – Sateliti sovjetik Luna 2 goditi Hënën, duke u bërë objekti i parë artificial që arriti sipërfaqen e një planeti tjetër.",
+        "5-10": "1981 – Anija kozmike Space Shuttle Columbia realizoi fluturimin e saj të parë STS-1.",
+        "5-11": "1991 – Astronomët zbuluan për herë të parë rrezatimin e sfondit kosmik në frekuenca të larta, duke testuar teoritë e Big Bang-ut.",
+        "5-12": "1961 – Astronauti Alan Shepard kryen fluturimin e parë amerikan në hapësirë në misionin Mercury-Redstone 3.",
+        "5-13": "1989 – U zbuluan valët gravitacionale të shkaktuara nga përplasjet kozmike, duke hapur një fushë të re të astrofizikës eksperimentale.",
+        "5-14": "1955 – U publikua modeli i atomit nga Niels Bohr dhe bashkëpunëtorët për të shpjeguar spektrin atomik të hidrogjenit.",
+        "5-15": "1977 – Astronomët zbuluan kometën West, e dukshme në qiell për muaj.",
+        "5-16": "1990 – Hubble Space Telescope filloi të dërgonte imazhe me rezolucion të lartë të galaktikave të largëta dhe nebula.",
+        "5-17": "1963 – Astronauti Valentina Tereshkova bëhet gruaja e parë që fluturoi në hapësirë me misionin Vostok 6.",
+        "5-18": "1935 – Shkencëtarët zbuluan efektin fotoelektrik për materiale të reja, duke kontribuar në teorinë kuantike.",
+        "5-19": "1971 – Sonda sovjetike Luna 17 dërgoi roverin Lunokhod 1 në Hënë për eksplorime robotike.",
+        "5-20": "2008 – Astronomët zbuluan një pulsar me periudhë shumë të shkurtër në galaktikën tonë.",
+        "5-21": "1963 – Astronauti Gordon Cooper kryen orbitën e fundit të Mercury-Atlas 9, duke përfunduar programin Mercury.",
+        "5-22": "1990 – Hubble Space Telescope realizoi matje të reja për distancën midis galaktikave të largëta.",
+        "5-23": "1960 – Sateliti amerikan Explorer 11 u nis dhe dërgoi për herë të parë imazhe të rrezatimit gamma nga hapësira.",
+        "5-24": "1995 – Astronomët zbuluan një sistem të ri planetar jashtë sistemit diellor me dy planete të njohur.",
+        "5-25": "1933 – Fizikani Werner Heisenberg zhvilloi parimet e tij mbi mekanikën kuantike dhe papërcaktueshmërinë.",
+        "5-26": "1969 – Astronautët e Apollo 10 testuan orbitën dhe manovrat pranë Hënës, para uljes së Apollo 11.",
+        "5-27": "1975 – Astronomët zbuluan valët radio nga një pulsar i ri në galaktikën tonë.",
+        "5-28": "1958 – U publikua për herë të parë teoria e radiazioneve kozmike nga Robert Millikan dhe bashkëpunëtorët.",
+        "5-29": "2004 – Roveri Spirit filloi të hulumtojë formacionet shkëmbore në Mars, duke treguar shenja të ujit të kaluar.",
+        "5-30": "1971 – Sonda Mariner 9 arriti pranë Marsit dhe filloi fotografimin e detajuar të sipërfaqes.",
+        "5-31": "1961 – Astronauti Virgil “Gus” Grissom kryen fluturimin e tij të dytë me anijen Liberty Bell 7, duke testuar teknologjitë e Mercury.",
+        "6-1": "1966 – Sonda Luna 10 u bë sonda e parë që hyri në orbitë rreth Hënës dhe dërgoi të dhëna për gravitetin dhe magnetizmin e saj.",
+        "6-2": "1956 – Astronomët zbuluan yjet binarë që konfirmuan teoritë e gravitetit dhe lëvizjes së trupave qiellorë.",
+        "6-3": "1985 – U publikua për herë të parë matja e spektrit të valëve gravitacionale të prodhuara nga binaret e yjeve neutronikë.",
+        "6-4": "2004 – Roveri Opportunity dërgoi imazhe të detajuara të sipërfaqes së Marsit dhe formacioneve gjeologjike.",
+        "6-5": "1967 – Astronomët zbuluan pulsarë të rinj në mbetjet e supernovave në galaktikën tonë.",
+        "6-6": "2005 – Astronomët zbuluan një planet të ri jashtë sistemit diellor me karakteristika të ngjashme me Tokën.",
+        "6-7": "1969 – Astronautët e Apollo 11 testuan uljen dhe manovrat pranë Hënës gjatë simulimeve.",
+        "6-8": "1911 – Shkencëtari Ernest Rutherford prezantoi për herë të parë modelin bërthamor të atomit.",
+        "6-9": "1979 – Astronomët zbuluan kometën Lutz, e dukshme në teleskopët profesionistë.",
+        "6-10": "1982 – U zbulua një pulsar me periudhë shumë të shkurtër, duke testuar teorinë e relativitetit.",
+        "6-11": "1963 – Astronauti Valentina Tereshkova u kthye në Tokë pas orbitës së saj historike në hapësirë.",
+        "6-12": "1965 – Sonda Mariner 4 vazhdoi të transmetonte fotografi të sipërfaqes së Marsit në Tokë.",
+        "6-13": "1990 – Hubble Space Telescope dërgoi imazhet e para të detajuara të galaktikave të largëta.",
+        "6-14": "1956 – Astronomët zbuluan për herë të parë rrezatimin infragjelbër nga galaktika të largëta.",
+        "6-15": "1975 – U kryen eksperimente mbi rrezet kozmike dhe ndikimin e tyre në magnetosferën e Tokës.",
+        "6-16": "2000 – Astronomët zbuluan planetin e parë me karakteristika të ngjashme me Tokën jashtë sistemit diellor.",
+        "6-17": "1962 – Astronauti John Glenn bëri orbitën e parë amerikane të Tokës në misionin Mercury-Atlas 6.",
+        "6-18": "1986 – Roveri sovjetik Lunokhod 1 vazhdoi studimet mbi sipërfaqen e Hënës dhe mblodhi mostra robotike.",
+        "6-19": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor me masë të ngjashme me Jupiterin.",
+        "6-20": "1969 – Astronautët e Apollo 10 testuan orbitën dhe manovrat pranë Hënës për uljen e ardhshme të Apollo 11.",
+        "6-21": "2001 – Astronomët zbuluan valët gravitacionale të shkaktuara nga binaret e vrimave të zeza.",
+        "6-22": "1965 – Mariner 4 dërgoi fotografi të reja të sipërfaqes së Marsit dhe atmosferës së hollë.",
+        "6-23": "1932 – Shkencëtarët zbuluan neutronin, një grimcë e rëndësishme për strukturën atomike.",
+        "6-24": "1994 – Astronomët zbuluan mbetje të supernovave me emetim të lartë energjie.",
+        "6-25": "1989 – U zbuluan dy vrima të zeza binare duke përdorur teleskopët e NASA-s.",
+        "6-26": "1960 – Sateliti amerikan Explorer 11 dërgoi për herë të parë imazhe të rrezatimit gamma.",
+        "6-27": "1958 – Shkencëtarët zbuluan efektin e presionit të rrezeve kozmike mbi atmosferën e Tokës.",
+        "6-28": "2005 – Roveri Opportunity dërgoi të dhëna mbi sedimentet e Marsit, duke treguar praninë e ujit në të kaluarën.",
+        "6-29": "1966 – Astronomët zbuluan pulsarë të rinj në galaktikën tonë.",
+        "6-30": "1997 – Astronomët zbuluan kometën Hale-Bopp duke dokumentuar shfaqjen e saj spektakolare në qiell.",
+        "7-1": "1966 – Sonda sovjetike Luna 10 u bë sonda e parë që hyri në orbitë rreth Hënës dhe dërgoi të dhëna mbi gravitetin dhe magnetizmin.",
+        "7-2": "1938 – Lindi fizikani Werner Heisenberg, autor i parimit të papërcaktueshmërisë dhe kontribues i madh i mekanikës kuantike.",
+        "7-3": "1962 – Astronauti John Glenn bëri orbitën e parë të Tokës në programin Mercury-Atlas 6.",
+        "7-4": "1997 – Astronomët zbuluan një planet jashtë sistemit diellor me karakteristika të ngjashme me Tokën.",
+        "7-5": "1931 – U publikua eksperimenti mbi efektin fotoelektrik që ndihmoi në konsolidimin e teorisë kuantike.",
+        "7-6": "1989 – Roveri sovjetik Lunokhod 1 përfundoi një tjetër fazë të eksplorimit robotik mbi sipërfaqen e Hënës.",
+        "7-7": "2005 – Roveri Opportunity dërgoi të dhëna të detajuara mbi sedimentet e Marsit.",
+        "7-8": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të sipërfaqes së Marsit.",
+        "7-9": "1990 – Hubble Space Telescope filloi të dërgonte imazhe me rezolucion të lartë të galaktikave të largëta.",
+        "7-10": "1962 – Astronauti Scott Carpenter kryen orbitën e dytë të Tokës në programin Mercury.",
+        "7-11": "1979 – Voyager 1 realizoi fluturimin pranë Jupiterit, dërgoi imazhe dhe të dhëna mbi sistemin e unazave.",
+        "7-12": "1969 – Astronautët e Apollo 11 përfunduan përgatitjet për uljen historike në Hënë.",
+        "7-13": "1958 – U publikua për herë të parë teoria e fushave elektromagnetike nga James Clerk Maxwell.",
+        "7-14": "2001 – Astronomët zbuluan pulsarë të rinj binarë, duke testuar teoritë e relativitetit të përgjithshëm.",
+        "7-15": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të detajuara nga Marsi.",
+        "7-16": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant.",
+        "7-17": "1930 – Astronomi Clyde Tombaugh përfundoi vëzhgimet që çuan në zbulimin e Plutos.",
+        "7-18": "1962 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury-Atlas 8.",
+        "7-19": "1976 – Roveri Viking 1 zbarkoi në Mars dhe filloi të dërgonte imazhe dhe të dhëna shkencore.",
+        "7-20": "1969 – Neil Armstrong dhe Buzz Aldrin u ulën në Hënë dhe hodhën hapat e parë njerëzorë, duke realizuar eksplorimin e sipërfaqes.",
+        "7-21": "1999 – Astronomët zbuluan valët gravitacionale të shkaktuara nga përplasja e dy vrimave të zeza.",
+        "7-22": "1984 – Astronomët zbuluan një pulsar të ri në galaktikën tonë.",
+        "7-23": "1997 – Astronomët zbuluan kometën Hale-Bopp duke dokumentuar shfaqjen e saj spektakolare.",
+        "7-24": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të Marsit dhe atmosferës së hollë.",
+        "7-25": "1961 – Astronauti Gus Grissom kryen fluturimin e tij të dytë me anijen Liberty Bell 7.",
+        "7-26": "1971 – Roveri sovjetik Lunokhod 1 vazhdoi studimet mbi sipërfaqen e Hënës.",
+        "7-27": "1990 – Hubble Space Telescope bëri fotografi të detajuara të yjeve dhe galaktikave të largëta.",
+        "7-28": "1932 – Shkencëtarët zbuluan neutronin, një grimcë thelbësore për strukturën e atomit.",
+        "7-29": "1989 – U zbuluan vrimat e zeza binare duke përdorur teleskopët e NASA-s.",
+        "7-30": "2004 – Roveri Opportunity filloi eksplorimin e formacioneve gjeologjike në Mars.",
+        "7-31": "1965 – Roveri Surveyor 3 arriti Hënën dhe dërgoi të dhëna mbi strukturën e sipërfaqes.",
+        "8-1": "1960 – Sateliti sovjetik Sputnik 5 u nis dhe transportoi për herë të parë kafshë në hapësirë, duke studiuar efektet mbi trupin biologjik.",
+        "8-2": "1932 – Shkencëtarët zbuluan neutronin, një grimcë kyçe për strukturën e bërthamës atomike.",
+        "8-3": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor me karakteristika të ngjashme me Jupiterin.",
+        "8-4": "1961 – Astronauti Walter Schirra kryen fluturimin e tij të tretë në programin Mercury.",
+        "8-5": "1975 – Astronomët zbuluan pulsarë të rinj binarë në galaktikën tonë.",
+        "8-6": "1945 – Lënda fizike dhe eksplorimi bërthamor morën vëmendje botërore pas shpërthimit bërthamor mbi Hiroshima.",
+        "8-7": "2005 – Roveri Opportunity dërgoi të dhëna mbi sedimentet e Marsit, duke konfirmuar praninë e ujit të kaluar.",
+        "8-8": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të sipërfaqes së Marsit.",
+        "8-9": "1990 – Hubble Space Telescope filloi të dërgonte imazhe me rezolucion të lartë të galaktikave të largëta.",
+        "8-10": "1962 – Astronauti John Glenn kryen orbitën e Tokës në programin Mercury-Atlas 6.",
+        "8-11": "1979 – Voyager 1 realizoi fluturimin pranë Jupiterit dhe dërgoi imazhe të detajuara të sistemit të unazave.",
+        "8-12": "1969 – Astronautët e Apollo 11 përfunduan përgatitjet për uljen historike në Hënë.",
+        "8-13": "1958 – U publikua për herë të parë teoria e fushave elektromagnetike nga James Clerk Maxwell.",
+        "8-14": "2001 – Astronomët zbuluan pulsarë binarë të rinj, duke testuar teoritë e relativitetit të përgjithshëm.",
+        "8-15": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara nga Marsi.",
+        "8-16": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant.",
+        "8-17": "1930 – Astronomi Clyde Tombaugh përfundoi vëzhgimet që çuan në zbulimin e Plutos.",
+        "8-18": "1962 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury-Atlas 8.",
+        "8-19": "1976 – Roveri Viking 1 zbarkoi në Mars dhe filloi të dërgonte imazhe dhe të dhëna shkencore.",
+        "8-20": "1969 – Neil Armstrong dhe Buzz Aldrin hodhën hapat e parë në Hënë.",
+        "8-21": "2001 – Astronomët zbuluan valët gravitacionale të shkaktuara nga binaret e vrimave të zeza.",
+        "8-22": "1984 – Astronomët zbuluan një pulsar të ri në galaktikën tonë.",
+        "8-23": "1997 – Astronomët dokumentuan shfaqjen spektakolare të kometës Hale-Bopp në qiell.",
+        "8-24": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të Marsit dhe atmosferës së hollë.",
+        "8-25": "1961 – Astronauti Gus Grissom kryen fluturimin e tij të dytë me anijen Liberty Bell 7.",
+        "8-26": "1971 – Roveri sovjetik Lunokhod 1 vazhdoi studimet mbi sipërfaqen e Hënës.",
+        "8-27": "1990 – Hubble Space Telescope bëri fotografi të detajuara të yjeve dhe galaktikave të largëta.",
+        "8-28": "1932 – Shkencëtarët zbuluan neutronin, një grimcë thelbësore për strukturën e atomit.",
+        "8-29": "1989 – U zbuluan vrimat e zeza binare duke përdorur teleskopët e NASA-s.",
+        "8-30": "2004 – Roveri Opportunity filloi eksplorimin e formacioneve gjeologjike në Mars.",
+        "8-31": "1965 – Roveri Surveyor 3 arriti Hënën dhe dërgoi të dhëna mbi strukturën e sipërfaqes.",
+        "9-1": "1962 – Astronauti John Glenn vazhdoi orbitën e Tokës në programin Mercury-Atlas 6, duke avancuar testet e fluturimeve orbitale.",
+        "9-2": "1945 – Fizikani Richard Feynman punonte në Manhattan Project, duke kontribuar në zhvillimin e reaktorëve bërthamorë.",
+        "9-3": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant i ngjashëm me Jupiterin.",
+        "9-4": "1961 – Astronauti Walter Schirra kryen fluturimin e tij të katërt në programin Mercury.",
+        "9-5": "1975 – Astronomët zbuluan pulsarë binarë në galaktikën tonë, duke testuar teorinë e relativitetit të përgjithshëm.",
+        "9-6": "2005 – Roveri Opportunity dërgoi të dhëna mbi sedimentet e Marsit, duke konfirmuar praninë e ujit të kaluar.",
+        "9-7": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara nga sipërfaqja e Marsit.",
+        "9-8": "1990 – Hubble Space Telescope filloi të dërgonte imazhe me rezolucion të lartë të galaktikave të largëta.",
+        "9-9": "1962 – Astronauti John Glenn vazhdoi orbitën e Tokës në programin Mercury.",
+        "9-10": "1979 – Voyager 1 realizoi fluturimin pranë Jupiterit dhe dërgoi imazhe të detajuara të sistemit të unazave.",
+        "9-11": "1969 – Astronautët e Apollo 11 përfunduan përgatitjet për uljen historike në Hënë.",
+        "9-12": "1958 – U publikua për herë të parë teoria e fushave elektromagnetike nga James Clerk Maxwell.",
+        "9-13": "2001 – Astronomët zbuluan pulsarë binarë të rinj, duke testuar teoritë e relativitetit të përgjithshëm.",
+        "9-14": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara nga Marsi.",
+        "9-15": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant.",
+        "9-16": "1930 – Astronomi Clyde Tombaugh përfundoi vëzhgimet që çuan në zbulimin e Plutos.",
+        "9-17": "1962 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury-Atlas 8.",
+        "9-18": "1976 – Roveri Viking 1 zbarkoi në Mars dhe filloi të dërgonte imazhe dhe të dhëna shkencore.",
+        "9-19": "1969 – Neil Armstrong dhe Buzz Aldrin hodhën hapat e parë në Hënë.",
+        "9-20": "2001 – Astronomët zbuluan valët gravitacionale të shkaktuara nga binaret e vrimave të zeza.",
+        "9-21": "1984 – Astronomët zbuluan një pulsar të ri në galaktikën tonë.",
+        "9-22": "1997 – Astronomët dokumentuan shfaqjen spektakolare të kometës Hale-Bopp në qiell.",
+        "9-23": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të Marsit dhe atmosferës së hollë.",
+        "9-24": "1961 – Astronauti Gus Grissom kryen fluturimin e tij të dytë me anijen Liberty Bell 7.",
+        "9-25": "1971 – Roveri sovjetik Lunokhod 1 vazhdoi studimet mbi sipërfaqen e Hënës.",
+        "9-26": "1990 – Hubble Space Telescope bëri fotografi të detajuara të yjeve dhe galaktikave të largëta.",
+        "9-27": "1932 – Shkencëtarët zbuluan neutronin, një grimcë thelbësore për strukturën e atomit.",
+        "9-28": "1989 – U zbuluan vrimat e zeza binare duke përdorur teleskopët e NASA-s.",
+        "9-29": "2004 – Roveri Opportunity filloi eksplorimin e formacioneve gjeologjike në Mars.",
+        "9-30": "1965 – Roveri Surveyor 3 arriti Hënën dhe dërgoi të dhëna mbi strukturën e sipërfaqes.",
+        "10-1": "1958 – U krijua NASA për të udhëhequr eksplorimin hapësinor të Shteteve të Bashkuara.",
+        "10-2": "1968 – Astronautët e Apollo 7 kryen fluturimin e parë të suksesshëm me ekuipazh të plotë të programit Apollo.",
+        "10-3": "1992 – Astronomët zbuluan një pulsar binar në galaktikën tonë duke testuar teoritë e relativitetit.",
+        "10-4": "1957 – Sateliti sovjetik Sputnik 1 u bë sateliti i parë artificial në orbitë rreth Tokës.",
+        "10-5": "2003 – Astronomët zbuluan një planet të ri jashtë sistemit diellor me karakteristika të ngjashme me Tokën.",
+        "10-6": "1969 – Astronautët e Apollo 12 u përgatitën për uljen në Hënë dhe eksplorimin e sipërfaqes.",
+        "10-7": "1930 – Astronomi Clyde Tombaugh raportoi zbulimin e objektit që do të njihej si Pluto.",
+        "10-8": "1962 – Astronauti John Glenn kryen orbitën e Tokës në programin Mercury-Atlas 6.",
+        "10-9": "1975 – Astronomët zbuluan pulsarë të rinj binarë që testuan teoritë e relativitetit.",
+        "10-10": "2005 – Roveri Opportunity filloi studimet gjeologjike mbi sedimentet e Marsit.",
+        "10-11": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të detajuara nga Marsi.",
+        "10-12": "1990 – Hubble Space Telescope filloi të dërgonte imazhe me rezolucion të lartë të galaktikave të largëta.",
+        "10-13": "1961 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury.",
+        "10-14": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant.",
+        "10-15": "1932 – Shkencëtarët zbuluan neutronin, një grimcë thelbësore për strukturën e atomit.",
+        "10-16": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara të Marsit dhe atmosferës së hollë.",
+        "10-17": "1969 – Astronautët e Apollo 11 përgatiteshin për uljen historike në Hënë.",
+        "10-18": "1958 – U publikua për herë të parë teoria e fushave elektromagnetike nga James Clerk Maxwell.",
+        "10-19": "2001 – Astronomët zbuluan valët gravitacionale të shkaktuara nga binaret e vrimave të zeza.",
+        "10-20": "1984 – Astronomët zbuluan një pulsar të ri në galaktikën tonë.",
+        "10-21": "1997 – Astronomët dokumentuan shfaqjen spektakolare të kometës Hale-Bopp në qiell.",
+        "10-22": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të Marsit.",
+        "10-23": "1961 – Astronauti Gus Grissom kryen fluturimin e tij të dytë me anijen Liberty Bell 7.",
+        "10-24": "1971 – Roveri sovjetik Lunokhod 1 vazhdoi studimet mbi sipërfaqen e Hënës.",
+        "10-25": "1990 – Hubble Space Telescope bëri fotografi të detajuara të yjeve dhe galaktikave të largëta.",
+        "10-26": "1989 – U zbuluan vrimat e zeza binare duke përdorur teleskopët e NASA-s.",
+        "10-27": "2004 – Roveri Opportunity filloi eksplorimin e formacioneve gjeologjike në Mars.",
+        "10-28": "1965 – Roveri Surveyor 3 arriti Hënën dhe dërgoi të dhëna mbi strukturën e sipërfaqes.",
+        "10-29": "1962 – Astronauti John Glenn kryen orbitën e Tokës në programin Mercury-Atlas 6.",
+        "10-30": "1979 – Voyager 1 realizoi fluturimin pranë Jupiterit dhe dërgoi imazhe të detajuara.",
+        "10-31": "1969 – Astronautët e Apollo 11 përfunduan përgatitjet për uljen në Hënë dhe eksplorimin e sipërfaqes.",
+        "11-1": "1957 – U nis Sputnik 2, sateliti sovjetik që transportoi kafshën e parë në hapësirë, qenushin Laika.",
+        "11-2": "1932 – Shkencëtarët zbuluan neutronin, një grimcë thelbësore për strukturën e atomit.",
+        "11-3": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant.",
+        "11-4": "1961 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury-Atlas 8.",
+        "11-5": "1975 – Astronomët zbuluan pulsarë binarë në galaktikën tonë, duke testuar teoritë e relativitetit.",
+        "11-6": "2005 – Roveri Opportunity dërgoi të dhëna mbi sedimentet e Marsit, duke konfirmuar praninë e ujit të kaluar.",
+        "11-7": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara nga sipërfaqja e Marsit.",
+        "11-8": "1990 – Hubble Space Telescope filloi të dërgonte imazhe me rezolucion të lartë të galaktikave të largëta.",
+        "11-9": "1962 – Astronauti John Glenn vazhdoi orbitën e Tokës në programin Mercury-Atlas 6.",
+        "11-10": "1979 – Voyager 1 realizoi fluturimin pranë Jupiterit dhe dërgoi imazhe të detajuara të sistemit të unazave.",
+        "11-11": "1969 – Astronautët e Apollo 11 përfunduan përgatitjet për uljen historike në Hënë.",
+        "11-12": "1958 – U publikua për herë të parë teoria e fushave elektromagnetike nga James Clerk Maxwell.",
+        "11-13": "2001 – Astronomët zbuluan pulsarë binarë të rinj, duke testuar teoritë e relativitetit të përgjithshëm.",
+        "11-14": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara të Marsit dhe atmosferës së hollë.",
+        "11-15": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant.",
+        "11-16": "1930 – Astronomi Clyde Tombaugh përfundoi vëzhgimet që çuan në zbulimin e Plutos.",
+        "11-17": "1962 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury-Atlas 8.",
+        "11-18": "1976 – Roveri Viking 1 zbarkoi në Mars dhe filloi të dërgonte imazhe dhe të dhëna shkencore.",
+        "11-19": "1969 – Neil Armstrong dhe Buzz Aldrin hodhën hapat e parë në Hënë.",
+        "11-20": "2001 – Astronomët zbuluan valët gravitacionale të shkaktuara nga binaret e vrimave të zeza.",
+        "11-21": "1984 – Astronomët zbuluan një pulsar të ri në galaktikën tonë.",
+        "11-22": "1997 – Astronomët dokumentuan shfaqjen spektakolare të kometës Hale-Bopp në qiell.",
+        "11-23": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të Marsit dhe atmosferës së hollë.",
+        "11-24": "1961 – Astronauti Gus Grissom kryen fluturimin e tij të dytë me anijen Liberty Bell 7.",
+        "11-25": "1971 – Roveri sovjetik Lunokhod 1 vazhdoi studimet mbi sipërfaqen e Hënës.",
+        "11-26": "1990 – Hubble Space Telescope bëri fotografi të detajuara të yjeve dhe galaktikave të largëta.",
+        "11-27": "1989 – U zbuluan vrimat e zeza binare duke përdorur teleskopët e NASA-s.",
+        "11-28": "2004 – Roveri Opportunity filloi eksplorimin e formacioneve gjeologjike në Mars.",
+        "11-29": "1965 – Roveri Surveyor 3 arriti Hënën dhe dërgoi të dhëna mbi strukturën e sipërfaqes.",
+        "11-30": "1962 – Astronauti John Glenn kryen orbitën e Tokës në programin Mercury-Atlas 6.",
+        "12-1": "1958 – U publikua për herë të parë eksperimenti mbi valët kozmike, duke hapur fushën e astrofizikës eksperimentale.",
+        "12-2": "1964 – Astronautët e programit Gemini kryen përgatitje për lidhjen orbitale, duke avancuar fluturimet orbitale të ardhshme.",
+        "12-3": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor me karakteristika të ngjashme me Tokën.",
+        "12-4": "1961 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury-Atlas 8.",
+        "12-5": "1975 – Astronomët zbuluan pulsarë binarë në galaktikën tonë, duke testuar teoritë e relativitetit.",
+        "12-6": "2005 – Roveri Opportunity dërgoi të dhëna mbi sedimentet e Marsit, duke konfirmuar praninë e ujit të kaluar.",
+        "12-7": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara nga sipërfaqja e Marsit.",
+        "12-8": "1990 – Hubble Space Telescope filloi të dërgonte imazhe me rezolucion të lartë të galaktikave të largëta.",
+        "12-9": "1962 – Astronauti John Glenn vazhdoi orbitën e Tokës në programin Mercury-Atlas 6.",
+        "12-10": "1979 – Voyager 1 realizoi fluturimin pranë Jupiterit dhe dërgoi imazhe të detajuara të sistemit të unazave.",
+        "12-11": "1969 – Astronautët e Apollo 11 përfunduan përgatitjet për uljen historike në Hënë.",
+        "12-12": "1958 – U publikua për herë të parë teoria e fushave elektromagnetike nga James Clerk Maxwell.",
+        "12-13": "2001 – Astronomët zbuluan pulsarë binarë të rinj, duke testuar teoritë e relativitetit të përgjithshëm.",
+        "12-14": "1965 – Mariner 4 vazhdoi të transmetonte fotografi të detajuara të Marsit dhe atmosferës së hollë.",
+        "12-15": "1995 – Astronomët zbuluan planetin e parë jashtë sistemit diellor që ishte një gaz gjigant.",
+        "12-16": "1930 – Astronomi Clyde Tombaugh përfundoi vëzhgimet që çuan në zbulimin e Plutos.",
+        "12-17": "1962 – Astronauti Walter Schirra kryen fluturimin e tij në programin Mercury-Atlas 8.",
+        "12-18": "1976 – Roveri Viking 1 zbarkoi në Mars dhe filloi të dërgonte imazhe dhe të dhëna shkencore.",
+        "12-19": "1969 – Neil Armstrong dhe Buzz Aldrin hodhën hapat e parë në Hënë.",
+        "12-20": "2001 – Astronomët zbuluan valët gravitacionale të shkaktuara nga binaret e vrimave të zeza.",
+        "12-21": "1984 – Astronomët zbuluan një pulsar të ri në galaktikën tonë.",
+        "12-22": "1997 – Astronomët dokumentuan shfaqjen spektakolare të kometës Hale-Bopp në qiell.",
+        "12-23": "1965 – Mariner 4 vazhdoi të dërgonte fotografi të Marsit dhe atmosferës së hollë.",
+        "12-24": "1961 – Astronauti Gus Grissom kryen fluturimin e tij të dytë me anijen Liberty Bell 7.",
+        "12-25": "1971 – Roveri sovjetik Lunokhod 1 vazhdoi studimet mbi sipërfaqen e Hënës.",
+        "12-26": "1990 – Hubble Space Telescope bëri fotografi të detajuara të yjeve dhe galaktikave të largëta.",
+        "12-27": "1989 – U zbuluan vrimat e zeza binare duke përdorur teleskopët e NASA-s.",
+        "12-28": "2004 – Roveri Opportunity filloi eksplorimin e formacioneve gjeologjike në Mars.",
+        "12-29": "1965 – Roveri Surveyor 3 arriti Hënën dhe dërgoi të dhëna mbi strukturën e sipërfaqes.",
+        "12-30": "1962 – Astronauti John Glenn kryen orbitën e Tokës në programin Mercury-Atlas 6.",
+        "12-31": "1969 – Astronautët e Apollo 11 përfunduan përgatitjet për uljen në Hënë dhe eksplorimin e sipërfaqes."
     };
 
     const calendarBody = document.getElementById('calendarBody');
@@ -310,6 +623,7 @@
             dayNode.innerText = d;
             dayNode.id = `node-${mIndex + 1}-${d}`;
 
+            // Gjej ditën e sotme (p.sh. 16 Mars)
             if (d === tDay && (mIndex + 1) === tMonth) {
                 dayNode.classList.add('is-today');
             }
@@ -320,23 +634,29 @@
         calendarBody.appendChild(grid);
     });
 
+    // Funksioni që bën efektin "grisje flete" dhe ndryshon tekstin
     function showFact(m, d, monthName) {
         const key = `${m}-${d}`;
-        const fact = physicsData[key] || "Zbulime fantastike ndodhin çdo ditë në botën e fizikës!";
+        const fact = physicsData[key] || "Asnjë e dhënë për këtë datë në arkivën tonë shkencore.";
         
         const page = document.getElementById('factPage');
         const badge = document.getElementById('dateBadge');
         const desc = document.getElementById('factDesc');
 
+        // Bëj animacionin e grisjes
         page.classList.remove('dropping');
         page.classList.add('tearing');
 
         setTimeout(() => {
+            // Pas gjysmë sekondi (kur fleta ka rënë), ndrysho tekstin
             badge.innerText = `${d} ${monthName}`;
             desc.innerText = fact;
+
+            // Fshij klasën e grisjes dhe shto klasën e shfaqjes së fletës së re
             page.classList.remove('tearing');
             page.classList.add('dropping');
             
+            // Ndrysho ngjyrat te data e zgjedhur në kalendar
             document.querySelectorAll('.day-node').forEach(n => {
                 if(!n.classList.contains('is-today')) {
                     n.style.background = "";
@@ -350,13 +670,16 @@
                 selectedNode.style.color = "var(--text-dark)";
                 selectedNode.style.borderColor = "var(--hot-pink)";
             }
-        }, 500);
+        }, 500); // 500ms zgjat animacioni i rënies
     }
 
+    // Ekzekutohet automatikisht kur hapet faqja
     window.onload = () => {
         const todayNode = document.getElementById(`node-${tMonth}-${tDay}`);
         if (todayNode) {
+            // Të ulet scrolli automatikisht aty ku duhet
             todayNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Shfaq të dhënën e sotme menjëherë, pa efektin e grisjes për herën e parë
             document.getElementById('dateBadge').innerText = `${tDay} ${months[tMonth-1]}`;
             document.getElementById('factDesc').innerText = physicsData[`${tMonth}-${tDay}`] || "Zbulime fantastike ndodhin çdo ditë!";
         }
