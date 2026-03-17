@@ -13,6 +13,29 @@ interface Profile {
   role?: string;
 }
 
+// Normalizon emrin e shkollës — çdo variant del si: Gjimnazi "Hydajet Lezha"
+function normalizeSchool(school?: string): string {
+  if (!school) return '';
+
+  // Heq të gjitha thonjëzat dhe dy pikat e kolonës
+  let s = school
+    .trim()
+    .replace(/["""''\u2018\u2019\u201C\u201D\u00AB\u00BB:]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  // Nëse përmban "hydajet lezha" (me ose pa gjimnazi), normalizon
+  if (s.includes('hydajet') && s.includes('lezha')) {
+    const prefix = s.includes('gjimnazi') ? 'Gjimnazi' : '';
+    if (prefix) return 'Gjimnazi \u201CHydajet Lezha\u201D';
+    return 'Hydajet Lezha';
+  }
+
+  // Shkolla të tjera — çdo fjalë me shkronjë të madhe
+  return s.replace(/\b\w/g, c => c.toUpperCase());
+}
+
 export const Leaderboard: React.FC = () => {
   const { profile } = useFirebase();
   const [allLeaders, setAllLeaders] = useState<Profile[]>([]);
@@ -23,17 +46,21 @@ export const Leaderboard: React.FC = () => {
   useEffect(() => {
     if (profile?.school && selectedSchool === 'Të gjitha shkollat') {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedSchool(profile.school);
+      setSelectedSchool(normalizeSchool(profile.school));
     }
   }, [profile?.school, selectedSchool]);
 
   useEffect(() => {
     // Fetch all profiles to filter and sort in memory (avoids composite index requirement for prototype)
     const unsubscribe = onSnapshot(collection(db, 'profiles'), (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        uid: doc.id,
-        ...doc.data()
-      })) as Profile[];
+      const data = snapshot.docs.map(doc => {
+        const d = doc.data();
+        return {
+          uid: doc.id,
+          ...d,
+          school: normalizeSchool(d.school),
+        };
+      }) as Profile[];
       setAllLeaders(data);
       setLoading(false);
     }, (error) => {
