@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sfida e Fizikës - Galileo</title>
+    <style>
+        :root {
+            --accent: #00f2ff;
+            --bg: #0f172a;
+        }
+
+        body {
+            margin: 0; font-family: 'Segoe UI', sans-serif;
+            background: #020617; color: white;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Paneli i Formulës */
+        .formula-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px; border-radius: 15px;
+            margin: 10px; border-left: 4px solid var(--accent);
+            width: 90%; max-width: 350px;
+            font-size: 14px;
+        }
+
+        #game-window {
+            position: relative;
+            width: 320px; height: 350px;
+            background: linear-gradient(180deg, #1e293b 0%, #020617 100%);
+            border-radius: 20px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #planet-surface {
+            position: absolute; bottom: -80px; left: 50%;
+            transform: translateX(-50%);
+            width: 450px; height: 150px; border-radius: 50%;
+            background: radial-gradient(circle, #2563eb 0%, #000 80%);
+            box-shadow: 0 -5px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        #galileo { position: absolute; top: 10px; left: 15px; font-size: 35px; }
+        #falling-obj { position: absolute; top: 50px; left: 45px; font-size: 25px; display: none; }
+        
+        /* Vizualizimi i Lartësisë */
+        .height-line {
+            position: absolute; left: 85px; top: 60px;
+            height: 220px; border-left: 2px dashed rgba(255,255,255,0.3);
+        }
+        .height-label {
+            position: absolute; left: 95px; top: 150px;
+            font-size: 12px; color: var(--accent); font-weight: bold;
+        }
+
+        .controls {
+            width: 320px; padding: 20px; text-align: center;
+        }
+
+        input {
+            width: 70px; padding: 10px; border-radius: 8px;
+            border: 1px solid var(--accent); background: #000; color: white;
+            text-align: center; font-size: 16px;
+        }
+
+        button {
+            background: var(--accent); color: black; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: bold;
+            cursor: pointer; margin-left: 5px;
+        }
+
+        #overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 100; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h3 style="margin: 15px 0 5px 0; color: var(--accent);">Gjej Kohën e Rënies</h3>
+
+    <div class="formula-card">
+        <strong>Lartësia (d):</strong> 10 metra <br>
+        <strong>Formula:</strong> $$t = \sqrt{\frac{2 \cdot d}{g}}$$
+        <small style="opacity:0.7">Gjej <b>t</b> (sekonda) për planetin përkatës.</small>
+    </div>
+
+    <div id="game-window">
+        <div id="galileo">👴</div>
+        <div class="height-line"></div>
+        <div class="height-label">d = 10m</div>
+        <div id="falling-obj">🍎</div>
+        <div id="planet-surface"></div>
+
+        <div id="overlay">
+            <h2 id="res-title"></h2>
+            <p id="res-msg" style="padding: 0 20px;"></p>
+            <button onclick="nextLevel()">Vazhdo</button>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div style="margin-bottom: 10px; font-size: 14px;" id="planet-info">
+            Sipërfaqja e Tokës: <b>g = 9.8 m/s²</b>
+        </div>
+        <input type="number" id="user-input" step="0.01" placeholder="t = ?">
+        <button onclick="startSimulation()">LËSHOJE</button>
+    </div>
+
+    <script>
+        const levels = [
+            { name: "Sipërfaqja e Tokës", g: 9.8, color: "#2563eb", item: "🍎" },
+            { name: "Sipërfaqja e Hënës", g: 1.6, color: "#94a3b8", item: "🌑" },
+            { name: "Sipërfaqja e Jupiterit", g: 24.8, color: "#ea580c", item: "💎" }
+        ];
+
+        let currentIdx = 0;
+        let active = false;
+        const d = 10; // Lartësia në metra
+
+        function startSimulation() {
+            if (active) return;
+            const inputVal = parseFloat(document.getElementById('user-input').value);
+            if (isNaN(inputVal)) return alert("Shkruaj një numër!");
+
+            active = true;
+            const obj = document.getElementById('falling-obj');
+            const lvl = levels[currentIdx];
+            const realT = Math.sqrt((2 * d) / lvl.g); // Llogaritja reale
+            
+            obj.style.display = "block";
+            let start = null;
+
+            function animate(timestamp) {
+                if (!start) start = timestamp;
+                let elapsed = (timestamp - start) / 1000;
+
+                // Pozicioni vizual y = y0 + 0.5 * g * t^2 (i shkallëzuar)
+                let visualY = 50 + (0.5 * lvl.g * Math.pow(elapsed, 2) * 23);
+
+                if (elapsed < inputVal && visualY < 280) {
+                    obj.style.top = visualY + "px";
+                    requestAnimationFrame(animate);
+                } else {
+                    showResult(elapsed, realT, visualY >= 280);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function showResult(endT, targetT, hitGround) {
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('res-title');
+            const msg = document.getElementById('res-msg');
+            const diff = Math.abs(endT - targetT);
+
+            overlay.style.display = "flex";
+
+            if (diff < 0.15) {
+                title.innerText = "SHKËLQYESHËM!";
+                title.style.color = "#22c55e";
+                msg.innerHTML = `Llogaritja jote ishte pothuajse perfekte!<br>Koha reale: <b>${targetT.toFixed(2)}s</b>`;
+            } else {
+                title.innerText = "GABIM!";
+                title.style.color = "#ef4444";
+                msg.innerHTML = hitGround 
+                    ? `U përplas më shpejt! Parashikimi yt ishte shumë i madh.<br>Koha reale: <b>${targetT.toFixed(2)}s</b>`
+                    : `Mbeti në ajër! Parashikimi yt ishte shumë i vogël.<br>Koha reale: <b>${targetT.toFixed(2)}s</b>`;
+            }
+        }
+
+        function nextLevel() {
+            currentIdx = (currentIdx + 1) % levels.length;
+            const lvl = levels[currentIdx];
+            
+            document.getElementById('overlay').style.display = "none";
+            document.getElementById('falling-obj').style.display = "none";
+            document.getElementById('falling-obj').innerText = lvl.item;
+            document.getElementById('user-input').value = "";
+            document.getElementById('planet-info').innerHTML = `${lvl.name}: <b>g = ${lvl.g} m/s²</b>`;
+            document.getElementById('planet-surface').style.background = `radial-gradient(circle, ${lvl.color} 0%, #000 80%)`;
+            
+            active = false;
+        }
+    </script>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
