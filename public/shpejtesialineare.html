@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shpejtësia Lineare</title>
+    <style>
+        :root {
+            --bg: #fdfcf0;
+            --card: #ffffff;
+            --primary: #bae1ff;
+            --secondary: #ffb3ba;
+            --track: #f1f5f9;
+            --text: #475569;
+        }
+
+        body {
+            margin: 0; font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg); color: var(--text);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh;
+        }
+
+        .game-card {
+            background: var(--card); padding: 25px; border-radius: 35px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.04);
+            width: 90%; max-width: 400px; text-align: center;
+            border: 1px solid #fef3c7;
+        }
+
+        .formula-list {
+            background: var(--primary); padding: 15px; border-radius: 20px;
+            font-size: 1.1rem; margin-bottom: 20px; text-align: center;
+            color: #1e3a8a; font-weight: bold;
+        }
+
+        .track-container {
+            width: 240px; height: 240px; background: var(--track);
+            border-radius: 50%; margin: 0 auto 20px;
+            position: relative; border: 10px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .car {
+            width: 20px; height: 35px; background: var(--secondary);
+            border-radius: 5px; position: absolute;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .input-group { margin: 15px 0; }
+
+        input[type="number"] {
+            width: 90px; padding: 12px; border-radius: 12px;
+            border: 2px solid var(--primary); text-align: center; font-size: 1rem;
+        }
+
+        .btn {
+            background: var(--primary); color: #1e3a8a; border: none;
+            padding: 15px; border-radius: 15px; font-weight: bold;
+            cursor: pointer; width: 100%; margin-top: 10px;
+        }
+
+        #modal {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.96);
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 100; text-align: center; padding: 20px;
+        }
+
+        .level-info { font-size: 0.9rem; background: #fffbeb; padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="game-card">
+        <div class="formula-list">
+            V = ω · r &nbsp; | &nbsp; V = 2πr / T
+        </div>
+
+        <div class="level-info" id="lvl-instructions">
+            Niveli 1: Gjej V kur ω = 2 rad/s dhe r = 5m.
+        </div>
+
+        <div class="track-container">
+            <div id="car" class="car"></div>
+            <div style="width: 4px; height: 4px; background: #64748b; border-radius: 50%;"></div>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="user-v" step="0.01" placeholder="V = ?">
+            <span style="font-weight: bold; margin-left: 5px;">m/s</span>
+        </div>
+
+        <button class="btn" onclick="verifiko()">KONTROLLO SHPEJTËSINË</button>
+    </div>
+
+    <div id="modal">
+        <h1 id="mod-titulli"></h1>
+        <p id="mod-teksti"></p>
+        <button class="btn" style="width: auto; padding: 12px 30px;" onclick="vazhdo()">Vazhdo</button>
+    </div>
+
+    <script>
+        const nivelet = [
+            { tip: 1, w: 2, r: 5, v: 10, txt: "Gjej V duke përdorur ω = 2 rad/s dhe r = 5m." },
+            { tip: 1, w: 1.5, r: 10, v: 15, txt: "Gjej V duke përdorur ω = 1.5 rad/s dhe r = 10m." },
+            { tip: 2, t: 4, r: 7, v: 10.99, txt: "Gjej V (2πr/T) kur r = 7m dhe T = 4s. (π≈3.14)" }
+        ];
+
+        let idx = 0;
+        let rotation = 0;
+
+        function animo() {
+            const lvl = nivelet[idx];
+            const w = lvl.tip === 1 ? lvl.w : (2 * Math.PI / lvl.t);
+            const visualRadius = lvl.r * 8; // Shkallëzimi për ekran
+
+            rotation += w * 0.016; // 60fps
+            
+            const x = Math.cos(rotation) * visualRadius;
+            const y = Math.sin(rotation) * visualRadius;
+            
+            const car = document.getElementById('car');
+            car.style.transform = `translate(${x}px, ${y}px) rotate(${rotation + Math.PI/2}rad)`;
+            
+            requestAnimationFrame(animo);
+        }
+        animo();
+
+        function verifiko() {
+            const userV = parseFloat(document.getElementById('user-v').value);
+            const saktV = nivelet[idx].v;
+            const diff = Math.abs(userV - saktV);
+            
+            const modal = document.getElementById('modal');
+            modal.style.display = "flex";
+
+            if (diff < 0.5) {
+                document.getElementById('mod-titulli').innerText = "Saktësi Galaktike!";
+                document.getElementById('mod-teksti').innerText = `Shpejtësia lineare është ${saktV} m/s. Makina lëviz në harmoni!`;
+                window.isCorrect = true;
+            } else {
+                document.getElementById('mod-titulli').innerText = "Llogaritje e gabuar";
+                document.getElementById('mod-teksti').innerText = `Përdor formulën e duhur për këtë nivel. Provo përsëri!`;
+                window.isCorrect = false;
+            }
+        }
+
+        function vazhdo() {
+            if (window.isCorrect) {
+                idx = (idx + 1) % nivelet.length;
+                document.getElementById('lvl-instructions').innerText = "Niveli " + (idx + 1) + ": " + nivelet[idx].txt;
+                document.getElementById('user-v').value = "";
+            }
+            document.getElementById('modal').style.display = "none";
+        }
+    </script>
+</body>
+</html>

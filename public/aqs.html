@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nxitimi Qëndersynues</title>
+    <style>
+        :root {
+            --pastel-blue: #d0e7ff;
+            --pastel-red: #ffccd5;
+            --pastel-green: #d1fae5;
+            --road: #f1f5f9;
+            --text: #334155;
+        }
+
+        body {
+            margin: 0; font-family: 'Segoe UI', sans-serif;
+            background-color: #f8fafc; color: var(--text);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: white; padding: 25px; border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            width: 90%; max-width: 400px; text-align: center;
+        }
+
+        .formula {
+            background: var(--pastel-blue); padding: 12px; border-radius: 15px;
+            font-weight: bold; font-size: 1.2rem; margin-bottom: 20px;
+        }
+
+        /* Pista Rrethore */
+        .canvas-area {
+            width: 260px; height: 260px; background: var(--road);
+            border-radius: 50%; margin: 0 auto 20px;
+            position: relative; border: 8px solid white;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        #car {
+            width: 35px; height: 20px; background: var(--pastel-red);
+            border-radius: 6px; position: absolute;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        /* Vektori i nxitimit a_qs */
+        #vector-aqs {
+            position: absolute; height: 3px; background: #ff4d6d;
+            transform-origin: right center; z-index: 1;
+            display: flex; align-items: center;
+        }
+        
+        #vector-aqs::before {
+            content: '➤'; position: absolute; left: -5px; color: #ff4d6d; font-size: 12px;
+        }
+
+        .data-box {
+            background: #f8fafc; padding: 15px; border-radius: 15px;
+            margin-bottom: 20px; font-size: 0.95rem; border: 1px solid #e2e8f0;
+        }
+
+        input[type="number"] {
+            width: 100px; padding: 12px; border-radius: 12px;
+            border: 2px solid var(--pastel-blue); text-align: center; font-size: 1.1rem;
+        }
+
+        .btn {
+            background: var(--pastel-green); color: #065f46; border: none;
+            padding: 15px 30px; border-radius: 15px; font-weight: bold;
+            cursor: pointer; width: 100%; margin-top: 15px;
+        }
+
+        #overlay {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.98);
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 100; text-align: center; padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="formula">a_qs = v² / R</div>
+
+        <div class="canvas-area">
+            <div id="vector-aqs"></div>
+            <div id="car"></div>
+            <div style="width: 10px; height: 10px; background: #94a3b8; border-radius: 50%; z-index: 3;"></div>
+        </div>
+
+        <div class="data-box" id="level-data">
+            Shpejtësia: <b>v = 8 m/s</b> | Rrezja: <b>R = 4 m</b>
+        </div>
+
+        <input type="number" id="user-ans" placeholder="a_qs = ?">
+        <button class="btn" onclick="kontrollo()">KONTROLLO</button>
+    </div>
+
+    <div id="overlay">
+        <h1 id="res-title"></h1>
+        <p id="res-msg"></p>
+        <button class="btn" style="width: auto;" onclick="vazhdo()">Vazhdo</button>
+    </div>
+
+    <script>
+        const nivelet = [
+            { v: 8, r: 4, a: 16 },
+            { v: 10, r: 2, a: 50 },
+            { v: 6, r: 3, a: 12 }
+        ];
+
+        let idx = 0;
+        let koha = 0;
+        const car = document.getElementById('car');
+        const vector = document.getElementById('vector-aqs');
+
+        function animo() {
+            const lvl = nivelet[idx];
+            const w = lvl.v / lvl.r; // Shpejtësia kendore
+            koha += 0.02;
+            
+            const radiusVizual = 100; 
+            const x = Math.cos(w * koha) * radiusVizual;
+            const y = Math.sin(w * koha) * radiusVizual;
+            
+            // Lëvizja e makinës
+            car.style.left = (130 + x - 17.5) + "px";
+            car.style.top = (130 + y - 10) + "px";
+            car.style.transform = `rotate(${w * koha + Math.PI/2}rad)`;
+
+            // Pozicionimi i vektorit (shigjeta drejt qendrës)
+            vector.style.width = (lvl.a * 2) + "px"; // Madhësia sipas nxitimit
+            vector.style.left = (130 + x - (lvl.a * 2)) + "px";
+            vector.style.top = (130 + y - 1.5) + "px";
+            vector.style.transform = `rotate(${w * koha}rad)`;
+
+            requestAnimationFrame(animo);
+        }
+        animo();
+
+        function kontrollo() {
+            const pergjigja = parseFloat(document.getElementById('user-ans').value);
+            const sakt = nivelet[idx].a;
+            const modal = document.getElementById('overlay');
+            
+            modal.style.display = "flex";
+            if (Math.abs(pergjigja - sakt) < 0.1) {
+                document.getElementById('res-title').innerText = "Saktë! 🎉";
+                document.getElementById('res-msg').innerText = `Nxitimi qëndersynues a_qs është ${sakt} m/s². Forca e mban makinën në rrugë!`;
+                window.isCorrect = true;
+            } else {
+                document.getElementById('res-title').innerText = "Gabim! ❌";
+                document.getElementById('res-msg').innerText = `Llogaritja doli ${pergjigja}, por duhej ${sakt}. Makina do të dilte jashtë piste!`;
+                window.isCorrect = false;
+            }
+        }
+
+        function vazhdo() {
+            if (window.isCorrect) {
+                idx = (idx + 1) % nivelet.length;
+                document.getElementById('level-data').innerHTML = `Shpejtësia: <b>v = ${nivelet[idx].v} m/s</b> | Rrezja: <b>R = ${nivelet[idx].r} m</b>`;
+                document.getElementById('user-ans').value = "";
+            }
+            document.getElementById('overlay').style.display = "none";
+        }
+    </script>
+</body>
+</html>

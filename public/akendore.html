@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nxitimi Këndor</title>
+    <style>
+        :root {
+            --neon-purple: #c084fc;
+            --neon-emerald: #34d399;
+            --dark-panel: #1e1b4b;
+            --text-light: #f8fafc;
+        }
+
+        body {
+            margin: 0; font-family: 'Monaco', monospace;
+            background-color: #020617; color: var(--text-light);
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh;
+        }
+
+        .engine-panel {
+            background: var(--dark-panel);
+            border: 3px solid var(--neon-purple);
+            border-radius: 10px; padding: 25px;
+            width: 340px; box-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
+            position: relative;
+        }
+
+        .formula {
+            color: var(--neon-emerald); font-size: 1.4rem;
+            text-align: center; margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Turbina */
+        .turbine-container {
+            width: 150px; height: 150px; margin: 0 auto 20px;
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+
+        .propeller {
+            width: 120px; height: 120px;
+            border: 4px solid var(--neon-emerald);
+            border-radius: 50%; position: relative;
+            transition: transform 0.1s linear;
+        }
+
+        .propeller::before, .propeller::after {
+            content: ''; position: absolute; background: var(--neon-emerald);
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+
+        .propeller::before { width: 100%; height: 4px; }
+        .propeller::after { width: 4px; height: 100%; }
+
+        /* Monitori i të dhënave */
+        .monitor {
+            background: rgba(0,0,0,0.5); padding: 15px;
+            border-radius: 5px; font-size: 0.85rem;
+            margin-bottom: 20px; border-left: 4px solid var(--neon-emerald);
+        }
+
+        .input-box {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        input {
+            background: transparent; border: 1px solid var(--neon-purple);
+            color: var(--neon-purple); padding: 10px; border-radius: 5px;
+            text-align: center; font-size: 1.2rem;
+        }
+
+        .btn {
+            background: var(--neon-purple); color: var(--dark-panel);
+            border: none; padding: 12px; font-weight: bold;
+            cursor: pointer; border-radius: 5px; transition: 0.2s;
+        }
+
+        .btn:hover { filter: brightness(1.2); }
+
+        #alert {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; text-align: center; padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="engine-panel">
+        <div class="formula">α = Δω / Δt</div>
+
+        <div class="turbine-container">
+            <div id="fan" class="propeller"></div>
+        </div>
+
+        <div class="monitor" id="data-screen">
+            Shpejtësia nisi: <b>ω₀ = 0 rad/s</b><br>
+            Arriti në: <b>ω₁ = 20 rad/s</b><br>
+            Brenda kohës: <b>Δt = 4 s</b>
+        </div>
+
+        <div class="input-box">
+            <input type="number" id="ans" step="0.1" placeholder="α (rad/s²)">
+            <button class="btn" onclick="kontrollo()">AKTIVIZO TURBINËN</button>
+        </div>
+    </div>
+
+    <div id="alert">
+        <h2 id="res-h"></h2>
+        <p id="res-p"></p>
+        <button class="btn" onclick="vazhdo()">Niveli Tjetër</button>
+    </div>
+
+    <script>
+        const nivelet = [
+            { w0: 0, w1: 20, t: 4, a: 5 },
+            { w0: 10, w1: 30, t: 5, a: 4 },
+            { w0: 50, w1: 20, t: 6, a: -5 } // Nxitim negativ (frenim)
+        ];
+
+        let idx = 0;
+        let rrotullimi = 0;
+        let shpejtesiaAktuale = 0;
+
+        function animo() {
+            const lvl = nivelet[idx];
+            // Simulim i thjeshtë vizual i rrotullimit
+            rrotullimi += shpejtesiaAktuale;
+            document.getElementById('fan').style.transform = `rotate(${rrotullimi}deg)`;
+            
+            // Shpejtësia rritet gradualisht për efekt vizual
+            if (shpejtesiaAktuale < lvl.w1) shpejtesiaAktuale += 0.1;
+
+            requestAnimationFrame(animo);
+        }
+        animo();
+
+        function kontrollo() {
+            const val = parseFloat(document.getElementById('ans').value);
+            const sakt = nivelet[idx].a;
+            const modal = document.getElementById('alert');
+            
+            modal.style.display = "flex";
+            if (Math.abs(val - sakt) < 0.1) {
+                document.getElementById('res-h').innerText = "SISTEMI OK!";
+                document.getElementById('res-p').innerText = `Nxitimi kendor është ${sakt} rad/s². Turbina punon me efikasitet.`;
+                window.isOk = true;
+            } else {
+                document.getElementById('res-h').innerText = "AVARI!";
+                document.getElementById('res-p').innerText = `Llogaritja e gabuar! Sistemi u mbingarkua.`;
+                window.isOk = false;
+            }
+        }
+
+        function vazhdo() {
+            if (window.isOk) {
+                idx = (idx + 1) % nivelet.length;
+                const L = nivelet[idx];
+                document.getElementById('data-screen').innerHTML = 
+                    `Shpejtësia nisi: <b>ω₀ = ${L.w0} rad/s</b><br>` +
+                    `Arriti në: <b>ω₁ = ${L.w1} rad/s</b><br>` +
+                    `Brenda kohës: <b>Δt = ${L.t} s</b>`;
+                document.getElementById('ans').value = "";
+                shpejtesiaAktuale = L.w0 / 10;
+            }
+            document.getElementById('alert').style.display = "none";
+        }
+    </script>
+</body>
+</html>
