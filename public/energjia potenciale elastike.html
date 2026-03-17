@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Inxhinieri i Sustave - Projekti Fizikë</title>
+    <style>
+        body {
+            margin: 0;
+            background: #f0f2f5;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 700px;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 4px solid #6c5ce7;
+        }
+
+        .header h1 { color: #6c5ce7; margin: 0; }
+        .formula { color: #a29bfe; font-weight: bold; margin-bottom: 20px; display: block; }
+
+        /* Skena e Sustës */
+        .spring-box {
+            height: 180px;
+            background: #ffffff;
+            border: 2px solid #dfe6e9;
+            border-radius: 20px;
+            position: relative;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .anchor {
+            width: 15px;
+            height: 100%;
+            background: #2d3436;
+        }
+
+        /* Vizatimi i sustës me CSS */
+        #spring {
+            height: 30px;
+            width: 100px; /* Do ndryshojë */
+            background-image: linear-gradient(45deg, transparent 45%, #636e72 45%, #636e72 55%, transparent 55%),
+                              linear-gradient(-45deg, transparent 45%, #636e72 45%, #636e72 55%, transparent 55%);
+            background-size: 20px 30px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        #ball {
+            font-size: 50px;
+            position: relative;
+            left: -10px;
+            transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 10;
+        }
+
+        /* UI */
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat { font-size: 1.2rem; }
+        .stat b { color: #6c5ce7; }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        input {
+            padding: 15px;
+            width: 150px;
+            border: 2px solid #dcdde1;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .btn-launch {
+            padding: 15px 30px;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-launch:hover { background: #5849c4; transform: scale(1.05); }
+
+        #feedback { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 25px; }
+
+        .reset-btn {
+            margin-top: 15px;
+            background: #ff7675;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Gjuajtësi Elastik 🏹</h1>
+        <span class="formula">E<sub>pe</sub> = ½ · k · x²</span>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat">Konstanti (k): <b id="k-val">0</b> N/m</div>
+        <div class="stat">Shtypja (x): <b id="x-val">0</b> m</div>
+    </div>
+
+    <div class="spring-box">
+        <div class="anchor"></div>
+        <div id="spring"></div>
+        <div id="ball">⚽</div>
+    </div>
+
+    <div class="input-group">
+        <input type="number" id="userVal" placeholder="Energjia (J)">
+        <button class="btn-launch" onclick="launch()">LËSHO 💥</button>
+    </div>
+
+    <div id="feedback"></div>
+    <button id="reset" class="reset-btn" onclick="init()">Provo një tjetër</button>
+</div>
+
+
+
+<script>
+    let k, x, targetEnergy;
+
+    function init() {
+        // Zgjedhim numra që llogariten bukur
+        k = (Math.floor(Math.random() * 4) + 1) * 200; // 200, 400, 600, 800
+        x = (Math.floor(Math.random() * 4) + 2) / 10; // 0.2, 0.3, 0.4, 0.5
+        
+        targetEnergy = 0.5 * k * (x * x);
+
+        document.getElementById('k-val').innerText = k;
+        document.getElementById('x-val').innerText = x;
+        document.getElementById('userVal').value = "";
+        document.getElementById('feedback').innerText = "";
+        document.getElementById('reset').style.display = "none";
+
+        const spring = document.getElementById('spring');
+        const ball = document.getElementById('ball');
+
+        // Susta duket e shtypur në fillim (ngarkim)
+        spring.style.width = "60px"; 
+        ball.style.left = "-10px";
+    }
+
+    function launch() {
+        const userEnergy = parseFloat(document.getElementById('userVal').value);
+        const spring = document.getElementById('spring');
+        const ball = document.getElementById('ball');
+        const fb = document.getElementById('feedback');
+
+        if(isNaN(userEnergy)) return;
+
+        // 1. Animacioni i sustës që lirohet (zgjatet shpejt)
+        spring.style.width = "180px";
+
+        // 2. Kontrollojmë rezultatin pas një vonese të vogël
+        setTimeout(() => {
+            // Lejojmë një diferencë shumë të vogël për rrumbullakimin
+            if(Math.abs(userEnergy - targetEnergy) < 0.01) {
+                ball.style.left = "500px"; // Topi fluturon larg
+                fb.innerText = "✅ PERFEKTE! Energjia " + userEnergy + " J u llogarit saktë.";
+                fb.style.color = "#27ae60";
+            } else {
+                ball.style.left = "80px"; // Topi rrokulliset pak
+                fb.innerText = "❌ GABIM! Duheshin " + targetEnergy + " J. Provo përsëri!";
+                fb.style.color = "#e74c3c";
+            }
+            document.getElementById('reset').style.display = "inline-block";
+        }, 300);
+    }
+
+    // Nisja e parë
+    init();
+</script>
+
+</body>
+</html>

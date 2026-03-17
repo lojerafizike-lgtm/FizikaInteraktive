@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <title>Roller Coaster - Projekti Fizike</title>
+    <style>
+        :root {
+            --track-path: path('M 0 80 Q 200 450 400 200 T 800 150');
+        }
+
+        body {
+            margin: 0;
+            background: #2c3e50;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: #f4f7f6;
+            width: 850px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .track-area {
+            height: 350px;
+            background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
+            border-radius: 15px;
+            position: relative;
+            margin: 20px 0;
+            border: 4px solid #34495e;
+            overflow: hidden;
+        }
+
+        /* Treni i ri i ndërtuar me CSS */
+        .train-unit {
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background: #e74c3c;
+            border-radius: 5px;
+            offset-path: var(--track-path);
+            offset-rotate: auto;
+            offset-distance: 0%;
+            transition: offset-distance 3.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Dritarja e vagonit */
+        .train-unit::after {
+            content: '';
+            width: 30px;
+            height: 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 2px;
+        }
+
+        /* Vonesat për vagonët që të ndjekin njëri-tjetrin */
+        #v2 { transition-delay: 0.15s; background: #3498db; }
+        #v3 { transition-delay: 0.3s; background: #f1c40f; }
+
+        /* Lokomotiva (Vagoni i parë) */
+        #v1 { background: #2c3e50; }
+        #v1::before {
+            content: '🚂';
+            position: absolute;
+            left: 10px;
+            font-size: 20px;
+        }
+
+        /* Vizatimi i shinave */
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: #fff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .controls input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #3498db;
+            width: 200px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn-go {
+            padding: 12px 25px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #feedback { margin-top: 15px; font-weight: bold; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎢 Roller Coaster: Konservimi i Energjisë</h2>
+    <p>Gjej <b>Em = (m·g·h) + (½·m·v²)</b> | Masa = 10kg, g = 10</p>
+
+    <div class="stats">
+        <div>Lartësia (h): <span id="h-val">?</span> m</div>
+        <div>Shpejtësia (v): <span id="v-val">?</span> m/s</div>
+    </div>
+
+    <div class="track-area">
+        <svg>
+            <path d="M 0 80 Q 200 450 400 200 T 800 150" fill="none" stroke="#2c3e50" stroke-width="8" stroke-linecap="round" stroke-dasharray="1, 15"/>
+            <path d="M 0 80 Q 200 450 400 200 T 800 150" fill="none" stroke="#bdc3c7" stroke-width="2"/>
+        </svg>
+
+        <div id="v3" class="train-unit"></div>
+        <div id="v2" class="train-unit"></div>
+        <div id="v1" class="train-unit"></div>
+    </div>
+
+    <div class="controls">
+        <input type="number" id="energyInp" placeholder="Shëno Energjinë (J)">
+        <button class="btn-go" onclick="startRide()">NIS TRENIN!</button>
+    </div>
+
+    <div id="feedback"></div>
+    <button id="resetBtn" style="display:none; margin: 10px auto; padding: 8px;" onclick="init()">Rifillo</button>
+</div>
+
+<script>
+    let m = 10, g = 10, h, v, correctEm;
+
+    function init() {
+        h = Math.floor(Math.random() * 6) + 4;
+        v = Math.floor(Math.random() * 5) + 2;
+        correctEm = (m * g * h) + (0.5 * m * v * v);
+
+        document.getElementById('h-val').innerText = h;
+        document.getElementById('v-val').innerText = v;
+        document.getElementById('energyInp').value = "";
+        document.getElementById('feedback').innerText = "";
+        document.getElementById('resetBtn').style.display = "none";
+
+        const units = document.querySelectorAll('.train-unit');
+        units.forEach(u => {
+            u.style.transition = "none";
+            u.style.offsetDistance = "0%";
+        });
+    }
+
+    function startRide() {
+        const val = parseFloat(document.getElementById('energyInp').value);
+        const units = document.querySelectorAll('.train-unit');
+        const fb = document.getElementById('feedback');
+
+        if(isNaN(val)) return;
+
+        if(val === correctEm) {
+            units.forEach(u => {
+                u.style.transition = "offset-distance 3.5s cubic-bezier(0.45, 0.05, 0.55, 0.95)";
+                u.style.offsetDistance = "100%";
+            });
+            fb.innerText = "✅ BRAVO! Energjia është e saktë. Udhëtimi filloi!";
+            fb.style.color = "#27ae60";
+        } else {
+            // Treni lëviz vetëm pak dhe ndalet
+            units.forEach(u => {
+                u.style.transition = "offset-distance 1s ease-out";
+                u.style.offsetDistance = "15%";
+            });
+            fb.innerText = "❌ GABIM! Energjia duhej të ishte " + correctEm + " J.";
+            fb.style.color = "#e74c3c";
+        }
+        document.getElementById('resetBtn').style.display = "inline-block";
+    }
+
+    init();
+</script>
+
+</body>
+</html>

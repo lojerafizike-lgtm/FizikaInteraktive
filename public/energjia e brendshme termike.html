@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratori i Fizikës: Energjia e Brendshme Termike</title>
+    <style>
+        :root {
+            --primare: #e67e22;
+            --sekondare: #f39c12;
+            --sukses: #27ae60;
+            --gabim: #c0392b;
+            --sfondi: #f0f3f6;
+            --teksti: #2c3e50;
+            --uji: #3498db;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--sfondi);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--teksti);
+        }
+
+        .karta {
+            background: white;
+            width: 850px;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 10px solid var(--primare);
+        }
+
+        h1 { margin-top: 0; color: var(--primare); }
+        
+        .shfaqja-formules {
+            background: #fff3e0;
+            color: var(--primare);
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            border: 2px solid var(--sekondare);
+        }
+
+        .parametrat {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .kutia-param {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 16px;
+            border-bottom: 4px solid var(--sekondare);
+        }
+
+        .kutia-param span { font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase; font-weight: bold; }
+        .kutia-param b { font-size: 1.2rem; display: block; margin-top: 5px; color: var(--teksti); }
+
+        .skena-termike {
+            height: 300px;
+            background: #ecf0f1;
+            border-radius: 20px;
+            position: relative;
+            margin-bottom: 30px;
+            border: 3px solid #bdc3c7;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 40px;
+        }
+
+        .ene {
+            width: 180px;
+            height: 200px;
+            border: 4px solid #7f8c8d;
+            border-top: none;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            position: relative;
+            background: white;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .uji {
+            width: 100%;
+            height: 70%;
+            background: var(--uji);
+            position: absolute;
+            bottom: 0;
+            transition: background 2s;
+        }
+
+        .termometer {
+            width: 25px;
+            height: 200px;
+            background: #eee;
+            border-radius: 15px;
+            position: absolute;
+            right: 180px;
+            bottom: 60px;
+            border: 3px solid #7f8c8d;
+            overflow: hidden;
+        }
+
+        .zhiva {
+            width: 100%;
+            background: #e74c3c;
+            position: absolute;
+            bottom: 0;
+            border-radius: 0;
+            transition: height 2s ease-in-out;
+            height: 20%;
+        }
+
+        .flaka {
+            position: absolute;
+            bottom: -5px;
+            font-size: 50px;
+            display: none;
+            animation: dridhje 0.3s infinite;
+            z-index: 5;
+        }
+
+        @keyframes dridhje {
+            0% { transform: scale(1) translateX(0); }
+            50% { transform: scale(1.1) translateX(2px); }
+            100% { transform: scale(1) translateX(0); }
+        }
+
+        .kontrollet {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        input {
+            padding: 15px;
+            border: 2px solid #ced4da;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            width: 250px;
+            text-align: center;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primare); }
+
+        button {
+            padding: 15px 35px;
+            background-color: var(--primare);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover { background-color: #d35400; transform: scale(1.05); }
+        
+        #mesazhi { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 30px; }
+        .butoni-reset { background: var(--sukses); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; display: none; margin: 15px auto; font-weight: bold;}
+    </style>
+</head>
+<body>
+
+<div class="karta">
+    <h1>Energjia e Brendshme Termike 🌡️</h1>
+    <div class="shfaqja-formules">Q = m · c · ΔT</div>
+    <p style="margin-top: -20px; font-size: 0.9rem; color: #7f8c8d;">Nxehtësia specifike e ujit: <b>c = 4184 J/(kg·°C)</b></p>
+
+    <div class="parametrat">
+        <div class="kutia-param">
+            <span>Masa e ujit (m)</span>
+            <b id="m-vlera">0 kg</b>
+        </div>
+        <div class="kutia-param">
+            <span>Temp. Fillestare (Ti)</span>
+            <b id="ti-vlera">20 °C</b>
+        </div>
+        <div class="kutia-param">
+            <span>Temp. e Synuar (Tf)</span>
+            <b id="tf-vlera">0 °C</b>
+        </div>
+    </div>
+
+    <div class="skena-termike">
+        <div class="termometer">
+            <div id="zhiva" class="zhiva"></div>
+        </div>
+        <div class="ene">
+            <div id="uji" class="uji"></div>
+        </div>
+        <div id="flaka" class="flaka">🔥</div>
+    </div>
+
+    <div class="kontrollet">
+        <input type="number" id="inputQ" placeholder="Shëno Joule (J)">
+        <button onclick="ngrohUjin()">FURNIZO NXEHTËSI ♨️</button>
+    </div>
+
+    <div id="mesazhi"></div>
+    <button id="reset" class="butoni-reset" onclick="init()">EKSPERIMENT I RI</button>
+</div>
+
+<script>
+    let m, Ti, Tf, c = 4184, targetQ;
+
+    function init() {
+        // Gjenerojmë të dhëna të reja të rastësishme
+        m = parseFloat((Math.random() * 0.4 + 0.1).toFixed(2)); // 0.1 deri 0.5 kg
+        Ti = 20;
+        Tf = Math.floor(Math.random() * 40) + 45; // 45 deri 85 °C
+        
+        // Formula: Q = m * c * (Tf - Ti)
+        targetQ = Math.round(m * c * (Tf - Ti));
+
+        document.getElementById('m-vlera').innerText = m + " kg";
+        document.getElementById('ti-vlera').innerText = Ti + " °C";
+        document.getElementById('tf-vlera').innerText = Tf + " °C";
+        document.getElementById('inputQ').value = "";
+        document.getElementById('mesazhi').innerText = "";
+        document.getElementById('reset').style.display = "none";
+        document.getElementById('flaka').style.display = "none";
+
+        const uji = document.getElementById('uji');
+        const zhiva = document.getElementById('zhiva');
+        uji.style.background = "#3498db"; 
+        zhiva.style.height = "20%"; 
+    }
+
+    function ngrohUjin() {
+        const vleraUser = parseFloat(document.getElementById('inputQ').value);
+        const uji = document.getElementById('uji');
+        const zhiva = document.getElementById('zhiva');
+        const flaka = document.getElementById('flaka');
+        const mesazhi = document.getElementById('mesazhi');
+        const resetBtn = document.getElementById('reset');
+
+        if(isNaN(vleraUser)) {
+            mesazhi.innerText = "Ju lutem vendosni një vlerë!";
+            mesazhi.style.color = "var(--gabim)";
+            return;
+        }
+
+        // Kontrollojmë saktësinë (me tolerancë +/- 50J)
+        if(Math.abs(vleraUser - targetQ) <= 50) {
+            flaka.style.display = "block";
+            
+            setTimeout(() => {
+                uji.style.background = "#e67e22"; 
+                zhiva.style.height = Tf + "%"; 
+                mesazhi.innerText = "✅ SAKTË! Energjia e brendshme u rrit dhe temperatura arriti " + Tf + "°C.";
+                mesazhi.style.color = "var(--sukses)";
+                flaka.style.display = "none";
+                resetBtn.style.display = "block";
+            }, 800);
+        } else {
+            mesazhi.innerText = "❌ GABIM! Llogaritja nuk doli saktë. Duheshin " + formatNr(targetQ) + " Joule.";
+            mesazhi.style.color = "var(--gabim)";
+            resetBtn.style.display = "block";
+        }
+    }
+
+    // Funksioni i rregulluar për formatimin e numrave
+    function formatNr(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Nisja e parë
+    init();
+</script>
+
+</body>
+</html>
