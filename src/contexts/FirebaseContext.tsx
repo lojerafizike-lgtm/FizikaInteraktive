@@ -4,7 +4,7 @@ import { User } from '../firebase';
 export interface Profile {
   displayName: string;
   username?: string;
-  role?: 'mesues' | 'nxenes';
+  role?: 'mesues' | 'nxenes' | 'admin';
   school?: string;
   photoURL: string;
   totalScore: number;

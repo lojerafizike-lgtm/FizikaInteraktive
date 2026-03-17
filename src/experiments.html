@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimenti</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .step { margin: 10px 0; }
+        .sci { background: #eef; padding: 15px; border-radius: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="experiment-container" class="card">
+        <h1>Loading...</h1>
+    </div>
+
+    <script>
+        const experiments = [
+            {
+                name:"Raketa me Balon", icon:"🚀", iconBg:"#d4e9ff",
+                goal:"🎯 Ligji III i Njutonit", goalBg:"#d4e9ff", goalColor:"#1a4a7a",
+                steps:[
+                  "Fute fijën nëpër kasën plastike",
+                  "Lidhe fijën fort midis dy karrigeve",
+                  "Fryeje balonin pa e lidhur",
+                  "Ngjite balonin te kasa me shirit",
+                  "Lëshoje — shiko si fluturon! 🚀"
+                ],
+                sci:{
+                  emoji:"🚀", title:"Veprim & Kundërveprim",
+                  law:"Ligji III i Njutonit", lawBg:"#d4e9ff", lawColor:"#1a4a7a",
+                  body:"Kur ajri del nga baloni me forcë drejt <strong>prapa</strong>, forca e kundërt e njëjtë e shtyn balonin drejt <strong>para</strong>. <strong>Çdo veprim ka kundërveprim të barabartë dhe të kundërt</strong> — ky parim lëviz edhe raketat kozmike!"
+                }
+            },
+            {
+                name:"Energjia me Rampë", icon:"🏎", iconBg:"#ffe5d0",
+                goal:"🎯 Ep → Ek (Transformim Energjie)", goalBg:"#ffe5d0", goalColor:"#7a3800",
+                steps:[
+                  "Vendos librin si rampë",
+                  "Vendos makinën në majë",
+                  "Lëshoje — shiko shpejtësinë!",
+                  "Ndrysho lartësinë e rampës",
+                  "Vëre ndryshimin e distancës!"
+                ],
+                sci:{
+                  emoji:"🏎", title:"Energjia Potenciale në Kinetike",
+                  law:"Ligji i Ruajtjes së Energjisë", lawBg:"#ffe5d0", lawColor:"#7a3800",
+                  body:"Energjia nuk zhduket, ajo shndërrohet! Në majë të rampës, makina ka <strong>Energji Potenciale (Ep)</strong>. Kur lëshohet, ajo shndërrohet në <strong>Energji Kinetike (Ek)</strong>. Sa më e lartë rampa, aq më shumë energji!"
+                }
+            }
+        ];
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const expId = parseInt(urlParams.get('exp'));
+        const container = document.getElementById('experiment-container');
+
+        if (!isNaN(expId) && experiments[expId]) {
+            const exp = experiments[expId];
+            container.innerHTML = `
+                <h1>${exp.icon} ${exp.name}</h1>
+                <p><strong>Qëllimi:</strong> ${exp.goal}</p>
+                <h3>Hapat:</h3>
+                <ul>${exp.steps.map(s => `<li class="step">${s}</li>`).join('')}</ul>
+                <div class="sci">
+                    <h3>${exp.sci.emoji} ${exp.sci.title}</h3>
+                    <p><strong>Ligji:</strong> ${exp.sci.law}</p>
+                    <p>${exp.sci.body}</p>
+                </div>
+            `;
+        } else {
+            container.innerHTML = '<h1>Eksperimenti nuk u gjet</h1>';
+        }
+    </script>
+</body>
+</html>

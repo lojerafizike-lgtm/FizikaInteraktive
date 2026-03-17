@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
   const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'calendar'>('home');
+
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isAddMaterialOpen, setIsAddMaterialOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
@@ -606,32 +607,81 @@ const App: React.FC = () => {
 
         {/* Games View */}
         {activePage === 'games' && (
-           <div className="animate__animated animate__fadeIn">
+           <div className="animate__animated animate__fadeIn p-8">
              <button onClick={() => navigate('home')} className="mb-8 md:mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
               <i className="fas fa-arrow-left"></i> Kthehu mbrapa
             </button>
             <div className="text-center mb-12 md:mb-24">
-                <h2 className="text-5xl md:text-9xl font-black mb-8 md:mb-12 tracking-tighter text-slate-800 leading-none">Lojërat Smartboard</h2>
-                <p className="text-slate-400 text-lg md:text-2xl font-medium max-w-2xl mx-auto">
-                  Eksploro fizikën përmes sfidave interaktive të dizajnuara për klasën.
-                </p>
+                <h2 className="text-5xl md:text-9xl font-black mb-8 md:mb-12 tracking-tighter text-slate-800 leading-none">Sfida dhe Lojëra</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
-                {DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
-                    <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
-                        <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
-                            {game.category}
-                        </div>
-                        <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
-                            <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
-                                <i className="fas fa-chalkboard-user"></i>
+            {/* Lojërat Digjitale */}
+            <div className="mb-20">
+                <h3 className="text-3xl font-black mb-10 text-slate-800">Lojërat Digjitale</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
+                    {DIGITAL_GAMES.filter(g => g.type === 'digital').map((game, i) => (
+                        <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
+                            <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                                {game.category}
                             </div>
-                            <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                            <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
+                                <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
+                                    <i className="fas fa-chalkboard-user"></i>
+                                </div>
+                                <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                            </div>
+                            <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
                         </div>
-                        <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
-                    </div>
-                ))}
+                    ))}
+                </div>
+            </div>
+
+            {/* Eksperimente */}
+            <div className="mb-20">
+                <h3 className="text-3xl font-black mb-10 text-slate-800">Eksperimente</h3>
+                <div className="flex flex-wrap gap-4 mb-10">
+                  <button onClick={() => handlePlayGame({ id: 'exp-0', title: 'Raketa me Balon', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=0' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">🚀 Raketa me Balon</button>
+                  <button onClick={() => handlePlayGame({ id: 'exp-1', title: 'Energjia me Rampë', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=1' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">🏎 Energjia me Rampë</button>
+                  <button onClick={() => handlePlayGame({ id: 'exp-2', title: 'Kompasi i Thjeshtë', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=2' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">🧭 Kompasi i Thjeshtë</button>
+                  <button onClick={() => handlePlayGame({ id: 'exp-3', title: 'Elektromagneti', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=3' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">⚡ Elektromagneti</button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
+                    {DIGITAL_GAMES.filter(g => g.type === 'experiments').map((game, i) => (
+                        <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
+                            <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                                {game.category}
+                            </div>
+                            <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
+                                <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
+                                    <i className="fas fa-flask"></i>
+                                </div>
+                                <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                            </div>
+                            <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Lojërat Smartboard */}
+            <div className="mb-20">
+                <h3 className="text-3xl font-black mb-10 text-slate-800">Lojërat Smartboard</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
+                    {DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
+                        <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
+                            <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                                {game.category}
+                            </div>
+                            <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
+                                <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
+                                    <i className="fas fa-chalkboard-user"></i>
+                                </div>
+                                <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
+                            </div>
+                            <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
+                        </div>
+                    ))}
+                </div>
             </div>
           </div>
         )}
@@ -645,26 +695,7 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
-        {activePage === 'magazine' && (
-          <div className="animate__animated animate__fadeIn h-full flex flex-col overflow-hidden relative">
-            <div className="flex items-center justify-between mb-4 shrink-0">
-              <button onClick={() => navigate('home')} className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
-                <i className="fas fa-arrow-left"></i> Kthehu mbrapa
-              </button>
-              <button 
-                onClick={() => navigate('home')} 
-                className="w-10 h-10 bg-white text-slate-400 rounded-full flex items-center justify-center shadow-md hover:bg-[#ffafcc] hover:text-white transition-all"
-                title="Mbyll Revistën"
-              >
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
-            <div className="flex-1 bg-white rounded-[2rem] shadow-2xl overflow-hidden">
-              <iframe src="/revista.html" className="w-full h-full border-none" title="Revista" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-            </div>
-          </div>
-        )}
-      {activePage === 'calendar' && (
+        {activePage === 'calendar' && (
         <div className="fixed inset-0 z-[100] bg-[#fcf9ff] animate__animated animate__fadeIn animate__faster flex flex-col">
           <div className="bg-white p-4 flex items-center justify-between shadow-sm relative z-10">
             <div className="flex items-center gap-4">
@@ -708,6 +739,17 @@ const App: React.FC = () => {
           <MaterialsSection onPlayGame={handlePlayGame} />
         )}
       </main>
+
+      {activePage === 'magazine' && (
+        <div className="fixed inset-0 z-[9999] bg-white overflow-hidden">
+          <div className="absolute top-4 left-4 z-[10000] flex items-center gap-4">
+             <button onClick={() => setActivePage('home')} className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors bg-white/80 p-2 rounded-full">
+                <i className="fas fa-arrow-left"></i> Kthehu mbrapa
+              </button>
+          </div>
+          <iframe src="/revista.html" className="w-full h-full border-none" title="Revista" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals"></iframe>
+        </div>
+      )}
 
       <footer className="bg-white text-slate-600 py-16 md:py-24 mt-32 rounded-t-[3rem] md:rounded-t-[5rem] border-t-8 border-[#ffafcc] relative overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
         {/* Decorative background elements */}

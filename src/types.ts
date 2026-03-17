@@ -54,7 +54,7 @@ export interface DigitalGame {
   title: string;
   category: string;
   html?: string;
-  type?: 'digital' | 'school';
+  type?: 'digital' | 'school' | 'experiments';
   url?: string;
 }
 

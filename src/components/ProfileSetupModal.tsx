@@ -8,7 +8,7 @@ export const ProfileSetupModal: React.FC = () => {
   const { user, profile } = useFirebase();
   const [username, setUsername] = useState('');
   const [school, setSchool] = useState('');
-  const [role, setRole] = useState<'mesues' | 'nxenes' | ''>('');
+  const [role, setRole] = useState<'mesues' | 'nxenes' | 'admin' | ''>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [forceShow, setForceShow] = useState(false);
 
