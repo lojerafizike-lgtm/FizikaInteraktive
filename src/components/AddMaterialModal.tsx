@@ -13,7 +13,7 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !profile) return;
+    if (!user) return;
     if (!file) {
       alert('Ju lutem zgjidhni një skedar!');
       return;
@@ -34,7 +34,7 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
         topic,
         title,
         authorId: user.uid,
-        authorName: profile.displayName || 'Mësues',
+        authorName: profile?.displayName || user.displayName || 'Mësues',
         createdAt: serverTimestamp(),
         fileUrl: downloadUrl,
         fileName: file.name

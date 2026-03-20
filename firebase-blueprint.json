@@ -35,9 +35,10 @@
         "authorId": { "type": "string" },
         "authorName": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" },
-        "fileUrl": { "type": "string" }
+        "fileUrl": { "type": "string" },
+        "fileName": { "type": "string" }
       },
-      "required": ["type", "topic", "title", "authorId", "authorName", "createdAt"]
+      "required": ["type", "topic", "title", "authorId", "authorName", "createdAt", "fileUrl", "fileName"]
     }
   },
   "firestore": {
