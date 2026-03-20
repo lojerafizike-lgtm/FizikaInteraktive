@@ -645,16 +645,18 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
   useEffect(() => {
     const q = query(collection(db, 'materials'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log("Materials snapshot received. Count:", snapshot.size);
       const materials: Material[] = [];
       snapshot.forEach((doc) => {
         const data = doc.data();
+        console.log("Material data:", data);
         // Map Firestore data to Material interface
         materials.push({
           id: doc.id,
-          type: data.type === 'Planet Mësimore' ? 'Për Mësuesit' : data.type as MaterialType,
-          topic: data.topic as MaterialTopic,
-          title: data.title,
-          description: `Ngarkuar nga ${data.authorName}`,
+          type: (data.type === 'Planet Mësimore' ? 'Për Mësuesit' : data.type) as MaterialType || 'Për Mësuesit',
+          topic: (data.topic as MaterialTopic) || 'Gjithëpërfshirëse',
+          title: data.title || 'Material pa titull',
+          description: `Ngarkuar nga ${data.authorName || 'Mësues'}`,
           icon: data.type === 'Planet Mësimore' ? 'fa-file-pdf' : 'fa-file-alt',
           actionText: 'Hap PDF',
           actionUrl: data.fileUrl || '#',

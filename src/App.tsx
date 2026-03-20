@@ -1054,7 +1054,7 @@ const App: React.FC = () => {
             >
               <i className="fas fa-pen-nib text-3xl"></i> SHËNIMET
             </button>
-            {profile?.role === 'mesues' && (
+            {(profile?.role === 'mesues' || user?.email === 'lojerafizike@gmail.com') && (
               <button 
                 onClick={() => { setMobileMenuSelectionOpen(false); setIsAddMaterialOpen(true); }}
                 className="w-full py-6 bg-gradient-to-r from-[#a2d2ff] to-[#bde0fe] text-white rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-4 hover:scale-105 transition-transform"
@@ -1096,7 +1096,7 @@ const App: React.FC = () => {
               <i className="fas fa-comment-dots text-3xl text-white drop-shadow-md"></i>
             </button>
           )}
-          {profile?.role === 'mesues' && (
+          {(profile?.role === 'mesues' || user?.email === 'lojerafizike@gmail.com') && (
             <button 
               onClick={() => setIsAddMaterialOpen(true)}
               className="w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-[#a2d2ff] to-[#bde0fe] border-4 border-white relative group"

@@ -21,13 +21,18 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
 
     setIsSubmitting(true);
     try {
+      console.log("Starting file upload process...");
       // Upload file to Firebase Storage
       const fileExtension = file.name.split('.').pop();
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
       const storageRef = ref(storage, `materials/${user.uid}/${fileName}`);
       
+      console.log("Uploading to storage path:", `materials/${user.uid}/${fileName}`);
       await uploadBytes(storageRef, file);
+      console.log("File uploaded successfully.");
+      
       const downloadUrl = await getDownloadURL(storageRef);
+      console.log("Download URL obtained:", downloadUrl);
       
       const materialData = {
         type,
@@ -40,12 +45,14 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
         fileName: file.name
       };
 
+      console.log("Adding document to Firestore:", materialData);
       await addDoc(collection(db, 'materials'), materialData);
+      console.log("Document added successfully.");
       
       alert('Materiali u shtua me sukses!');
       onClose();
     } catch (error) {
-      console.error('Error adding material:', error);
+      console.error('Error adding material (detailed):', error);
       handleFirestoreError(error, OperationType.CREATE, 'materials');
     } finally {
       setIsSubmitting(false);
