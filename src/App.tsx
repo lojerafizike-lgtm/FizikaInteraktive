@@ -327,10 +327,10 @@ const App: React.FC = () => {
         {activePage === 'home' && (
           <div className="animate__animated animate__fadeIn">
             <div className="max-w-4xl mb-16">
-              <h2 className="text-4xl md:text-8xl font-black mb-10 tracking-tighter leading-[0.85]">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bde0fe] to-[#cdb4db]">"Burimi i vetëm</span> <br/> 
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#cdb4db] to-[#ffafcc]">i dijes është</span> <br/> 
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffafcc] to-[#bde0fe]">përvoja"</span>
+              <h2 className="text-4xl md:text-8xl font-black mb-10 tracking-tight leading-[0.85]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bde0fe] to-[#cdb4db] pr-2">"Burimi i vetëm</span> <br/> 
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#cdb4db] to-[#ffafcc] pr-2">i dijes është</span> <br/> 
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffafcc] to-[#bde0fe] pr-2">përvoja"</span>
                 <br/>
                 <span className="text-xl md:text-3xl font-medium italic text-slate-400 block mt-10 tracking-[0.6em] uppercase opacity-50">~ Albert Einstein</span>
               </h2>
@@ -861,6 +861,15 @@ const App: React.FC = () => {
               <div>
                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><i className="fas fa-mobile-screen text-[#ffafcc]"></i> Na Ndiq</h3>
                 <div className="space-y-3">
+                  <a href="mailto:fizikainteraktive@gmail.com" className="flex items-center justify-between group p-3 rounded-2xl bg-white hover:bg-[#f0f9ff] border border-slate-100 hover:border-[#a2d2ff] shadow-sm transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center group-hover:bg-[#a2d2ff] group-hover:text-white transition-colors">
+                        <i className="fas fa-envelope text-sm"></i>
+                      </div>
+                      <span className="font-bold text-sm text-slate-600 group-hover:text-[#a2d2ff] transition-colors">fizikainteraktive@gmail.com</span>
+                    </div>
+                    <i className="fas fa-arrow-right text-slate-300 group-hover:text-[#a2d2ff] group-hover:-rotate-45 transition-all"></i>
+                  </a>
                   <a href="https://www.tiktok.com/@fizika.interaktive?_r=1&_t=ZS-94IwXdQaQqe" target="_blank" rel="noreferrer" className="flex items-center justify-between group p-3 rounded-2xl bg-white hover:bg-[#fff0f5] border border-slate-100 hover:border-[#ffafcc] shadow-sm transition-all">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center group-hover:bg-[#ffafcc] group-hover:text-white transition-colors">
