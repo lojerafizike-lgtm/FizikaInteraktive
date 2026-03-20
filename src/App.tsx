@@ -33,6 +33,7 @@ const App: React.FC = () => {
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [mobileMenuSelectionOpen, setMobileMenuSelectionOpen] = useState(false);
   const [playingGame, setPlayingGame] = useState<{ title: string, url?: string, html?: string } | null>(null);
+  const [activeGameTab, setActiveGameTab] = useState<'digjitale' | 'eksperimente' | 'shkolle' | null>(null);
   
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -121,16 +122,19 @@ const App: React.FC = () => {
       });
     }
 
-    items.push(
-      {
+    if (profile?.role === 'mesues') {
+      items.push({
         label: 'Materiale',
         href: '#',
         onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('materials'); },
         rotation: -4,
         hoverStyles: { bgColor: '#ffafcc', textColor: '#ffffff' }
-      },
+      });
+    }
+
+    items.push(
       {
-        label: 'Lojërat',
+        label: 'Sfida & Lojëra',
         href: '#',
         onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('games'); },
         rotation: 4,
@@ -174,7 +178,7 @@ const App: React.FC = () => {
     );
 
     return items;
-  }, [user, login]);
+  }, [user, login, profile?.role]);
 
   if (showSplash) {
     return (
@@ -250,7 +254,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate('home')}>
             <div className="w-14 h-14 bg-gradient-to-br from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0 overflow-hidden">
               <img 
-                src="logoja-jote.png" 
+                src="/logoja-jote.png" 
                 alt="Logo" 
                 className="w-full h-full object-cover" 
                 referrerPolicy="no-referrer" 
@@ -286,17 +290,19 @@ const App: React.FC = () => {
               </button>
               
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 p-2">
-                <button 
-                  onClick={() => navigate('materials')}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
-                >
-                  <i className="fas fa-book-open w-5"></i> Materiale
-                </button>
+                {profile?.role === 'mesues' && (
+                  <button 
+                    onClick={() => navigate('materials')}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
+                  >
+                    <i className="fas fa-book-open w-5"></i> Materiale
+                  </button>
+                )}
                 <button 
                   onClick={() => navigate('games')}
                   className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
                 >
-                  <i className="fas fa-gamepad w-5"></i> Lojërat
+                  <i className="fas fa-gamepad w-5"></i> Sfida & Lojëra
                 </button>
                 <button 
                   onClick={() => navigate('scientists')}
@@ -611,78 +617,127 @@ const App: React.FC = () => {
              <button onClick={() => navigate('home')} className="mb-8 md:mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
               <i className="fas fa-arrow-left"></i> Kthehu mbrapa
             </button>
-            <div className="text-center mb-12 md:mb-24">
-                <h2 className="text-5xl md:text-9xl font-black mb-8 md:mb-12 tracking-tighter text-slate-800 leading-none">Sfida dhe Lojëra</h2>
+            <div className="text-center mb-8 md:mb-16">
+                <h2 className="text-5xl md:text-9xl font-black mb-8 md:mb-12 tracking-tighter text-slate-800 leading-none">Sfida & Lojëra</h2>
             </div>
+            
+            {/* Tabs / Categories */}
+            {!activeGameTab ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
+                <button onClick={() => setActiveGameTab('digjitale')} className="group relative overflow-hidden bg-white p-10 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all border-2 border-transparent hover:border-[#ffafcc]/40 flex flex-col items-center text-center h-80 justify-center">
+                  <div className="w-24 h-24 bg-[#ffafcc]/20 text-[#ffafcc] rounded-full flex items-center justify-center text-5xl mb-6 group-hover:scale-110 transition-transform">
+                    <i className="fas fa-gamepad"></i>
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tighter text-slate-800 mb-2">Lojëra Digjitale</h3>
+                  <p className="text-slate-500 font-medium text-sm">Luaj dhe mëso fizikën përmes lojërave interaktive</p>
+                </button>
+                <button onClick={() => setActiveGameTab('eksperimente')} className="group relative overflow-hidden bg-white p-10 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all border-2 border-transparent hover:border-[#a2d2ff]/40 flex flex-col items-center text-center h-80 justify-center">
+                  <div className="w-24 h-24 bg-[#a2d2ff]/20 text-[#a2d2ff] rounded-full flex items-center justify-center text-5xl mb-6 group-hover:scale-110 transition-transform">
+                    <i className="fas fa-flask"></i>
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tighter text-slate-800 mb-2">Eksperimente</h3>
+                  <p className="text-slate-500 font-medium text-sm">Eksploro fenomene fizike përmes eksperimenteve</p>
+                </button>
+                <button onClick={() => setActiveGameTab('shkolle')} className="group relative overflow-hidden bg-white p-10 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all border-2 border-transparent hover:border-[#cdb4db]/40 flex flex-col items-center text-center h-80 justify-center">
+                  <div className="w-24 h-24 bg-[#cdb4db]/20 text-[#cdb4db] rounded-full flex items-center justify-center text-5xl mb-6 group-hover:scale-110 transition-transform">
+                    <i className="fas fa-chalkboard-user"></i>
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tighter text-slate-800 mb-2">Lojëra Shkollë</h3>
+                  <p className="text-slate-500 font-medium text-sm">Lojëra të përshtatshme për t'u luajtur në klasë</p>
+                </button>
+              </div>
+            ) : (
+              <div className="mb-12 flex justify-center">
+                <button onClick={() => setActiveGameTab(null)} className="flex items-center gap-3 px-6 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all font-bold text-slate-600 hover:text-[#ffafcc]">
+                  <i className="fas fa-arrow-left"></i> Kthehu te Kategoritë
+                </button>
+              </div>
+            )}
 
             {/* Lojërat Digjitale */}
-            <div className="mb-20">
-                <h3 className="text-3xl font-black mb-10 text-slate-800">Lojërat Digjitale</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
-                    {DIGITAL_GAMES.filter(g => g.type === 'digital').map((game, i) => (
-                        <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
-                            <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
-                                {game.category}
-                            </div>
-                            <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
-                                <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
-                                    <i className="fas fa-chalkboard-user"></i>
-                                </div>
-                                <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
-                            </div>
-                            <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {activeGameTab === 'digjitale' && (
+              <div className="mb-20 animate__animated animate__fadeIn">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                      {DIGITAL_GAMES.filter(g => g.type === 'digital').map((game, i) => (
+                          <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-8 rounded-3xl md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent hover:border-[#ffc8dd]/40 group flex flex-col justify-between h-auto md:h-80 card-fusha relative overflow-hidden">
+                              <div className="absolute top-6 right-6 px-3 py-1 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                                  {game.category}
+                              </div>
+                              <div className="flex flex-col gap-4 mb-6 mt-4">
+                                  <div className="w-16 h-16 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl flex items-center justify-center text-3xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
+                                      <i className="fas fa-gamepad"></i>
+                                  </div>
+                                  <h4 className="text-xl md:text-2xl font-black tracking-tighter leading-tight line-clamp-3">{game.title}</h4>
+                              </div>
+                              <button className="w-full py-4 bg-[#f8fafc] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+            )}
 
             {/* Eksperimente */}
-            <div className="mb-20">
-                <h3 className="text-3xl font-black mb-10 text-slate-800">Eksperimente</h3>
-                <div className="flex flex-wrap gap-4 mb-10">
-                  <button onClick={() => handlePlayGame({ id: 'exp-0', title: 'Raketa me Balon', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=0' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">🚀 Raketa me Balon</button>
-                  <button onClick={() => handlePlayGame({ id: 'exp-1', title: 'Energjia me Rampë', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=1' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">🏎 Energjia me Rampë</button>
-                  <button onClick={() => handlePlayGame({ id: 'exp-2', title: 'Kompasi i Thjeshtë', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=2' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">🧭 Kompasi i Thjeshtë</button>
-                  <button onClick={() => handlePlayGame({ id: 'exp-3', title: 'Elektromagneti', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=3' })} className="px-8 py-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all font-bold text-slate-700">⚡ Elektromagneti</button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
-                    {DIGITAL_GAMES.filter(g => g.type === 'experiments').map((game, i) => (
-                        <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
-                            <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
-                                {game.category}
-                            </div>
-                            <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
-                                <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
-                                    <i className="fas fa-flask"></i>
-                                </div>
-                                <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
-                            </div>
-                            <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {activeGameTab === 'eksperimente' && (
+              <div className="mb-20 animate__animated animate__fadeIn">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                      {[
+                        { id: 'exp-0', title: 'Raketa me Balon', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=0', icon: 'fa-rocket' },
+                        { id: 'exp-1', title: 'Energjia me Rampë', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=1', icon: 'fa-car-side' },
+                        { id: 'exp-2', title: 'Kompasi i Thjeshtë', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=2', icon: 'fa-compass' },
+                        { id: 'exp-3', title: 'Elektromagneti', category: 'Eksperimente', type: 'experiments', url: '/experiments.html?exp=3', icon: 'fa-bolt' }
+                      ].map((game, i) => (
+                          <div key={i} onClick={() => handlePlayGame(game as { id: string, title: string, category: string, type: 'experiments', url: string, icon: string })} className="bg-white p-6 md:p-8 rounded-3xl md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent hover:border-[#ffc8dd]/40 group flex flex-col justify-between h-auto md:h-80 card-fusha relative overflow-hidden">
+                              <div className="absolute top-6 right-6 px-3 py-1 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                                  {game.category}
+                              </div>
+                              <div className="flex flex-col gap-4 mb-6 mt-4">
+                                  <div className="w-16 h-16 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl flex items-center justify-center text-3xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
+                                      <i className={`fas ${game.icon}`}></i>
+                                  </div>
+                                  <h4 className="text-xl md:text-2xl font-black tracking-tighter leading-tight line-clamp-3">{game.title}</h4>
+                              </div>
+                              <button className="w-full py-4 bg-[#f8fafc] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS EKSPERIMENTIN</button>
+                          </div>
+                      ))}
+                      {DIGITAL_GAMES.filter(g => g.type === 'experiments').map((game, i) => (
+                          <div key={`dg-${i}`} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-8 rounded-3xl md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent hover:border-[#ffc8dd]/40 group flex flex-col justify-between h-auto md:h-80 card-fusha relative overflow-hidden">
+                              <div className="absolute top-6 right-6 px-3 py-1 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                                  {game.category}
+                              </div>
+                              <div className="flex flex-col gap-4 mb-6 mt-4">
+                                  <div className="w-16 h-16 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl flex items-center justify-center text-3xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
+                                      <i className="fas fa-flask"></i>
+                                  </div>
+                                  <h4 className="text-xl md:text-2xl font-black tracking-tighter leading-tight line-clamp-3">{game.title}</h4>
+                              </div>
+                              <button className="w-full py-4 bg-[#f8fafc] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS EKSPERIMENTIN</button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+            )}
 
             {/* Lojërat Smartboard */}
-            <div className="mb-20">
-                <h3 className="text-3xl font-black mb-10 text-slate-800">Lojërat Smartboard</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-14">
-                    {DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
-                        <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-16 rounded-3xl md:rounded-[5rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-4 border-transparent hover:border-[#ffc8dd]/40 group h-auto md:h-[480px] flex flex-col justify-between card-fusha relative overflow-hidden">
-                            <div className="absolute top-6 right-6 px-4 py-1.5 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
-                                {game.category}
-                            </div>
-                            <div className="flex items-center gap-4 md:gap-12 mb-6 md:mb-0">
-                                <div className="w-16 h-16 md:w-32 md:h-32 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-5xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
-                                    <i className="fas fa-chalkboard-user"></i>
-                                </div>
-                                <h4 className="text-2xl md:text-5xl font-black tracking-tighter leading-tight">{game.title}</h4>
-                            </div>
-                            <button className="w-full py-4 md:py-9 bg-[#f8fafc] rounded-xl md:rounded-[3rem] font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {activeGameTab === 'shkolle' && (
+              <div className="mb-20 animate__animated animate__fadeIn">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                      {DIGITAL_GAMES.filter(g => g.type === 'school').map((game, i) => (
+                          <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-8 rounded-3xl md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent hover:border-[#ffc8dd]/40 group flex flex-col justify-between h-auto md:h-80 card-fusha relative overflow-hidden">
+                              <div className="absolute top-6 right-6 px-3 py-1 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
+                                  {game.category}
+                              </div>
+                              <div className="flex flex-col gap-4 mb-6 mt-4">
+                                  <div className="w-16 h-16 bg-[#ffc8dd]/20 text-slate-800 rounded-2xl flex items-center justify-center text-3xl group-hover:bg-[#4a4e69] group-hover:text-white transition-all shadow-inner shrink-0">
+                                      <i className="fas fa-chalkboard-user"></i>
+                                  </div>
+                                  <h4 className="text-xl md:text-2xl font-black tracking-tighter leading-tight line-clamp-3">{game.title}</h4>
+                              </div>
+                              <button className="w-full py-4 bg-[#f8fafc] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] group-hover:bg-[#ff758f] group-hover:text-white transition-all">NIS SFIDËN</button>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+            )}
           </div>
         )}
         {activePage === 'scientists' && (
