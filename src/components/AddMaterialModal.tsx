@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { db, collection, addDoc, serverTimestamp, handleFirestoreError, OperationType } from '../firebase';
+import { db, collection, addDoc, serverTimestamp, handleFirestoreError, OperationType, storage, ref, uploadBytes, getDownloadURL } from '../firebase';
 import { useFirebase } from '../contexts/FirebaseContext';
 
 export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
@@ -14,12 +14,20 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !profile) return;
+    if (!file) {
+      alert('Ju lutem zgjidhni një skedar!');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      // In a real app, we would upload the file to Firebase Storage first
-      // and get a download URL. Since we don't have Storage setup here,
-      // we'll just save the metadata and a placeholder URL.
+      // Upload file to Firebase Storage
+      const fileExtension = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
+      const storageRef = ref(storage, `materials/${user.uid}/${fileName}`);
+      
+      await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(storageRef);
       
       const materialData = {
         type,
@@ -28,7 +36,8 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
         authorId: user.uid,
         authorName: profile.displayName || 'Mësues',
         createdAt: serverTimestamp(),
-        fileUrl: file ? `https://placeholder-url.com/${file.name}` : ''
+        fileUrl: downloadUrl,
+        fileName: file.name
       };
 
       await addDoc(collection(db, 'materials'), materialData);

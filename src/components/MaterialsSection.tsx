@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_PHYSICS_DATA } from '../constants';
 import { gjeneroKuizPerKategorine } from '../utils/quizGenerator';
 import { PhysicsData, DigitalGame } from '../types';
 import { useFirebase } from '../contexts/FirebaseContext';
-import { updateUserScore } from '../firebase';
+import { updateUserScore, db, collection, onSnapshot, query, orderBy } from '../firebase';
+import html2pdf from 'html2pdf.js';
 // import { DIGITAL_GAMES } from '../gameContent'; // Removed unused import
 
 
@@ -23,6 +24,7 @@ interface Material {
   actionUrl: string;
   isFavorite?: boolean;
   gameData?: DigitalGame;
+  fileUrl?: string;
 }
 
 interface QuizQuestion {
@@ -638,11 +640,38 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
   const [selectedType, setSelectedType] = useState<MaterialType | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<MaterialTopic | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<{ topic: string, questions: QuizQuestion[] } | null>(null);
-  const [selectedLessonPlan, setSelectedLessonPlan] = useState<Material | null>(null);
+  const [uploadedMaterials, setUploadedMaterials] = useState<Material[]>([]);
+
+  useEffect(() => {
+    const q = query(collection(db, 'materials'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const materials: Material[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        // Map Firestore data to Material interface
+        materials.push({
+          id: doc.id,
+          type: data.type === 'Planet Mësimore' ? 'Për Mësuesit' : data.type as MaterialType,
+          topic: data.topic as MaterialTopic,
+          title: data.title,
+          description: `Ngarkuar nga ${data.authorName}`,
+          icon: data.type === 'Planet Mësimore' ? 'fa-file-pdf' : 'fa-file-alt',
+          actionText: 'Hap PDF',
+          actionUrl: data.fileUrl || '#',
+          fileUrl: data.fileUrl,
+        });
+      });
+      setUploadedMaterials(materials);
+    }, (error) => {
+      console.error("Error fetching materials:", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const ALL_MATERIALS = useMemo(() => {
-    return [...MOCK_MATERIALS, ...PROJECTS];
-  }, []);
+    return [...MOCK_MATERIALS, ...PROJECTS, ...uploadedMaterials];
+  }, [uploadedMaterials]);
 
   const filteredMaterials = useMemo(() => {
     return ALL_MATERIALS.filter(m => {
@@ -657,6 +686,51 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
   const favorites = ALL_MATERIALS.filter(m => m.isFavorite).slice(0, 4);
 
   const isTeacher = profile?.role === 'mesues' || user?.email === 'lojerafizike@gmail.com';
+
+  const openLessonPlanAsPDF = (plan: Material) => {
+    if (plan.fileUrl) {
+      window.open(plan.fileUrl, '_blank');
+      return;
+    }
+
+    const element = document.createElement('div');
+    element.innerHTML = `
+      <div style="font-family: Arial, sans-serif; padding: 40px; color: #333;">
+        <h1 style="color: #4a4e69; border-bottom: 2px solid #ffafcc; padding-bottom: 10px;">${plan.title}</h1>
+        <p style="color: #888; font-size: 12px; text-transform: uppercase;">Tema: ${plan.topic}</p>
+        <div style="margin-top: 30px; line-height: 1.6;">
+          ${plan.content ? plan.content.split('\n\n').map(section => {
+            if (section.startsWith('###')) {
+              return `<h3 style="color: #4a4e69; margin-top: 20px;">${section.replace('### ', '')}</h3>`;
+            }
+            if (section.startsWith('- **')) {
+              return `<ul style="margin-top: 10px;">
+                ${section.split('\n').map(item => `<li>${item.replace('- **', '<strong>').replace('**: ', '</strong>: ')}</li>`).join('')}
+              </ul>`;
+            }
+            if (section.match(/^\d\./)) {
+              return `<ol style="margin-top: 10px;">
+                ${section.split('\n').map(item => `<li>${item.split('.').slice(1).join('.').trim()}</li>`).join('')}
+              </ol>`;
+            }
+            return `<p style="margin-top: 10px;">${section}</p>`;
+          }).join('') : '<p>Përmbajtja po përgatitet...</p>'}
+        </div>
+      </div>
+    `;
+
+    const opt = {
+      margin:       10,
+      filename:     `${plan.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+      image:        { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+    };
+
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf: { output: (type: string) => string }) => {
+      window.open(pdf.output('bloburl'), '_blank');
+    });
+  };
 
   return (
     <div className="animate__animated animate__fadeIn space-y-20 pb-20">
@@ -745,7 +819,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
                   } else if (m.type === 'Për Mësuesit') {
-                    setSelectedLessonPlan(m);
+                    openLessonPlanAsPDF(m);
                   }
                 }}
               />
@@ -783,7 +857,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
                   } else if (m.type === 'Për Mësuesit') {
-                    setSelectedLessonPlan(m);
+                    openLessonPlanAsPDF(m);
                   }
                 }}
               />
@@ -805,12 +879,6 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
           <QuizModal 
             quiz={activeQuiz} 
             onClose={() => setActiveQuiz(null)} 
-          />
-        )}
-        {selectedLessonPlan && (
-          <LessonPlanModal 
-            plan={selectedLessonPlan} 
-            onClose={() => setSelectedLessonPlan(null)} 
           />
         )}
       </AnimatePresence>
@@ -1010,94 +1078,4 @@ function QuizModal({ quiz, onClose }: { quiz: { topic: string, questions: QuizQu
   );
 }
 
-function LessonPlanModal({ plan, onClose }: { plan: Material, onClose: () => void }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
-    >
-      <motion.div 
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
-        className="bg-white w-full max-w-2xl rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
-      >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] p-6 md:p-8 relative shrink-0">
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-slate-900/20 hover:bg-slate-900/40 rounded-full flex items-center justify-center text-white transition-colors z-10"
-          >
-            <i className="fas fa-times"></i>
-          </button>
-          <div className="flex items-center gap-4 mb-4 pr-12">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-white/30 rounded-2xl flex items-center justify-center text-white shrink-0">
-              <i className={`fas ${plan.icon} text-lg md:text-xl`}></i>
-            </div>
-            <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-widest text-white truncate">
-              {plan.topic}
-            </span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-black text-white leading-tight pr-12">{plan.title}</h2>
-        </div>
 
-        {/* Content */}
-        <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0">
-          <div className="prose prose-slate max-w-none">
-            {plan.content ? (
-              <div className="space-y-6">
-                {plan.content.split('\n\n').map((section, idx) => {
-                  if (section.startsWith('###')) {
-                    return <h3 key={idx} className="text-xl font-black text-slate-800 mt-6 mb-2">{section.replace('### ', '')}</h3>;
-                  }
-                  if (section.startsWith('- **')) {
-                    return (
-                      <ul key={idx} className="space-y-2">
-                        {section.split('\n').map((item, i) => (
-                          <li key={i} className="flex gap-3 text-slate-600">
-                            <span className="text-[#ffafcc] mt-1">•</span>
-                            <span dangerouslySetInnerHTML={{ __html: item.replace('- **', '<strong>').replace('**: ', '</strong>: ') }} />
-                          </li>
-                        ))}
-                      </ul>
-                    );
-                  }
-                  if (section.match(/^\d\./)) {
-                    return (
-                      <ol key={idx} className="space-y-3">
-                        {section.split('\n').map((item, i) => (
-                          <li key={i} className="flex gap-3 text-slate-600">
-                            <span className="font-black text-[#ffafcc]">{item.split('.')[0]}.</span>
-                            <span>{item.split('.').slice(1).join('.').trim()}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    );
-                  }
-                  return <p key={idx} className="text-slate-600 leading-relaxed">{section}</p>;
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <i className="fas fa-file-alt text-4xl text-slate-200 mb-4"></i>
-                <p className="text-slate-400">Përmbajtja e këtij plani po përgatitet...</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
-          <button 
-            onClick={onClose}
-            className="px-8 py-3 bg-white text-slate-600 font-black uppercase tracking-widest text-xs rounded-2xl border border-slate-200 hover:bg-slate-100 transition-colors"
-          >
-            Mbyll
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}

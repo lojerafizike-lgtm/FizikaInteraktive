@@ -18,7 +18,7 @@ function normalizeSchool(school?: string): string {
   if (!school) return '';
 
   // Heq të gjitha thonjëzat dhe dy pikat e kolonës
-  let s = school
+  const s = school
     .trim()
     .replace(/["""''\u2018\u2019\u201C\u201D\u00AB\u00BB:]/g, '')
     .replace(/\s+/g, ' ')

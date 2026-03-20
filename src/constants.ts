@@ -205,11 +205,6 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             name: "9. Energjia kimike", sym: "E_kim", form: "—", unit: "J", otherUnits: "cal, kcal", teTjera: "", nature: "Skalare", desc: "Energjia e ruajtur në lidhjet kimike të substancave, e cila çlirohet gjatë reaksioneve.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-forms-and-changes", img: "https://www.sciencefacts.net/wp-content/uploads/2022/07/Chemical-Energy.jpg", vid: "https://www.youtube.com/embed/Iqwrl79a55A" , gameUrl:"/energjia kimike.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Nese 1 gram i nje lende jep 4 J, sa energji japin 5 gram?</p></div></div>`,
             ushtrimInteraktiv: { pyetja: "Nese 1 gram i nje lende jep 4 J, sa energji japin 5 gram?", zgjidhja: "20", hapi1: "Kupto lidhjen propozicionale: E = sasia * vlera per njesi", hapi2: "Zevendeso: E = 5 * 4", hapi3: "Llogarit: 20 J" }
-        },
-        { 
-            name: "10. Energjia bërthamore", sym: "E", form: "E = mc²", unit: "J", otherUnits: "MeV,1 MeV=10⁶ • 1,6•10⁻¹⁹J", teTjera: "", nature: "Skalare", desc: "Energjia e çliruar gjatë proceseve të fisionit ose fuzionit të bërthamave atomike.", phetUrl: "https://phet.colorado.edu/en/simulation/nuclear-fission", img: "https://cdn1.byjus.com/wp-content/uploads/2018/01/Nuclear-Energy2-700x416.png", vid: "https://www.youtube.com/embed/fuDOxIveHA4" , gameUrl:"/energjia berthamore.html",
-            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni energjine e cliruar per 1 kg mase. (Shkruaj vleren ne fuqine 10^16, psh nese del 9*10^16 shkruaj 9).</p></div></div>`,
-            ushtrimInteraktiv: { pyetja: "Gjeni energjine e cliruar per 1 kg mase. (Shkruaj vleren ne fuqine 10^16, psh nese del 9*10^16 shkruaj 9).", zgjidhja: "9", hapi1: "Zgjidh formulen: E = m * c²", hapi2: "Zevendeso: E = 1 * (3*10^8)²", hapi3: "Llogarit: 9 * 10^16 J" }
         }
     ],
     "Elektriciteti": [
