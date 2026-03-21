@@ -6,7 +6,7 @@ import { PhysicsData, DigitalGame } from '../types';
 import { useFirebase } from '../contexts/FirebaseContext';
 import { updateUserScore, db, collection, onSnapshot, query, orderBy } from '../firebase';
 import html2pdf from 'html2pdf.js';
-// import { DIGITAL_GAMES } from '../gameContent'; // Removed unused import
+import { DIGITAL_GAMES } from '../gameContent';
 
 
 type MaterialType = 'Lojëra' | 'Kuize' | 'Fletë Pune' | 'Për Mësuesit';
@@ -603,8 +603,25 @@ const PROJECTS: Material[] = [
     id: 'p1',
     type: 'Për Mësuesit',
     topic: 'Gjithëpërfshirëse',
-    title: "Sistemi Diellor në Klasë",
-    description: "Udhëzues për ndërtimin e një modeli të shkallëzuar të sistemit diellor.",
+    title: "☀️ Sistemi Diellor në Klasë",
+    description: "Udhëzues për ndërtimin e një modeli të shkallëzuar",
+    content: `### Hyrje
+Ky projekt u ndihmon nxënësve të kuptojnë madhësinë dhe renditjen e planeteve nëpërmjet një modeli fizik të ndërtuar me duart e tyre. Zhvillon të menduarit shkencor, matematikën e aplikuar dhe punën në grup.
+
+### Materialet e Nevojshme
+Balonat e madhësive të ndryshme, bojëra tempera ose akrilike, vizore dhe litar matës, karton të trashë, gërsherë dhe ngjitës, fije ose litar për varje, markera të trashë, dhe kokëza të vogla plastike ose letrash.
+
+### Shkalla e Modelit
+Përdorni shkallën 1 : 10 miliard. Me këtë shkallë, Dielli bëhet rreth 14 cm — madhësia e një topi tenisi. Jupiteri bëhet 14 mm, Toka vetëm 1.3 mm, dhe Mërkuri rreth 0.5 mm — pothuaj sa kokërdhoku i kripës. Kjo i ndihmon nxënësit të kuptojnë diferencat e mëdha midis planeteve.
+
+### Hapat e Ndërtimit
+- **Hapi 1 — Planifikimi dhe hulumtimi**: Ndani klasën në 9 grupe (një për secilin planet dhe Diellin). Secili grup hulumton karakteristikat e planetit të tij.
+- **Hapi 2 — Krijimi i modeleve**: Përdorni balonat ose sferat e letrës për të krijuar planetet sipas shkallës së llogaritur.
+- **Hapi 3 — Ngjyrosja**: Ngjyrosni planetet duke u bazuar në fotografitë reale nga teleskopët (p.sh. e kuqe për Marsin, blu për Neptunin).
+- **Hapi 4 — Montimi**: Përdorni fijet për të varur planetet në tavanin e klasës ose në korridor, duke ruajtur distancat relative nëse është e mundur.
+
+### Reflektimi
+Diskutoni me nxënësit rreth hapësirave boshe në univers dhe pse udhëtimet hapësinore marrin kaq shumë kohë.`,
     icon: "fa-sun",
     actionText: "Shiko Udhëzuesin",
     actionUrl: "#",
@@ -631,6 +648,18 @@ const PROJECTS: Material[] = [
     actionText: "Shkarko Posterin",
     actionUrl: "#",
     isFavorite: false
+  },
+  {
+    id: 'p4',
+    type: 'Lojëra',
+    topic: 'Gjithëpërfshirëse',
+    title: "Sistemi Diellor 3D",
+    description: "Eksploro sistemin diellor në 3D me këtë lojë interaktive.",
+    icon: "fa-globe",
+    actionText: "Luaj Lojën",
+    actionUrl: "#",
+    isFavorite: true,
+    gameData: DIGITAL_GAMES.find(g => g.id === 'sistemi-diellor-3d')
   }
 ];
 
@@ -703,7 +732,10 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
         <div style="margin-top: 30px; line-height: 1.6;">
           ${plan.content ? plan.content.split('\n\n').map(section => {
             if (section.startsWith('###')) {
-              return `<h3 style="color: #4a4e69; margin-top: 20px;">${section.replace('### ', '')}</h3>`;
+              const lines = section.split('\n');
+              const heading = lines[0].replace('### ', '');
+              const rest = lines.slice(1).join('<br/>');
+              return `<h3 style="color: #4a4e69; margin-top: 20px;">${heading}</h3>${rest ? `<p style="margin-top: 10px;">${rest}</p>` : ''}`;
             }
             if (section.startsWith('- **')) {
               return `<ul style="margin-top: 10px;">
@@ -715,7 +747,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                 ${section.split('\n').map(item => `<li>${item.split('.').slice(1).join('.').trim()}</li>`).join('')}
               </ol>`;
             }
-            return `<p style="margin-top: 10px;">${section}</p>`;
+            return `<p style="margin-top: 10px;">${section.replace(/\n/g, '<br/>')}</p>`;
           }).join('') : '<p>Përmbajtja po përgatitet...</p>'}
         </div>
       </div>
@@ -729,9 +761,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
     };
 
-    html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf: { output: (type: string) => string }) => {
-      window.open(pdf.output('bloburl'), '_blank');
-    });
+    html2pdf().set(opt).from(element).save();
   };
 
   return (

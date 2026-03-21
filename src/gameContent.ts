@@ -4599,5 +4599,853 @@ export const DIGITAL_GAMES: DigitalGame[] = [
     </script>
 </body>
 </html>`
+  },
+  {
+    id: "sistemi-diellor-3d",
+    title: "Sistemi Diellor 3D",
+    category: "Gjithëpërfshirëse",
+    type: "digital",
+    html: `<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemi Diellor 3D - Eksplorim Interaktiv</title>
+    <!-- Modern Fonts: Orbitron for Sci-Fi Headers, Inter for clean UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020106;
+            --panel-bg: rgba(12, 16, 33, 0.45);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f0f4f8;
+            --text-muted: #8ba1ba;
+            --accent: #00e5ff;
+            --accent-glow: rgba(0, 229, 255, 0.35);
+            --accent-pink: #ff2a6d;
+            --glass-blur: blur(20px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-deep); color: var(--text-main);
+            font-family: 'Inter', sans-serif; overflow: hidden;
+            width: 100vw; height: 100vh; user-select: none;
+        }
+
+        #webgl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+
+        /* UI Base */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+        }
+
+        /* Header */
+        header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+            padding: 30px 50px; display: flex; justify-content: space-between; align-items: flex-start;
+            background: linear-gradient(to bottom, rgba(2, 1, 6, 0.95), transparent);
+            pointer-events: none;
+        }
+
+        .title-group h1 {
+            font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900;
+            letter-spacing: 6px; margin-bottom: 6px;
+            background: linear-gradient(135deg, #ffffff, #a0c4ff, #00e5ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.2);
+        }
+
+        .title-group p { font-size: 0.9rem; font-weight: 500; letter-spacing: 8px; color: var(--accent); text-transform: uppercase; opacity: 0.8; }
+
+        /* Controls Panel */
+        #controls {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            z-index: 10; display: flex; align-items: center; gap: 20px;
+            padding: 18px 36px; border-radius: 50px; border-bottom: 2px solid rgba(0, 229, 255, 0.2);
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);
+            color: var(--text-muted); font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+            padding: 16px 30px; border-radius: 30px; cursor: pointer;
+            transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+
+        .control-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .control-btn.active {
+            background: rgba(0, 229, 255, 0.1); border-color: var(--accent); color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px rgba(0, 229, 255, 0.1);
+        }
+        .control-btn.active .indicator { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .indicator { width: 6px; height: 6px; border-radius: 50%; background: #444; transition: 0.3s; }
+
+        .slider-group { display: flex; align-items: center; gap: 15px; padding: 0 20px; border-left: 1px solid rgba(255,255,255,0.1); }
+        .slider-group span { font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); font-family: 'Orbitron', sans-serif;}
+        
+        input[type=range] { -webkit-appearance: none; width: 140px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); outline: none; cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+            background: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.2s;
+            border: 2px solid var(--accent);
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.3); background: var(--accent); }
+
+        /* Left Legend */
+        #legend {
+            position: fixed; left: 40px; top: 50%; transform: translateY(-50%);
+            z-index: 10; padding: 25px; display: flex; flex-direction: column; gap: 10px;
+            border-left: 2px solid rgba(255, 42, 109, 0.3); pointer-events: auto;
+        }
+        .legend-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-pink); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px; padding-left: 5px; }
+        .legend-item {
+            display: flex; align-items: center; gap: 15px; padding: 12px 18px;
+            border-radius: 12px; cursor: pointer; transition: all 0.3s ease; background: transparent; border: 1px solid transparent;
+        }
+        .legend-item:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); transform: translateX(8px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .legend-color { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+        .legend-name { font-size: 1.1rem; font-weight: 500; letter-spacing: 1.5px; }
+
+        /* Tooltip & Hint */
+        #tooltip {
+            position: fixed; z-index: 30; pointer-events: none; opacity: 0;
+            background: rgba(2, 1, 6, 0.9); border: 1px solid rgba(255,255,255,0.1);
+            padding: 16px 24px; border-radius: 12px; font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem; letter-spacing: 3px; color: #fff; text-transform: uppercase;
+            transform: translate(20px, -20px); transition: opacity 0.3s, transform 0.1s linear; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        #tooltip.visible { opacity: 1; }
+        
+        #hint {
+            position: fixed; bottom: 125px; left: 50%; transform: translateX(-50%); z-index: 5;
+            font-size: 0.9rem; font-family: 'Orbitron', sans-serif; letter-spacing: 3px; color: var(--accent);
+            text-transform: uppercase; animation: pulseHint 3s infinite; pointer-events: none; opacity: 0.6;
+            background: rgba(0,0,0,0.5); padding: 8px 20px; border-radius: 15px;
+        }
+        @keyframes pulseHint { 0%, 100% { opacity: 0.2; transform: translateX(-50%) scale(0.98); } 50% { opacity: 0.9; text-shadow: 0 0 15px var(--accent-glow); transform: translateX(-50%) scale(1); } }
+
+        #viewHint {
+            position: fixed; top: 140px; left: 50%; transform: translateX(-50%); z-index: 5;
+            font-size: 0.9rem; letter-spacing: 2px; color: rgba(255,255,255,0.5);
+            pointer-events: none; text-transform: uppercase;
+        }
+
+        /* Side Data Modal */
+        #screenOverlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 20;
+            opacity: 0; pointer-events: none; transition: opacity 0.6s; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+        }
+        #screenOverlay.active { opacity: 1; pointer-events: all; cursor: pointer; }
+
+        #dataModal {
+            position: fixed; top: 0; right: -600px; width: 500px; height: 100vh;
+            z-index: 25; background: rgba(6, 9, 18, 0.85); backdrop-filter: blur(30px);
+            border-left: 1px solid rgba(255,255,255,0.08); transition: right 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; overflow-y: auto; box-shadow: -20px 0 50px rgba(0,0,0,0.8); cursor: default;
+        }
+        #dataModal.open { right: 0; }
+        
+        .modal-content { padding: 50px 40px; }
+
+        .modal-close {
+            position: absolute; top: 30px; left: 30px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); width: 44px; height: 44px; border-radius: 50%;
+            color: var(--text-main); font-size: 1.2rem; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: rgba(255, 42, 109, 0.2); border-color: var(--accent-pink); color: var(--accent-pink); transform: rotate(90deg); }
+
+        .m-header { margin-top: 20px; margin-bottom: 40px; text-align: right; }
+        .m-type { font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px; }
+        .m-title { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; font-weight: 900; line-height: 1; color: #fff; margin-bottom: 15px; }
+        .m-divider { height: 3px; width: 80px; background: linear-gradient(90deg, transparent, var(--accent)); border-radius: 3px; margin-left: auto; box-shadow: 0 0 15px var(--accent-glow); }
+        
+        .m-visual {
+            width: 100%; height: 280px; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 30px; position: relative; border-radius: 20px;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 60%);
+        }
+        #modalCanvas { width: 100%; height: 100%; object-fit: contain; }
+
+        .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+        .stat-box {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .stat-box::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--stat-color, var(--accent)); opacity: 0.5; transition: 0.3s; }
+        .stat-box:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
+        .stat-box:hover::before { opacity: 1; box-shadow: 0 0 15px var(--stat-color, var(--accent)); }
+        
+        .stat-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600;}
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: 1px;}
+        
+        .m-desc {
+            font-size: 0.95rem; line-height: 1.8; color: #cbd5e1; font-weight: 300;
+            padding: 25px; background: rgba(0, 229, 255, 0.05); border-left: 3px solid var(--accent);
+            border-radius: 0 16px 16px 0; font-style: italic; position: relative;
+        }
+        .m-desc::after { content: '"'; position: absolute; top: -10px; right: 20px; font-size: 4rem; font-family: 'Orbitron', serif; color: rgba(255,255,255,0.05); }
+
+        .btn-focus {
+            margin-top: 30px; width: 100%; padding: 15px; border-radius: 10px; border: 1px solid var(--accent);
+            background: rgba(0, 229, 255, 0.1); color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.9rem;
+            letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: 0.3s;
+        }
+        .btn-focus:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent-glow); }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            #legend { display: none; }
+            header { padding: 20px; flex-direction: column; gap: 15px; align-items: center; text-align: center; }
+            .title-group h1 { font-size: 1.6rem; }
+            #controls { bottom: 20px; width: 95%; padding: 12px; flex-wrap: wrap; justify-content: center; }
+            #dataModal { width: 100%; right: -100%; border-left: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="webgl-container"></div>
+
+<header>
+    <div class="title-group">
+        <h1>FIZIKA INTERAKTIVE</h1>
+        <p>Eksploruesi 3D Sistem Diellor</p>
+    </div>
+</header>
+
+<div id="viewHint">Mbani klikuar per te rrotulluar kameren | Rrotulloni rroten e mausit per Zmadhim/Zvogëlim</div>
+<div id="hint">Zgjidh nje trup qiellor per te pare detajet dhe per t'i bere zmadhim qendror</div>
+
+<div id="controls" class="glass-panel">
+    <button class="control-btn active" id="btnPlay">
+        <div class="indicator"></div> <span id="playText">PAUZE</span>
+    </button>
+    <div class="slider-group">
+        <span id="speedVal">1.0x</span>
+        <input type="range" id="speedSlider" min="0" max="5" step="0.1" value="1">
+    </div>
+    <button class="control-btn active" id="btnOrbits">
+        <div class="indicator"></div> ORBITAT
+    </button>
+</div>
+
+<div id="legend" class="glass-panel">
+    <div class="legend-title">INDEKSI I PLANETEVE</div>
+    <div id="legendItems"></div>
+</div>
+
+<div id="tooltip"></div>
+
+<div id="screenOverlay"></div>
+<div id="dataModal">
+    <div class="modal-content">
+        <button class="modal-close"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        <div class="m-header">
+            <div class="m-type" id="mType">-</div>
+            <div class="m-title" id="mName">-</div>
+            <div class="m-divider" id="mDivider"></div>
+        </div>
+        
+        <div class="m-visual">
+            <canvas id="modalCanvas" width="400" height="400"></canvas>
+        </div>
+
+        <div class="m-grid">
+            <div class="stat-box" style="--stat-color: #00e5ff;">
+                <div class="stat-label">Diametri (km)</div>
+                <div class="stat-value" id="mDiam">-</div>
+            </div>
+            <div class="stat-box" style="--stat-color: #ff2a6d;">
+                <div class="stat-label">Distanca nga Dielli</div>
+                <div class="stat-value" id="mDist">-</div>
+            </div>
+            <div class="stat-box" style="--stat-color: #b548ff;">
+                <div class="stat-label">Periudha Orbitale</div>
+                <div class="stat-value" id="mPeriod">-</div>
+            </div>
+            <div class="stat-box" style="--stat-color: #ffd000;">
+                <div class="stat-label">Temperatura Mesatare</div>
+                <div class="stat-value" id="mTemp">-</div>
+            </div>
+            <div class="stat-box" style="--stat-color: #4cd137;">
+                <div class="stat-label">Satelite Natyrore</div>
+                <div class="stat-value" id="mMoons">-</div>
+            </div>
+            <div class="stat-box" style="--stat-color: #f39c12;">
+                <div class="stat-label">Kategoria</div>
+                <div class="stat-value" id="mCat">-</div>
+            </div>
+        </div>
+        
+        <div class="m-desc" id="mDesc">-</div>
+        
+        <button class="btn-focus" id="btnFocus">ZMADHO DHE FOKUSO KAMEREN</button>
+    </div>
+</div>
+
+<!-- Three.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+// --- DATA DEFINITION ---
+const sunData = {
+    name: 'Dielli', type: 'Yll i Sekuences Kryesore', 
+    color: 0xffdd77, emit: 0xffa020, radius: 25,
+    diam: '1,392,700', dist: 'N/A', moons: '0', temp: '5,500 °C', typeShort: 'Yll',
+    desc: 'Zemra e sistemit tone. Nje reaktor gjigant termonuklear qe prodhon drite dhe nxehtesi duke shkrire hidrogjenin ne helium. Ndihmon jeten ne Toke dhe mban se bashku tere sistemin.'
+};
+
+const planets = [
+    { name: 'Merkuri', type: 'Planet Shkembor', color: 0xa8a8ae, typeShort: 'Shkembor', radius: 2, distOrbit: 50, speedOrbit: 0.04, speedRot: 0.01, diam: '4,879', distStat: '57.9 M km', moons: '0', temp: '167 °C', desc: 'Planeti me i vogel dhe nga me ekstremet. Nuk ka atmosfere per te mbajtur nxehtesine, ndaj ditet jane furre dhe netet jane akull.' },
+    { name: 'Aferdita', type: 'Planet Shkembor', color: 0xeab676, typeShort: 'Shkembor', radius: 3.5, distOrbit: 75, speedOrbit: 0.025, speedRot: -0.005, diam: '12,104', distStat: '108.2 M km', moons: '0', temp: '464 °C', desc: 'Edhe pse eshte planeti i dyte, eshte me i nxehti per shkak te efektit serrë ekstrem nga retë e dendura të acidit sulfurik.' },
+    { name: 'Toka', type: 'Planet Shkembor', color: 0x2288ee, typeShort: 'Shkembor', radius: 4, distOrbit: 105, speedOrbit: 0.02, speedRot: 0.02, hasMoon: true, diam: '12,742', distStat: '149.6 M km', moons: '1', temp: '15 °C', desc: 'E vetmja oaz e njohur e jetes ne univers. Krenaria jone, mbushur me oqeane ugar, male madheshtore dhe nje ekuiliber delikat natyror.', isEarth: true },
+    { name: 'Marsi', type: 'Planet Shkembor', color: 0xe04a22, typeShort: 'Shkembor', radius: 2.8, distOrbit: 140, speedOrbit: 0.016, speedRot: 0.02, diam: '6,779', distStat: '227.9 M km', moons: '2', temp: '-65 °C', desc: 'Planeti i Kuq, shkretetire e ftohte e pluhurosur. Ka qene dikur i lagesht gje qe nxit kerkimin e mbetjeve te jetes se mundshme.', rocky: true },
+    { name: 'Jupiteri', type: 'Gjigant Gazor', color: 0xdfa666, bands: true, typeShort: 'Gazor', radius: 12, distOrbit: 210, speedOrbit: 0.008, speedRot: 0.04, diam: '139,820', distStat: '778.5 M km', moons: '95', temp: '-110 °C', desc: 'Gjiganti i gazit, mbreti i sistemit diellor. Rrethohet nga stuhi kolosale si Njolla e Madhe e Kuqe qe prej qindra vitesh.' },
+    { name: 'Saturni', type: 'Gjigant Gazor', color: 0xf3e5ab, bands: true, hasRings: true, typeShort: 'Gazor', radius: 10, distOrbit: 290, speedOrbit: 0.006, speedRot: 0.038, diam: '116,460', distStat: '1.43 B km', moons: '146', temp: '-140 °C', desc: 'Bizhuteria e sistemit, e dallueshme per sistemin e tij masiv dhe te bukur te unazave prej akulli, shkembinjsh dhe pluhuri kozmik.' },
+    { name: 'Urani', type: 'Gjigant Akulli', color: 0x66ccff, typeShort: 'Akulli', radius: 7.5, distOrbit: 370, speedOrbit: 0.004, speedRot: -0.03, diam: '50,724', distStat: '2.87 B km', moons: '28', temp: '-195 °C', desc: 'I vetmi planet qe rrotullohet "i shtrire", ndoshta fale nje perplasjeje galaktike ne te kaluaren e tij te hershme.', ice: true },
+    { name: 'Neptuni', type: 'Gjigant Akulli', color: 0x2b58d9, typeShort: 'Akulli', radius: 7, distOrbit: 450, speedOrbit: 0.003, speedRot: 0.03, diam: '49,244', distStat: '4.50 B km', moons: '16', temp: '-200 °C', desc: 'Bota me e larget, e erret e ngrirë. Sfera e fundit e gravitetit solid para se te hyjme ne rrethin e kometave.', ice: true }
+];
+
+// Custom Procedural Texture Generator via HTML5 Canvas
+function generateTexture(type, baseColorStr) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024; canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = baseColorStr;
+    ctx.fillRect(0, 0, 1024, 512);
+    
+    if (type === 'bands') {
+        const isJupiter = baseColorStr === '#dfa666' || baseColorStr === '#dfa666';
+        const numBands = isJupiter ? 40 : 60;
+        for(let i=0; i<numBands; i++) {
+            const y = Math.random() * 512;
+            const h = Math.random() * 30 + 5;
+            ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            for(let x=0; x<=1024; x+=50) { ctx.lineTo(x, y + Math.sin(x*0.05 + y)*10); }
+            ctx.lineTo(1024, y+h); ctx.lineTo(0, y+h); ctx.fill();
+            
+            for(let j=0; j<8; j++) {
+                ctx.beginPath(); ctx.ellipse(Math.random()*1024, y+h/2, Math.random()*30+15, h/2.5, 0, 0, Math.PI*2); ctx.fill();
+            }
+        }
+        if (isJupiter) {
+            ctx.fillStyle = 'rgba(180, 50, 30, 0.9)';
+            ctx.beginPath(); ctx.ellipse(600, 320, 80, 40, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'rgba(230, 90, 60, 0.9)';
+            ctx.beginPath(); ctx.ellipse(600, 320, 50, 20, 0.1, 0, Math.PI*2); ctx.fill();
+        }
+    } else if (type === 'earth') {
+        ctx.fillStyle = '#08306b'; ctx.fillRect(0,0,1024,512);
+        ctx.fillStyle = '#1e753e'; 
+        for(let i=0; i<35; i++) {
+            ctx.beginPath(); ctx.arc(Math.random()*1024, Math.random()*512, Math.random()*80+20, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.fillStyle = '#a68c53'; 
+        for(let i=0; i<20; i++) {
+            ctx.beginPath(); ctx.arc(Math.random()*1024, Math.random()*512, Math.random()*50+10, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.fillStyle = '#ffffff'; 
+        ctx.fillRect(0, 0, 1024, 40); ctx.fillRect(0, 472, 1024, 40);
+        for(let i=0; i<30; i++) { 
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.beginPath(); ctx.arc(Math.random()*1024, Math.random()*512, Math.random()*60+20, 0, Math.PI*2); ctx.fill();
+        }
+    } else if (type === 'rocky') {
+        for(let i=0; i<300; i++) {
+            const isDark = Math.random() > 0.5;
+            ctx.fillStyle = isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.15)';
+            const r = Math.random() * 20 + 2;
+            const cx = Math.random()*1024; const cy = Math.random()*512;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+            if (isDark && r > 5) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(cx-1, cy-1, r, 0, Math.PI*2); ctx.stroke();
+                ctx.strokeStyle = 'rgba(0,0,0,0.4)'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(cx+1, cy+1, r, 0, Math.PI*2); ctx.stroke();
+            }
+        }
+    } else if (type === 'ice') {
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        for(let i=0; i<40; i++) { ctx.fillRect(0, Math.random()*512, 1024, Math.random()*15+2); }
+    } else if (type === 'sun') {
+        ctx.fillStyle = '#ff6a00'; 
+        ctx.fillRect(0, 0, 1024, 512); // Base bright fiery orange
+        
+        ctx.globalCompositeOperation = 'lighter';
+        for(let i=0; i<6000; i++) {
+            const size = Math.random() * 8 + 2;
+            const x = Math.random() * 1024;
+            const y = Math.random() * 512;
+            
+            const r = Math.random();
+            if (r > 0.8) ctx.fillStyle = 'rgba(255, 255, 200, 0.4)';      // Hot white/yellow
+            else if (r > 0.4) ctx.fillStyle = 'rgba(255, 140, 0, 0.2)';   // Orange plasma
+            else ctx.fillStyle = 'rgba(255, 40, 0, 0.15)';                // Reddish plasma
+            
+            ctx.beginPath();
+            ctx.ellipse(x, y, size*1.5, size, Math.random()*Math.PI, 0, Math.PI*2);
+            ctx.fill();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        
+        ctx.filter = 'blur(4px)';
+        // Sunspots
+        for(let i=0; i<50; i++) {
+            ctx.fillStyle = 'rgba(60, 0, 0, 0.85)';
+            ctx.beginPath();
+            ctx.ellipse(Math.random()*1024, Math.random()*512, Math.random()*25+5, Math.random()*15+5, Math.random()*Math.PI, 0, Math.PI*2);
+            ctx.fill();
+        }
+        ctx.filter = 'none';
+
+        // Solar prominences/flares
+        ctx.strokeStyle = 'rgba(255, 200, 50, 0.3)';
+        for(let i=0; i<30; i++) {
+            ctx.lineWidth = Math.random() * 4 + 1;
+            ctx.beginPath();
+            ctx.moveTo(Math.random()*1024, Math.random()*512);
+            ctx.bezierCurveTo(Math.random()*1024, Math.random()*512, Math.random()*1024, Math.random()*512, Math.random()*1024, Math.random()*512);
+            ctx.stroke();
+        }
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.anisotropy = 16;
+    return texture;
+}
+
+const modalCanvas = document.getElementById('modalCanvas');
+const modalRenderer = new THREE.WebGLRenderer({ canvas: modalCanvas, antialias: true, alpha: true });
+modalRenderer.setSize(400, 280, false);
+modalRenderer.setPixelRatio(window.devicePixelRatio);
+const modalScene = new THREE.Scene();
+const modalCamera = new THREE.PerspectiveCamera(40, 400/280, 0.1, 100);
+modalCamera.position.z = 18;
+const modalLight = new THREE.DirectionalLight(0xffffff, 1.8);
+modalLight.position.set(10, 5, 15);
+modalScene.add(modalLight);
+modalScene.add(new THREE.AmbientLight(0x222233, 1.0));
+
+let modalPlanetMesh = null;
+let modalAtmosphere = null;
+let modalRings = null;
+
+// --- THREE.JS SETUP ---
+const container = document.getElementById('webgl-container');
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x020106, 0.0015);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(0, 250, 400);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+container.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxDistance = 1000;
+controls.minDistance = 30;
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0x222233, 0.5);
+scene.add(ambientLight);
+
+const sunLight = new THREE.PointLight(0xfff5e6, 2.5, 1200);
+scene.add(sunLight);
+
+// Elements
+const celestialBodies = [];
+let planetMeshes = [];
+let orbitLines = [];
+
+// Create Sun
+const sunGeo = new THREE.SphereGeometry(sunData.radius, 64, 64);
+const sunTex = generateTexture('sun', '#ffcc00');
+const sunMat = new THREE.MeshBasicMaterial({ 
+    color: 0xffffff, // White allows true texture colors 
+    map: sunTex
+});
+const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+scene.add(sunMesh);
+celestialBodies.push({ name: 'sun', mesh: sunMesh });
+
+// Sun Glow / Atmosphere (Fake Bloom)
+const sunGlowMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.45,
+    side: THREE.BackSide, blending: THREE.AdditiveBlending,
+    map: sunTex // Fiery atmosphere
+});
+const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(sunData.radius * 1.6, 32, 32), sunGlowMat);
+scene.add(sunGlow);
+
+// Planets creation
+planets.forEach((p, idx) => {
+    // Determine texture type
+    let tType = '';
+    if (p.isEarth) tType = 'earth';
+    else if (p.bands) tType = 'bands';
+    else if (p.rocky || p.typeShort === 'Shkembor') tType = 'rocky';
+    else if (p.ice) tType = 'ice';
+
+    const hexColorStr = '#' + p.color.toString(16).padStart(6, '0');
+    const tex = generateTexture(tType, hexColorStr);
+
+    const geo = new THREE.SphereGeometry(p.radius, 32, 32);
+    // Use MeshStandardMaterial for realistic lighting and shadows
+    const mat = new THREE.MeshStandardMaterial({ 
+        color: 0xffffff, map: tex, roughness: p.typeShort === 'Gazor' ? 0.3 : 0.8
+    });
+    
+    // Group for rotation and orbit
+    const orbitGroup = new THREE.Group();
+    scene.add(orbitGroup);
+
+    const planetMesh = new THREE.Mesh(geo, mat);
+    planetMesh.position.x = p.distOrbit;
+    orbitGroup.add(planetMesh);
+    
+    // Earth Atmosphere
+    if (p.isEarth) {
+        const atmGeo = new THREE.SphereGeometry(p.radius * 1.05, 32, 32);
+        const atmMat = new THREE.MeshStandardMaterial({
+            color: 0x4da8da, transparent: true, opacity: 0.3, roughness: 1.0, blending: THREE.AdditiveBlending
+        });
+        const atmMesh = new THREE.Mesh(atmGeo, atmMat);
+        planetMesh.add(atmMesh);
+    }
+
+    // Saturn Rings
+    if (p.hasRings) {
+        const ringGeo = new THREE.RingGeometry(p.radius * 1.4, p.radius * 2.2, 64);
+        const ringMat = new THREE.MeshStandardMaterial({ 
+            color: 0xf3e5ab, side: THREE.DoubleSide, transparent: true, opacity: 0.8, roughness: 0.5
+        });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 2 - 0.2; // tilted
+        planetMesh.add(ringMesh);
+    }
+
+    // Moon for Earth
+    if (p.hasMoon) {
+        const moonGeo = new THREE.SphereGeometry(1, 16, 16);
+        const moonMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.9, map: generateTexture('rocky', '#aaaaaa') });
+        const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+        moonMesh.position.x = p.radius + 3;
+        const moonGroup = new THREE.Group();
+        moonGroup.add(moonMesh);
+        planetMesh.add(moonGroup);
+        p.moonGroup = moonGroup;
+    }
+
+    // Orbit Path
+    const pathGeo = new THREE.BufferGeometry();
+    const points = [];
+    for(let i=0; i<=128; i++) {
+        const a = (i/128) * Math.PI * 2;
+        points.push(new THREE.Vector3(Math.cos(a)*p.distOrbit, 0, Math.sin(a)*p.distOrbit));
+    }
+    pathGeo.setFromPoints(points);
+    const pathMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1 });
+    const orbitLine = new THREE.Line(pathGeo, pathMat);
+    scene.add(orbitLine);
+    orbitLines.push(orbitLine);
+
+    // Initial random angle
+    const initAngle = Math.random() * Math.PI * 2;
+    orbitGroup.rotation.y = initAngle;
+
+    p.orbitGroup = orbitGroup;
+    p.mesh = planetMesh;
+    planetMeshes.push(planetMesh);
+    celestialBodies.push({ name: 'planet', mesh: planetMesh, data: p, index: idx });
+});
+
+// Starfield
+const starGeo = new THREE.BufferGeometry();
+const starPoints = [];
+const starColors = [];
+const colorObj = new THREE.Color();
+for(let i=0; i<3000; i++) {
+    const r = Math.random() * 800 + 400; // far away
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random() * 2) - 1);
+    
+    starPoints.push(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.sin(phi) * Math.sin(theta),
+        r * Math.cos(phi)
+    );
+    
+    const colors = [0xffffff, 0xadd8e6, 0xffe4b5, 0xffc0cb];
+    colorObj.setHex(colors[Math.floor(Math.random()*colors.length)]);
+    starColors.push(colorObj.r, colorObj.g, colorObj.b);
+}
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPoints, 3));
+starGeo.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
+const starMat = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.8 });
+const stars = new THREE.Points(starGeo, starMat);
+scene.add(stars);
+
+// --- RAYCASTER FOR INTERACTION (TOUCH & MOUSE) ---
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const tip = document.getElementById('tooltip');
+let hoveredBody = null;
+
+function updatePointer(clientX, clientY) {
+    mouse.x = (clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(celestialBodies.map(cb => cb.mesh));
+
+    if (intersects.length > 0) {
+        document.body.style.cursor = 'pointer';
+        hoveredBody = celestialBodies.find(cb => cb.mesh === intersects[0].object);
+        
+        tip.classList.add('visible');
+        tip.style.left = (clientX + 20) + 'px';
+        tip.style.top = (clientY - 20) + 'px';
+        
+        const name = hoveredBody.name === 'sun' ? 'Dielli' : hoveredBody.data.name;
+        tip.textContent = name;
+    } else {
+        document.body.style.cursor = 'default';
+        tip.classList.remove('visible');
+        hoveredBody = null;
+    }
+}
+
+let pointerDownPos = { x: 0, y: 0 };
+window.addEventListener('pointerdown', (e) => {
+    pointerDownPos.x = e.clientX;
+    pointerDownPos.y = e.clientY;
+    updatePointer(e.clientX, e.clientY);
+});
+
+window.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+        updatePointer(e.clientX, e.clientY);
+    }
+});
+
+window.addEventListener('pointerup', (e) => {
+    const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+    if (dist < 15) { // If it's a tap and not a drag
+        updatePointer(e.clientX, e.clientY); // Ensure hover state is updated for touch
+        if (hoveredBody) {
+            if(hoveredBody.name === 'sun') openModal(sunData, hoveredBody.mesh);
+            else openModal(hoveredBody.data, hoveredBody.mesh);
+        }
+    }
+});
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// --- UI & STATE LOGIC ---
+let isPaused = false;
+let simSpeed = 1.0;
+let showOrbits = true;
+let activePlanetData = null;
+let targetMesh = null;
+let isFocusing = false;
+
+document.getElementById('btnPlay').addEventListener('click', function() {
+    isPaused = !isPaused;
+    document.getElementById('playText').textContent = isPaused ? 'LUAJ' : 'PAUZE';
+    this.classList.toggle('active', !isPaused);
+});
+
+document.getElementById('speedSlider').addEventListener('input', function() {
+    simSpeed = parseFloat(this.value);
+    document.getElementById('speedVal').textContent = simSpeed === 0 ? 'NGRIRJE' : simSpeed.toFixed(1) + 'x';
+});
+
+document.getElementById('btnOrbits').addEventListener('click', function() {
+    showOrbits = !showOrbits;
+    this.classList.toggle('active', showOrbits);
+    orbitLines.forEach(l => l.visible = showOrbits);
+});
+
+function openModal(d, mesh) {
+    document.getElementById('hint').style.opacity = '0';
+    activePlanetData = d;
+    targetMesh = mesh;
+    
+    document.getElementById('mType').textContent = d.typeShort;
+    let hexColorStr = typeof d.color === 'number' ? '#' + d.color.toString(16).padStart(6, '0') : d.color;
+    document.getElementById('mType').style.color = hexColorStr;
+    document.getElementById('mName').textContent = d.name;
+    document.getElementById('mDivider').style.background = \`linear-gradient(90deg, transparent, \${hexColorStr})\`;
+    
+    document.getElementById('mDiam').textContent = d.diam;
+    document.getElementById('mDist').textContent = d.dist || d.distStat;
+    document.getElementById('mPeriod').textContent = d.period ? (d.period < 400 ? d.period+' ditë' : (d.period/365.2).toFixed(1)+' vjet') : '-';
+    document.getElementById('mTemp').textContent = d.temp;
+    document.getElementById('mMoons').textContent = d.moons;
+    document.getElementById('mCat').textContent = d.type;
+    document.getElementById('mDesc').textContent = d.desc;
+    document.getElementById('mDesc').style.borderLeftColor = hexColorStr;
+
+    // --- SETUP MODAL HIGH RES SCENE ---
+    if (modalPlanetMesh) {
+        modalScene.remove(modalPlanetMesh);
+        if(modalAtmosphere) modalScene.remove(modalAtmosphere);
+        if(modalRings) modalScene.remove(modalRings);
+        modalAtmosphere = null; modalRings = null;
+    }
+
+    const geo = new THREE.SphereGeometry(6, 64, 64);
+    if (d.name === 'Dielli') {
+        const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, map: mesh.material.map });
+        modalPlanetMesh = new THREE.Mesh(geo, mat);
+        const glowGeo = new THREE.SphereGeometry(7.5, 32, 32);
+        const glowMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, side: THREE.BackSide, map: mesh.material.map });
+        modalAtmosphere = new THREE.Mesh(glowGeo, glowMat);
+        modalScene.add(modalAtmosphere);
+    } else {
+        const mat = mesh.material.clone();
+        mat.bumpMap = mat.map; 
+        mat.bumpScale = d.typeShort === 'Gazor' ? 0.05 : 0.8;
+        mat.roughness = d.isEarth ? 0.6 : 0.8;
+        modalPlanetMesh = new THREE.Mesh(geo, mat);
+        
+        if (d.isEarth) {
+            const atmMat = new THREE.MeshStandardMaterial({ color: 0x4da8da, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false });
+            modalAtmosphere = new THREE.Mesh(new THREE.SphereGeometry(6.2, 32, 32), atmMat);
+            modalScene.add(modalAtmosphere);
+        }
+        
+        if (d.hasRings) {
+            let ringMat = null;
+            mesh.children.forEach(c => { if (c.geometry && c.geometry.type === 'RingGeometry') ringMat = c.material; });
+            if (ringMat) {
+                modalRings = new THREE.Mesh(new THREE.RingGeometry(8, 12, 64), ringMat);
+                modalRings.rotation.x = Math.PI / 2 - 0.2;
+                modalScene.add(modalRings);
+            }
+        }
+    }
+    
+    modalPlanetMesh.rotation.copy(mesh.rotation);
+    modalScene.add(modalPlanetMesh);
+
+    document.getElementById('screenOverlay').classList.add('active');
+    document.getElementById('dataModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('dataModal').classList.remove('open');
+    document.getElementById('screenOverlay').classList.remove('active');
+    isFocusing = false;
+}
+
+document.querySelector('.modal-close').addEventListener('click', closeModal);
+document.getElementById('screenOverlay').addEventListener('click', closeModal);
+
+// Button to fly camera to planet
+document.getElementById('btnFocus').addEventListener('click', () => {
+    isFocusing = true;
+    closeModal(); // Hide UI to enjoy the view
+});
+
+function buildLegend() {
+    const list = document.getElementById('legendItems');
+    list.innerHTML = '';
+    
+    const sunItem = document.createElement('div');
+    sunItem.className = 'legend-item';
+    let sunHex = typeof sunData.color === 'number' ? '#' + sunData.color.toString(16).padStart(6, '0') : sunData.color;
+    sunItem.innerHTML = \`<div class="legend-color" style="color:\${sunHex}; background-color:\${sunHex}; box-shadow: 0 0 15px currentColor"></div><span class="legend-name">\${sunData.name}</span>\`;
+    sunItem.addEventListener('click', () => {
+        openModal(sunData, sunMesh);
+    });
+    list.appendChild(sunItem);
+
+    planets.forEach((p) => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        let hex = '#' + p.color.toString(16).padStart(6, '0');
+        item.innerHTML = \`<div class="legend-color" style="color:\${hex}; background-color:\${hex}"></div><span class="legend-name">\${p.name}</span>\`;
+        item.addEventListener('click', () => {
+            openModal(p, p.mesh);
+        });
+        list.appendChild(item);
+    });
+}
+buildLegend();
+
+// --- ANIMATION LOOP ---
+const clock = new THREE.Clock();
+const tempVec = new THREE.Vector3();
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    const delta = clock.getDelta();
+
+    if (!isPaused) {
+        // Rotate Sun
+        sunMesh.rotation.y += 0.005 * simSpeed;
+        sunGlow.rotation.y -= 0.002 * simSpeed;
+
+        planets.forEach(p => {
+            // Orbit translation
+            p.orbitGroup.rotation.y -= p.speedOrbit * simSpeed * 10 * delta;
+            // Planet self rotation
+            p.mesh.rotation.y += p.speedRot * simSpeed * 10 * delta;
+            // Moon orbit
+            if (p.moonGroup) {
+                p.moonGroup.rotation.y += 0.1 * simSpeed * 10 * delta;
+            }
+        });
+        // Slowly rotate whole starfield
+        stars.rotation.y += 0.0005 * simSpeed;
+    }
+
+    controls.update();
+
+    if (isFocusing && targetMesh) {
+        targetMesh.getWorldPosition(tempVec);
+        controls.target.lerp(tempVec, 0.05);
+        const radius = activePlanetData.radius || 25;
+        const camOffset = new THREE.Vector3(radius * 3, radius * 1.5, radius * 3);
+        const targetCamPos = tempVec.clone().add(camOffset);
+        camera.position.lerp(targetCamPos, 0.05);
+    } else {
+        if(!targetMesh) controls.target.lerp(new THREE.Vector3(0,0,0), 0.05);
+    }
+
+    renderer.render(scene, camera);
+
+    if (document.getElementById('dataModal').classList.contains('open') && modalPlanetMesh) {
+        modalPlanetMesh.rotation.y += 0.005;
+        if (modalAtmosphere) modalAtmosphere.rotation.y += 0.005;
+        if (modalRings) modalRings.rotation.z -= 0.002;
+        modalRenderer.render(modalScene, modalCamera);
+    }
+}
+
+animate();
+</script>
+</body>
+</html>`
   }
 ];
