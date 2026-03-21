@@ -850,6 +850,8 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
+                  } else if (m.fileUrl) {
+                    window.open(m.fileUrl, '_blank');
                   } else if (m.type === 'Për Mësuesit') {
                     openLessonPlanAsPDF(m);
                   }
@@ -888,6 +890,8 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
+                  } else if (m.fileUrl) {
+                    window.open(m.fileUrl, '_blank');
                   } else if (m.type === 'Për Mësuesit') {
                     openLessonPlanAsPDF(m);
                   }
@@ -946,7 +950,7 @@ function MaterialCard({ material, onAction }: { material: Material, onAction?: (
       <h4 className="text-2xl font-black tracking-tighter text-slate-800 mb-4 group-hover:text-[#ffafcc] transition-colors leading-tight">{material.title}</h4>
       <p className="text-slate-500 leading-relaxed font-medium flex-grow mb-10">{material.description}</p>
       
-      {material.actionUrl !== '#' ? (
+      {material.actionUrl !== '#' && !onAction ? (
         <a 
           href={material.actionUrl}
           target="_blank"
@@ -957,7 +961,7 @@ function MaterialCard({ material, onAction }: { material: Material, onAction?: (
         </a>
       ) : (
         <button 
-          onClick={onAction}
+          onClick={onAction || (() => { if (material.actionUrl !== '#') window.open(material.actionUrl, '_blank'); })}
           className="w-full py-5 bg-[#ffafcc] text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-[#ff8fab] hover:scale-105 active:scale-95 transition-all relative z-10"
         >
           {material.actionText}
