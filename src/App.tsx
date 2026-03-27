@@ -1011,6 +1011,17 @@ const App: React.FC = () => {
                     <p className="text-xs text-slate-400">Ushtrime dhe burime mësimore</p>
                   </div>
                 </div>
+                {/* Ref 9 */}
+                <div 
+                  onClick={() => navigate('exo3d')}
+                  className="p-4 rounded-2xl bg-white border border-slate-100 hover:border-[#cdb4db] hover:shadow-lg transition-all flex gap-4 group shadow-sm cursor-pointer"
+                >
+                  <span className="text-2xl font-black text-slate-200 group-hover:text-[#cdb4db] transition-colors">09</span>
+                  <div>
+                    <h4 className="text-slate-700 font-bold text-sm mb-1 flex items-center gap-2"><span>🔭</span> Exo3D</h4>
+                    <p className="text-xs text-slate-400">Eksploruesi i Ekzoplanetëve 3D</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
