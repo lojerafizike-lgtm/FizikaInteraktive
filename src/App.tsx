@@ -598,7 +598,7 @@ const App: React.FC = () => {
                             Dëshiron të mësosh më shumë? Bisedo rreth të gjitha madhësive fizike në faqen tonë.
                           </p>
                           <button 
-                            onClick={() => window.location.href = '/help'}
+                            onClick={() => window.open('https://www.chatbase.co/bOCHTf5O-zmXBftpAqTxD/help', '_blank')}
                             className="px-16 py-6 bg-[#ffafcc] text-white rounded-[2.5rem] font-black text-lg uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4 mx-auto"
                           >
                             VAZHDO <i className="fas fa-arrow-right text-sm"></i>
