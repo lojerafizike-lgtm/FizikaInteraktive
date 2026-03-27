@@ -35,6 +35,138 @@ interface QuizQuestion {
 
 const MOCK_MATERIALS: Material[] = [
   { 
+    id: 'fp_10_t1', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 10 (Tremujori 1)', 
+    description: 'Viti 2025-2026.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/ushtrime plotesuese trem 1 fizike 10. Viti 25-26.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_10_t2', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 10 (Tremujori 2)', 
+    description: 'Viti 2023-2024.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/USHTR PLOTS tr 2 FIZ 10, 23-24.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_11_t1', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 11 (Tremujori 1)', 
+    description: 'Përgatitje për tremujorin e parë.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/Ushtrime plotësuese  fizike 11 tremujori 1.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_11_t2', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 11 (Tremujori 2)', 
+    description: 'Viti 2025-2026.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/ushtrime plotesuese fiz 11, trem 2. 25-26.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_11_t3', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 11 (Tremujori 3)', 
+    description: 'Përgatitje për tremujorin e tretë.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/ushtrime plotesuese fiz 11, trem 3.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_12_levizja', 
+    type: 'Fletë Pune', 
+    topic: 'Kinematika' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 12 (Lëvizja dhe Forcat)', 
+    description: 'Viti 2023-2024.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/ushtrime plotesuese  fiz 12 levizja dhe forcat 23-24.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_12_puna', 
+    type: 'Fletë Pune', 
+    topic: 'Energjia' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 12 (Puna dhe Energjia)', 
+    description: 'Përgatitje për temën e punës dhe energjisë.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/Ushtr plots Puna dhe energjia,  fiz 12.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_12_t3', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Fizika 12 (Tremujori 3)', 
+    description: 'Lëkundje, drita dhe valë.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/Ushtrime plotësuese fiz 12, tremuj 3,  lekundje, drita  dhe valë.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_td_el', 
+    type: 'Fletë Pune', 
+    topic: 'Elektriciteti' as MaterialTopic, 
+    title: 'Ushtrime Plotësuese - Periudha 2 (TD, Rryma dhe Magnetizmi)', 
+    description: 'Përgatitje për termodinamikën, rrymën dhe magnetizmin.', 
+    icon: 'fa-file-word', 
+    actionText: 'Shkarko Word', 
+    actionUrl: '/files/ushtr pl periudha 2 TD, El rryma dhe magnetizmi.docx',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_olim10', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Olimpiada e Fizikës - Klasa 10', 
+    description: 'Faza e dytë, 2025-2026. Përmban pyetjet me zgjidhje.', 
+    icon: 'fa-file-pdf', 
+    actionText: 'Shkarko PDF', 
+    actionUrl: '/files/Zgjidhje Olimpiada e fizikes_klasa 10_2025-2026.pdf',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_olim11', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Olimpiada e Fizikës - Klasa 11', 
+    description: 'Faza e dytë, 2025-2026. Përmban pyetjet me zgjidhje.', 
+    icon: 'fa-file-pdf', 
+    actionText: 'Shkarko PDF', 
+    actionUrl: '/files/Zgjidhje Olimpiada e fizikes_klasa 11_2025-2026.pdf',
+    isFavorite: true
+  },
+  { 
+    id: 'fp_olim12', 
+    type: 'Fletë Pune', 
+    topic: 'Gjithëpërfshirëse' as MaterialTopic, 
+    title: 'Olimpiada e Fizikës - Klasa 12', 
+    description: 'Faza e dytë, 2024-2025. Përmban pyetjet me zgjidhje.', 
+    icon: 'fa-file-pdf', 
+    actionText: 'Shkarko PDF', 
+    actionUrl: '/files/Zgjidhje Olimpiada e fizikes_klasa 12_2024-2025.pdf',
+    isFavorite: true
+  },
+  { 
     id: 'fp1', 
     type: 'Fletë Pune', 
     topic: 'Gjithëpërfshirëse' as MaterialTopic, 
@@ -854,6 +986,8 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                     window.open(m.fileUrl, '_blank');
                   } else if (m.type === 'Për Mësuesit') {
                     openLessonPlanAsPDF(m);
+                  } else if (m.actionUrl && m.actionUrl !== '#') {
+                    window.open(m.actionUrl, '_blank');
                   }
                 }}
               />
@@ -894,6 +1028,8 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                     window.open(m.fileUrl, '_blank');
                   } else if (m.type === 'Për Mësuesit') {
                     openLessonPlanAsPDF(m);
+                  } else if (m.actionUrl && m.actionUrl !== '#') {
+                    window.open(m.actionUrl, '_blank');
                   }
                 }}
               />
@@ -955,6 +1091,17 @@ function MaterialCard({ material, onAction }: { material: Material, onAction?: (
           href={material.actionUrl}
           target="_blank"
           rel="noopener noreferrer"
+          download={/\.(pdf|docx?|xlsx?|pptx?)(\?.*)?$/i.test(material.actionUrl)}
+          className="w-full py-5 bg-[#ffafcc] text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-[#ff8fab] hover:scale-105 active:scale-95 transition-all relative z-10 text-center block"
+        >
+          {material.actionText}
+        </a>
+      ) : material.actionUrl && /\.(pdf|docx?|xlsx?|pptx?)(\?.*)?$/i.test(material.actionUrl) ? (
+        <a 
+          href={material.actionUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          download
           className="w-full py-5 bg-[#ffafcc] text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-[#ff8fab] hover:scale-105 active:scale-95 transition-all relative z-10 text-center block"
         >
           {material.actionText}
