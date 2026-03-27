@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksploruesi i Ekzoplanetëve 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #F9FAFB;
+            --white: #FFFFFF;
+            --pink:    #FCE7F3;
+            --pink-mid: #f9a8d4;
+            --pink-deep: #db2777;
+            --sky:     #DBEAFE;
+            --sky-mid: #93C5FD;
+            --sky-deep: #1d4ed8;
+            --lavender: #EDE9FE;
+            --lavender-mid: #C084FC;
+            --lavender-deep: #7c3aed;
+            --mint:  #D1FAE5;
+            --peach: #FCE7F3;
+            --yellow: #FEF9C3;
+            --text-dark: #1E293B;
+            --text-mid:  #334155;
+            --text-soft: #94A3B8;
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+            --radius-xl: 28px;
+            --radius-pill: 100px;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ====== AMBIENT BLOBS ====== */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.45;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::before {
+            width: 480px; height: 480px;
+            background: radial-gradient(circle, #FCE7F3 0%, transparent 70%);
+            top: -80px; left: -80px;
+        }
+        body::after {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, #DBEAFE 0%, transparent 70%);
+            bottom: -80px; right: -80px;
+        }
+
+        /* ====== HEADER ====== */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            padding: 14px 40px;
+            background: rgba(255,255,255,0.82);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(196,181,253,0.2);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 24px rgba(139,92,246,0.08);
+        }
+        .collab-pill {
+            display: flex; align-items: center; gap: 10px;
+            background: linear-gradient(135deg, #fce4ec 0%, #ede9fe 50%, #e0f2fe 100%);
+            border: 2px solid rgba(196,181,253,0.4);
+            border-radius: var(--radius-pill);
+            padding: 10px 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .collab-pill .blink { width: 9px; height: 9px; border-radius: 50%; background: #db2777; box-shadow: 0 0 10px #fce4ec; animation: blink 1.8s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.7);} }
+        .collab-label { font-size: 1rem; font-weight: 700; color: #111827; letter-spacing: 0.01em; }
+        .collab-link {
+            font-size: 1.3rem; font-weight: 900; font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #111827;
+            text-decoration: none;
+            border-bottom: 2.5px solid #93c5fd;
+            padding-bottom: 1px;
+            transition: opacity 0.2s;
+        }
+        .collab-link:hover { opacity: 0.65; }
+
+        /* ====== HERO ====== */
+        .hero {
+            position: relative; z-index: 1;
+            text-align: center;
+            padding: 56px 24px 8px;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--sky);
+            border: 2px solid var(--sky-mid);
+            border-radius: var(--radius-pill);
+            padding: 8px 22px;
+            font-size: 0.78rem; font-weight: 800; color: var(--sky-deep);
+            letter-spacing: 0.1em; text-transform: uppercase;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 16px rgba(147,197,253,0.3);
+        }
+        .hero-badge span { font-size: 1rem; }
+        .hero h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 14px;
+        }
+        .hero h1 .line1 {
+            display: block;
+            color: #1E293B;
+        }
+        .hero h1 .line2 {
+            display: block;
+            background: linear-gradient(120deg, #93C5FD 0%, #C084FC 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .hero-sub {
+            font-size: 1rem; font-weight: 600; color: #94A3B8;
+            max-width: 460px; margin: 0 auto 36px;
+        }
+
+        /* ====== SEARCH ====== */
+        .search-wrap { display: flex; justify-content: center; margin-bottom: 8px; position: relative; z-index: 1; }
+        .search-box {
+            display: flex; align-items: center; gap: 12px;
+            background: white;
+            border: 2.5px solid rgba(196,181,253,0.4);
+            border-radius: var(--radius-pill);
+            padding: 14px 24px;
+            width: 100%; max-width: 460px;
+            box-shadow: 0 4px 20px rgba(139,92,246,0.1);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .search-box:focus-within {
+            border-color: var(--lavender-deep);
+            box-shadow: 0 6px 28px rgba(139,92,246,0.2);
+        }
+        .search-box input {
+            flex: 1; border: none; background: transparent; outline: none;
+            font-size: 0.92rem; font-family: 'Nunito', sans-serif; font-weight: 700; color: var(--text-dark);
+        }
+        .search-box input::placeholder { color: #c4b5fd; }
+        .search-icon { font-size: 1.1rem; }
+        .count-pill { text-align: center; margin: 14px 0 28px; font-size: 0.8rem; font-weight: 700; color: var(--text-soft); position: relative; z-index: 1; }
+
+        /* ====== GRID ====== */
+        .grid-section { padding: 0 36px 70px; position: relative; z-index: 1; }
+        .systems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 20px;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        /* BUBBLE CARD */
+        .sys-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 26px 22px 20px;
+            cursor: pointer;
+            position: relative; overflow: hidden;
+            box-shadow: var(--shadow-card);
+            border: 2px solid rgba(255,255,255,0.9);
+            display: flex; flex-direction: column; gap: 10px;
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease;
+        }
+        .sys-card:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        /* colorful top accent bar */
+        .sys-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+        .sys-card.c-pink::before  { background: linear-gradient(90deg, #fce4ec, #fda4af); }
+        .sys-card.c-sky::before   { background: linear-gradient(90deg, #e0f2fe, #93c5fd); }
+        .sys-card.c-lav::before   { background: linear-gradient(90deg, #ede9fe, #c4b5fd); }
+        .sys-card.c-mint::before  { background: linear-gradient(90deg, #d1fae5, #6ee7b7); }
+        .sys-card.c-peach::before { background: linear-gradient(90deg, #ffe4e6, #fca5a5); }
+        .sys-card.c-yellow::before{ background: linear-gradient(90deg, #fef9c3, #fde68a); }
+
+        .sys-card.c-pink:hover  { box-shadow: 0 16px 40px rgba(252,228,236,0.6), 0 4px 12px rgba(0,0,0,0.06); border-color: rgba(253,164,175,0.5); }
+        .sys-card.c-sky:hover   { box-shadow: 0 16px 40px rgba(224,242,254,0.7), 0 4px 12px rgba(0,0,0,0.06); border-color: rgba(147,197,253,0.5); }
+        .sys-card.c-lav:hover   { box-shadow: 0 16px 40px rgba(237,233,254,0.7), 0 4px 12px rgba(0,0,0,0.06); border-color: rgba(196,181,253,0.5); }
+        .sys-card.c-mint:hover  { box-shadow: 0 16px 40px rgba(209,250,229,0.7), 0 4px 12px rgba(0,0,0,0.06); border-color: rgba(110,231,183,0.5); }
+        .sys-card.c-peach:hover { box-shadow: 0 16px 40px rgba(255,228,230,0.7), 0 4px 12px rgba(0,0,0,0.06); border-color: rgba(252,165,165,0.5); }
+        .sys-card.c-yellow:hover{ box-shadow: 0 16px 40px rgba(254,249,195,0.8), 0 4px 12px rgba(0,0,0,0.06); border-color: rgba(253,230,138,0.6); }
+
+        /* Clay icon bubble */
+        .card-icon-wrap {
+            width: 56px; height: 56px; border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 4px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+        }
+        .c-pink  .card-icon-wrap { background: var(--pink); }
+        .c-sky   .card-icon-wrap { background: var(--sky); }
+        .c-lav   .card-icon-wrap { background: var(--lavender); }
+        .c-mint  .card-icon-wrap { background: var(--mint); }
+        .c-peach .card-icon-wrap { background: var(--peach); }
+        .c-yellow .card-icon-wrap{ background: var(--yellow); }
+
+        .card-name { font-size: 1.05rem; font-weight: 900; font-family: 'Plus Jakarta Sans', sans-serif; color: #1E293B; }
+        .card-type {
+            display: inline-block;
+            font-size: 0.67rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+            background: var(--bg); color: #334155;
+            padding: 4px 12px; border-radius: var(--radius-pill);
+        }
+        .card-dist { font-size: 0.73rem; font-weight: 600; color: #94A3B8; }
+        .card-cta {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #94A3B8;
+            opacity: 0; transform: translateY(4px);
+            transition: opacity 0.25s, transform 0.25s;
+            margin-top: 2px;
+        }
+        .card-cta svg { width: 14px; height: 14px; }
+        .sys-card:hover .card-cta { opacity: 1; transform: translateY(0); }
+
+        .no-results { text-align: center; padding: 60px; color: var(--text-soft); font-weight: 700; display: none; }
+
+        /* ====== FOOTER ====== */
+        footer {
+            margin-top: auto;
+            background: white;
+            border-top: 2px solid rgba(196,181,253,0.2);
+            padding: 28px 40px;
+            display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+            position: relative; z-index: 1;
+        }
+        .footer-left { font-size: 0.82rem; font-weight: 700; color: #6b7280; }
+        .footer-collab {
+            display: flex; align-items: center; gap: 14px;
+            background: linear-gradient(135deg, #fce4ec, #ede9fe, #e0f2fe);
+            border: 2px solid rgba(196,181,253,0.3);
+            border-radius: var(--radius-xl);
+            padding: 14px 26px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .footer-collab-text { font-size: 0.82rem; font-weight: 700; color: #334155; line-height: 1.5; }
+        .footer-collab-text strong { display: block; font-size: 1rem; font-weight: 900; font-family: 'Plus Jakarta Sans', sans-serif; color: #1E293B; }
+        .footer-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, #1d4ed8, #6d28d9);
+            color: white; text-decoration: none;
+            font-size: 0.88rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 12px 26px; border-radius: var(--radius-pill);
+            box-shadow: 0 6px 20px rgba(109,40,217,0.3);
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            white-space: nowrap;
+        }
+        .footer-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 12px 30px rgba(109,40,217,0.4); }
+        .footer-btn svg { width: 14px; height: 14px; }
+
+        /* ====== VIEWER OVERLAY ====== */
+        #viewer-overlay {
+            display: none; position: fixed; inset: 0; z-index: 500; flex-direction: column;
+            background: var(--bg);
+        }
+        #viewer-overlay.open { display: flex; }
+        .viewer-bar {
+            height: 66px; flex-shrink: 0;
+            background: white;
+            border-bottom: 2px solid rgba(196,181,253,0.2);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
+            box-shadow: 0 4px 20px rgba(139,92,246,0.07);
+        }
+        .vback-btn {
+            display: flex; align-items: center; gap: 8px;
+            background: white;
+            border: 2px solid rgba(196,181,253,0.4);
+            border-radius: var(--radius-pill);
+            padding: 9px 22px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 800; color: #111827;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .vback-btn:hover { background: var(--lavender); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(196,181,253,0.3); }
+        .vback-btn svg { width: 16px; height: 16px; }
+        .viewer-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem; font-weight: 900;
+            background: linear-gradient(90deg, #93C5FD, #C084FC);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .live-badge {
+            display: flex; align-items: center; gap: 6px;
+            background: #f0fdf4; border: 2px solid #bbf7d0;
+            border-radius: var(--radius-pill); padding: 7px 16px;
+            font-size: 0.75rem; font-weight: 800; color: #166534;
+        }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; animation: blink 1.5s infinite; }
+        .viewer-iframe-wrap { flex: 1; background: #050510; }
+        .viewer-iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+        @media (max-width: 640px) {
+            header, footer { padding: 14px 16px; }
+            .hero { padding: 36px 16px 8px; }
+            .grid-section { padding: 0 14px 50px; }
+            .collab-pill { padding: 8px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="collab-pill">
+        <span class="blink"></span>
+        <span class="collab-label">Në bashkëpunim me</span>
+        <a href="https://exoplanet.eu/exo3d/" target="_blank" rel="noopener" class="collab-link">Exo3D</a>
+    </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-badge"><span>🔭</span> Eksplorimi i Hapësirës</div>
+    <h1>
+        <span class="line1">Sisteme Ekzoplanetare</span>
+        <span class="line2">në pamje 3D</span>
+    </h1>
+    <p class="hero-sub">Zgjidhni një sistem yjor dhe eksploroni planetët e tij me teknologjinë Exo3D</p>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Kërko sistem... (p.sh. Kepler, TOI)" oninput="filterSystems()">
+    </div>
+</div>
+<div class="count-pill" id="count-pill"></div>
+
+<!-- GRID -->
+<div class="grid-section">
+    <div class="systems-grid" id="systems-grid"></div>
+    <div class="no-results" id="no-results">Asnjë sistem nuk u gjet 🌌</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-left">© 2026 FizikaInteraktive · Të dhënat nga <a href="https://exoplanet.eu" target="_blank" style="color:#6d28d9;font-weight:800;text-decoration:none;">exoplanet.eu</a></div>
+    <div class="footer-collab">
+        <div class="footer-collab-text">
+            Teknologjia 3D nga
+            <strong>Exo3D · exoplanet.eu</strong>
+        </div>
+        <a href="https://exoplanet.eu/exo3d/" target="_blank" rel="noopener" class="footer-btn">
+            Vizito Exo3D
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+        </a>
+    </div>
+</footer>
+
+<!-- VIEWER -->
+<div id="viewer-overlay">
+    <div class="viewer-bar">
+        <button class="vback-btn" onclick="closeViewer()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+            </svg>
+            Kthehu
+        </button>
+        <span class="viewer-title" id="viewer-title"></span>
+        <div class="live-badge"><span class="live-dot"></span> Live 3D</div>
+    </div>
+    <div class="viewer-iframe-wrap" id="iframe-wrap">
+        <iframe id="exo-iframe" src="" allowfullscreen></iframe>
+    </div>
+</div>
+
+<script>
+const COLORS = ['c-sky','c-lav','c-mint','c-pink','c-peach','c-yellow'];
+
+const systems = [
+    { name:'DH Tau',         file:'dh_tau.json',       type:'Gjigant i Ri',      dist:'437 vj',  icon:'🟠' },
+    { name:'TRAPPIST-1',     file:'trappist_1.json',   type:'Multi-Planetar',    dist:'39 vj',   icon:'💧' },
+    { name:'Sistemi Diellor',file:'solar_system.json', type:'Sistemi ynë',       dist:'0 vj',    icon:'☀️' },
+    { name:'HATS-69',        file:'hats_69.json',      type:'Sistem Yjor',       dist:'—',       icon:'🌟' },
+    { name:'Kepler-11',      file:'kepler_11.json',    type:'Shumë-Planetar',   dist:'2150 vj', icon:'🪐' },
+    { name:'Kepler-70',      file:'kepler_70.json',    type:'Sistem Kompakt',   dist:'3861 vj', icon:'🔵' },
+    { name:'Kepler-90',      file:'kepler_90.json',    type:'8 Planete',         dist:'2840 vj', icon:'🎯' },
+    { name:'Kepler-101',     file:'kepler_101.json',   type:'Kepler',            dist:'1200 vj', icon:'✨' },
+    { name:'Kepler-102',     file:'kepler_102.json',   type:'Kepler',            dist:'351 vj',  icon:'🌊' },
+    { name:'Kepler-103',     file:'kepler_103.json',   type:'Kepler',            dist:'891 vj',  icon:'🌿' },
+    { name:'Kepler-105',     file:'kepler_105.json',   type:'Kepler',            dist:'1043 vj', icon:'💫' },
+    { name:'Kepler-106',     file:'kepler_106.json',   type:'Kepler',            dist:'753 vj',  icon:'🌍' },
+    { name:'Kepler-107',     file:'kepler_107.json',   type:'Kepler Multi',      dist:'1680 vj', icon:'⚡' },
+    { name:'Kepler-110',     file:'kepler_110.json',   type:'Kepler',            dist:'—',       icon:'🌌' },
+    { name:'Kepler-111',     file:'kepler_111.json',   type:'Kepler',            dist:'—',       icon:'🌀' },
+    { name:'Kepler-112',     file:'kepler_112.json',   type:'Kepler',            dist:'—',       icon:'🎈' },
+    { name:'TOI-2134',       file:'toi_2134.json',     type:'TESS',              dist:'—',       icon:'❤️' },
+    { name:'TOI-1011',       file:'toi_1011.json',     type:'TESS',              dist:'—',       icon:'🟣' },
+    { name:'TOI-1064',       file:'toi_1064.json',     type:'TESS',              dist:'—',       icon:'🌟' },
+    { name:'TOI-1075',       file:'toi_1075.json',     type:'TESS Shkëmbor',    dist:'—',       icon:'🪨' },
+    { name:'TOI-1107',       file:'toi_1107.json',     type:'TESS',              dist:'—',       icon:'💜' },
+    { name:'TOI-1130',       file:'toi_1130.json',     type:'TESS',              dist:'—',       icon:'🌊' },
+    { name:'TOI-1135',       file:'toi_1135.json',     type:'TESS',              dist:'—',       icon:'🔭' },
+    { name:'TOI-1136',       file:'toi_1136.json',     type:'TESS Multi',        dist:'—',       icon:'🎵' },
+    { name:'TOI-1174',       file:'toi_1174.json',     type:'TESS',              dist:'—',       icon:'📡' },
+    { name:'TOI-1180',       file:'toi_1180.json',     type:'TESS',              dist:'—',       icon:'💥' },
+    { name:'TOI-1181',       file:'toi_1181.json',     type:'TESS',              dist:'—',       icon:'🔥' },
+    { name:'K2-10',          file:'k2_10.json',        type:'K2',                dist:'—',       icon:'🌐' },
+    { name:'K2-11',          file:'k2_11.json',        type:'K2',                dist:'—',       icon:'⭐' },
+    { name:'K2-100',         file:'k2_100.json',       type:'K2',                dist:'—',       icon:'🔴' },
+    { name:'K2-104',         file:'k2_104.json',       type:'K2',                dist:'—',       icon:'🟢' },
+    { name:'K2-105',         file:'k2_105.json',       type:'K2',                dist:'—',       icon:'🏔️' },
+    { name:'K2-106',         file:'k2_106.json',       type:'K2 Shkëmbor',      dist:'—',       icon:'🪐' },
+    { name:'K2-107',         file:'k2_107.json',       type:'K2',                dist:'—',       icon:'🎪' },
+    { name:'K2-108',         file:'k2_108.json',       type:'K2',                dist:'—',       icon:'🌕' },
+    { name:'K2-110',         file:'k2_110.json',       type:'K2',                dist:'—',       icon:'💎' },
+    { name:'K2-113',         file:'k2_113.json',       type:'K2',                dist:'—',       icon:'🎯' },
+    { name:'K2-128',         file:'k2_128.json',       type:'K2',                dist:'—',       icon:'♉' },
+    { name:'K2-183',         file:'k2_183.json',       type:'K2',                dist:'—',       icon:'♈' },
+];
+
+let filtered = [...systems];
+
+function renderGrid() {
+    const grid = document.getElementById('systems-grid');
+    const noRes = document.getElementById('no-results');
+    const pill = document.getElementById('count-pill');
+    grid.innerHTML = '';
+
+    if (!filtered.length) { noRes.style.display='block'; pill.textContent='0 sisteme'; return; }
+    noRes.style.display = 'none';
+    pill.textContent = `✦ ${filtered.length} sisteme të eksplorimit`;
+
+    filtered.forEach((s, i) => {
+        const color = COLORS[i % COLORS.length];
+        const d = document.createElement('div');
+        d.className = `sys-card ${color}`;
+        d.onclick = () => openSystem(s);
+        d.innerHTML = `
+            <div class="card-icon-wrap">${s.icon}</div>
+            <div class="card-name">${s.name}</div>
+            <div class="card-type">${s.type}</div>
+            ${s.dist !== '—' ? `<div class="card-dist">📍 ${s.dist} nga Toka</div>` : ''}
+            <div class="card-cta">
+                Eksplo 3D
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                </svg>
+            </div>
+        `;
+        grid.appendChild(d);
+    });
+}
+
+function filterSystems() {
+    const q = document.getElementById('search-input').value.toLowerCase().trim();
+    filtered = q ? systems.filter(s => s.name.toLowerCase().includes(q) || s.type.toLowerCase().includes(q)) : [...systems];
+    renderGrid();
+}
+
+function openSystem(sys) {
+    document.getElementById('viewer-title').textContent = sys.name;
+    document.getElementById('exo-iframe').src = `https://exoplanet.eu/exo3d/exo3d.html?system-url=system_json%2F${sys.file}`;
+    document.getElementById('viewer-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    const wrap = document.getElementById('iframe-wrap');
+    if (wrap.requestFullscreen) wrap.requestFullscreen().catch(()=>{});
+    else if (wrap.webkitRequestFullscreen) wrap.webkitRequestFullscreen();
+}
+
+function closeViewer() {
+    if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+    document.getElementById('viewer-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { document.getElementById('exo-iframe').src = ''; }, 300);
+}
+
+renderGrid();
+</script>
+</body>
+</html>

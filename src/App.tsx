@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const { user, profile, login } = useFirebase();
   const [showSplash, setShowSplash] = useState(true);
   const [isWarping, setIsWarping] = useState(false);
-  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'calendar'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'exo3d' | 'calendar'>('home');
 
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isAddMaterialOpen, setIsAddMaterialOpen] = useState(false);
@@ -52,7 +52,7 @@ const App: React.FC = () => {
     }, 800);
   };
 
-  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'calendar', data?: CategoryName | PhysicsTerm | null) => {
+  const navigate = (page: 'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'exo3d' | 'calendar', data?: CategoryName | PhysicsTerm | null) => {
     if (page === 'category') setSelectedCategory(data as CategoryName);
     if (page === 'details') {
         setSelectedTerm(data as PhysicsTerm);
@@ -167,6 +167,13 @@ const App: React.FC = () => {
         onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('magazine'); },
         rotation: 6,
         hoverStyles: { bgColor: '#ffc8dd', textColor: '#ffffff' }
+      },
+      {
+        label: 'Exo3d',
+        href: '#',
+        onClick: (e: React.MouseEvent) => { e.preventDefault(); navigate('exo3d'); },
+        rotation: -4,
+        hoverStyles: { bgColor: '#bde0fe', textColor: '#ffffff' }
       },
       {
         label: 'Renditja',
@@ -315,6 +322,12 @@ const App: React.FC = () => {
                   className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
                 >
                   <i className="fas fa-book-open w-5"></i> Revista
+                </button>
+                <button 
+                  onClick={() => navigate('exo3d')}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] hover:bg-slate-50 rounded-xl transition-all"
+                >
+                  <i className="fas fa-globe w-5"></i> Exo3d
                 </button>
               </div>
             </div>
@@ -803,6 +816,17 @@ const App: React.FC = () => {
               </button>
           </div>
           <iframe src="/revista.html" className="w-full h-full border-none" title="Revista" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals"></iframe>
+        </div>
+      )}
+
+      {activePage === 'exo3d' && (
+        <div className="fixed inset-0 z-[9999] bg-white overflow-hidden">
+          <div className="absolute top-4 left-4 z-[10000] flex items-center gap-4">
+             <button onClick={() => setActivePage('home')} className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors bg-white/80 p-2 rounded-full shadow-md">
+                <i className="fas fa-arrow-left"></i> Kthehu mbrapa
+              </button>
+          </div>
+          <iframe src="/exo3d.html" className="w-full h-full border-none" title="Exo3d" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals"></iframe>
         </div>
       )}
 
