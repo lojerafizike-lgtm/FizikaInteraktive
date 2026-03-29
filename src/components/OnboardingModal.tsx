@@ -43,30 +43,30 @@ export const OnboardingModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[10000] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-[2rem] p-6 md:p-10 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border-4 border-[#ffafcc]/20">
-        <div className="text-center mb-6 md:mb-8">
-          <div className="w-20 h-20 bg-[#ffafcc]/20 text-[#ffafcc] rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
+      <div className="bg-white rounded-[2rem] p-5 md:p-8 w-full max-w-md shadow-2xl border-4 border-[#ffafcc]/20">
+        <div className="text-center mb-4 md:mb-6">
+          <div className="w-16 h-16 bg-[#ffafcc]/20 text-[#ffafcc] rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
             <i className="fas fa-user-astronaut"></i>
           </div>
-          <h2 className="text-3xl font-black tracking-tighter text-slate-800">Mirësevini!</h2>
-          <p className="text-slate-500 mt-2">Le të krijojmë profilin tuaj për t'u bashkuar me renditjen e shkollës suaj.</p>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-slate-800">Mirësevini!</h2>
+          <p className="text-slate-500 text-sm mt-1">Le të krijojmë profilin tuaj për t'u bashkuar me renditjen e shkollës suaj.</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded-xl text-sm font-medium mb-6 text-center">
+          <div className="bg-red-50 text-red-500 p-2 rounded-xl text-xs font-medium mb-4 text-center">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Username (Nofka)</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">Username (Nofka)</label>
             <input 
               type="text" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="p.sh. Fizikanti123"
-              className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#ffafcc] focus:ring-4 focus:ring-[#ffafcc]/20 outline-none transition-all font-medium"
+              className="w-full px-3 py-2 md:py-3 rounded-xl border-2 border-slate-200 focus:border-[#ffafcc] focus:ring-4 focus:ring-[#ffafcc]/20 outline-none transition-all font-medium text-sm"
               maxLength={30}
               required
             />

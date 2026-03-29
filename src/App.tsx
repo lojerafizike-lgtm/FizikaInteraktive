@@ -871,44 +871,44 @@ const App: React.FC = () => {
       {/* Download Modal */}
       {showDownloadModal && (
         <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate__animated animate__fadeIn animate__faster">
-          <div className="bg-white rounded-[2rem] p-6 md:p-12 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate__animated animate__zoomIn animate__faster">
+          <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 max-w-3xl w-full shadow-2xl relative animate__animated animate__zoomIn animate__faster">
             <button 
               onClick={() => setShowDownloadModal(false)}
-              className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition-colors z-20"
+              className="absolute top-3 right-3 md:top-5 md:right-5 w-8 h-8 md:w-10 md:h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition-colors z-20"
             >
-              <i className="fas fa-times text-lg"></i>
+              <i className="fas fa-times text-base md:text-lg"></i>
             </button>
             
-            <div className="text-center mb-8 md:mb-10 relative z-10 mt-4 md:mt-0">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg text-white text-3xl md:text-4xl transform rotate-3">
+            <div className="text-center mb-5 md:mb-8 relative z-10 mt-2 md:mt-0">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-lg text-white text-2xl md:text-3xl transform rotate-3">
                 <i className="fas fa-cloud-download-alt"></i>
               </div>
-              <h2 className="text-2xl md:text-4xl font-black text-slate-800 mb-3 md:mb-4 tracking-tight">Instalo Aplikacionin</h2>
-              <p className="text-slate-500 text-base md:text-lg font-medium max-w-lg mx-auto">
+              <h2 className="text-xl md:text-3xl font-black text-slate-800 mb-2 md:mb-3 tracking-tight">Instalo Aplikacionin</h2>
+              <p className="text-slate-500 text-sm md:text-base font-medium max-w-lg mx-auto leading-tight">
                 Merrni FizikaInteraktive me vete kudo! Zgjidhni platformën tuaj për të instaluar aplikacionin.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 relative z-10">
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-[#a8e6cf]/20 border-2 border-slate-100 hover:border-[#a8e6cf] rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-android text-4xl text-[#a8e6cf] mb-4 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700">Android</span>
-                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 relative z-10">
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-[#a8e6cf]/20 border-2 border-slate-100 hover:border-[#a8e6cf] rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-android text-3xl md:text-4xl text-[#a8e6cf] mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700 text-sm md:text-base">Android</span>
+                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
               </a>
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-apple text-4xl text-slate-700 mb-4 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700">iPhone</span>
-                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-apple text-3xl md:text-4xl text-slate-700 mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700 text-sm md:text-base">iPhone</span>
+                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
               </a>
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-[#bde0fe]/20 border-2 border-slate-100 hover:border-[#bde0fe] rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-windows text-4xl text-[#bde0fe] mb-4 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700">Windows</span>
-                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-[#bde0fe]/20 border-2 border-slate-100 hover:border-[#bde0fe] rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-windows text-3xl md:text-4xl text-[#bde0fe] mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700 text-sm md:text-base">Windows</span>
+                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
               </a>
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-apple text-4xl text-slate-700 mb-4 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700">Mac</span>
-                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-apple text-3xl md:text-4xl text-slate-700 mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700 text-sm md:text-base">Mac</span>
+                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
               </a>
             </div>
             
