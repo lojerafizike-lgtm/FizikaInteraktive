@@ -297,15 +297,24 @@ const App: React.FC = () => {
       <nav className="hidden md:flex sticky top-0 z-40 px-8 py-6 bg-white/60 backdrop-blur-3xl border-b border-white/40 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
           <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate('home')}>
-            <div className="w-14 h-14 bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0 overflow-hidden p-2">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0 overflow-hidden">
               <img 
-                src="/favicon.svg" 
+                src="/logoja-jote.png" 
                 alt="Logo" 
-                className="w-full h-full object-contain" 
+                className="w-full h-full object-cover" 
                 referrerPolicy="no-referrer" 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const parent = e.currentTarget.parentElement;
+                  if (parent && !parent.querySelector('.fa-atom')) {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-atom text-xl';
+                    parent.appendChild(icon);
+                  }
+                }} 
               />
             </div>
-            <h1 className="text-xl lg:text-2xl font-black tracking-tight">Fizika<span className="text-[#FF416C]">Interaktive</span></h1>
+            <h1 className="text-xl lg:text-2xl font-black tracking-tight">Fizika<span className="text-[#ffafcc]">Interaktive</span></h1>
           </div>
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
@@ -862,25 +871,25 @@ const App: React.FC = () => {
       {/* Download Modal */}
       {showDownloadModal && (
         <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate__animated animate__fadeIn animate__faster">
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 max-w-3xl w-full shadow-2xl relative overflow-hidden animate__animated animate__zoomIn animate__faster">
+          <div className="bg-white rounded-[2rem] p-6 md:p-12 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate__animated animate__zoomIn animate__faster">
             <button 
               onClick={() => setShowDownloadModal(false)}
-              className="absolute top-6 right-6 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition-colors z-10"
+              className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition-colors z-20"
             >
               <i className="fas fa-times text-lg"></i>
             </button>
             
-            <div className="text-center mb-10 relative z-10">
-              <div className="w-20 h-20 bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg text-white text-4xl transform rotate-3">
+            <div className="text-center mb-8 md:mb-10 relative z-10 mt-4 md:mt-0">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg text-white text-3xl md:text-4xl transform rotate-3">
                 <i className="fas fa-cloud-download-alt"></i>
               </div>
-              <h2 className="text-3xl md:text-4xl font-black text-slate-800 mb-4 tracking-tight">Instalo Aplikacionin</h2>
-              <p className="text-slate-500 text-lg font-medium max-w-lg mx-auto">
+              <h2 className="text-2xl md:text-4xl font-black text-slate-800 mb-3 md:mb-4 tracking-tight">Instalo Aplikacionin</h2>
+              <p className="text-slate-500 text-base md:text-lg font-medium max-w-lg mx-auto">
                 Merrni FizikaInteraktive me vete kudo! Zgjidhni platformën tuaj për të instaluar aplikacionin.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 relative z-10">
               <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-[#a8e6cf]/20 border-2 border-slate-100 hover:border-[#a8e6cf] rounded-3xl transition-all hover:-translate-y-1">
                 <i className="fab fa-android text-4xl text-[#a8e6cf] mb-4 group-hover:scale-110 transition-transform"></i>
                 <span className="font-black text-slate-700">Android</span>
@@ -994,7 +1003,7 @@ const App: React.FC = () => {
             <div className="space-y-8">
               <div>
                 <h2 className="text-3xl font-black text-slate-800 mb-2 tracking-tighter flex items-center gap-3">
-                  <i className="fas fa-bolt text-[#FF416C] animate-pulse"></i> Fizika<span className="text-[#FF416C]">.</span>
+                  <i className="fas fa-atom text-[#ffafcc] animate-spin-slow"></i> Fizika<span className="text-[#ffafcc]">.</span>
                 </h2>
                 <p className="text-[#a2d2ff] font-bold tracking-widest text-xs uppercase mb-4">Edukimi Interaktiv 2026</p>
                 <p className="text-sm font-medium flex items-start gap-3 text-slate-500 leading-relaxed">
@@ -1275,7 +1284,7 @@ const App: React.FC = () => {
       
       {/* Full Screen Game Overlay */}
       {playingGame && (
-        <div id="game-overlay-container" className="fixed top-0 left-0 w-full h-[100dvh] z-[9999] bg-slate-900 flex flex-col">
+        <div id="game-overlay-container" className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col">
           <div className="bg-slate-800 text-white p-2 md:p-4 flex justify-between items-center shadow-md shrink-0">
             <h2 className="text-sm md:text-xl font-bold font-['Orbitron'] truncate pr-2">{playingGame.title}</h2>
             <div className="flex items-center gap-2">
@@ -1380,34 +1389,35 @@ const DraggableCalculator: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
   return (
     <div 
-      className="fixed z-[10000] shadow-2xl rounded-[1.5rem] overflow-hidden bg-white border border-pink-200"
+      className="fixed z-[10000] shadow-2xl rounded-[1.5rem] overflow-hidden bg-white border border-pink-200 flex flex-col"
       style={{ 
-        bottom: '100px', 
-        right: '30px',
-        transform: `translate(${position.x}px, ${position.y}px)`,
+        left: '50%',
+        top: '50%',
+        transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px))`,
         width: '320px',
         height: '520px',
         maxWidth: '95vw',
-        maxHeight: '90vh',
+        maxHeight: '85vh',
         touchAction: 'none'
       }}
     >
       <div 
-        className="h-8 bg-slate-100 cursor-grab active:cursor-grabbing flex items-center justify-center border-b border-slate-200"
+        className="h-10 bg-slate-100 cursor-grab active:cursor-grabbing flex items-center justify-center border-b border-slate-200 shrink-0 relative"
         onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
         onTouchStart={(e) => handleStart(e.touches[0].clientX, e.touches[0].clientY)}
       >
-        <div className="w-10 h-1 bg-slate-400 rounded-full"></div>
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
+        <button 
+          onClick={onClose}
+          onTouchEnd={(e) => { e.stopPropagation(); onClose(); }}
+          className="absolute right-2 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-pink-500 hover:bg-pink-50 rounded-full transition-colors z-10"
+        >
+          <i className="fas fa-times text-lg"></i>
+        </button>
       </div>
-      <button 
-        onClick={onClose}
-        className="absolute top-1 right-3 text-slate-500 hover:text-pink-500 text-xl font-bold z-10"
-      >
-        <i className="fas fa-times"></i>
-      </button>
       <iframe 
         src="/kalk2222.html" 
-        className="w-full h-[calc(100%-32px)] border-none" 
+        className="w-full flex-1 border-none" 
         title="Kalkulatori"
       ></iframe>
     </div>

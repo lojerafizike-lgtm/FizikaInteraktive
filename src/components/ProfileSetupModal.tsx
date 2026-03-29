@@ -56,7 +56,7 @@ export const ProfileSetupModal: React.FC = () => {
         <motion.div 
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-4 border-white"
+          className="bg-white w-full max-w-md max-h-[90vh] overflow-y-auto rounded-[2.5rem] shadow-2xl border-4 border-white"
         >
           <div className="bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] p-8 text-white text-center relative">
             {forceShow && (

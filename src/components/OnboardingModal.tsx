@@ -43,8 +43,8 @@ export const OnboardingModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[10000] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-[2rem] p-8 md:p-10 w-full max-w-md shadow-2xl border-4 border-[#ffafcc]/20">
-        <div className="text-center mb-8">
+      <div className="bg-white rounded-[2rem] p-6 md:p-10 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border-4 border-[#ffafcc]/20">
+        <div className="text-center mb-6 md:mb-8">
           <div className="w-20 h-20 bg-[#ffafcc]/20 text-[#ffafcc] rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
             <i className="fas fa-user-astronaut"></i>
           </div>

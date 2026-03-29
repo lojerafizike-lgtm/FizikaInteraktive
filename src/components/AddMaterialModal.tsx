@@ -79,7 +79,7 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
       >
         <div className="bg-gradient-to-r from-[#a2d2ff] to-[#bde0fe] p-6 text-white flex justify-between items-center">
           <h2 className="text-2xl font-black">Shto Material</h2>
