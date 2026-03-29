@@ -850,9 +850,22 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
 
   const isTeacher = profile?.role === 'mesues' || user?.email === 'lojerafizike@gmail.com';
 
+  const downloadFile = (url: string, filename: string = 'material') => {
+    if (url.startsWith('data:')) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
   const openLessonPlanAsPDF = (plan: Material) => {
     if (plan.fileUrl) {
-      window.open(plan.fileUrl, '_blank');
+      downloadFile(plan.fileUrl, plan.title);
       return;
     }
 
@@ -983,7 +996,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
                   } else if (m.fileUrl) {
-                    window.open(m.fileUrl, '_blank');
+                    downloadFile(m.fileUrl, m.title);
                   } else if (m.type === 'Për Mësuesit') {
                     openLessonPlanAsPDF(m);
                   } else if (m.actionUrl && m.actionUrl !== '#') {
@@ -1025,7 +1038,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
                   } else if (m.fileUrl) {
-                    window.open(m.fileUrl, '_blank');
+                    downloadFile(m.fileUrl, m.title);
                   } else if (m.type === 'Për Mësuesit') {
                     openLessonPlanAsPDF(m);
                   } else if (m.actionUrl && m.actionUrl !== '#') {

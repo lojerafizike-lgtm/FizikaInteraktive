@@ -69,7 +69,7 @@ service cloud.firestore {
              data.authorId == request.auth.uid &&
              data.authorName is string && data.authorName.size() < 100 &&
              data.createdAt is timestamp &&
-             (!('fileUrl' in data) || (data.fileUrl is string && data.fileUrl.size() < 1000)) &&
+             (!('fileUrl' in data) || (data.fileUrl is string && data.fileUrl.size() < 1048576)) &&
              (!('fileName' in data) || (data.fileName is string && data.fileName.size() < 255));
     }
 

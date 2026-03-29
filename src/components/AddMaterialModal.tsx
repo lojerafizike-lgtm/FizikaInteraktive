@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { db, collection, addDoc, serverTimestamp, handleFirestoreError, OperationType, storage, ref, uploadBytes, getDownloadURL } from '../firebase';
+import { db, collection, addDoc, serverTimestamp, handleFirestoreError, OperationType } from '../firebase';
 import { useFirebase } from '../contexts/FirebaseContext';
 
 export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
@@ -22,39 +22,54 @@ export default function AddMaterialModal({ onClose }: { onClose: () => void }) {
     setIsSubmitting(true);
     try {
       console.log("Starting file upload process...");
-      // Upload file to Firebase Storage
-      const fileExtension = file.name.split('.').pop();
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
-      const storageRef = ref(storage, `materials/${user.uid}/${fileName}`);
       
-      console.log("Uploading to storage path:", `materials/${user.uid}/${fileName}`);
-      await uploadBytes(storageRef, file);
-      console.log("File uploaded successfully.");
-      
-      const downloadUrl = await getDownloadURL(storageRef);
-      console.log("Download URL obtained:", downloadUrl);
-      
-      const materialData = {
-        type,
-        topic,
-        title,
-        authorId: user.uid,
-        authorName: profile?.displayName || user.displayName || 'Mësues',
-        createdAt: serverTimestamp(),
-        fileUrl: downloadUrl,
-        fileName: file.name
-      };
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const base64 = event.target?.result as string;
+          
+          // Check size (Firestore limit is 1MB, base64 adds ~33% overhead)
+          // Limit to ~700KB actual file size
+          if (base64.length > 900000) {
+            alert('Skedari është shumë i madh. Ju lutem ngarkoni një skedar më të vogël se 600KB.');
+            setIsSubmitting(false);
+            return;
+          }
 
-      console.log("Adding document to Firestore:", materialData);
-      await addDoc(collection(db, 'materials'), materialData);
-      console.log("Document added successfully.");
+          const materialData = {
+            type,
+            topic,
+            title,
+            authorId: user.uid,
+            authorName: profile?.displayName || user.displayName || 'Mësues',
+            createdAt: serverTimestamp(),
+            fileUrl: base64,
+            fileName: file.name
+          };
+
+          console.log("Adding document to Firestore:", materialData);
+          await addDoc(collection(db, 'materials'), materialData);
+          console.log("Document added successfully.");
+          
+          alert('Materiali u shtua me sukses!');
+          onClose();
+        } catch (error) {
+          console.error('Error adding material (detailed):', error);
+          handleFirestoreError(error, OperationType.CREATE, 'materials');
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
       
-      alert('Materiali u shtua me sukses!');
-      onClose();
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+        alert('Gabim gjatë leximit të skedarit.');
+        setIsSubmitting(false);
+      };
+      
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.error('Error adding material (detailed):', error);
-      handleFirestoreError(error, OperationType.CREATE, 'materials');
-    } finally {
+      console.error('Error in file upload process:', error);
       setIsSubmitting(false);
     }
   };

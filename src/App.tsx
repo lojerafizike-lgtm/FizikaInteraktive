@@ -18,9 +18,19 @@ import AddMaterialModal from './components/AddMaterialModal';
 import { useFirebase } from './contexts/FirebaseContext';
 import { updateUserScore } from './firebase';
 
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
 const App: React.FC = () => {
   const { user, profile, login } = useFirebase();
   const [showSplash, setShowSplash] = useState(true);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
   const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'exo3d' | 'calendar'>('home');
 
@@ -34,6 +44,33 @@ const App: React.FC = () => {
   const [mobileMenuSelectionOpen, setMobileMenuSelectionOpen] = useState(false);
   const [playingGame, setPlayingGame] = useState<{ title: string, url?: string, html?: string } | null>(null);
   const [activeGameTab, setActiveGameTab] = useState<'digjitale' | 'eksperimente' | 'shkolle' | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      alert("Për të instaluar aplikacionin e sigurtë, hapni menunë e shfletuesit tuaj (tre pikat lart djathtas) dhe zgjidhni 'Shto në Ekranin Kryesor' (Add to Home Screen).");
+    }
+  };
   
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -49,6 +86,7 @@ const App: React.FC = () => {
     setIsWarping(true);
     setTimeout(() => {
       setShowSplash(false);
+      setTimeout(() => setShowDownloadModal(true), 600);
     }, 800);
   };
 
@@ -830,6 +868,57 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* Download Modal */}
+      {showDownloadModal && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate__animated animate__fadeIn animate__faster">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 max-w-3xl w-full shadow-2xl relative overflow-hidden animate__animated animate__zoomIn animate__faster">
+            <button 
+              onClick={() => setShowDownloadModal(false)}
+              className="absolute top-6 right-6 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition-colors z-10"
+            >
+              <i className="fas fa-times text-lg"></i>
+            </button>
+            
+            <div className="text-center mb-10 relative z-10">
+              <div className="w-20 h-20 bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg text-white text-4xl transform rotate-3">
+                <i className="fas fa-cloud-download-alt"></i>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-800 mb-4 tracking-tight">Instalo Aplikacionin</h2>
+              <p className="text-slate-500 text-lg font-medium max-w-lg mx-auto">
+                Merrni FizikaInteraktive me vete kudo! Zgjidhni platformën tuaj për të instaluar aplikacionin.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-[#a8e6cf]/20 border-2 border-slate-100 hover:border-[#a8e6cf] rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-android text-4xl text-[#a8e6cf] mb-4 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700">Android</span>
+                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+              </a>
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-apple text-4xl text-slate-700 mb-4 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700">iPhone</span>
+                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+              </a>
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-[#bde0fe]/20 border-2 border-slate-100 hover:border-[#bde0fe] rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-windows text-4xl text-[#bde0fe] mb-4 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700">Windows</span>
+                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+              </a>
+              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-6 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-3xl transition-all hover:-translate-y-1">
+                <i className="fab fa-apple text-4xl text-slate-700 mb-4 group-hover:scale-110 transition-transform"></i>
+                <span className="font-black text-slate-700">Mac</span>
+                <span className="text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
+              </a>
+            </div>
+            
+            {/* Decorative blobs */}
+            <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#ffafcc]/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#bde0fe]/20 rounded-full blur-3xl pointer-events-none"></div>
+          </div>
+        </div>
+      )}
+
       <footer className="bg-white text-slate-600 py-16 md:py-24 mt-32 rounded-t-[3rem] md:rounded-t-[5rem] border-t-8 border-[#ffafcc] relative overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
         {/* Decorative background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
@@ -868,6 +957,47 @@ const App: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-6 md:px-12 max-w-7xl relative z-10">
+          {/* App Download Banner */}
+          <div className="bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9] rounded-[3rem] p-8 md:p-12 mb-16 flex flex-col lg:flex-row items-center justify-between gap-8 border-2 border-white shadow-xl relative overflow-hidden">
+            <div className="relative z-10 text-center lg:text-left">
+              <h3 className="text-2xl md:text-3xl font-black text-slate-800 mb-3 tracking-tight">Instalo Aplikacionin</h3>
+              <p className="text-slate-500 font-medium max-w-md">Eksploro fizikën kudo që të jesh. E disponueshme për të gjitha pajisjet tuaja.</p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 relative z-10">
+              <a href="#" onClick={handleInstallClick} className="flex items-center gap-3 px-6 py-3 bg-white hover:bg-[#a8e6cf]/10 border-2 border-slate-100 hover:border-[#a8e6cf] rounded-2xl transition-all shadow-sm hover:shadow-md group">
+                <i className="fab fa-android text-2xl text-[#a8e6cf] group-hover:scale-110 transition-transform"></i>
+                <div className="text-left">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Instalo për</div>
+                  <div className="font-black text-slate-700 leading-none">Android</div>
+                </div>
+              </a>
+              <a href="#" onClick={handleInstallClick} className="flex items-center gap-3 px-6 py-3 bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-300 rounded-2xl transition-all shadow-sm hover:shadow-md group">
+                <i className="fab fa-apple text-2xl text-slate-700 group-hover:scale-110 transition-transform"></i>
+                <div className="text-left">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Instalo për</div>
+                  <div className="font-black text-slate-700 leading-none">iPhone</div>
+                </div>
+              </a>
+              <a href="#" onClick={handleInstallClick} className="flex items-center gap-3 px-6 py-3 bg-white hover:bg-[#bde0fe]/10 border-2 border-slate-100 hover:border-[#bde0fe] rounded-2xl transition-all shadow-sm hover:shadow-md group">
+                <i className="fab fa-windows text-2xl text-[#bde0fe] group-hover:scale-110 transition-transform"></i>
+                <div className="text-left">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Instalo për</div>
+                  <div className="font-black text-slate-700 leading-none">Windows</div>
+                </div>
+              </a>
+              <a href="#" onClick={handleInstallClick} className="flex items-center gap-3 px-6 py-3 bg-white hover:bg-slate-50 border-2 border-slate-100 hover:border-slate-300 rounded-2xl transition-all shadow-sm hover:shadow-md group">
+                <i className="fab fa-apple text-2xl text-slate-700 group-hover:scale-110 transition-transform"></i>
+                <div className="text-left">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Instalo për</div>
+                  <div className="font-black text-slate-700 leading-none">Mac</div>
+                </div>
+              </a>
+            </div>
+            {/* Decorative blobs */}
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#ffafcc]/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#bde0fe]/10 rounded-full blur-3xl pointer-events-none"></div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 mb-16">
             {/* Col 1: Brand & Socials */}
             <div className="space-y-8">
