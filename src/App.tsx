@@ -297,24 +297,15 @@ const App: React.FC = () => {
       <nav className="hidden md:flex sticky top-0 z-40 px-8 py-6 bg-white/60 backdrop-blur-3xl border-b border-white/40 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
           <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate('home')}>
-            <div className="w-14 h-14 bg-gradient-to-br from-[#bde0fe] via-[#ffafcc] to-[#cdb4db] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0 overflow-hidden">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 shrink-0 overflow-hidden p-2">
               <img 
-                src="/logoja-jote.png" 
+                src="/favicon.svg" 
                 alt="Logo" 
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-contain" 
                 referrerPolicy="no-referrer" 
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  const parent = e.currentTarget.parentElement;
-                  if (parent && !parent.querySelector('.fa-atom')) {
-                    const icon = document.createElement('i');
-                    icon.className = 'fas fa-atom text-xl';
-                    parent.appendChild(icon);
-                  }
-                }} 
               />
             </div>
-            <h1 className="text-xl lg:text-2xl font-black tracking-tight">Fizika<span className="text-[#ffafcc]">Interaktive</span></h1>
+            <h1 className="text-xl lg:text-2xl font-black tracking-tight">Fizika<span className="text-[#FF416C]">Interaktive</span></h1>
           </div>
           <div className="flex items-center gap-4 lg:gap-10">
             <button onClick={() => navigate('home')} className="hidden md:block text-xs lg:text-sm font-black uppercase tracking-widest text-slate-500 hover:text-[#ffafcc] transition-colors">Fillimi</button>
@@ -1003,7 +994,7 @@ const App: React.FC = () => {
             <div className="space-y-8">
               <div>
                 <h2 className="text-3xl font-black text-slate-800 mb-2 tracking-tighter flex items-center gap-3">
-                  <i className="fas fa-atom text-[#ffafcc] animate-spin-slow"></i> Fizika<span className="text-[#ffafcc]">.</span>
+                  <i className="fas fa-bolt text-[#FF416C] animate-pulse"></i> Fizika<span className="text-[#FF416C]">.</span>
                 </h2>
                 <p className="text-[#a2d2ff] font-bold tracking-widest text-xs uppercase mb-4">Edukimi Interaktiv 2026</p>
                 <p className="text-sm font-medium flex items-start gap-3 text-slate-500 leading-relaxed">
