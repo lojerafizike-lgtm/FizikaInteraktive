@@ -1,122 +1,156 @@
-import { PhysicsData } from '../types';
+import { PhysicsData, PhysicsTerm } from '../types';
 
-interface Pyetje {
+interface QuizQuestion {
     pyetja: string;
     opsionet: string[];
-    pergjigjjaESakte: string;
-    vështirësia: 'mesatare' | 'e vështirë';
+    pergjgjjaESakte: string;
 }
+
+// ── Helpers ────────────────────────────────────────────────────────────────
 
 function përzieje<T>(arr: T[]): T[] {
-    return [...arr].sort(() => Math.random() - 0.5);
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
 
+/**
+ * Merr `sasi` distraktore unike nga lista, duke shmangur indexin aktual
+ * dhe vlerën e saktë (që të mos kemi dy përgjigje të sakta).
+ */
 function merrDistraktore(
-    madhesite: any[],
+    madhesite: PhysicsTerm[],
     indexAktual: number,
-    fusha: keyof typeof madhesite[0],
-    sasi: number = 2
+    fusha: keyof PhysicsTerm,
+    vlera_e_sakte: string,
+    sasi: number
 ): string[] {
     const kandidatët = madhesite
         .filter((_, i) => i !== indexAktual)
-        .map(m => m[fusha])
-        .filter((v): v is string => typeof v === 'string' && v.trim() !== '');
+        .map(m => m[fusha] as string | undefined)
+        .filter((v): v is string => !!v && v.trim() !== '' && v.trim() !== vlera_e_sakte);
 
-    // Përziejë dhe merr distraktore unike
     const unike = [...new Set(kandidatët)];
     return përzieje(unike).slice(0, sasi);
 }
 
-export function gjeneroKuizPerKategorine(kategoria: string, teDhenat: PhysicsData): Pyetje[] {
-    const madhesite = teDhenat[kategoria];
-    if (!madhesite || madhesite.length === 0) return [];
+/**
+ * Ndërto 4 opsione (1 i saktë + deri 3 distraktore) dhe i përzieje.
+ * Nëse nuk ka mjaftueshëm distraktore, kthe null (pyetja hidhet).
+ */
+function ndërtoOpsione(
+    sakte: string,
+    distraktore: string[],
+    minimumiDistraktore: number = 2
+): string[] | null {
+    const unike = [...new Set(distraktore)].filter(d => d !== sakte);
+    if (unike.length < minimumiDistraktore) return null;
+    return përzieje([sakte, ...unike.slice(0, 3)]);
+}
 
-    const kuizi: Pyetje[] = [];
+// ── Gjeneratori kryesor ────────────────────────────────────────────────────
+
+export function gjeneroKuizPerKategorine(
+    kategoria: string,
+    teDhenat: PhysicsData
+): QuizQuestion[] {
+    const madhesite = teDhenat[kategoria];
+    if (!madhesite || madhesite.length < 2) return [];
+
+    const kuizi: QuizQuestion[] = [];
 
     madhesite.forEach((madhesia, index) => {
-        const emri = madhesia.name.split('. ').slice(1).join('. ') || madhesia.name;
+        const emri = madhesia.name.split('. ').slice(1).join('. ').trim() || madhesia.name;
 
-        // ── Pyetja 1: Çfarë përfaqëson (e vështirë — 4 opsione) ──────────────
-        const distr1 = merrDistraktore(madhesite, index, 'desc', 3);
-        if (distr1.length >= 2) {
+        // ── P1: Çfarë përfaqëson — kërkon njohje të saktë të definicionit ──
+        const distrDesc = merrDistraktore(madhesite, index, 'desc', madhesia.desc, 3);
+        const opsDesc = ndërtoOpsione(madhesia.desc, distrDesc);
+        if (opsDesc) {
             kuizi.push({
-                pyetja: `Cili nga përkufizimet e mëposhtme e përshkruan saktë "${emri}"?`,
-                opsionet: përzieje([madhesia.desc, ...distr1]),
-                pergjigjjaESakte: madhesia.desc,
-                vështirësia: 'e vështirë'
+                pyetja: `Cili nga përkufizimet e mëposhtme e përshkruan SAKTË madhësinë "${emri}"?`,
+                opsionet: opsDesc,
+                pergjgjjaESakte: madhesia.desc
             });
         }
 
-        // ── Pyetja 2: Formula (e vështirë — formulë alternative false) ────────
-        const distrForm = merrDistraktore(madhesite, index, 'form', 3);
-        if (distrForm.length >= 2 && madhesia.form) {
-            // Krijo një formulë "të ngjashme" por të gabuar duke ndryshuar operatorë
+        // ── P2: Formula — me distraktore nga formula të ngjashme ────────────
+        if (madhesia.form && madhesia.form.trim()) {
+            const distrForm = merrDistraktore(madhesite, index, 'form', madhesia.form, 3);
+
+            // Shto formulë "false të afërt" duke manipuluar simbole
             const formulëFalse = madhesia.form
                 .replace(/\//g, '·')
                 .replace(/²/g, '³')
-                .replace(/\+/g, '−');
+                .replace(/\+/g, '−')
+                .replace(/−/g, '+');
+            if (formulëFalse !== madhesia.form) {
+                distrForm.push(formulëFalse);
+            }
 
-            const opsionetFormulës = përzieje([
-                madhesia.form,
-                ...distrForm.slice(0, 2),
-                formulëFalse !== madhesia.form ? formulëFalse : distrForm[2] ?? distrForm[0]
-            ].filter((v, i, arr) => arr.indexOf(v) === i)); // unike
+            const opsForm = ndërtoOpsione(madhesia.form, distrForm);
+            if (opsForm) {
+                kuizi.push({
+                    pyetja: `Identifiko formulën KORREKTE matematikore për "${emri}". Kujdes: formulat e ngjashme janë kurth!`,
+                    opsionet: opsForm,
+                    pergjgjjaESakte: madhesia.form
+                });
+            }
+        }
 
+        // ── P3: Njësia SI — otherUnits vendoset si kurth i qëllimshëm ────────
+        if (madhesia.unit && madhesia.unit.trim()) {
+            const distrUnit = merrDistraktore(madhesite, index, 'unit', madhesia.unit, 2);
+
+            // Nëse ka njësi alternative, shto si kurth të eksplicitë
+            if (madhesia.otherUnits && madhesia.otherUnits.trim()) {
+                distrUnit.unshift(madhesia.otherUnits);
+            }
+
+            const opsUnit = ndërtoOpsione(madhesia.unit, distrUnit);
+            if (opsUnit) {
+                kuizi.push({
+                    pyetja: `Cila është njësia BAZË SI për "${emri}"? (Njësitë alternative dhe të gabuara janë të inkluduara si kurth!)`,
+                    opsionet: opsUnit,
+                    pergjgjjaESakte: madhesia.unit
+                });
+            }
+        }
+
+        // ── P4: Natyra vektorial/skalar ───────────────────────────────────────
+        if (madhesia.nature && madhesia.nature !== '-') {
+            const natyraTjeter = madhesia.nature === 'Vektoriale' ? 'Skalare' : 'Vektoriale';
+            const opsNature = përzieje([
+                madhesia.nature,
+                natyraTjeter,
+                'As vektoriale, as skalare',
+                'Varet nga situata'
+            ]);
             kuizi.push({
-                pyetja: `Identifiko formulën e saktë matematikore për "${emri}":`,
-                opsionet: opsionetFormulës.slice(0, 4),
-                pergjigjjaESakte: madhesia.form,
-                vështirësia: 'e vështirë'
+                pyetja: `Madhësia fizike "${emri}" është madhësi:`,
+                opsionet: opsNature,
+                pergjgjjaESakte: madhesia.nature
             });
         }
 
-        // ── Pyetja 3: Njësia SI (me kurth — otherUnits është gabim) ──────────
-        const distrUnit = merrDistraktore(madhesite, index, 'unit', 2);
-        if (distrUnit.length >= 1) {
-            const opsionetNjësisë = përzieje([
-                madhesia.unit,
-                ...distrUnit,
-                // Shto njësinë alternative si kurth (nëse ekziston)
-                ...(madhesia.otherUnits ? [madhesia.otherUnits] : [])
-            ].filter((v, i, arr) => v && arr.indexOf(v) === i)).slice(0, 4);
+        // ── P5: Gjej madhësinë nga njësia (inversim i P3) ────────────────────
+        if (madhesia.unit && madhesia.unit.trim()) {
+            const distrEmra = merrDistraktore(madhesite, index, 'name', madhesia.name, 3)
+                .map(n => n.split('. ').slice(1).join('. ').trim() || n);
 
-            kuizi.push({
-                pyetja: `Cila është njësia bazë SI për madhësinë "${emri}"? (Kujdes: njësitë alternative janë kurth!)`,
-                opsionet: opsionetNjësisë,
-                pergjigjjaESakte: madhesia.unit,
-                vështirësia: 'e vështirë'
-            });
-        }
-
-        // ── Pyetja 4: Lidhja midis madhësive (sfiduese) ───────────────────────
-        const tjetër = madhesite.find((m, i) => i !== index && m.form?.includes(madhesia.symbol ?? ''));
-        if (tjetër) {
-            const distrL = merrDistraktore(madhesite, index, 'name', 3)
-                .map(n => n.split('. ').slice(1).join('. ') || n);
-
-            kuizi.push({
-                pyetja: `Madhësia "${emri}" shfaqet drejtpërdrejt në formulën e cilës madhësi tjetër?`,
-                opsionet: përzieje([
-                    tjetër.name.split('. ').slice(1).join('. ') || tjetër.name,
-                    ...distrL.slice(0, 3)
-                ]).slice(0, 4),
-                pergjigjjaESakte: tjetër.name.split('. ').slice(1).join('. ') || tjetër.name,
-                vështirësia: 'e vështirë'
-            });
-        }
-
-        // ── Pyetja 5: E/Jo — fakt specifik ────────────────────────────────────
-        if (madhesia.desc) {
-            const fjalëKyçe = madhesia.desc.split(' ').slice(0, 4).join(' ');
-            kuizi.push({
-                pyetja: `Vlerëso: "${fjalëKyçe}..." është fillimi i saktë i përkufizimit për "${emri}".`,
-                opsionet: përzieje(['E vërtetë', 'E gabuar']),
-                pergjigjjaESakte: 'E vërtetë',
-                vështirësia: 'mesatare'
-            });
+            const opsEmra = ndërtoOpsione(emri, distrEmra);
+            if (opsEmra) {
+                kuizi.push({
+                    pyetja: `Njësia matëse "${madhesia.unit}" i përket cilës madhësi fizike?`,
+                    opsionet: opsEmra,
+                    pergjgjjaESakte: emri
+                });
+            }
         }
     });
 
-    // Kthe pyetjet të përziera — nuk grumbullohen pyetjet e së njëjtës madhësi
+    // Kthe pyetjet të përziera — nuk grupohen sipas madhësisë
     return përzieje(kuizi);
 }
