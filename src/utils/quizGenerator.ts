@@ -70,7 +70,7 @@ export function gjeneroKuizPerKategorine(
         const opsDesc = ndërtoOpsione(madhesia.desc, distrDesc);
         if (opsDesc) {
             kuizi.push({
-                pyetja: `Cili nga përkufizimet e mëposhtme e përshkruan SAKTË madhësinë "${emri}"?`,
+                pyetja: `Cila nga përkufizimet e mëposhtme e përshkruan SAKTË madhësinë "${emri}"?`,
                 opsionet: opsDesc,
                 pergjgjjaESakte: madhesia.desc
             });
@@ -93,7 +93,7 @@ export function gjeneroKuizPerKategorine(
             const opsForm = ndërtoOpsione(madhesia.form, distrForm);
             if (opsForm) {
                 kuizi.push({
-                    pyetja: `Identifiko formulën KORREKTE matematikore për "${emri}". Kujdes: formulat e ngjashme janë kurth!`,
+                    pyetja: `Zgjidh formulën KRYESORE për "${emri}". Kujdes: formulat e ngjashme janë kurth!`,
                     opsionet: opsForm,
                     pergjgjjaESakte: madhesia.form
                 });
