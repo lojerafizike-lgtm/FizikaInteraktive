@@ -549,13 +549,19 @@ const App: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="bg-[#4a4e69] text-white p-8 md:p-16 rounded-3xl md:rounded-[3.5rem] mb-10 md:mb-16 text-center shadow-2xl relative">
-                        <p className="text-[8px] md:text-[10px] font-black text-white/30 uppercase tracking-[0.3em] md:tracking-[0.6em] mb-4 md:mb-6">Formula Kryesore</p>
-                        <code 
-                          className="text-3xl md:text-7xl font-mono font-black text-[#ffc8dd] break-all"
-                          dangerouslySetInnerHTML={{ __html: selectedTerm.form }}
-                        />
-                    </div>
+                  <div className="bg-[#4a4e69] text-white p-8 md:p-16 rounded-3xl md:rounded-[3.5rem] mb-10 md:mb-16 text-center shadow-2xl relative">
+    <p className="text-[8px] md:text-[10px] font-black text-white/30 uppercase tracking-[0.3em] md:tracking-[0.6em] mb-4 md:mb-6">Formula Kryesore</p>
+    <div className="flex flex-col items-center gap-3 md:gap-5">
+      {selectedTerm.form.split('\n').map((line, i) => (
+        <code
+          key={i}
+          className="text-xl md:text-4xl font-mono font-black text-[#ffc8dd] break-words"
+        >
+          {line}
+        </code>
+      ))}
+    </div>
+</div>
                     <div className="mb-12 md:mb-20">
                         <h4 className="text-xs md:text-sm font-black text-[#ffafcc] uppercase tracking-[0.3em] md:tracking-[0.5em] mb-4 md:mb-6">Kuptimi fizik</h4>
                         <p className="text-xl md:text-3xl text-slate-600/90 leading-tight font-medium tracking-tight">{selectedTerm.desc}</p>
