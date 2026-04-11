@@ -3,11 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Capacitor Master - Fizika Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --accent: #ffafcc;
+            --accent2: #a2d2ff;
+            --gold: #ffc8dd;
+            --text: #4a4e69;
+            --muted: #94a3b8;
+            --border: #4a4e69;
+            --green: #baffc9;
+            --red: #ffb3ba;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1a2e;
-            color: white;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -18,35 +35,66 @@
         }
 
         #game-ui {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--surface);
             padding: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
-            border: 1px solid #4e4e6a;
+            border: 4px solid var(--border);
             margin-bottom: 20px;
             width: 600px;
             display: flex;
             justify-content: space-between;
+            box-shadow: 8px 8px 0px var(--border);
         }
 
         canvas {
-            background: #16213e;
-            border: 3px solid #0f3460;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,210,255,0.2);
+            background: var(--bg);
+            border: 4px solid var(--border);
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1), 8px 8px 0px var(--border);
         }
 
-        .stat-box { text-align: center; }
-        .stat-value { font-size: 24px; font-weight: bold; color: #00d2ff; }
-        .controls { margin-top: 15px; color: #aaa; font-size: 0.8rem; }
+        .stat-box { 
+            text-align: center; 
+            background: var(--bg);
+            padding: 10px;
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
+            flex: 1;
+            margin: 0 10px;
+        }
+        .stat-box div:first-child {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+        .stat-value { 
+            font-family: 'VT323', monospace;
+            font-size: 2.5rem; 
+            font-weight: bold; 
+            color: var(--accent2); 
+            text-shadow: 1px 1px 0px var(--border);
+        }
+        
+        .controls { 
+            margin-top: 20px; 
+            color: var(--text); 
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem; 
+            background: var(--surface);
+            padding: 15px;
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
+            text-align: center;
+        }
         
         #message {
             position: absolute;
             top: 20%;
-            font-size: 2rem;
+            font-family: 'VT323', monospace;
+            font-size: 4rem;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 0px var(--surface), -2px -2px 0px var(--surface), 2px -2px 0px var(--surface), -2px 2px 0px var(--surface);
             pointer-events: none;
+            z-index: 100;
         }
     </style>
 </head>
@@ -71,7 +119,7 @@
     <canvas id="capCanvas" width="700" height="400"></canvas>
 
     <div class="controls">
-        Lëviz MIUN lart/poshtë për të ndryshuar distancën (d) | Mbaj shtypur BUTONIN e miut për të shtuar dielektrikun (ε)
+        <i class="fas fa-mouse"></i> Lëviz MIUN lart/poshtë për të ndryshuar distancën (d) | Mbaj shtypur BUTONIN e miut për të shtuar dielektrikun (ε)
     </div>
 
     <script>
@@ -119,12 +167,12 @@
             // Kushti i humbjes (Mbingarkesa)
             if (W > 5000) {
                 msgDisp.innerText = "KONDENSATORI SHPËRTHEU! 💥";
-                msgDisp.style.color = "#ff4d4d";
+                msgDisp.style.color = "#ffb3ba";
                 charge = 0;
                 setTimeout(() => msgDisp.innerText = "", 2000);
             } else if (W > 3000) {
-                msgDisp.innerText = "QYTETI U NNDIZ! ⚡🏙️";
-                msgDisp.style.color = "#00ff88";
+                msgDisp.innerText = "QYTETI U NDEZ! ⚡🏙️";
+                msgDisp.style.color = "#baffc9";
             }
         }
 
@@ -136,34 +184,44 @@
             let startX = (canvas.width - plateWidth) / 2;
 
             // Vizatimi i Dielektrikut (mushkëria mes pllakave)
-            ctx.fillStyle = `rgba(0, 210, 255, ${epsilon / 10})`;
+            ctx.fillStyle = `rgba(162, 210, 255, ${epsilon / 5})`; // accent2 color with opacity
             ctx.fillRect(startX, centerY - d/2, plateWidth, d);
+            
+            if(epsilon > 1) {
+                ctx.strokeStyle = "#4a4e69";
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(startX, centerY - d/2, plateWidth, d);
+                ctx.setLineDash([]);
+            }
 
             // Pllaka e sipërme (Pozitive)
-            ctx.fillStyle = "#ff4d4d";
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = "#ff4d4d";
-            ctx.fillRect(startX, centerY - d/2 - 10, plateWidth, 10);
+            ctx.fillStyle = "#ffafcc";
+            ctx.fillRect(startX, centerY - d/2 - 15, plateWidth, 15);
+            ctx.strokeStyle = "#4a4e69";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(startX, centerY - d/2 - 15, plateWidth, 15);
 
             // Pllaka e poshtme (Negative)
-            ctx.fillStyle = "#4d79ff";
-            ctx.shadowColor = "#4d79ff";
-            ctx.fillRect(startX, centerY + d/2, plateWidth, 10);
+            ctx.fillStyle = "#a2d2ff";
+            ctx.fillRect(startX, centerY + d/2, plateWidth, 15);
+            ctx.strokeStyle = "#4a4e69";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(startX, centerY + d/2, plateWidth, 15);
             
             // Vizatimi i ngarkesave (Grimcat që lëvizin)
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = "white";
+            ctx.fillStyle = "#4a4e69";
             for(let i=0; i < charge/10; i++) {
                 let rx = startX + (Math.random() * plateWidth);
-                let ry = (centerY - d/2 - 5) + (Math.random() > 0.5 ? 0 : d + 10);
+                let ry = (centerY - d/2 - 8) + (Math.random() > 0.5 ? 0 : d + 15);
                 ctx.beginPath();
-                ctx.arc(rx, ry, 2, 0, Math.PI*2);
+                ctx.arc(rx, ry, 3, 0, Math.PI*2);
                 ctx.fill();
             }
 
             // Etiketat e formulës
-            ctx.fillStyle = "#aaa";
-            ctx.font = "12px Arial";
+            ctx.fillStyle = "#4a4e69";
+            ctx.font = "bold 20px VT323";
             ctx.fillText("Distanca (d): " + d.toFixed(0) + "px", 20, 380);
             ctx.fillText("Permitiviteti (ε): " + epsilon.toFixed(1), 200, 380);
         }

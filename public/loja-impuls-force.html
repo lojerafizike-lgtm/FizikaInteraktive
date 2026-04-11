@@ -4,80 +4,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Impulsi i Forcës — Loja Fizike</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --bg: #0a0f1e;
-  --bg2: #0f1628;
-  --accent: #f97316;
-  --accent2: #fb923c;
-  --text: #e2e8f0;
-  --muted: #64748b;
-  --card: #131c30;
-  --border: #1e2d45;
-  --green: #22c55e;
-  --red: #ef4444;
+  --bg: #fdf6e3;
+  --bg2: #f4e8d1;
+  --accent: #ffb3ba;
+  --accent2: #ffdfba;
+  --text: #5c4b51;
+  --muted: #8c7a80;
+  --card: #ffffff;
+  --border: #d4c4b7;
+  --green: #baffc9;
+  --red: #ffb3ba;
+  --blue: #bae1ff;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; min-height:100vh; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
 header {
-  background: linear-gradient(135deg, #1a0a00 0%, var(--bg2) 100%);
-  border-bottom: 2px solid var(--accent);
-  padding: 16px 24px;
+  background: var(--bg2);
+  border-bottom: 4px dashed var(--accent);
+  padding: 20px 24px;
   display: flex; align-items: center; gap: 16px;
 }
-.sym { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--accent); font-weight:900; }
-.title-block h1 { font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--accent); letter-spacing:2px; }
-.title-block p { color:var(--muted); font-size:.9rem; }
+.sym { font-family:'VT323',monospace; font-size:2.5rem; color:var(--text); font-weight:900; text-shadow: 2px 2px 0px var(--accent); }
+.title-block h1 { font-family:'VT323',monospace; font-size:1.8rem; color:var(--text); letter-spacing:2px; text-shadow: 1px 1px 0px var(--accent2); }
+.title-block p { color:var(--muted); font-size:1rem; font-family:'VT323',monospace; }
 .formula-badge {
-  margin-left:auto; background:rgba(249,115,22,0.15); border:1px solid var(--accent);
-  padding:8px 20px; border-radius:8px; font-family:'Orbitron',sans-serif; font-size:1.1rem; color:var(--accent2);
+  margin-left:auto; background:var(--card); border:2px solid var(--text);
+  padding:8px 20px; border-radius:0px; font-family:'VT323',monospace; font-size:1.4rem; color:var(--text);
+  box-shadow: 4px 4px 0px var(--accent2);
 }
-.tabs { display:flex; border-bottom:1px solid var(--border); background:var(--bg2); }
-.tab { padding:14px 28px; cursor:pointer; font-family:'Orbitron',sans-serif; font-size:.8rem; letter-spacing:1px;
-  color:var(--muted); border-bottom:3px solid transparent; transition:.3s; }
-.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tabs { display:flex; border-bottom:2px solid var(--border); background:var(--bg2); }
+.tab { padding:14px 28px; cursor:pointer; font-family:'VT323',monospace; font-size:1.2rem; letter-spacing:1px;
+  color:var(--muted); border-bottom:4px solid transparent; transition:.3s; }
+.tab.active { color:var(--text); border-bottom-color:var(--accent); }
 .panel { display:none; padding:24px; max-width:860px; margin:0 auto; }
 .panel.active { display:block; }
 
 /* Sim styles */
-.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
-.info-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px; }
-.info-card label { font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px; }
-.info-card .val { font-family:'Orbitron',sans-serif; font-size:1.4rem; color:var(--accent); }
-.slider-row { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:12px; display:flex; align-items:center; gap:14px; }
-.slider-row label { min-width:160px; font-size:.9rem; color:var(--text); }
-.slider-row input[type=range] { flex:1; accent-color:var(--accent); }
-.slider-row .sv { min-width:70px; text-align:right; font-family:'Orbitron',sans-serif; font-size:.9rem; color:var(--accent2); }
-canvas { background: linear-gradient(180deg,#050d1a 0%,#0a1628 100%); border-radius:12px; border:1px solid var(--border); display:block; width:100%; }
-.formula-box { background:rgba(249,115,22,.08); border:1px solid rgba(249,115,22,.3); border-radius:10px; padding:14px 18px; margin:14px 0; }
-.formula-box .f { font-family:'Orbitron',sans-serif; font-size:1.2rem; color:var(--accent2); margin-bottom:6px; }
-.formula-box p { color:var(--muted); font-size:.85rem; line-height:1.6; }
-.btn { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border:none; padding:10px 24px; border-radius:8px; font-family:'Orbitron',sans-serif; font-size:.8rem; letter-spacing:1px; cursor:pointer; }
-.btn:hover { opacity:.85; }
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+.info-card { background:var(--card); border:2px solid var(--text); border-radius:0px; padding:14px; box-shadow: 4px 4px 0px var(--blue); }
+.info-card label { font-family:'VT323',monospace; font-size:1.1rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px; }
+.info-card .val { font-family:'VT323',monospace; font-size:1.6rem; color:var(--text); }
+.slider-row { background:var(--card); border:2px solid var(--text); border-radius:0px; padding:14px 18px; margin-bottom:16px; display:flex; align-items:center; gap:14px; box-shadow: 4px 4px 0px var(--accent2); }
+.slider-row label { min-width:160px; font-family:'VT323',monospace; font-size:1.2rem; color:var(--text); }
+.slider-row input[type=range] { flex:1; accent-color:var(--text); }
+.slider-row .sv { min-width:70px; text-align:right; font-family:'VT323',monospace; font-size:1.2rem; color:var(--text); background:var(--bg); padding:4px 8px; border:1px solid var(--border); }
+canvas { background: var(--card); border-radius:0px; border:2px solid var(--text); display:block; width:100%; box-shadow: 6px 6px 0px var(--accent); }
+.formula-box { background:var(--bg2); border:2px dashed var(--text); border-radius:0px; padding:16px 20px; margin:16px 0; }
+.formula-box .f { font-family:'VT323',monospace; font-size:1.6rem; color:var(--text); margin-bottom:8px; }
+.formula-box p { color:var(--text); font-size:1rem; line-height:1.6; font-family:'VT323',monospace; }
+.btn { background:var(--accent); color:var(--text); border:2px solid var(--text); padding:12px 24px; border-radius:0px; font-family:'VT323',monospace; font-size:1.2rem; letter-spacing:1px; cursor:pointer; box-shadow: 4px 4px 0px var(--text); transition: transform 0.1s, box-shadow 0.1s; }
+.btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--text); }
 
 /* Quiz */
-.progress-bar { background:var(--border); border-radius:99px; height:6px; margin-bottom:20px; }
-.progress-fill { background:linear-gradient(90deg,var(--accent),var(--accent2)); height:100%; border-radius:99px; transition:.4s; }
-.q-counter { font-size:.8rem; color:var(--muted); margin-bottom:8px; font-family:'Orbitron',sans-serif; }
-.question { font-size:1.1rem; color:var(--text); margin-bottom:20px; line-height:1.5; }
-.opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-.opt-btn { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:13px 16px; color:var(--text); cursor:pointer; font-family:'Rajdhani',sans-serif; font-size:1rem; text-align:left; transition:.25s; }
-.opt-btn:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
-.opt-btn.correct { background:rgba(34,197,94,.15); border-color:var(--green); color:var(--green); }
-.opt-btn.wrong { background:rgba(239,68,68,.15); border-color:var(--red); color:var(--red); }
-.feedback { background:var(--card); border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:.9rem; line-height:1.5; border-left:3px solid var(--accent); display:none; }
-.next-btn { display:none; }
-.score-screen { text-align:center; padding:40px 20px; display:none; }
-.score-screen h2 { font-family:'Orbitron',sans-serif; font-size:2rem; color:var(--accent); margin-bottom:12px; }
-.stars { font-size:2.5rem; margin:16px 0; }
-.score-num { font-family:'Orbitron',sans-serif; font-size:1.4rem; color:var(--text); }
-.restart-btn { margin-top:20px; }
+.progress-bar { background:var(--card); border:2px solid var(--text); border-radius:0px; height:12px; margin-bottom:20px; }
+.progress-fill { background:var(--accent); height:100%; border-radius:0px; transition:.4s; border-right:2px solid var(--text); }
+.q-counter { font-size:1.2rem; color:var(--muted); margin-bottom:8px; font-family:'VT323',monospace; }
+.question { font-family:'VT323',monospace; font-size:1.6rem; color:var(--text); margin-bottom:20px; line-height:1.5; }
+.opts { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+.opt-btn { background:var(--card); border:2px solid var(--text); border-radius:0px; padding:16px; color:var(--text); cursor:pointer; font-family:'VT323',monospace; font-size:1.3rem; text-align:left; transition:.25s; box-shadow: 4px 4px 0px var(--border); }
+.opt-btn:hover:not(:disabled) { border-color:var(--text); background:var(--bg2); box-shadow: 4px 4px 0px var(--text); }
+.opt-btn.correct { background:var(--green); border-color:var(--text); color:var(--text); box-shadow: 4px 4px 0px var(--text); }
+.opt-btn.wrong { background:var(--red); border-color:var(--text); color:var(--text); box-shadow: 4px 4px 0px var(--text); }
+.feedback { background:var(--card); border:2px dashed var(--text); border-radius:0px; padding:16px; margin-bottom:16px; font-family:'VT323',monospace; font-size:1.3rem; line-height:1.5; display:none; }
+.next-btn { display:none; background:var(--blue); }
+.score-screen { text-align:center; padding:40px 20px; display:none; background:var(--card); border:2px solid var(--text); box-shadow: 8px 8px 0px var(--accent); }
+.score-screen h2 { font-family:'VT323',monospace; font-size:2.5rem; color:var(--text); margin-bottom:16px; text-shadow: 2px 2px 0px var(--accent2); }
+.stars { font-size:3rem; margin:20px 0; color:var(--text); }
+.score-num { font-family:'VT323',monospace; font-size:1.8rem; color:var(--text); }
+.restart-btn { margin-top:24px; background:var(--green); }
 </style>
 </head>
 <body>
 <header>
-  <div class="sym">Δp</div>
+  <div class="sym"><i class="fas fa-bolt"></i> Δp</div>
   <div class="title-block">
     <h1>Impulsi i Forcës</h1>
     <p>Prodhimi i forcës me intervalin e kohës</p>
@@ -86,8 +89,8 @@ canvas { background: linear-gradient(180deg,#050d1a 0%,#0a1628 100%); border-rad
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('sim')">🔬 Simulim</div>
-  <div class="tab" onclick="switchTab('quiz')">🧠 Kuiz</div>
+  <div class="tab active" onclick="switchTab('sim')"><i class="fas fa-microscope"></i> Simulim</div>
+  <div class="tab" onclick="switchTab('quiz')"><i class="fas fa-gamepad"></i> Kuiz</div>
 </div>
 
 <div id="sim" class="panel active">
@@ -119,7 +122,7 @@ canvas { background: linear-gradient(180deg,#050d1a 0%,#0a1628 100%); border-rad
     <div class="info-card"><label>Forca F</label><div class="val" id="resF">40 N</div></div>
     <div class="info-card"><label>Koha Δt</label><div class="val" id="resDt">3.0 s</div></div>
   </div>
-  <button class="btn" style="margin-top:16px" onclick="animateShot()">▶ Apliko Forcën</button>
+  <button class="btn" style="margin-top:16px" onclick="animateShot()"><i class="fas fa-play"></i> Apliko Forcën</button>
 </div>
 
 <div id="quiz" class="panel">
@@ -129,13 +132,13 @@ canvas { background: linear-gradient(180deg,#050d1a 0%,#0a1628 100%); border-rad
     <div class="question" id="qText"></div>
     <div class="opts" id="opts"></div>
     <div class="feedback" id="feedback"></div>
-    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër →</button>
+    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër <i class="fas fa-arrow-right"></i></button>
   </div>
   <div class="score-screen" id="scoreScreen">
     <div class="stars" id="stars"></div>
     <h2>Rezultati Yt</h2>
     <div class="score-num" id="scoreNum"></div>
-    <button class="btn restart-btn" onclick="startQuiz()">🔄 Rifillo Kuizin</button>
+    <button class="btn restart-btn" onclick="startQuiz()"><i class="fas fa-redo"></i> Rifillo Kuizin</button>
   </div>
 </div>
 
@@ -172,26 +175,31 @@ function drawStatic(){
   const w=canvas.offsetWidth; canvas.width=w; canvas.height=220;
   ctx.clearRect(0,0,w,220);
   // ground
-  ctx.fillStyle='#1e2d45'; ctx.fillRect(0,170,w,50);
-  ctx.fillStyle='#2a3f5f'; ctx.fillRect(0,168,w,4);
+  ctx.fillStyle='#d4c4b7'; ctx.fillRect(0,170,w,50);
+  ctx.fillStyle='#5c4b51'; ctx.fillRect(0,168,w,4);
+  // grid background
+  ctx.strokeStyle='#f4e8d1'; ctx.lineWidth=1;
+  for(let i=0; i<w; i+=20) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,168); ctx.stroke(); }
+  for(let i=0; i<168; i+=20) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+  
   // block
-  ctx.fillStyle='#1e3a5f';
-  ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.roundRect(ballX,130,60,40,6); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='#93c5fd'; ctx.font='bold 13px Rajdhani'; ctx.textAlign='center';
+  ctx.fillStyle='#bae1ff';
+  ctx.strokeStyle='#5c4b51'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.rect(ballX,130,60,40); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#5c4b51'; ctx.font='bold 16px VT323'; ctx.textAlign='center';
   ctx.fillText('m='+document.getElementById('sM').value+'kg', ballX+30, 155);
   // force arrow
   const F=+document.getElementById('sF').value;
   const arrowLen=Math.min(F*1.2,120);
-  ctx.strokeStyle='#f97316'; ctx.lineWidth=3;
+  ctx.strokeStyle='#ffb3ba'; ctx.lineWidth=4;
   ctx.beginPath(); ctx.moveTo(ballX-10, 150); ctx.lineTo(ballX-10+arrowLen,150); ctx.stroke();
-  ctx.fillStyle='#f97316';
+  ctx.fillStyle='#ffb3ba';
   ctx.beginPath(); ctx.moveTo(ballX-10+arrowLen,150); ctx.lineTo(ballX-10+arrowLen-12,144); ctx.lineTo(ballX-10+arrowLen-12,156); ctx.fill();
-  ctx.fillStyle='#f97316'; ctx.font='12px Orbitron'; ctx.textAlign='left';
+  ctx.fillStyle='#5c4b51'; ctx.font='16px VT323'; ctx.textAlign='left';
   ctx.fillText('F='+F+'N', ballX-10, 140);
   // impulse label
   const imp=(F*(+document.getElementById('sDt').value)).toFixed(0);
-  ctx.fillStyle='#fb923c'; ctx.font='11px Orbitron'; ctx.textAlign='center';
+  ctx.fillStyle='#5c4b51'; ctx.font='16px VT323'; ctx.textAlign='center';
   ctx.fillText('Δp='+imp+' N·s', w/2, 60);
 }
 

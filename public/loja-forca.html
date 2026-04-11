@@ -4,22 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Loja - Forca</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
-    --bg: #0a0a1a;
-    --surface: #111130;
-    --accent: #00e5ff;
-    --accent2: #ff4081;
-    --gold: #ffd600;
-    --text: #e8eaf6;
-    --muted: #7986cb;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --accent: #ffafcc;
+    --accent2: #a2d2ff;
+    --gold: #ffc8dd;
+    --text: #4a4e69;
+    --muted: #94a3b8;
+    --border: #4a4e69;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
     color: var(--text);
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Inter', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -29,117 +33,120 @@
     overflow-x: hidden;
   }
   h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2rem;
+    font-family: 'VT323', monospace;
+    font-size: 3.5rem;
     color: var(--accent);
-    text-shadow: 0 0 20px var(--accent);
+    text-shadow: 3px 3px 0px var(--border);
     margin-bottom: 4px;
     letter-spacing: 2px;
+    text-transform: uppercase;
   }
-  .subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 24px; }
+  .subtitle { color: var(--text); font-size: 1.1rem; margin-bottom: 24px; font-family: 'VT323', monospace; font-size: 1.5rem; }
   .card {
     background: var(--surface);
-    border: 1px solid #1a1a4a;
-    border-radius: 16px;
+    border: 4px solid var(--border);
+    border-radius: 0;
     padding: 24px;
     width: 100%;
     max-width: 700px;
     margin-bottom: 20px;
     position: relative;
-    overflow: hidden;
-  }
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    box-shadow: 8px 8px 0px var(--border);
   }
   .scene {
-    background: #050510;
-    border-radius: 12px;
+    background: #e2e8f0;
+    border-radius: 0;
     height: 180px;
     position: relative;
     margin-bottom: 16px;
     overflow: hidden;
-    border: 1px solid #1a1a4a;
+    border: 4px solid var(--border);
   }
   .ground {
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 30px;
-    background: linear-gradient(180deg, #1a3a1a, #0d2a0d);
-    border-top: 2px solid #2d5a2d;
+    background: #a8e6cf;
+    border-top: 4px solid var(--border);
   }
   .block {
     position: absolute;
     bottom: 30px;
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #1565c0, #0d47a1);
-    border: 2px solid var(--accent);
-    border-radius: 8px;
+    background: var(--accent2);
+    border: 4px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.75rem;
-    color: var(--accent);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    color: var(--border);
     transition: left 0.1s linear;
-    box-shadow: 0 0 15px rgba(0,229,255,0.3);
+    box-shadow: inset -4px -4px 0px rgba(0,0,0,0.1);
   }
   .arrow {
     position: absolute;
     bottom: 55px;
-    height: 8px;
-    background: var(--accent2);
+    height: 12px;
+    background: var(--accent);
+    border: 3px solid var(--border);
     transform-origin: left center;
-    border-radius: 4px;
     transition: width 0.2s;
   }
   .arrow::after {
-    content: '▶';
+    content: '';
     position: absolute;
-    right: -14px;
-    top: -7px;
-    font-size: 18px;
-    color: var(--accent2);
+    right: -12px;
+    top: -8px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid var(--border);
   }
-  label { font-size: 1rem; color: var(--muted); display: block; margin-bottom: 6px; }
+  .arrow::before {
+    content: '';
+    position: absolute;
+    right: -7px;
+    top: -5px;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 7px solid var(--accent);
+    z-index: 1;
+  }
+  label { font-size: 1rem; color: var(--text); display: block; margin-bottom: 6px; font-weight: bold; }
   .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   input[type=range] {
     flex: 1;
     -webkit-appearance: none;
-    height: 6px;
-    border-radius: 3px;
-    background: #1a1a4a;
+    height: 12px;
+    border: 2px solid var(--border);
+    background: #e2e8f0;
     outline: none;
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 20px; height: 20px;
-    border-radius: 50%;
+    width: 24px; height: 24px;
     background: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
+    border: 3px solid var(--border);
     cursor: pointer;
   }
   .val {
     min-width: 60px;
     text-align: right;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
-    color: var(--gold);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    color: var(--text);
   }
   .formula-box {
-    background: #050510;
-    border: 1px solid var(--accent);
-    border-radius: 10px;
+    background: #f8fafc;
+    border: 4px solid var(--border);
     padding: 16px;
     text-align: center;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
-    color: var(--accent);
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    color: var(--text);
     margin-bottom: 16px;
+    box-shadow: 4px 4px 0px var(--border);
   }
   .results {
     display: grid;
@@ -148,65 +155,71 @@
     margin-bottom: 16px;
   }
   .result-item {
-    background: #050510;
-    border-radius: 10px;
+    background: #f8fafc;
     padding: 12px;
     text-align: center;
-    border: 1px solid #1a1a4a;
+    border: 4px solid var(--border);
+    box-shadow: 4px 4px 0px var(--border);
   }
-  .result-item .rlabel { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+  .result-item .rlabel { font-size: 0.85rem; color: var(--text); font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
   .result-item .rval {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.3rem;
-    color: var(--gold);
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    color: var(--accent2);
+    text-shadow: 1px 1px 0px var(--border);
   }
   .quiz-section { }
   .question {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: var(--text);
     margin-bottom: 14px;
     line-height: 1.5;
+    font-weight: bold;
   }
   .options { display: flex; flex-direction: column; gap: 10px; }
   .opt-btn {
-    background: #050510;
-    border: 1px solid #1a1a4a;
-    border-radius: 10px;
+    background: #ffffff;
+    border: 3px solid var(--border);
     color: var(--text);
     padding: 12px 16px;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     text-align: left;
-    transition: all 0.2s;
+    transition: all 0.1s;
+    box-shadow: 4px 4px 0px var(--border);
   }
-  .opt-btn:hover { border-color: var(--accent); color: var(--accent); background: #0a0a2a; }
-  .opt-btn.correct { border-color: #4caf50; background: #1a3a1a; color: #81c784; }
-  .opt-btn.wrong { border-color: var(--accent2); background: #2a0a1a; color: #ef9a9a; }
+  .opt-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--border); }
+  .opt-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border); }
+  .opt-btn.correct { background: #a8e6cf; }
+  .opt-btn.wrong { background: #ffafcc; }
   .feedback {
     margin-top: 14px;
     padding: 12px;
-    border-radius: 8px;
+    border: 3px solid var(--border);
     font-size: 1rem;
+    font-weight: bold;
     display: none;
+    box-shadow: 4px 4px 0px var(--border);
   }
   .feedback.show { display: block; }
-  .feedback.ok { background: #1a3a1a; border: 1px solid #4caf50; color: #81c784; }
-  .feedback.bad { background: #2a0a1a; border: 1px solid var(--accent2); color: #ef9a9a; }
+  .feedback.ok { background: #a8e6cf; color: var(--text); }
+  .feedback.bad { background: #ffafcc; color: var(--text); }
   .next-btn {
     margin-top: 14px;
-    background: linear-gradient(135deg, var(--accent), #006080);
-    border: none;
-    border-radius: 10px;
-    color: #000;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
+    background: var(--accent2);
+    border: 4px solid var(--border);
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
     padding: 12px 24px;
     cursor: pointer;
     display: none;
-    font-weight: bold;
-    letter-spacing: 1px;
+    box-shadow: 4px 4px 0px var(--border);
+    text-transform: uppercase;
   }
+  .next-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border); }
   .next-btn.show { display: inline-block; }
   .score-row {
     display: flex;
@@ -215,49 +228,48 @@
     margin-bottom: 16px;
   }
   .score-badge {
-    background: #1a1a4a;
-    border: 1px solid var(--accent);
-    border-radius: 8px;
+    background: #ffffff;
+    border: 3px solid var(--border);
     padding: 6px 14px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.85rem;
-    color: var(--accent);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    color: var(--text);
+    box-shadow: 3px 3px 0px var(--border);
   }
   .progress-bar {
     flex: 1;
-    height: 6px;
-    background: #1a1a4a;
-    border-radius: 3px;
+    height: 16px;
+    background: #ffffff;
+    border: 3px solid var(--border);
     margin: 0 12px;
     overflow: hidden;
   }
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 3px;
+    background: var(--accent);
+    border-right: 3px solid var(--border);
     transition: width 0.4s;
   }
   .tab-row {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     margin-bottom: 20px;
   }
   .tab {
-    padding: 8px 20px;
-    border-radius: 8px;
-    border: 1px solid #1a1a4a;
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1rem;
+    padding: 10px 24px;
+    border: 4px solid var(--border);
+    background: #ffffff;
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
     cursor: pointer;
-    transition: all 0.2s;
+    box-shadow: 4px 4px 0px var(--border);
+    text-transform: uppercase;
   }
   .tab.active {
     background: var(--accent);
-    color: #000;
-    border-color: var(--accent);
-    font-weight: 600;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--border);
   }
   .panel { display: none; }
   .panel.active { display: block; }
@@ -268,34 +280,35 @@
   }
   .victory.show { display: block; }
   .victory-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2rem;
-    color: var(--gold);
-    text-shadow: 0 0 20px var(--gold);
+    font-family: 'VT323', monospace;
+    font-size: 3rem;
+    color: var(--accent);
+    text-shadow: 3px 3px 0px var(--border);
     margin-bottom: 10px;
   }
-  .stars { font-size: 2.5rem; margin: 10px 0; }
+  .stars { font-size: 3rem; margin: 10px 0; letter-spacing: 10px; }
   .restart-btn {
     margin-top: 16px;
     background: var(--gold);
-    border: none;
-    border-radius: 10px;
-    color: #000;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
+    border: 4px solid var(--border);
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
     padding: 12px 28px;
     cursor: pointer;
-    font-weight: bold;
+    box-shadow: 4px 4px 0px var(--border);
+    text-transform: uppercase;
   }
+  .restart-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border); }
 </style>
 </head>
 <body>
-<h1>⚡ FORCA</h1>
+<h1><i class="fas fa-bolt"></i> FORCA</h1>
 <p class="subtitle">F = m × a &nbsp;|&nbsp; Ligjet e Njutonit</p>
 
 <div class="tab-row">
-  <button class="tab active" onclick="switchTab('sim')">🔬 Simulim</button>
-  <button class="tab" onclick="switchTab('quiz')">🧠 Kuiz</button>
+  <button class="tab active" onclick="switchTab('sim')"><i class="fas fa-microscope"></i> Simulim</button>
+  <button class="tab" onclick="switchTab('quiz')"><i class="fas fa-gamepad"></i> Kuiz</button>
 </div>
 
 <!-- SIMULATION PANEL -->
@@ -305,7 +318,7 @@
       <div class="ground"></div>
       <div class="block" id="block">m</div>
       <div class="arrow" id="arrow" style="left:120px; width:0px;"></div>
-      <div style="position:absolute;top:10px;left:12px;font-size:0.8rem;color:var(--muted);">Lëvizja e bllokut sipas F=ma</div>
+      <div style="position:absolute;top:10px;left:12px;font-family:'VT323',monospace;font-size:1.2rem;color:var(--text);background:rgba(255,255,255,0.8);padding:2px 8px;border:2px solid var(--border);">Lëvizja e bllokut sipas F=ma</div>
     </div>
     <div class="formula-box">F = m × a</div>
     <div class="slider-row">
@@ -322,7 +335,7 @@
       <div class="result-item"><div class="rlabel">Nxitimi</div><div class="rval" id="accVal">5.0 m/s²</div></div>
       <div class="result-item"><div class="rlabel">Forca Rezultante</div><div class="rval" id="fresVal">25 N</div></div>
     </div>
-    <button class="next-btn show" id="animBtn" onclick="toggleAnim()" style="display:inline-block;">▶ LËVIZ</button>
+    <button class="next-btn show" id="animBtn" onclick="toggleAnim()" style="display:inline-block; width:100%;"><i class="fas fa-play"></i> LËVIZ</button>
   </div>
 </div>
 
@@ -330,7 +343,7 @@
 <div class="panel" id="panel-quiz">
   <div class="card">
     <div class="score-row">
-      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <span class="score-badge"><i class="fas fa-star" style="color:#ffc8dd"></i> <span id="score">0</span></span>
       <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
       <span class="score-badge"><span id="qnum">1</span>/7</span>
     </div>
@@ -338,13 +351,13 @@
       <div class="question" id="question"></div>
       <div class="options" id="options"></div>
       <div class="feedback" id="feedback"></div>
-      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()" style="width:100%;">PYETJA TJETËR <i class="fas fa-arrow-right"></i></button>
     </div>
     <div class="victory" id="victory">
       <div class="victory-title">🏆 BRAVO!</div>
       <div class="stars" id="stars"></div>
-      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
-      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+      <div style="font-family:'VT323',monospace;font-size:2rem;color:var(--text);margin-bottom:20px;">Pikë: <span id="finalScore" style="color:var(--accent);text-shadow:2px 2px 0px var(--border);"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()"><i class="fas fa-redo"></i> RISTART</button>
     </div>
   </div>
 </div>
@@ -374,13 +387,13 @@ function toggleAnim() {
   if (animRunning) {
     animRunning = false;
     cancelAnimationFrame(animFrame);
-    document.getElementById('animBtn').textContent = '▶ LËVIZ';
+    document.getElementById('animBtn').innerHTML = '<i class="fas fa-play"></i> LËVIZ';
     blockX = 50; velocity = 0; lastTime = null;
     document.getElementById('block').style.left = blockX + 'px';
     document.getElementById('arrow').style.left = (blockX + 70) + 'px';
   } else {
     animRunning = true;
-    document.getElementById('animBtn').textContent = '⏹ NDALO';
+    document.getElementById('animBtn').innerHTML = '<i class="fas fa-stop"></i> NDALO';
     blockX = 50; velocity = 0; lastTime = null;
     animFrame = requestAnimationFrame(animStep);
   }
@@ -445,12 +458,12 @@ function checkAns(i, btn) {
     score++;
     document.getElementById('score').textContent = score;
     fb.className = 'feedback ok show';
-    fb.textContent = '✅ Saktë! Bravo!';
+    fb.innerHTML = '<i class="fas fa-check-circle"></i> Saktë! Bravo!';
   } else {
     btn.className = 'opt-btn wrong';
     document.querySelectorAll('.opt-btn')[q.ans].className = 'opt-btn correct';
     fb.className = 'feedback bad show';
-    fb.textContent = '❌ Jo! Përgjigja e saktë: ' + String.fromCharCode(65+q.ans) + '. ' + q.opts[q.ans];
+    fb.innerHTML = '<i class="fas fa-times-circle"></i> Jo! Përgjigja e saktë: ' + String.fromCharCode(65+q.ans) + '. ' + q.opts[q.ans];
   }
   document.getElementById('nextBtn').className = 'next-btn show';
 }

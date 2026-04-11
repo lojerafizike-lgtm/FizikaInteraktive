@@ -3,62 +3,279 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Loja - Forca Elastike</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  :root{--bg:#001a0a;--surface:#002a12;--accent:#00e676;--accent2:#ff5722;--gold:#ffd600;--text:#e8f5e9;--muted:#69f0ae;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
-  h1{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);text-shadow:0 0 20px var(--accent);margin-bottom:4px;letter-spacing:2px;}
-  .subtitle{color:var(--muted);font-size:1.1rem;margin-bottom:24px;}
-  .card{background:var(--surface);border:1px solid #003a18;border-radius:16px;padding:24px;width:100%;max-width:700px;margin-bottom:20px;position:relative;overflow:hidden;}
-  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
-  .scene{background:#000d05;border-radius:12px;height:280px;position:relative;margin-bottom:16px;border:1px solid #003a18;overflow:hidden;display:flex;justify-content:center;}
-  .ceiling{position:absolute;top:0;left:0;right:0;height:18px;background:linear-gradient(180deg,#1b5e20,#2e7d32);}
-  .spring-svg{position:absolute;top:18px;left:50%;transform:translateX(-50%);}
-  .hung-mass{position:absolute;left:50%;transform:translateX(-50%);width:70px;height:50px;background:linear-gradient(135deg,#1b5e20,#004d1a);border:2px solid var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--accent);transition:top 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-  .formula-box{background:#000d05;border:1px solid var(--accent);border-radius:10px;padding:16px;text-align:center;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);margin-bottom:16px;}
-  label{font-size:1rem;color:var(--muted);display:block;margin-bottom:6px;}
-  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-  input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:#003a18;outline:none;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);cursor:pointer;}
-  .val{min-width:70px;text-align:right;font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--gold);}
-  .results{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
-  .result-item{background:#000d05;border-radius:10px;padding:12px;text-align:center;border:1px solid #003a18;}
-  .rlabel{font-size:0.8rem;color:var(--muted);margin-bottom:4px;}
-  .rval{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--gold);}
-  .tab-row{display:flex;gap:8px;margin-bottom:20px;}
-  .tab{padding:8px 20px;border-radius:8px;border:1px solid #003a18;background:transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:1rem;cursor:pointer;transition:all 0.2s;}
-  .tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600;}
-  .panel{display:none;}.panel.active{display:block;}
-  .question{font-size:1.1rem;color:var(--text);margin-bottom:14px;line-height:1.5;}
-  .options{display:flex;flex-direction:column;gap:10px;}
-  .opt-btn{background:#000d05;border:1px solid #003a18;border-radius:10px;color:var(--text);padding:12px 16px;font-family:'Rajdhani',sans-serif;font-size:1rem;cursor:pointer;text-align:left;transition:all 0.2s;}
-  .opt-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .opt-btn.correct{border-color:#4caf50;background:#1a3a1a;color:#81c784;}
-  .opt-btn.wrong{border-color:var(--accent2);background:#2a0a0a;color:#ef9a9a;}
-  .feedback{margin-top:14px;padding:12px;border-radius:8px;font-size:1rem;display:none;}
-  .feedback.show{display:block;}
-  .feedback.ok{background:#1a3a1a;border:1px solid #4caf50;color:#81c784;}
-  .feedback.bad{background:#2a0a0a;border:1px solid var(--accent2);color:#ef9a9a;}
-  .next-btn{margin-top:14px;background:linear-gradient(135deg,var(--accent),#1b5e20);border:none;border-radius:10px;color:#000;font-family:'Orbitron',sans-serif;font-size:0.9rem;padding:12px 24px;cursor:pointer;display:none;font-weight:bold;}
-  .next-btn.show{display:inline-block;}
-  .score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-  .score-badge{background:#003a18;border:1px solid var(--accent);border-radius:8px;padding:6px 14px;font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--accent);}
-  .progress-bar{flex:1;height:6px;background:#003a18;border-radius:3px;margin:0 12px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width 0.4s;}
-  .victory{text-align:center;padding:30px;display:none;}
-  .victory.show{display:block;}
-  .victory-title{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--gold);text-shadow:0 0 20px var(--gold);margin-bottom:10px;}
-  .stars{font-size:2.5rem;margin:10px 0;}
-  .restart-btn{margin-top:16px;background:var(--gold);border:none;border-radius:10px;color:#000;font-family:'Orbitron',sans-serif;font-size:0.9rem;padding:12px 28px;cursor:pointer;font-weight:bold;}
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --accent: #a2d2ff;
+    --accent2: #ffafcc;
+    --gold: #ffc8dd;
+    --text: #4a4e69;
+    --muted: #94a3b8;
+    --border: #4a4e69;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+  h1 {
+    font-family: 'VT323', monospace;
+    font-size: 3.5rem;
+    color: var(--accent);
+    text-shadow: 3px 3px 0px var(--border);
+    margin-bottom: 4px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .subtitle { color: var(--text); font-size: 1.1rem; margin-bottom: 24px; font-family: 'VT323', monospace; font-size: 1.5rem; }
+  .card {
+    background: var(--surface);
+    border: 4px solid var(--border);
+    border-radius: 0;
+    padding: 24px;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 8px 8px 0px var(--border);
+  }
+  .scene {
+    background: #e2e8f0;
+    border-radius: 0;
+    height: 280px;
+    position: relative;
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 4px solid var(--border);
+    display: flex;
+    justify-content: center;
+  }
+  .ceiling { position: absolute; top: 0; left: 0; right: 0; height: 18px; background: var(--border); }
+  .spring-svg { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); }
+  .hung-mass {
+    position: absolute; left: 50%; transform: translateX(-50%); width: 70px; height: 50px;
+    background: var(--accent2);
+    border: 4px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'VT323', monospace; font-size: 1.5rem; color: var(--border);
+    transition: top 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: inset -4px -4px 0px rgba(0,0,0,0.1);
+  }
+  .formula-box {
+    background: #f8fafc;
+    border: 4px solid var(--border);
+    padding: 16px;
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    color: var(--text);
+    margin-bottom: 16px;
+    box-shadow: 4px 4px 0px var(--border);
+  }
+  label { font-size: 1rem; color: var(--text); display: block; margin-bottom: 6px; font-weight: bold; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 12px;
+    border: 2px solid var(--border);
+    background: #e2e8f0;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px; height: 24px;
+    background: var(--accent);
+    border: 3px solid var(--border);
+    cursor: pointer;
+  }
+  .val {
+    min-width: 80px;
+    text-align: right;
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    color: var(--text);
+  }
+  .results {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .result-item {
+    background: #f8fafc;
+    padding: 12px;
+    text-align: center;
+    border: 4px solid var(--border);
+    box-shadow: 4px 4px 0px var(--border);
+  }
+  .result-item .rlabel { font-size: 0.85rem; color: var(--text); font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
+  .result-item .rval {
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    color: var(--accent2);
+    text-shadow: 1px 1px 0px var(--border);
+  }
+  .tab-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    padding: 10px 24px;
+    border: 4px solid var(--border);
+    background: #ffffff;
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px var(--border);
+    text-transform: uppercase;
+  }
+  .tab.active {
+    background: var(--accent);
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--border);
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .question {
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 14px;
+    line-height: 1.5;
+    font-weight: bold;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn {
+    background: #ffffff;
+    border: 3px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.1s;
+    box-shadow: 4px 4px 0px var(--border);
+  }
+  .opt-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--border); }
+  .opt-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border); }
+  .opt-btn.correct { background: #a8e6cf; }
+  .opt-btn.wrong { background: #ffafcc; }
+  .feedback {
+    margin-top: 14px;
+    padding: 12px;
+    border: 3px solid var(--border);
+    font-size: 1rem;
+    font-weight: bold;
+    display: none;
+    box-shadow: 4px 4px 0px var(--border);
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #a8e6cf; color: var(--text); }
+  .feedback.bad { background: #ffafcc; color: var(--text); }
+  .next-btn {
+    margin-top: 14px;
+    background: var(--accent2);
+    border: 4px solid var(--border);
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    padding: 12px 24px;
+    cursor: pointer;
+    display: none;
+    box-shadow: 4px 4px 0px var(--border);
+    text-transform: uppercase;
+    width: 100%;
+  }
+  .next-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border); }
+  .next-btn.show { display: inline-block; }
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .score-badge {
+    background: #ffffff;
+    border: 3px solid var(--border);
+    padding: 6px 14px;
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    color: var(--text);
+    box-shadow: 3px 3px 0px var(--border);
+  }
+  .progress-bar {
+    flex: 1;
+    height: 16px;
+    background: #ffffff;
+    border: 3px solid var(--border);
+    margin: 0 12px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-right: 3px solid var(--border);
+    transition: width 0.4s;
+  }
+  .victory { text-align: center; padding: 30px; display: none; }
+  .victory.show { display: block; }
+  .victory-title {
+    font-family: 'VT323', monospace;
+    font-size: 3rem;
+    color: var(--accent);
+    text-shadow: 3px 3px 0px var(--border);
+    margin-bottom: 10px;
+  }
+  .stars { font-size: 3rem; margin: 10px 0; letter-spacing: 10px; }
+  .restart-btn {
+    margin-top: 16px;
+    background: var(--gold);
+    border: 4px solid var(--border);
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    padding: 12px 28px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px var(--border);
+    text-transform: uppercase;
+  }
+  .restart-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border); }
+  .info-box {
+    background: #ffffff;
+    border: 4px solid var(--border);
+    padding: 16px;
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 1.6;
+    box-shadow: 4px 4px 0px var(--border);
+    margin-top: 16px;
+    font-weight: 600;
+  }
 </style>
 </head>
 <body>
-<h1>🌀 FORCA ELASTIKE</h1>
+<h1><i class="fas fa-compress-alt"></i> FORCA ELASTIKE</h1>
 <p class="subtitle">F = -kx &nbsp;|&nbsp; Ligji i Hukut</p>
 <div class="tab-row">
-  <button class="tab active" onclick="switchTab('sim',event)">🔬 Simulim</button>
-  <button class="tab" onclick="switchTab('quiz',event)">🧠 Kuiz</button>
+  <button class="tab active" onclick="switchTab('sim',event)"><i class="fas fa-microscope"></i> Simulim</button>
+  <button class="tab" onclick="switchTab('quiz',event)"><i class="fas fa-gamepad"></i> Kuiz</button>
 </div>
 
 <div class="panel active" id="panel-sim">
@@ -66,11 +283,11 @@
     <div class="scene">
       <div class="ceiling"></div>
       <svg class="spring-svg" id="springSvg" width="40" height="120" viewBox="0 0 40 120">
-        <polyline id="springPoly" points="" stroke="#00e676" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <polyline id="springPoly" points="" stroke="#4a4e69" stroke-width="4" fill="none" stroke-linecap="round"/>
       </svg>
       <div class="hung-mass" id="mass" style="top:150px;">m</div>
-      <div id="xLabel" style="position:absolute;right:20px;top:100px;font-family:'Orbitron',sans-serif;font-size:0.8rem;color:var(--muted);">x=0</div>
-      <div id="fLabel" style="position:absolute;left:20px;top:100px;font-family:'Orbitron',sans-serif;font-size:0.8rem;color:var(--accent2);">Fe=0 N</div>
+      <div id="xLabel" style="position:absolute;right:20px;top:100px;font-family:'VT323',monospace;font-size:1.2rem;color:var(--text);background:rgba(255,255,255,0.8);padding:2px 8px;border:2px solid var(--border);">x=0</div>
+      <div id="fLabel" style="position:absolute;left:20px;top:100px;font-family:'VT323',monospace;font-size:1.2rem;color:#ff4d6d;background:rgba(255,255,255,0.8);padding:2px 8px;border:2px solid var(--border);">Fe=0 N</div>
     </div>
     <div class="formula-box">F_e = -k × x &nbsp;&nbsp;(Ligji i Hukut)</div>
     <div class="slider-row">
@@ -88,8 +305,8 @@
       <div class="result-item"><div class="rlabel">|F_e| = kx</div><div class="rval" id="r2">4.0 N</div></div>
       <div class="result-item"><div class="rlabel">Drejtimi F_e</div><div class="rval" id="r3">↑ Lart</div></div>
     </div>
-    <div style="background:#000d05;border:1px solid #003a18;border-radius:10px;padding:12px;font-size:0.95rem;color:var(--muted);line-height:1.6;">
-      💡 <strong style="color:var(--accent)">Ligji i Hukut:</strong> Forca elastike është proportionale me shformimin dhe ka drejtim të kundërt. Shenja "−" tregon se Fe kundërshtón shformimin!
+    <div class="info-box">
+      <i class="fas fa-lightbulb" style="color:var(--accent2)"></i> <strong style="color:var(--text)">Ligji i Hukut:</strong> Forca elastike është proportionale me shformimin dhe ka drejtim të kundërt. Shenja "−" tregon se Fe kundërshtón shformimin!
     </div>
   </div>
 </div>
@@ -97,7 +314,7 @@
 <div class="panel" id="panel-quiz">
   <div class="card">
     <div class="score-row">
-      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <span class="score-badge"><i class="fas fa-star" style="color:#ffc8dd"></i> <span id="score">0</span></span>
       <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
       <span class="score-badge"><span id="qnum">1</span>/7</span>
     </div>
@@ -105,13 +322,13 @@
       <div class="question" id="question"></div>
       <div class="options" id="options"></div>
       <div class="feedback" id="feedback"></div>
-      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR <i class="fas fa-arrow-right"></i></button>
     </div>
     <div class="victory" id="victory">
       <div class="victory-title">🏆 BRAVO!</div>
       <div class="stars" id="stars"></div>
-      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
-      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+      <div style="font-family:'VT323',monospace;font-size:2rem;color:var(--text);margin-bottom:20px;">Pikë: <span id="finalScore" style="color:var(--accent);text-shadow:2px 2px 0px var(--border);"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()"><i class="fas fa-redo"></i> RISTART</button>
     </div>
   </div>
 </div>
@@ -168,9 +385,37 @@ const questions=[
   {q:"Spirale kthehet gjithmonë prapa sepse:",opts:["Ka masë të madhe","Fe kundërshton deformimin","Ligji i Njutonit","Fërkimi e ndalon"],ans:1}
 ];
 let qi=0,score=0;
-function loadQ(){const q=questions[qi];document.getElementById('question').textContent=(qi+1)+'. '+q.q;document.getElementById('feedback').className='feedback';document.getElementById('nextBtn').className='next-btn';document.getElementById('qnum').textContent=qi+1;document.getElementById('progress').style.width=(qi/questions.length*100)+'%';const opts=document.getElementById('options');opts.innerHTML='';q.opts.forEach((o,i)=>{const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=String.fromCharCode(65+i)+'. '+o;btn.onclick=()=>checkAns(i,btn);opts.appendChild(btn);});}
-function checkAns(i,btn){const q=questions[qi];document.querySelectorAll('.opt-btn').forEach(b=>b.onclick=null);const fb=document.getElementById('feedback');if(i===q.ans){btn.className='opt-btn correct';score++;document.getElementById('score').textContent=score;fb.className='feedback ok show';fb.textContent='✅ Saktë!';}else{btn.className='opt-btn wrong';document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn correct';fb.className='feedback bad show';fb.textContent='❌ Jo! Saktë: '+String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];}document.getElementById('nextBtn').className='next-btn show';}
-function nextQ(){qi++;if(qi>=questions.length){document.getElementById('quiz-content').style.display='none';document.getElementById('victory').className='victory show';document.getElementById('finalScore').textContent=score;document.getElementById('stars').textContent=score>=6?'⭐⭐⭐':score>=4?'⭐⭐':'⭐';}else loadQ();}
+function loadQ() {
+  const q=questions[qi];
+  document.getElementById('question').textContent=(qi+1)+'. '+q.q;
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('nextBtn').className='next-btn';
+  document.getElementById('qnum').textContent=qi+1;
+  document.getElementById('progress').style.width=(qi/questions.length*100)+'%';
+  const opts=document.getElementById('options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=String.fromCharCode(65+i)+'. '+o;
+    btn.onclick=()=>checkAns(i,btn);
+    opts.appendChild(btn);
+  });
+}
+function checkAns(i,btn) {
+  const q=questions[qi];
+  document.querySelectorAll('.opt-btn').forEach(b=>b.onclick=null);
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){
+    btn.className='opt-btn correct';score++;document.getElementById('score').textContent=score;
+    fb.className='feedback ok show';fb.innerHTML='<i class="fas fa-check-circle"></i> Saktë!';
+  }else{
+    btn.className='opt-btn wrong';document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn correct';
+    fb.className='feedback bad show';fb.innerHTML='<i class="fas fa-times-circle"></i> Jo! Saktë: '+String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];
+  }
+  document.getElementById('nextBtn').className='next-btn show';
+}
+function nextQ() { qi++; if(qi>=questions.length){document.getElementById('quiz-content').style.display='none';document.getElementById('victory').className='victory show';document.getElementById('finalScore').textContent=score;document.getElementById('stars').textContent=score>=6?'⭐⭐⭐':score>=4?'⭐⭐':'⭐';}else loadQ(); }
 function restartQuiz(){qi=0;score=0;document.getElementById('score').textContent=0;document.getElementById('victory').className='victory';document.getElementById('quiz-content').style.display='block';loadQ();}
 function switchTab(t,e){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));e.target.classList.add('active');document.getElementById('panel-'+t).classList.add('active');}
 loadQ();

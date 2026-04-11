@@ -3,29 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <title>Power Grid Master - Fuqia Elektrike</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        #game-board { background: #1e293b; border: 4px solid #38bdf8; border-radius: 20px; padding: 25px; box-shadow: 0 0 30px rgba(56, 189, 248, 0.2); width: 650px; }
-        canvas { background: #020617; border-radius: 10px; margin-bottom: 20px; width: 100%; }
-        .ui-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .stat-card { background: #334155; padding: 15px; border-radius: 12px; text-align: center; }
-        .power-value { font-size: 2em; font-weight: bold; color: #fbbf24; }
-        .slider-group { margin: 15px 0; }
-        input[type=range] { width: 100%; cursor: pointer; accent-color: #38bdf8; }
-        button { grid-column: span 2; padding: 15px; background: #0ea5e9; border: none; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: 0.3s; }
-        button:hover { background: #0284c7; transform: scale(1.02); }
-        .alert { color: #f87171; font-weight: bold; margin-top: 10px; display: none; }
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --accent: #ffafcc;
+            --accent2: #a2d2ff;
+            --gold: #ffc8dd;
+            --text: #4a4e69;
+            --muted: #94a3b8;
+            --border: #4a4e69;
+            --green: #baffc9;
+            --red: #ffb3ba;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: var(--bg); 
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 { 
+            font-family: 'VT323', monospace; 
+            font-size: 3.5rem; 
+            color: var(--accent); 
+            text-shadow: 3px 3px 0px var(--border); 
+            margin-bottom: 4px; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+        }
+        p {
+            color: var(--text); 
+            font-size: 1.5rem; 
+            margin-bottom: 24px; 
+            font-family: 'VT323', monospace;
+        }
+        #game-board { 
+            background: var(--surface); 
+            border: 4px solid var(--border); 
+            padding: 24px; 
+            box-shadow: 8px 8px 0px var(--border); 
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 20px;
+        }
+        canvas { 
+            background: #e2e8f0; 
+            border: 4px solid var(--border); 
+            display: block;
+            width: 100%;
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .ui-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+        }
+        .stat-card { 
+            background: var(--bg);
+            border: 4px solid var(--border);
+            padding: 15px; 
+            text-align: center; 
+            box-shadow: 4px 4px 0px var(--border);
+        }
+        .stat-card div:first-child {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .power-value { 
+            font-family: 'VT323', monospace;
+            font-size: 2.5rem; 
+            color: var(--accent2); 
+            font-weight: bold; 
+            text-shadow: 2px 2px 0px var(--border);
+        }
+        .slider-group { 
+            margin: 15px 0; 
+            background: var(--bg);
+            border: 4px solid var(--border);
+            padding: 15px;
+            box-shadow: 4px 4px 0px var(--border);
+        }
+        .slider-group label {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: var(--text);
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type=range] { 
+            cursor: pointer; 
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            border: 2px solid var(--border);
+            background: #e2e8f0;
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border: 3px solid var(--border);
+            cursor: pointer;
+        }
+        button { 
+            grid-column: span 2; 
+            padding: 15px; 
+            background: var(--accent); 
+            border: 4px solid var(--border); 
+            color: var(--text); 
+            cursor: pointer; 
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            box-shadow: 4px 4px 0px var(--border);
+            transition: transform 0.1s, box-shadow 0.1s;
+            width: 100%;
+        }
+        button:active { 
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--border);
+        }
+        .alert { 
+            color: var(--red); 
+            font-weight: bold; 
+            margin-top: 10px; 
+            display: none; 
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        .top-info {
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 15px;
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+        }
+        .max-p {
+            color: var(--green);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-    <h1>🏙️ Power Grid Master</h1>
-    <p>Rregullo Tensionin ($U$) dhe Rrymën ($I$) për të plotësuar nevojat e qytetit!</p>
+    <h1><i class="fas fa-city"></i> Power Grid Master</h1>
+    <p>Rregullo Tensionin (U) dhe Rrymën (I) për të plotësuar nevojat e qytetit!</p>
 
     <div id="game-board">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+        <div class="top-info">
             <div>Niveli: <span id="level">1</span></div>
-            <div style="color: #4ade80;">Maksimumi i Sigurt: <span id="maxP">2500</span> W</div>
+            <div class="max-p">Maksimumi i Sigurt: <span id="maxP">3000</span> W</div>
         </div>
 
         <canvas id="powerCanvas" width="600" height="150"></canvas>
@@ -33,7 +174,7 @@
         <div class="ui-grid">
             <div class="stat-card">
                 <div>Kërkesa e Qytetit</div>
-                <div class="power-value" id="targetP">1200 W</div>
+                <div class="power-value" id="targetP">1500 W</div>
             </div>
             <div class="stat-card">
                 <div>Fuqia Juaj (P)</div>
@@ -51,7 +192,7 @@
 
             <button onclick="supplyPower()">DËRGO ENERGJINË</button>
         </div>
-        <div id="alertMsg" class="alert">⚠️ KUJDES: Mbingarkesë! Sistemi do të digjet!</div>
+        <div id="alertMsg" class="alert"><i class="fas fa-exclamation-triangle"></i> KUJDES: Mbingarkesë! Sistemi do të digjet!</div>
     </div>
 
     <script>
@@ -84,7 +225,62 @@
             const intensity = Math.min(p / maxPower, 1);
             
             // Vizatimi i "telave" të qytetit
-            ctx.strokeStyle = `rgba(56, 189, 248, ${0.2 + intensity})`;
-            ctx.lineWidth = 5;
+            ctx.strokeStyle = "#4a4e69";
+            ctx.lineWidth = 8;
             ctx.beginPath();
-            ctx.moveTo(50,
+            ctx.moveTo(50, 75);
+            ctx.lineTo(550, 75);
+            ctx.stroke();
+
+            if (p > 0) {
+                ctx.strokeStyle = p > maxPower ? "#ffb3ba" : "#a2d2ff";
+                ctx.lineWidth = 4 + (intensity * 6);
+                ctx.beginPath();
+                ctx.moveTo(50, 75);
+                ctx.lineTo(550, 75);
+                ctx.stroke();
+            }
+
+            // Qyteti
+            ctx.fillStyle = "#4a4e69";
+            ctx.fillRect(450, 30, 80, 90);
+            ctx.fillRect(420, 50, 40, 70);
+            ctx.fillRect(520, 40, 50, 80);
+
+            // Dritaret
+            ctx.fillStyle = p >= targetPower && p <= maxPower ? "#baffc9" : (p > maxPower ? "#ffb3ba" : "#e2e8f0");
+            for(let x=460; x<520; x+=20) {
+                for(let y=40; y<110; y+=20) {
+                    ctx.fillRect(x, y, 10, 10);
+                }
+            }
+        }
+
+        function supplyPower() {
+            const u = document.getElementById('uInput').value;
+            const i = document.getElementById('iInput').value;
+            const p = u * i;
+
+            if (p > maxPower) {
+                alert("Sistemi u dogj! Keni tejkaluar maksimumin e sigurt.");
+                level = 1;
+            } else if (Math.abs(p - targetPower) <= 100) {
+                alert("Shkëlqyeshëm! Qyteti ka energji të mjaftueshme.");
+                level++;
+                targetPower = Math.floor(Math.random() * 2000) + 1000;
+                maxPower = targetPower + 1000;
+                document.getElementById('level').innerText = level;
+                document.getElementById('targetP').innerText = targetPower + " W";
+                document.getElementById('maxP').innerText = maxPower;
+            } else if (p < targetPower) {
+                alert("Energjia nuk mjafton. Qyteti është në errësirë.");
+            } else {
+                alert("Keni dërguar shumë energji, por jo aq sa të digjet sistemi. Mundohuni të jeni më afër kërkesës.");
+            }
+            calculatePower();
+        }
+
+        calculatePower();
+    </script>
+</body>
+</html>

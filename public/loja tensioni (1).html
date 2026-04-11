@@ -3,26 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <title>Voltage Stabilizer - Loja e Tensionit</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --volt-color: #ffd700; --bg-dark: #121212; }
-        body { background: var(--bg-dark); color: white; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        #game-container { background: #222; padding: 30px; border-radius: 20px; border: 4px solid #444; box-shadow: 0 0 50px rgba(255, 215, 0, 0.1); width: 500px; text-align: center; }
-        .voltmeter { background: #000; padding: 20px; border-radius: 50% 50% 0 0; border: 5px solid #666; position: relative; height: 120px; overflow: hidden; }
-        #needle { width: 4px; height: 100px; background: red; position: absolute; bottom: 0; left: 50%; transform-origin: bottom; transform: rotate(-90deg); transition: 0.2s; }
-        .screen { background: #1a1a1a; padding: 15px; margin: 20px 0; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 24px; color: #0f0; border: 2px solid #333; }
-        .controls { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--volt-color); }
-        .device-icon { font-size: 50px; margin-bottom: 10px; transition: 0.3s; }
-        button { padding: 12px; background: var(--volt-color); border: none; color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        button:hover { transform: scale(1.05); }
-        .target-info { color: #aaa; font-size: 0.9em; margin-bottom: 5px; }
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --accent: #ffafcc;
+            --accent2: #a2d2ff;
+            --gold: #ffc8dd;
+            --text: #4a4e69;
+            --muted: #94a3b8;
+            --border: #4a4e69;
+            --green: #baffc9;
+            --red: #ffb3ba;
+        }
+
+        body {
+            background: var(--bg);
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #game-container {
+            background: var(--surface);
+            padding: 30px;
+            border: 4px solid var(--border);
+            box-shadow: 8px 8px 0px var(--border);
+            width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            font-family: 'VT323', monospace;
+            font-size: 3.5rem;
+            color: var(--accent);
+            text-shadow: 2px 2px 0px var(--border);
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+        }
+
+        .target-info {
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            color: var(--text);
+            margin-bottom: 20px;
+            background: var(--bg);
+            padding: 10px;
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
+        }
+
+        #targetU {
+            color: var(--accent2);
+            font-weight: bold;
+            text-shadow: 1px 1px 0px var(--border);
+        }
+
+        .voltmeter {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 50% 50% 0 0;
+            border: 4px solid var(--border);
+            position: relative;
+            height: 120px;
+            overflow: hidden;
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1);
+            margin: 0 auto 20px auto;
+            width: 240px;
+        }
+
+        #needle {
+            width: 6px;
+            height: 100px;
+            background: var(--accent);
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform-origin: bottom;
+            transform: translateX(-50%) rotate(-90deg);
+            transition: transform 0.2s;
+            border: 2px solid var(--border);
+        }
+
+        .device-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            transition: filter 0.3s;
+        }
+
+        .screen {
+            background: var(--bg);
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'VT323', monospace;
+            font-size: 3rem;
+            color: var(--accent2);
+            border: 4px solid var(--border);
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1);
+            text-shadow: 1px 1px 0px var(--border);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            background: var(--bg);
+            padding: 20px;
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
+        }
+
+        .controls label {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: var(--text);
+            text-align: left;
+        }
+
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+            -webkit-appearance: none;
+            height: 12px;
+            border: 2px solid var(--border);
+            background: #e2e8f0;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border: 3px solid var(--border);
+            cursor: pointer;
+        }
+
+        button {
+            padding: 15px;
+            background: var(--green);
+            border: 4px solid var(--border);
+            color: var(--border);
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--border);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--border);
+        }
+
+        #message {
+            margin-top: 20px;
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            min-height: 2.5rem;
+        }
     </style>
 </head>
 <body>
 
     <div id="game-container">
-        <h2>⚡ VOLTAGE STABILIZER ⚡</h2>
-        <div class="target-info">Pajisja kërkon saktësisht: <b id="targetU">220</b> V</div>
+        <h2><i class="fas fa-bolt"></i> VOLTAGE STABILIZER</h2>
+        <div class="target-info">Pajisja kërkon saktësisht: <span id="targetU">220</span> V</div>
         
         <div class="voltmeter">
             <div id="needle"></div>
@@ -37,9 +195,9 @@
         <div class="controls">
             <label>Rregullo Transformatorin (U):</label>
             <input type="range" id="uSlider" min="0" max="400" value="0" oninput="updateVoltage()">
-            <button onclick="checkVoltage()">NDIZ PAJISJEN</button>
+            <button onclick="checkVoltage()"><i class="fas fa-power-off"></i> NDIZ PAJISJEN</button>
         </div>
-        <p id="message" style="margin-top: 15px; font-weight: bold;"></p>
+        <div id="message"></div>
     </div>
 
     <script>
@@ -59,11 +217,11 @@
             // Efekti vizual i pajisjes
             const device = document.getElementById('device');
             if (val > targetVoltage + 20) {
-                device.style.filter = "drop-shadow(0 0 10px red) saturate(2)";
+                device.style.filter = "drop-shadow(0 0 10px #ffb3ba) saturate(2)";
             } else if (val < targetVoltage - 20) {
                 device.style.filter = "grayscale(1)";
             } else {
-                device.style.filter = "drop-shadow(0 0 15px yellow)";
+                device.style.filter = "drop-shadow(0 0 15px #ffc8dd)";
             }
         }
 
@@ -73,15 +231,18 @@
             const diff = Math.abs(val - targetVoltage);
 
             if (diff <= 5) {
-                msg.style.color = "#4ade80";
+                msg.style.color = "#4a4e69";
+                msg.style.textShadow = "1px 1px 0px #baffc9";
                 msg.innerText = "PERFEKT! Pajisja punon me efikasitet maksimal.";
-                nextLevel();
+                setTimeout(nextLevel, 2000);
             } else if (val > targetVoltage) {
-                msg.style.color = "#f87171";
+                msg.style.color = "#4a4e69";
+                msg.style.textShadow = "1px 1px 0px #ffb3ba";
                 msg.innerText = "BOOM! Tensioni shumë i lartë. Pajisja u dogj!";
-                resetGame();
+                setTimeout(resetGame, 2000);
             } else {
-                msg.style.color = "#fbbf24";
+                msg.style.color = "#4a4e69";
+                msg.style.textShadow = "1px 1px 0px #ffc8dd";
                 msg.innerText = " Tension i ulët. Pajisja nuk ka fuqi të ndizet.";
             }
         }
@@ -92,6 +253,7 @@
             document.getElementById('targetU').innerText = targetVoltage;
             document.getElementById('device').innerText = devices[currentLevel % devices.length];
             document.getElementById('uSlider').value = 0;
+            document.getElementById('message').innerText = "";
             updateVoltage();
         }
 
@@ -101,6 +263,7 @@
             document.getElementById('targetU').innerText = targetVoltage;
             document.getElementById('device').innerText = devices[0];
             document.getElementById('uSlider').value = 0;
+            document.getElementById('message').innerText = "";
             updateVoltage();
         }
 

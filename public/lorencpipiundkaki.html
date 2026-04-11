@@ -3,105 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <title>Lorentz Force Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --accent: #f0abfc; /* Pink/Purple Astro */
-            --bg: #020617;
-            --panel: rgba(15, 23, 42, 0.8);
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --accent: #ffafcc;
+            --accent2: #a2d2ff;
+            --gold: #ffc8dd;
+            --text: #4a4e69;
+            --muted: #94a3b8;
+            --border: #4a4e69;
+            --green: #baffc9;
+            --red: #ffb3ba;
         }
 
         body {
             margin: 0;
             background: var(--bg);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
             display: flex;
             height: 100vh;
         }
 
         #sidebar {
             width: 320px;
-            background: var(--panel);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(240, 171, 252, 0.2);
+            background: var(--surface);
+            border-right: 4px solid var(--border);
             padding: 25px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            box-shadow: 8px 0px 0px var(--border);
+            z-index: 10;
+        }
+
+        h2 {
+            font-family: 'VT323', monospace;
+            font-size: 3.5rem;
+            color: var(--accent);
+            text-shadow: 2px 2px 0px var(--border);
+            margin: 0;
+            text-transform: uppercase;
+            text-align: center;
         }
 
         .level-display {
-            background: linear-gradient(45deg, #2e1065, #701a75);
+            background: var(--bg);
             padding: 15px;
-            border-radius: 12px;
             text-align: center;
-            border: 1px solid var(--accent);
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
+        }
+
+        .level-display div:first-child {
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+
+        #lvlName {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            color: var(--accent2);
+            font-weight: bold;
+            text-shadow: 1px 1px 0px var(--border);
         }
 
         .control-group {
-            background: rgba(0,0,0,0.3);
+            background: var(--bg);
             padding: 15px;
-            border-radius: 8px;
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
         }
 
-        input[type=range] { width: 100%; accent-color: var(--accent); }
+        .label {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: var(--text);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+            -webkit-appearance: none;
+            height: 12px;
+            border: 2px solid var(--border);
+            background: #e2e8f0;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border: 3px solid var(--border);
+            cursor: pointer;
+        }
+
+        #bVal {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            color: var(--accent2);
+            font-weight: bold;
+            text-shadow: 1px 1px 0px var(--border);
+        }
 
         /* FORMULA E SAKTË NË FUND */
         .formula-footer {
             margin-top: auto;
-            background: rgba(240, 171, 252, 0.1);
+            background: var(--surface);
             padding: 15px;
-            border-radius: 10px;
             text-align: center;
-            border: 1px solid var(--accent);
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
+        }
+
+        .formula-footer div:first-child {
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 5px;
         }
 
         .formula-text {
-            font-size: 1.3rem;
-            font-family: "Times New Roman", serif;
-            font-style: italic;
-            letter-spacing: 1px;
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            color: var(--accent);
+            text-shadow: 1px 1px 0px var(--border);
+        }
+
+        .formula-footer p {
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-top: 10px;
+            margin-bottom: 0;
         }
 
         #viewport { flex-grow: 1; position: relative; }
-        canvas { width: 100%; height: 100%; }
+        canvas { width: 100%; height: 100%; background: var(--bg); }
 
         .btn {
-            background: var(--accent);
-            color: black;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
+            background: var(--green);
+            color: var(--border);
+            border: 4px solid var(--border);
+            padding: 15px;
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
+            box-shadow: 4px 4px 0px var(--border);
+            transition: transform 0.1s, box-shadow 0.1s;
         }
-        .btn:hover { opacity: 0.8; transform: scale(1.02); }
+        .btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--border);
+        }
+        
+        .btn-reset {
+            background: var(--red);
+        }
     </style>
 </head>
 <body>
 
     <div id="sidebar">
-        <h2 style="margin: 0; color: var(--accent);">LORENTZ PRO</h2>
+        <h2>LORENTZ PRO</h2>
         
         <div class="level-display">
-            <div style="font-size: 0.8rem; opacity: 0.8;">SITUATA</div>
-            <div id="lvlName" style="font-size: 1.2rem; font-weight: bold;">Niveli 1: Devijimi</div>
+            <div>SITUATA</div>
+            <div id="lvlName">Niveli 1: Devijimi</div>
         </div>
 
         <div class="control-group">
             <label class="label">Fusha Magnetike (B)</label>
             <input type="range" id="bRange" min="-5" max="5" step="0.1" value="0">
-            <div id="bVal" style="text-align: center; color: var(--accent);">0.00 T</div>
+            <div id="bVal" style="text-align: center;">0.00 T</div>
         </div>
 
-        <button class="btn" onclick="fireParticle()">LËSHO GRIMCËN</button>
-        <button class="btn" onclick="resetLevel()" style="background: transparent; color: white; border: 1px solid white;">RESET</button>
+        <button class="btn" onclick="fireParticle()"><i class="fas fa-rocket"></i> LËSHO GRIMCËN</button>
+        <button class="btn btn-reset" onclick="resetLevel()"><i class="fas fa-undo"></i> RESET</button>
 
         <div class="formula-footer">
-            <div style="font-size: 0.7rem; opacity: 0.7; margin-bottom: 5px;">FORCA E LORENCIT:</div>
+            <div>FORCA E LORENCIT:</div>
             <div class="formula-text">F = q · v · B · sin(α)</div>
-            <p style="font-size: 0.75rem; margin-top: 10px;">Gjej fushën B që grimca të godasë cakun!</p>
+            <p>Gjej fushën B që grimca të godasë cakun!</p>
         </div>
     </div>
 
@@ -157,22 +253,25 @@
     function resetLevel() { resetParticle(); }
 
     function draw() {
-        ctx.fillStyle = '#020617';
-        ctx.fillRect(0, 0, width, height);
+        ctx.clearRect(0, 0, width, height);
 
         // Vizato targetin
         ctx.beginPath();
         ctx.arc(target.x, target.y, target.r, 0, Math.PI*2);
-        ctx.strokeStyle = varProp('--accent');
+        ctx.strokeStyle = "#4a4e69";
+        ctx.lineWidth = 4;
         ctx.setLineDash([5, 5]);
         ctx.stroke();
+        ctx.fillStyle = "#ffafcc";
+        ctx.fill();
         ctx.setLineDash([]);
 
         // Vizato B field (Crosses or Dots)
         const B = parseFloat(bRange.value);
         document.getElementById('bVal').innerText = B.toFixed(2) + " T";
         
-        ctx.fillStyle = "rgba(240, 171, 252, 0.05)";
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "20px VT323";
         if(B !== 0) {
             for(let i=0; i<width; i+=100) {
                 for(let j=0; j<height; j+=100) {
@@ -192,7 +291,8 @@
 
             // Vizato rrugëtimin
             ctx.beginPath();
-            ctx.strokeStyle = "rgba(240, 171, 252, 0.5)";
+            ctx.strokeStyle = "#a2d2ff";
+            ctx.lineWidth = 4;
             particle.path.forEach((p, i) => {
                 if(i===0) ctx.moveTo(p.x, p.y);
                 else ctx.lineTo(p.x, p.y);
@@ -214,17 +314,16 @@
 
         // Vizato grimcën
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, 6, 0, Math.PI*2);
-        ctx.fillStyle = "#fff";
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = varProp('--accent');
+        ctx.arc(particle.x, particle.y, 10, 0, Math.PI*2);
+        ctx.fillStyle = "#ffc8dd";
         ctx.fill();
+        ctx.strokeStyle = "#4a4e69";
+        ctx.lineWidth = 3;
+        ctx.stroke();
 
         requestAnimationFrame(draw);
     }
 
-    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-    
     resize();
     draw();
 </script>

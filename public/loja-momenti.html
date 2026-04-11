@@ -4,62 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Momenti i Forcës — Loja Fizike</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --bg:#0d0d1a; --bg2:#121220; --accent:#a855f7; --accent2:#c084fc;
-  --text:#e2e8f0; --muted:#64748b; --card:#161626; --border:#252540;
-  --green:#22c55e; --red:#ef4444; --gold:#f59e0b;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --accent: #a2d2ff;
+  --accent2: #ffafcc;
+  --gold: #ffc8dd;
+  --text: #4a4e69;
+  --muted: #94a3b8;
+  --border: #4a4e69;
+  --green: #baffc9;
+  --red: #ffb3ba;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
-header{background:linear-gradient(135deg,#0d0020,var(--bg2));border-bottom:2px solid var(--accent);padding:16px 24px;display:flex;align-items:center;gap:16px;}
-.sym{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);font-weight:900;}
-.title-block h1{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);letter-spacing:2px;}
-.title-block p{color:var(--muted);font-size:.9rem;}
-.formula-badge{margin-left:auto;background:rgba(168,85,247,.15);border:1px solid var(--accent);padding:8px 20px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent2);}
-.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);}
-.tab{padding:14px 28px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;color:var(--muted);border-bottom:3px solid transparent;transition:.3s;}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-.panel{display:none;padding:24px;max-width:900px;margin:0 auto;}
+body{
+  background: var(--bg);
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  overflow-x: hidden;
+}
+header{background:var(--surface);border-bottom:4px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:16px;width:100%;max-width:900px;margin-bottom:20px;box-shadow:8px 8px 0px var(--border);}
+.sym{font-family:'VT323',monospace;font-size:3rem;color:var(--accent);font-weight:900;text-shadow:2px 2px 0px var(--border);}
+.title-block h1{font-family:'VT323',monospace;font-size:2rem;color:var(--text);letter-spacing:2px;text-transform:uppercase;}
+.title-block p{color:var(--text);font-size:1.2rem;font-family:'VT323',monospace;}
+.formula-badge{margin-left:auto;background:var(--accent2);border:4px solid var(--border);padding:8px 20px;font-family:'VT323',monospace;font-size:1.5rem;color:var(--text);box-shadow:4px 4px 0px var(--border);}
+.tabs{display:flex;border-bottom:4px solid var(--border);background:var(--surface);width:100%;max-width:900px;margin-bottom:20px;box-shadow:8px 8px 0px var(--border);}
+.tab{padding:14px 28px;cursor:pointer;font-family:'VT323',monospace;font-size:1.5rem;letter-spacing:1px;color:var(--muted);border-bottom:4px solid transparent;transition:.3s;}
+.tab.active{color:var(--text);border-bottom-color:var(--accent);}
+.panel{display:none;padding:24px;max-width:900px;margin:0 auto;background:var(--surface);border:4px solid var(--border);box-shadow:8px 8px 0px var(--border);width:100%;}
 .panel.active{display:block;}
-.formula-box{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:14px 18px;margin:14px 0;}
-.formula-box .f{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent2);margin-bottom:6px;}
-.formula-box p{color:var(--muted);font-size:.85rem;line-height:1.6;}
+.formula-box{background:var(--bg);border:4px solid var(--border);padding:14px 18px;margin:14px 0;box-shadow:4px 4px 0px var(--border);}
+.formula-box .f{font-family:'VT323',monospace;font-size:1.8rem;color:var(--text);margin-bottom:6px;}
+.formula-box p{color:var(--text);font-size:1.2rem;line-height:1.6;font-family:'VT323',monospace;}
 .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0;}
-.info-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;}
-.info-card label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;}
-.info-card .val{font-family:'Orbitron',sans-serif;font-size:1.3rem;}
-.slider-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
-.slider-row label{min-width:180px;font-size:.9rem;color:var(--text);}
-.slider-row input[type=range]{flex:1;accent-color:var(--accent);}
-.slider-row .sv{min-width:80px;text-align:right;font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--accent2);}
-canvas{background:#09091a;border-radius:12px;border:1px solid var(--border);display:block;width:100%;}
-.balance-status{text-align:center;padding:10px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.85rem;letter-spacing:1px;margin-top:10px;transition:.3s;}
-.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;cursor:pointer;}
-.btn:hover{opacity:.85;}
+.info-card{background:var(--surface);border:4px solid var(--border);padding:14px;box-shadow:4px 4px 0px var(--border);}
+.info-card label{font-family:'VT323',monospace;font-size:1.2rem;color:var(--text);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;}
+.info-card .val{font-family:'VT323',monospace;font-size:1.8rem;color:var(--text);}
+.slider-row{background:var(--surface);border:4px solid var(--border);padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:4px 4px 0px var(--border);}
+.slider-row label{min-width:180px;font-family:'VT323',monospace;font-size:1.4rem;color:var(--text);}
+.slider-row input[type=range]{flex:1;-webkit-appearance:none;height:12px;border:2px solid var(--border);background:#e2e8f0;outline:none;}
+.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;background:var(--accent);border:3px solid var(--border);cursor:pointer;}
+.slider-row .sv{min-width:80px;text-align:right;font-family:'VT323',monospace;font-size:1.4rem;color:var(--text);}
+canvas{background:#e2e8f0;border:4px solid var(--border);display:block;width:100%;box-shadow:4px 4px 0px var(--border);}
+.balance-status{text-align:center;padding:10px;border:4px solid var(--border);font-family:'VT323',monospace;font-size:1.5rem;letter-spacing:1px;margin-top:10px;transition:.3s;box-shadow:4px 4px 0px var(--border);}
+.btn{background:var(--accent);color:var(--text);border:4px solid var(--border);padding:10px 24px;font-family:'VT323',monospace;font-size:1.5rem;letter-spacing:1px;cursor:pointer;box-shadow:4px 4px 0px var(--border);transition:transform 0.1s, box-shadow 0.1s;}
+.btn:active{transform:translate(4px,4px);box-shadow:0px 0px 0px var(--border);}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 /* quiz */
-.progress-bar{background:var(--border);border-radius:99px;height:6px;margin-bottom:20px;}
-.progress-fill{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:99px;transition:.4s;}
-.q-counter{font-size:.8rem;color:var(--muted);margin-bottom:8px;font-family:'Orbitron',sans-serif;}
-.question{font-size:1.1rem;color:var(--text);margin-bottom:20px;line-height:1.5;}
+.progress-bar{background:var(--surface);border:4px solid var(--border);height:20px;margin-bottom:20px;}
+.progress-fill{background:var(--accent);height:100%;transition:.4s;border-right:4px solid var(--border);}
+.q-counter{font-size:1.5rem;color:var(--text);margin-bottom:8px;font-family:'VT323',monospace;}
+.question{font-family:'VT323',monospace;font-size:1.8rem;color:var(--text);margin-bottom:20px;line-height:1.5;}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.opt-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:1rem;text-align:left;transition:.25s;}
-.opt-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
-.opt-btn.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--green);}
-.opt-btn.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red);}
-.feedback{background:var(--card);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.9rem;line-height:1.5;border-left:3px solid var(--accent);display:none;}
-.next-btn{display:none;}
+.opt-btn{background:var(--surface);border:4px solid var(--border);padding:13px 16px;color:var(--text);cursor:pointer;font-family:'VT323',monospace;font-size:1.5rem;text-align:left;transition:.25s;box-shadow:4px 4px 0px var(--border);}
+.opt-btn:hover:not(:disabled){background:var(--bg);transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--border);}
+.opt-btn.correct{background:var(--green);}
+.opt-btn.wrong{background:var(--red);}
+.feedback{background:var(--surface);border:4px dashed var(--border);padding:12px 16px;margin-bottom:14px;font-family:'VT323',monospace;font-size:1.5rem;line-height:1.5;display:none;box-shadow:4px 4px 0px var(--border);}
+.next-btn{display:none;background:var(--accent2);}
 .score-screen{text-align:center;padding:40px 20px;display:none;}
-.score-screen h2{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);margin-bottom:12px;}
-.stars{font-size:2.5rem;margin:16px 0;}
-.score-num{font-family:'Orbitron',sans-serif;font-size:1.4rem;}
+.score-screen h2{font-family:'VT323',monospace;font-size:3rem;color:var(--text);margin-bottom:12px;text-shadow:2px 2px 0px var(--accent);}
+.stars{font-size:4rem;margin:16px 0;color:var(--text);}
+.score-num{font-family:'VT323',monospace;font-size:2rem;}
 </style>
 </head>
 <body>
 <header>
-  <div class="sym">M</div>
+  <div class="sym"><i class="fas fa-balance-scale"></i> M</div>
   <div class="title-block">
     <h1>Momenti i Forcës</h1>
     <p>Efekti rrotullues i një force</p>
@@ -68,8 +90,8 @@ canvas{background:#09091a;border-radius:12px;border:1px solid var(--border);disp
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('sim')">🔬 Simulim</div>
-  <div class="tab" onclick="switchTab('quiz')">🧠 Kuiz</div>
+  <div class="tab active" onclick="switchTab('sim')"><i class="fas fa-microscope"></i> Simulim</div>
+  <div class="tab" onclick="switchTab('quiz')"><i class="fas fa-gamepad"></i> Kuiz</div>
 </div>
 
 <div id="sim" class="panel active">
@@ -82,7 +104,7 @@ canvas{background:#09091a;border-radius:12px;border:1px solid var(--border);disp
 
   <div class="two-col" style="margin-top:16px">
     <div>
-      <div style="font-size:.8rem;color:#f87171;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'Orbitron',sans-serif;">⬅ Krahut Majtas</div>
+      <div style="font-size:1.2rem;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'VT323',monospace;"><i class="fas fa-arrow-left"></i> Krahut Majtas</div>
       <div class="slider-row">
         <label>Forca F₁</label>
         <input type="range" id="sF1" min="10" max="200" value="60" oninput="updateSim()">
@@ -95,7 +117,7 @@ canvas{background:#09091a;border-radius:12px;border:1px solid var(--border);disp
       </div>
     </div>
     <div>
-      <div style="font-size:.8rem;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'Orbitron',sans-serif;">Krahut Djathtas ➡</div>
+      <div style="font-size:1.2rem;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'VT323',monospace;">Krahut Djathtas <i class="fas fa-arrow-right"></i></div>
       <div class="slider-row">
         <label>Forca F₂</label>
         <input type="range" id="sF2" min="10" max="200" value="60" oninput="updateSim()">
@@ -110,13 +132,13 @@ canvas{background:#09091a;border-radius:12px;border:1px solid var(--border);disp
   </div>
 
   <div class="info-grid">
-    <div class="info-card"><label>M₁ (kundërorar)</label><div class="val" style="color:#f87171" id="resM1">120 N·m</div></div>
-    <div class="info-card"><label>M₂ (orar)</label><div class="val" style="color:#34d399" id="resM2">120 N·m</div></div>
+    <div class="info-card"><label>M₁ (kundërorar)</label><div class="val" style="color:var(--red)" id="resM1">120 N·m</div></div>
+    <div class="info-card"><label>M₂ (orar)</label><div class="val" style="color:var(--green)" id="resM2">120 N·m</div></div>
     <div class="info-card"><label>M_rezultante</label><div class="val" id="resMR">0 N·m</div></div>
   </div>
 
-  <div id="balanceStatus" class="balance-status" style="background:rgba(34,197,94,.1);border:1px solid #22c55e;color:#22c55e;">
-    ⚖️ EKUILIBËR — M₁ = M₂
+  <div id="balanceStatus" class="balance-status" style="background:var(--green);color:var(--text);">
+    <i class="fas fa-balance-scale"></i> EKUILIBËR — M₁ = M₂
   </div>
 </div>
 
@@ -127,13 +149,13 @@ canvas{background:#09091a;border-radius:12px;border:1px solid var(--border);disp
     <div class="question" id="qText"></div>
     <div class="opts" id="opts"></div>
     <div class="feedback" id="feedback"></div>
-    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër →</button>
+    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër <i class="fas fa-arrow-right"></i></button>
   </div>
   <div class="score-screen" id="scoreScreen">
     <div class="stars" id="stars"></div>
     <h2>Rezultati Yt</h2>
     <div class="score-num" id="scoreNum"></div>
-    <button class="btn" style="margin-top:20px" onclick="startQuiz()">🔄 Rifillo Kuizin</button>
+    <button class="btn" style="margin-top:20px" onclick="startQuiz()"><i class="fas fa-redo"></i> Rifillo Kuizin</button>
   </div>
 </div>
 
@@ -166,16 +188,16 @@ function updateSim(){
   const bs=document.getElementById('balanceStatus');
   const diff=parseFloat(MR);
   if(Math.abs(diff)<1){
-    bs.style.background='rgba(34,197,94,.1)'; bs.style.borderColor='#22c55e'; bs.style.color='#22c55e';
-    bs.textContent='⚖️ EKUILIBËR — M₁ = M₂';
+    bs.style.background='var(--green)'; bs.style.color='var(--text)';
+    bs.innerHTML='<i class="fas fa-balance-scale"></i> EKUILIBËR — M₁ = M₂';
     targetAngle=0;
   } else if(diff>0){
-    bs.style.background='rgba(52,211,153,.1)'; bs.style.borderColor='#34d399'; bs.style.color='#34d399';
-    bs.textContent='↘ Rrotullohet ORAR (djathtas peshon më shumë)';
+    bs.style.background='var(--accent)'; bs.style.color='var(--text)';
+    bs.innerHTML='<i class="fas fa-undo" style="transform: scaleX(-1);"></i> Rrotullohet ORAR (djathtas peshon më shumë)';
     targetAngle=Math.min(diff/50*0.35,0.4);
   } else {
-    bs.style.background='rgba(248,113,113,.1)'; bs.style.borderColor='#f87171'; bs.style.color='#f87171';
-    bs.textContent='↙ Rrotullohet KUNDËRORAR (majtas peshon më shumë)';
+    bs.style.background='var(--accent2)'; bs.style.color='var(--text)';
+    bs.innerHTML='<i class="fas fa-undo"></i> Rrotullohet KUNDËRORAR (majtas peshon më shumë)';
     targetAngle=Math.max(diff/50*0.35,-0.4);
   }
   animateTilt();
@@ -204,41 +226,43 @@ function drawBalance(){
   const angle=tiltAngle;
 
   // pivot
-  ctx.fillStyle='#a855f7';
-  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx-18,cy+30); ctx.lineTo(cx+18,cy+30); ctx.closePath(); ctx.fill();
-  ctx.fillStyle='#6b21a8'; ctx.fillRect(cx-30,cy+28,60,12);
+  ctx.fillStyle='#a2d2ff';
+  ctx.strokeStyle='#4a4e69'; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx-20,cy+40); ctx.lineTo(cx+20,cy+40); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#4a4e69'; ctx.fillRect(cx-40,cy+36,80,16);
 
   // beam
   ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
-  ctx.strokeStyle='#c084fc'; ctx.lineWidth=6;
+  ctx.strokeStyle='#4a4e69'; ctx.lineWidth=8;
+  ctx.beginPath(); ctx.moveTo(-armPx*d1/2,0); ctx.lineTo(armPx*d2/2,0); ctx.stroke();
+  ctx.strokeStyle='#ffafcc'; ctx.lineWidth=4;
   ctx.beginPath(); ctx.moveTo(-armPx*d1/2,0); ctx.lineTo(armPx*d2/2,0); ctx.stroke();
 
   // left weight
   const lh=Math.min(F1/10*20,80);
-  ctx.fillStyle='rgba(248,113,113,.25)'; ctx.strokeStyle='#f87171'; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.roundRect(-armPx*d1/2-20,20,-40+40,lh,6); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='#f87171'; ctx.font='11px Orbitron'; ctx.textAlign='center';
-  ctx.fillText('F₁='+F1+'N', -armPx*d1/2, 14);
-  ctx.fillText('d₁='+d1+'m', -armPx*d1/2, 35+lh*0.5);
+  ctx.fillStyle='#ffb3ba'; ctx.strokeStyle='#4a4e69'; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.rect(-armPx*d1/2-20,4,-40+40,lh); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#4a4e69'; ctx.font='16px VT323'; ctx.textAlign='center';
+  ctx.fillText('F₁='+F1+'N', -armPx*d1/2, -10);
+  ctx.fillText('d₁='+d1+'m', -armPx*d1/2, 20+lh*0.5);
 
   // right weight
   const rh=Math.min(F2/10*20,80);
-  ctx.fillStyle='rgba(52,211,153,.25)'; ctx.strokeStyle='#34d399'; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.roundRect(armPx*d2/2-20,20,40,rh,6); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='#34d399'; ctx.textAlign='center';
-  ctx.fillText('F₂='+F2+'N', armPx*d2/2, 14);
-  ctx.fillText('d₂='+d2+'m', armPx*d2/2, 35+rh*0.5);
+  ctx.fillStyle='#baffc9'; ctx.strokeStyle='#4a4e69'; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.rect(armPx*d2/2-20,4,40,rh); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#4a4e69'; ctx.textAlign='center';
+  ctx.fillText('F₂='+F2+'N', armPx*d2/2, -10);
+  ctx.fillText('d₂='+d2+'m', armPx*d2/2, 20+rh*0.5);
 
   // center marker
-  ctx.fillStyle='#c084fc';
-  ctx.beginPath(); ctx.arc(0,0,6,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#4a4e69';
+  ctx.beginPath(); ctx.arc(0,0,8,0,Math.PI*2); ctx.fill();
   ctx.restore();
 
   // labels
-  ctx.fillStyle='#f87171'; ctx.font='12px Orbitron'; ctx.textAlign='center';
-  ctx.fillText('M₁='+(F1*d1).toFixed(0)+' N·m', cx-armPx-10, 230);
-  ctx.fillStyle='#34d399';
-  ctx.fillText('M₂='+(F2*d2).toFixed(0)+' N·m', cx+armPx+10, 230);
+  ctx.fillStyle='#4a4e69'; ctx.font='18px VT323'; ctx.textAlign='center';
+  ctx.fillText('M₁='+(F1*d1).toFixed(0)+' N·m', cx-armPx-20, 230);
+  ctx.fillText('M₂='+(F2*d2).toFixed(0)+' N·m', cx+armPx+20, 230);
 }
 
 // QUIZ
@@ -282,8 +306,8 @@ function answer(i){
   if(i===q.ans) score++;
   const fb=document.getElementById('feedback');
   fb.style.display='block';
-  fb.style.borderLeftColor=i===q.ans?'var(--green)':'var(--red)';
-  fb.textContent=(i===q.ans?'✅ ':'❌ ')+q.exp;
+  fb.style.borderColor=i===q.ans?'var(--green)':'var(--red)';
+  fb.innerHTML=(i===q.ans?'<i class="fas fa-check"></i> ':'<i class="fas fa-times"></i> ')+q.exp;
   document.getElementById('nextBtn').style.display='inline-block';
 }
 function nextQ(){ cur++; if(cur<questions.length) showQ(); else showScore(); }

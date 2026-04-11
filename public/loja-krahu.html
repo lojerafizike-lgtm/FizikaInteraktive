@@ -4,65 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Krahu i Forcës — Loja Fizike</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --bg:#0a0f0a; --bg2:#0f180f; --accent:#4ade80; --accent2:#86efac;
-  --text:#e2e8f0; --muted:#64748b; --card:#121f12; --border:#1a2e1a;
-  --green:#22c55e; --red:#ef4444;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --accent: #ffafcc;
+  --accent2: #a2d2ff;
+  --gold: #ffc8dd;
+  --text: #4a4e69;
+  --muted: #94a3b8;
+  --border: #4a4e69;
+  --green: #baffc9;
+  --red: #ffb3ba;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
-header{background:linear-gradient(135deg,#001008,var(--bg2));border-bottom:2px solid var(--accent);padding:16px 24px;display:flex;align-items:center;gap:16px;}
-.sym{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);font-weight:900;}
-.title-block h1{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);letter-spacing:2px;}
-.title-block p{color:var(--muted);font-size:.9rem;}
-.formula-badge{margin-left:auto;background:rgba(74,222,128,.15);border:1px solid var(--accent);padding:8px 20px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent2);}
-.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);}
-.tab{padding:14px 28px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;color:var(--muted);border-bottom:3px solid transparent;transition:.3s;}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-.panel{display:none;padding:24px;max-width:860px;margin:0 auto;}
+body{
+  background: var(--bg);
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  overflow-x: hidden;
+}
+header{background:var(--surface);border-bottom:4px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:16px;width:100%;max-width:860px;margin-bottom:20px;box-shadow:8px 8px 0px var(--border);}
+.sym{font-family:'VT323',monospace;font-size:3rem;color:var(--accent);font-weight:900;text-shadow:2px 2px 0px var(--border);}
+.title-block h1{font-family:'VT323',monospace;font-size:2rem;color:var(--text);letter-spacing:2px;text-transform:uppercase;}
+.title-block p{color:var(--text);font-size:1.2rem;font-family:'VT323',monospace;}
+.formula-badge{margin-left:auto;background:var(--accent2);border:4px solid var(--border);padding:8px 20px;font-family:'VT323',monospace;font-size:1.5rem;color:var(--text);box-shadow:4px 4px 0px var(--border);}
+.tabs{display:flex;border-bottom:4px solid var(--border);background:var(--surface);width:100%;max-width:860px;margin-bottom:20px;box-shadow:8px 8px 0px var(--border);}
+.tab{padding:14px 28px;cursor:pointer;font-family:'VT323',monospace;font-size:1.5rem;letter-spacing:1px;color:var(--muted);border-bottom:4px solid transparent;transition:.3s;}
+.tab.active{color:var(--text);border-bottom-color:var(--accent);}
+.panel{display:none;padding:24px;max-width:860px;margin:0 auto;background:var(--surface);border:4px solid var(--border);box-shadow:8px 8px 0px var(--border);width:100%;}
 .panel.active{display:block;}
-.formula-box{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3);border-radius:10px;padding:14px 18px;margin:14px 0;}
-.formula-box .f{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent2);margin-bottom:6px;}
-.formula-box p{color:var(--muted);font-size:.85rem;line-height:1.6;}
-.slider-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
-.slider-row label{min-width:200px;font-size:.9rem;color:var(--text);}
-.slider-row input[type=range]{flex:1;accent-color:var(--accent);}
-.slider-row .sv{min-width:80px;text-align:right;font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--accent2);}
-canvas{background:#050d05;border-radius:12px;border:1px solid var(--border);display:block;width:100%;}
+.formula-box{background:var(--bg);border:4px solid var(--border);padding:14px 18px;margin:14px 0;box-shadow:4px 4px 0px var(--border);}
+.formula-box .f{font-family:'VT323',monospace;font-size:1.8rem;color:var(--text);margin-bottom:6px;}
+.formula-box p{color:var(--text);font-size:1.2rem;line-height:1.6;font-family:'VT323',monospace;}
+.slider-row{background:var(--surface);border:4px solid var(--border);padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:4px 4px 0px var(--border);}
+.slider-row label{min-width:200px;font-family:'VT323',monospace;font-size:1.4rem;color:var(--text);}
+.slider-row input[type=range]{flex:1;-webkit-appearance:none;height:12px;border:2px solid var(--border);background:#e2e8f0;outline:none;}
+.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;background:var(--accent);border:3px solid var(--border);cursor:pointer;}
+.slider-row .sv{min-width:80px;text-align:right;font-family:'VT323',monospace;font-size:1.4rem;color:var(--text);}
+canvas{background:#e2e8f0;border:4px solid var(--border);display:block;width:100%;box-shadow:4px 4px 0px var(--border);}
 .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0;}
-.info-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;}
-.info-card label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;}
-.info-card .val{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent);}
+.info-card{background:var(--surface);border:4px solid var(--border);padding:14px;box-shadow:4px 4px 0px var(--border);}
+.info-card label{font-family:'VT323',monospace;font-size:1.2rem;color:var(--text);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;}
+.info-card .val{font-family:'VT323',monospace;font-size:1.8rem;color:var(--text);}
 .examples-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
-.ex-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:.25s;}
-.ex-btn:hover,.ex-btn.sel{border-color:var(--accent);background:rgba(74,222,128,.1);}
-.ex-btn .ico{font-size:1.8rem;display:block;margin-bottom:4px;}
-.ex-btn .nm{font-size:.75rem;color:var(--muted);font-family:'Orbitron',sans-serif;}
-.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;padding:10px 24px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;cursor:pointer;font-weight:700;}
-.btn:hover{opacity:.85;}
+.ex-btn{background:var(--surface);border:4px solid var(--border);padding:12px;cursor:pointer;text-align:center;transition:.25s;box-shadow:4px 4px 0px var(--border);}
+.ex-btn:hover{background:var(--bg);transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--border);}
+.ex-btn.sel{background:var(--accent2);color:var(--text);}
+.ex-btn .ico{font-size:2.5rem;display:block;margin-bottom:4px;}
+.ex-btn .nm{font-size:1.2rem;color:var(--text);font-family:'VT323',monospace;}
+.btn{background:var(--accent);color:var(--text);border:4px solid var(--border);padding:10px 24px;font-family:'VT323',monospace;font-size:1.5rem;letter-spacing:1px;cursor:pointer;box-shadow:4px 4px 0px var(--border);transition:transform 0.1s, box-shadow 0.1s;}
+.btn:active{transform:translate(4px,4px);box-shadow:0px 0px 0px var(--border);}
 /* quiz */
-.progress-bar{background:var(--border);border-radius:99px;height:6px;margin-bottom:20px;}
-.progress-fill{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:99px;transition:.4s;}
-.q-counter{font-size:.8rem;color:var(--muted);margin-bottom:8px;font-family:'Orbitron',sans-serif;}
-.question{font-size:1.1rem;color:var(--text);margin-bottom:20px;line-height:1.5;}
+.progress-bar{background:var(--surface);border:4px solid var(--border);height:20px;margin-bottom:20px;}
+.progress-fill{background:var(--accent);height:100%;transition:.4s;border-right:4px solid var(--border);}
+.q-counter{font-size:1.5rem;color:var(--text);margin-bottom:8px;font-family:'VT323',monospace;}
+.question{font-family:'VT323',monospace;font-size:1.8rem;color:var(--text);margin-bottom:20px;line-height:1.5;}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.opt-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:1rem;text-align:left;transition:.25s;}
-.opt-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
-.opt-btn.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--green);}
-.opt-btn.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red);}
-.feedback{background:var(--card);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.9rem;line-height:1.5;border-left:3px solid var(--accent);display:none;}
-.next-btn{display:none;}
+.opt-btn{background:var(--surface);border:4px solid var(--border);padding:13px 16px;color:var(--text);cursor:pointer;font-family:'VT323',monospace;font-size:1.5rem;text-align:left;transition:.25s;box-shadow:4px 4px 0px var(--border);}
+.opt-btn:hover:not(:disabled){background:var(--bg);transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--border);}
+.opt-btn.correct{background:var(--green);}
+.opt-btn.wrong{background:var(--red);}
+.feedback{background:var(--surface);border:4px dashed var(--border);padding:12px 16px;margin-bottom:14px;font-family:'VT323',monospace;font-size:1.5rem;line-height:1.5;display:none;box-shadow:4px 4px 0px var(--border);}
+.next-btn{display:none;background:var(--accent2);}
 .score-screen{text-align:center;padding:40px 20px;display:none;}
-.score-screen h2{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);margin-bottom:12px;}
-.stars{font-size:2.5rem;margin:16px 0;}
-.score-num{font-family:'Orbitron',sans-serif;font-size:1.4rem;}
+.score-screen h2{font-family:'VT323',monospace;font-size:3rem;color:var(--text);margin-bottom:12px;text-shadow:2px 2px 0px var(--accent);}
+.stars{font-size:4rem;margin:16px 0;color:var(--text);}
+.score-num{font-family:'VT323',monospace;font-size:2rem;}
 </style>
 </head>
 <body>
 <header>
-  <div class="sym">d</div>
+  <div class="sym"><i class="fas fa-ruler-combined"></i> d</div>
   <div class="title-block">
     <h1>Krahu i Forcës</h1>
     <p>Distanca pingule nga boshti i rrotullimit</p>
@@ -71,8 +94,8 @@ canvas{background:#050d05;border-radius:12px;border:1px solid var(--border);disp
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('sim')">🔬 Simulim</div>
-  <div class="tab" onclick="switchTab('quiz')">🧠 Kuiz</div>
+  <div class="tab active" onclick="switchTab('sim')"><i class="fas fa-microscope"></i> Simulim</div>
+  <div class="tab" onclick="switchTab('quiz')"><i class="fas fa-gamepad"></i> Kuiz</div>
 </div>
 
 <div id="sim" class="panel active">
@@ -82,7 +105,7 @@ canvas{background:#050d05;border-radius:12px;border:1px solid var(--border);disp
   </div>
 
   <div style="margin-bottom:14px">
-    <div style="font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'Orbitron',sans-serif;">Shembuj praktikë:</div>
+    <div style="font-size:1.2rem;color:var(--text);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'VT323',monospace;">Shembuj praktikë:</div>
     <div class="examples-row">
       <div class="ex-btn sel" id="ex0" onclick="selEx(0)"><span class="ico">🔧</span><span class="nm">Çelës</span></div>
       <div class="ex-btn" id="ex1" onclick="selEx(1)"><span class="ico">🚪</span><span class="nm">Derë</span></div>
@@ -124,13 +147,13 @@ canvas{background:#050d05;border-radius:12px;border:1px solid var(--border);disp
     <div class="question" id="qText"></div>
     <div class="opts" id="opts"></div>
     <div class="feedback" id="feedback"></div>
-    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër →</button>
+    <button class="btn next-btn" id="nextBtn" onclick="nextQ()">Pyetja Tjetër <i class="fas fa-arrow-right"></i></button>
   </div>
   <div class="score-screen" id="scoreScreen">
     <div class="stars" id="stars"></div>
     <h2>Rezultati Yt</h2>
     <div class="score-num" id="scoreNum"></div>
-    <button class="btn" style="margin-top:20px" onclick="startQuiz()">🔄 Rifillo Kuizin</button>
+    <button class="btn" style="margin-top:20px" onclick="startQuiz()"><i class="fas fa-redo"></i> Rifillo Kuizin</button>
   </div>
 </div>
 
@@ -181,48 +204,48 @@ function drawViz(F,d,theta){
   const armLen=Math.min(d*60,220);
   const ex=ox+armLen*Math.cos(-0.1), ey=oy+armLen*Math.sin(-0.1);
   // background grid
-  ctx.strokeStyle='rgba(74,222,128,.05)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(74,78,105,.1)'; ctx.lineWidth=2;
   for(let x=0;x<w;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,260); ctx.stroke(); }
   for(let y=0;y<260;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
   // pivot
-  ctx.fillStyle='#4ade80';
-  ctx.beginPath(); ctx.arc(ox,oy,10,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='rgba(74,222,128,.2)';
-  ctx.beginPath(); ctx.arc(ox,oy,30,0,Math.PI*2); ctx.fill();
-  ctx.strokeStyle='#4ade80'; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.arc(ox,oy,30,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle='#ffafcc';
+  ctx.beginPath(); ctx.arc(ox,oy,12,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#4a4e69'; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.arc(ox,oy,12,0,Math.PI*2); ctx.stroke();
   // arm
-  ctx.strokeStyle='#86efac'; ctx.lineWidth=5;
+  ctx.strokeStyle='#a2d2ff'; ctx.lineWidth=8;
+  ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ex,ey); ctx.stroke();
+  ctx.strokeStyle='#4a4e69'; ctx.lineWidth=4;
   ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ex,ey); ctx.stroke();
   // force arrow at end
   const fLen=Math.min(F*0.8,100);
   const fx=ex+fLen*Math.cos(thetaRad-Math.PI/2);
   const fy=ey+fLen*Math.sin(thetaRad-Math.PI/2);
-  ctx.strokeStyle='#f97316'; ctx.lineWidth=3;
+  ctx.strokeStyle='#ffb3ba'; ctx.lineWidth=6;
   ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(fx,fy); ctx.stroke();
-  ctx.fillStyle='#f97316';
+  ctx.fillStyle='#ffb3ba';
   const ang2=Math.atan2(fy-ey,fx-ex);
-  ctx.beginPath(); ctx.moveTo(fx,fy); ctx.lineTo(fx-12*Math.cos(ang2-0.4),fy-12*Math.sin(ang2-0.4)); ctx.lineTo(fx-12*Math.cos(ang2+0.4),fy-12*Math.sin(ang2+0.4)); ctx.closePath(); ctx.fill();
-  ctx.fillStyle='#f97316'; ctx.font='12px Orbitron'; ctx.textAlign='left';
+  ctx.beginPath(); ctx.moveTo(fx,fy); ctx.lineTo(fx-16*Math.cos(ang2-0.4),fy-16*Math.sin(ang2-0.4)); ctx.lineTo(fx-16*Math.cos(ang2+0.4),fy-16*Math.sin(ang2+0.4)); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#4a4e69'; ctx.font='16px VT323'; ctx.textAlign='left';
   ctx.fillText('F='+F+'N', fx+5, fy);
   // perpendicular line (krahu)
   const px=ox+(ex-ox)*0.98, py=oy+(ey-oy)*0.98;
   const perpLen=(d*Math.sin(thetaRad))*60*0.98;
-  ctx.strokeStyle='#facc15'; ctx.lineWidth=2; ctx.setLineDash([5,5]);
+  ctx.strokeStyle='#ffc8dd'; ctx.lineWidth=4; ctx.setLineDash([8,8]);
   const armAngle=Math.atan2(ey-oy,ex-ox);
   const perpX=ox+Math.cos(armAngle+Math.PI/2)*20, perpY=oy+Math.sin(armAngle+Math.PI/2)*20;
   ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(perpX,perpY); ctx.stroke(); ctx.setLineDash([]);
   // d label
-  ctx.fillStyle='#facc15'; ctx.font='12px Orbitron'; ctx.textAlign='center';
+  ctx.fillStyle='#4a4e69'; ctx.font='16px VT323'; ctx.textAlign='center';
   ctx.fillText('d='+d.toFixed(1)+'m', (ox+ex)/2+8, (oy+ey)/2-12);
   // moment label
   const deff=(d*Math.sin(thetaRad)).toFixed(2);
-  ctx.fillStyle='#4ade80'; ctx.font='bold 14px Orbitron'; ctx.textAlign='left';
+  ctx.fillStyle='#4a4e69'; ctx.font='bold 18px VT323'; ctx.textAlign='left';
   ctx.fillText('M = '+F+' × '+deff+' = '+(F*parseFloat(deff)).toFixed(1)+' N·m', ox+armLen+20, oy);
   // theta arc
-  ctx.strokeStyle='#c084fc'; ctx.lineWidth=2;
+  ctx.strokeStyle='#baffc9'; ctx.lineWidth=4;
   ctx.beginPath(); ctx.arc(ex,ey,25,armAngle,armAngle+thetaRad-Math.PI/2); ctx.stroke();
-  ctx.fillStyle='#c084fc'; ctx.font='11px Orbitron'; ctx.textAlign='center';
+  ctx.fillStyle='#4a4e69'; ctx.font='14px VT323'; ctx.textAlign='center';
   ctx.fillText('θ='+theta+'°', ex+35, ey+15);
 }
 
@@ -254,8 +277,8 @@ function answer(i){
   document.querySelectorAll('.opt-btn').forEach((b,j)=>{b.disabled=true;if(j===q.ans)b.classList.add('correct');else if(j===i)b.classList.add('wrong');});
   if(i===q.ans)score++;
   const fb=document.getElementById('feedback');
-  fb.style.display='block';fb.style.borderLeftColor=i===q.ans?'var(--green)':'var(--red)';
-  fb.textContent=(i===q.ans?'✅ ':'❌ ')+q.exp;
+  fb.style.display='block';fb.style.borderColor=i===q.ans?'var(--green)':'var(--red)';
+  fb.innerHTML=(i===q.ans?'<i class="fas fa-check"></i> ':'<i class="fas fa-times"></i> ')+q.exp;
   document.getElementById('nextBtn').style.display='inline-block';
 }
 function nextQ(){cur++;if(cur<questions.length)showQ();else showScore();}

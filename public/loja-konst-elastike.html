@@ -3,78 +3,227 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Loja - Konstanta Elastike</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  :root{--bg:#0a0a0f;--surface:#14142a;--accent:#b39ddb;--accent2:#ff7043;--gold:#ffd600;--text:#ede7f6;--muted:#9575cd;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
-  h1{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);text-shadow:0 0 20px var(--accent);margin-bottom:4px;letter-spacing:2px;}
-  .subtitle{color:var(--muted);font-size:1.1rem;margin-bottom:24px;}
-  .card{background:var(--surface);border:1px solid #2a1a5a;border-radius:16px;padding:24px;width:100%;max-width:700px;margin-bottom:20px;position:relative;overflow:hidden;}
-  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
-  .formula-box{background:#08080f;border:1px solid var(--accent);border-radius:10px;padding:16px;text-align:center;font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);margin-bottom:16px;}
-  label{font-size:1rem;color:var(--muted);display:block;margin-bottom:6px;}
-  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-  input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:#2a1a5a;outline:none;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);cursor:pointer;}
-  .val{min-width:70px;text-align:right;font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--gold);}
-  .results{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
-  .result-item{background:#08080f;border-radius:10px;padding:12px;text-align:center;border:1px solid #2a1a5a;}
-  .rlabel{font-size:0.8rem;color:var(--muted);margin-bottom:4px;}
-  .rval{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--gold);}
-  .tab-row{display:flex;gap:8px;margin-bottom:20px;}
-  .tab{padding:8px 20px;border-radius:8px;border:1px solid #2a1a5a;background:transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:1rem;cursor:pointer;transition:all 0.2s;}
-  .tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600;}
-  .panel{display:none;}.panel.active{display:block;}
-  .question{font-size:1.1rem;color:var(--text);margin-bottom:14px;line-height:1.5;}
-  .options{display:flex;flex-direction:column;gap:10px;}
-  .opt-btn{background:#08080f;border:1px solid #2a1a5a;border-radius:10px;color:var(--text);padding:12px 16px;font-family:'Rajdhani',sans-serif;font-size:1rem;cursor:pointer;text-align:left;transition:all 0.2s;}
-  .opt-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .opt-btn.correct{border-color:#4caf50;background:#1a3a1a;color:#81c784;}
-  .opt-btn.wrong{border-color:var(--accent2);background:#2a0a0a;color:#ef9a9a;}
-  .feedback{margin-top:14px;padding:12px;border-radius:8px;font-size:1rem;display:none;}
-  .feedback.show{display:block;}
-  .feedback.ok{background:#1a3a1a;border:1px solid #4caf50;color:#81c784;}
-  .feedback.bad{background:#2a0a0a;border:1px solid var(--accent2);color:#ef9a9a;}
-  .next-btn{margin-top:14px;background:linear-gradient(135deg,var(--accent),#4a148c);border:none;border-radius:10px;color:#fff;font-family:'Orbitron',sans-serif;font-size:0.9rem;padding:12px 24px;cursor:pointer;display:none;font-weight:bold;}
-  .next-btn.show{display:inline-block;}
-  .score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-  .score-badge{background:#2a1a5a;border:1px solid var(--accent);border-radius:8px;padding:6px 14px;font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--accent);}
-  .progress-bar{flex:1;height:6px;background:#2a1a5a;border-radius:3px;margin:0 12px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width 0.4s;}
-  .victory{text-align:center;padding:30px;display:none;}
-  .victory.show{display:block;}
-  .victory-title{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--gold);text-shadow:0 0 20px var(--gold);margin-bottom:10px;}
-  .stars{font-size:2.5rem;margin:10px 0;}
-  .restart-btn{margin-top:16px;background:var(--gold);border:none;border-radius:10px;color:#000;font-family:'Orbitron',sans-serif;font-size:0.9rem;padding:12px 28px;cursor:pointer;font-weight:bold;}
-  /* Graph */
-  canvas{background:#08080f;border:1px solid #2a1a5a;border-radius:10px;max-width:100%;}
-  .graph-label{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:6px;}
-  .springs-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
-  .spring-card{background:#08080f;border:1px solid #2a1a5a;border-radius:12px;padding:16px;text-align:center;}
-  .spring-name{font-size:0.9rem;color:var(--muted);margin-bottom:8px;}
-  .spring-k{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--accent);}
-  .spring-bar{height:10px;background:var(--accent);border-radius:5px;margin:8px 0;}
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --accent: #8b5cf6;
+    --accent-hover: #7c3aed;
+    --accent2: #f97316;
+    --gold: #f59e0b;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+  }
+  h1 {
+    font-size: 2.5rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: 800;
+    text-align: center;
+  }
+  .subtitle { color: var(--muted); font-size: 1.2rem; margin-bottom: 30px; font-weight: 600; text-align: center; }
+  .card {
+    background: var(--surface);
+    border-radius: 24px;
+    padding: 32px;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .formula-box {
+    background: #f8fafc;
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin-bottom: 24px;
+    font-weight: 800;
+    box-shadow: var(--shadow-inner);
+  }
+  label { font-size: 1rem; color: var(--text); display: block; margin-bottom: 8px; font-weight: 600; }
+  .slider-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: #e2e8f0;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
+    transition: transform 0.1s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+  .val {
+    min-width: 80px;
+    text-align: right;
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 800;
+    background: #f1f5f9;
+    padding: 6px 12px;
+    border-radius: 12px;
+  }
+  .results { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .result-item {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .rlabel { font-size: 0.9rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .rval { font-size: 1.3rem; color: var(--gold); font-weight: 800; }
+  .tab-row { display: flex; gap: 12px; margin-bottom: 24px; justify-content: center; }
+  .tab {
+    padding: 12px 24px;
+    border-radius: 16px;
+    border: none;
+    background: #e2e8f0;
+    color: var(--muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab:hover { background: #cbd5e1; color: var(--text); }
+  .tab.active {
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  }
+  .panel { display: none; animation: fadeIn 0.3s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .question { font-size: 1.2rem; color: var(--text); margin-bottom: 20px; line-height: 1.5; font-weight: 800; }
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .opt-btn {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    color: var(--text);
+    padding: 16px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .opt-btn:hover { border-color: var(--accent); background: #f5f3ff; }
+  .opt-btn.correct { border-color: #10b981; background: #ecfdf5; color: #047857; }
+  .opt-btn.wrong { border-color: #ef4444; background: #fef2f2; color: #b91c1c; }
+  .feedback { margin-top: 20px; padding: 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 800; display: none; text-align: center; }
+  .feedback.show { display: block; animation: fadeIn 0.3s ease; }
+  .feedback.ok { background: #ecfdf5; color: #047857; border: 1px solid #10b981; }
+  .feedback.bad { background: #fef2f2; color: #b91c1c; border: 1px solid #ef4444; }
+  .next-btn {
+    margin-top: 20px;
+    background: var(--accent);
+    border: none;
+    border-radius: 16px;
+    color: #ffffff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    padding: 16px 32px;
+    cursor: pointer;
+    display: none;
+    font-weight: 800;
+    width: 100%;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  }
+  .next-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  .next-btn.show { display: inline-block; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .score-badge {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .progress-bar { flex: 1; height: 12px; background: #e2e8f0; border-radius: 6px; margin: 0 16px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 6px; transition: width 0.4s ease; }
+  .victory { text-align: center; padding: 40px 20px; display: none; }
+  .victory.show { display: block; animation: fadeIn 0.5s ease; }
+  .victory-title { font-size: 2.5rem; color: var(--gold); margin-bottom: 16px; font-weight: 800; }
+  .stars { font-size: 3.5rem; margin: 16px 0; color: var(--gold); }
+  .restart-btn {
+    margin-top: 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: 16px;
+    color: #ffffff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.2rem;
+    padding: 16px 36px;
+    cursor: pointer;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  
+  /* Graph specific */
+  canvas { background: #ffffff; border: 2px solid var(--border); border-radius: 16px; max-width: 100%; box-shadow: var(--shadow-inner); }
+  .graph-label { font-size: 0.95rem; color: var(--muted); text-align: center; margin-top: 12px; font-weight: 600; }
+  .springs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .spring-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 16px; text-align: center; }
+  .spring-name { font-size: 1rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .spring-k { font-size: 1.3rem; color: var(--accent); font-weight: 800; }
+  .spring-bar { height: 12px; background: var(--accent); border-radius: 6px; margin: 12px 0 4px 0; }
 </style>
 </head>
 <body>
-<h1>🔧 KONSTANTA ELASTIKE</h1>
+<h1><i class="fas fa-wrench"></i> KONSTANTA ELASTIKE</h1>
 <p class="subtitle">k = F / x &nbsp;|&nbsp; Rezistenca ndaj Shformimit</p>
 <div class="tab-row">
-  <button class="tab active" onclick="switchTab('sim',event)">📊 Grafik F(x)</button>
-  <button class="tab" onclick="switchTab('quiz',event)">🧠 Kuiz</button>
+  <button class="tab active" onclick="switchTab('sim',event)"><i class="fas fa-chart-line"></i> Grafik F(x)</button>
+  <button class="tab" onclick="switchTab('quiz',event)"><i class="fas fa-question-circle"></i> Kuiz</button>
 </div>
 
 <div class="panel active" id="panel-sim">
   <div class="card">
     <div class="formula-box">k = F / x &nbsp;&nbsp;(pjerrësia e grafikut F-x)</div>
     <div class="springs-row">
-      <div class="spring-card"><div class="spring-name">🌸 Spirale e butë</div><div class="spring-k" id="sk1">k = 50 N/m</div><div class="spring-bar" id="sb1" style="width:25%"></div></div>
-      <div class="spring-card"><div class="spring-name">⚙️ Spirale e ngurtë</div><div class="spring-k" id="sk2">k = 200 N/m</div><div class="spring-bar" id="sb2" style="width:100%;background:var(--accent2)"></div></div>
+      <div class="spring-card"><div class="spring-name"><i class="fas fa-leaf" style="color:#10b981"></i> Spirale e butë</div><div class="spring-k" id="sk1">k = 50 N/m</div><div class="spring-bar" id="sb1" style="width:25%"></div></div>
+      <div class="spring-card"><div class="spring-name"><i class="fas fa-cog" style="color:var(--accent2)"></i> Spirale e ngurtë</div><div class="spring-k" id="sk2">k = 200 N/m</div><div class="spring-bar" id="sb2" style="width:100%;background:var(--accent2)"></div></div>
     </div>
     <canvas id="graphCanvas" width="650" height="240"></canvas>
     <div class="graph-label">Grafiku F(x) — pjerrësia = k (konstanta elastike)</div>
-    <div class="slider-row" style="margin-top:14px;">
+    <div class="slider-row" style="margin-top:24px;">
       <label style="min-width:100px">k spirales (N/m)</label>
       <input type="range" id="kSlider" min="10" max="300" value="100" oninput="updateGraph()">
       <span class="val" id="kVal">100 N/m</span>
@@ -95,7 +244,7 @@
 <div class="panel" id="panel-quiz">
   <div class="card">
     <div class="score-row">
-      <span class="score-badge">⭐ <span id="score">0</span></span>
+      <span class="score-badge"><i class="fas fa-star" style="color:var(--gold)"></i> <span id="score">0</span></span>
       <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
       <span class="score-badge"><span id="qnum">1</span>/7</span>
     </div>
@@ -103,13 +252,13 @@
       <div class="question" id="question"></div>
       <div class="options" id="options"></div>
       <div class="feedback" id="feedback"></div>
-      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR →</button>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">PYETJA TJETËR <i class="fas fa-arrow-right"></i></button>
     </div>
     <div class="victory" id="victory">
       <div class="victory-title">🏆 BRAVO!</div>
       <div class="stars" id="stars"></div>
-      <div style="font-size:1.2rem;color:var(--muted);">Pikë: <span id="finalScore" style="color:var(--gold);font-family:'Orbitron',sans-serif;"></span> / 7</div>
-      <button class="restart-btn" onclick="restartQuiz()">RISTART</button>
+      <div style="font-size:1.4rem;color:var(--muted);font-weight:800;">Pikë: <span id="finalScore" style="color:var(--accent);"></span> / 7</div>
+      <button class="restart-btn" onclick="restartQuiz()"><i class="fas fa-redo"></i> RISTART</button>
     </div>
   </div>
 </div>
@@ -134,7 +283,7 @@ function drawGraph(k, xMark) {
   ctx.clearRect(0,0,W,H);
 
   // background
-  ctx.fillStyle = '#08080f';
+  ctx.fillStyle = '#ffffff';
   ctx.fillRect(0,0,W,H);
 
   const xMax = 0.25, fMax = k * xMax;
@@ -142,18 +291,18 @@ function drawGraph(k, xMark) {
   const sy = f => H-pad.b - f/fMax*(H-pad.t-pad.b);
 
   // grid
-  ctx.strokeStyle = '#1a1a3a'; ctx.lineWidth = 1;
+  ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
   for (let i=0;i<=5;i++) {
     const x = i/5*xMax; ctx.beginPath(); ctx.moveTo(sx(x),pad.t); ctx.lineTo(sx(x),H-pad.b); ctx.stroke();
     const f = i/5*fMax; ctx.beginPath(); ctx.moveTo(pad.l,sy(f)); ctx.lineTo(W-pad.r,sy(f)); ctx.stroke();
   }
 
   // axes
-  ctx.strokeStyle='#4a4a8a';ctx.lineWidth=2;
+  ctx.strokeStyle='#64748b';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,H-pad.b);ctx.lineTo(W-pad.r,H-pad.b);ctx.stroke();
 
   // axis labels
-  ctx.fillStyle='#9575cd';ctx.font='12px Rajdhani';ctx.textAlign='center';
+  ctx.fillStyle='#64748b';ctx.font='600 12px Nunito';ctx.textAlign='center';
   for (let i=0;i<=5;i++) {
     const xv=i/5*xMax; ctx.fillText((xv*100).toFixed(0)+'cm',sx(xv),H-pad.b+16);
     const fv=i/5*fMax; ctx.textAlign='right'; ctx.fillText(fv.toFixed(0)+'N',pad.l-6,sy(fv)+4); ctx.textAlign='center';
@@ -162,21 +311,21 @@ function drawGraph(k, xMark) {
   ctx.save();ctx.translate(14,H/2);ctx.rotate(-Math.PI/2);ctx.fillText('F (N)',0,0);ctx.restore();
 
   // Line F=kx
-  ctx.strokeStyle='#b39ddb';ctx.lineWidth=2;
+  ctx.strokeStyle='#8b5cf6';ctx.lineWidth=3;
   ctx.beginPath();ctx.moveTo(sx(0),sy(0));ctx.lineTo(sx(xMax),sy(fMax));ctx.stroke();
 
   // marked point
   const px = sx(xMark), py = sy(k*xMark);
-  ctx.strokeStyle='#ff7043';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.strokeStyle='#f97316';ctx.lineWidth=2;ctx.setLineDash([4,4]);
   ctx.beginPath();ctx.moveTo(px,H-pad.b);ctx.lineTo(px,py);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(px,py);ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle='#ff7043';ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#ffd600';ctx.font='bold 12px Orbitron';ctx.textAlign='left';
-  ctx.fillText('F='+((k*xMark).toFixed(1))+'N',px+8,py-4);
+  ctx.fillStyle='#f97316';ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f59e0b';ctx.font='800 14px Nunito';ctx.textAlign='left';
+  ctx.fillText('F='+((k*xMark).toFixed(1))+'N',px+8,py-6);
 
   // slope label
-  ctx.fillStyle='#b39ddb';ctx.font='12px Rajdhani';ctx.textAlign='center';
+  ctx.fillStyle='#8b5cf6';ctx.font='800 14px Nunito';ctx.textAlign='center';
   ctx.fillText('Pjerrësia = k = '+k+' N/m',sx(xMax*0.5),sy(fMax*0.65)-14);
 }
 
@@ -192,9 +341,37 @@ const questions=[
   {q:"Dy spirale k1=100 N/m dhe k2=200 N/m shformohen njëlloj. Cila ka Fe më të madhe?",opts:["k1 (100N/m)","k2 (200N/m)","Të dyja njëlloj","Varet nga masa"],ans:1}
 ];
 let qi=0,score=0;
-function loadQ(){const q=questions[qi];document.getElementById('question').textContent=(qi+1)+'. '+q.q;document.getElementById('feedback').className='feedback';document.getElementById('nextBtn').className='next-btn';document.getElementById('qnum').textContent=qi+1;document.getElementById('progress').style.width=(qi/questions.length*100)+'%';const opts=document.getElementById('options');opts.innerHTML='';q.opts.forEach((o,i)=>{const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=String.fromCharCode(65+i)+'. '+o;btn.onclick=()=>checkAns(i,btn);opts.appendChild(btn);});}
-function checkAns(i,btn){const q=questions[qi];document.querySelectorAll('.opt-btn').forEach(b=>b.onclick=null);const fb=document.getElementById('feedback');if(i===q.ans){btn.className='opt-btn correct';score++;document.getElementById('score').textContent=score;fb.className='feedback ok show';fb.textContent='✅ Saktë!';}else{btn.className='opt-btn wrong';document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn correct';fb.className='feedback bad show';fb.textContent='❌ Jo! Saktë: '+String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];}document.getElementById('nextBtn').className='next-btn show';}
-function nextQ(){qi++;if(qi>=questions.length){document.getElementById('quiz-content').style.display='none';document.getElementById('victory').className='victory show';document.getElementById('finalScore').textContent=score;document.getElementById('stars').textContent=score>=6?'⭐⭐⭐':score>=4?'⭐⭐':'⭐';}else loadQ();}
+function loadQ() {
+  const q=questions[qi];
+  document.getElementById('question').textContent=(qi+1)+'. '+q.q;
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('nextBtn').className='next-btn';
+  document.getElementById('qnum').textContent=qi+1;
+  document.getElementById('progress').style.width=(qi/questions.length*100)+'%';
+  const opts=document.getElementById('options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=String.fromCharCode(65+i)+'. '+o;
+    btn.onclick=()=>checkAns(i,btn);
+    opts.appendChild(btn);
+  });
+}
+function checkAns(i,btn) {
+  const q=questions[qi];
+  document.querySelectorAll('.opt-btn').forEach(b=>b.onclick=null);
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){
+    btn.className='opt-btn correct';score++;document.getElementById('score').textContent=score;
+    fb.className='feedback ok show';fb.innerHTML='<i class="fas fa-check-circle"></i> Saktë!';
+  }else{
+    btn.className='opt-btn wrong';document.querySelectorAll('.opt-btn')[q.ans].className='opt-btn correct';
+    fb.className='feedback bad show';fb.innerHTML='<i class="fas fa-times-circle"></i> Jo! Saktë: '+String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];
+  }
+  document.getElementById('nextBtn').className='next-btn show';
+}
+function nextQ() { qi++; if(qi>=questions.length){document.getElementById('quiz-content').style.display='none';document.getElementById('victory').className='victory show';document.getElementById('finalScore').textContent=score;document.getElementById('stars').textContent=score>=6?'⭐⭐⭐':score>=4?'⭐⭐':'⭐';}else loadQ(); }
 function restartQuiz(){qi=0;score=0;document.getElementById('score').textContent=0;document.getElementById('victory').className='victory';document.getElementById('quiz-content').style.display='block';loadQ();}
 function switchTab(t,e){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));e.target.classList.add('active');document.getElementById('panel-'+t).classList.add('active');}
 loadQ();

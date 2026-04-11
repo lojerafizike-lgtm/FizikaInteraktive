@@ -71,47 +71,6 @@ const App: React.FC = () => {
       alert("Për të instaluar aplikacionin e sigurtë, hapni menunë e shfletuesit tuaj (tre pikat lart djathtas) dhe zgjidhni 'Shto në Ekranin Kryesor' (Add to Home Screen).");
     }
   };
-
-  const handleAndroidDownload = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const link = document.createElement('a');
-    link.href = '/fizika-interaktive.apk';
-    link.download = 'fizika-interaktive.apk';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleIOSClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    alert("iPhone / iPad: Hap këtë faqe në Safari, shtyp ikonën 'Share' (katror me shigjetë lart) dhe zgjidh 'Add to Home Screen' (Shto në Ekranin Kryesor).");
-  };
-
-  const handleWindowsClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-      }
-    } else {
-      alert("Windows: Hap këtë faqe në Chrome ose Edge, kliko ikonën e instalimit (⊕) në shiritin e adresës, dhe zgjidh 'Install' për ta shtuar si aplikacion desktop.");
-    }
-  };
-
-  const handleMacClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-      }
-    } else {
-      alert("Mac: Hap këtë faqe në Chrome ose Edge, kliko ikonën e instalimit (⊕) në shiritin e adresës, dhe zgjidh 'Install' për ta shtuar si aplikacion.");
-    }
-  };
   
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
