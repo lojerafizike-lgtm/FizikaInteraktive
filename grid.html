@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Grid Manager</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Nunito', 'sans-serif'],
+              orbitron: ['Orbitron', 'sans-serif'],
+            },
+            colors: {
+              primary: '#ffafcc',
+              secondary: '#ffc8dd',
+              dark: '#4a4e69',
+              slate800: '#1e293b',
+              slate100: '#f1f5f9',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { font-family: 'Nunito', sans-serif; background-color: #f8fafc; color: #1e293b; overflow: hidden; }
+      .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
+      .game-btn { transition: all 0.2s; cursor: pointer; }
+      .game-btn:active { transform: scale(0.95); }
+      * { user-select: none; }
+    </style>
+
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-4xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col h-[600px] border border-slate-200">
+        <div class="bg-dark p-6 text-white flex justify-between items-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
+            <h1 class="text-2xl font-orbitron font-bold z-10 flex items-center gap-3"><i class="fas fa-map-marked-alt text-primary"></i> Power Grid Manager</h1>
+            <div class="bg-white/20 px-4 py-2 rounded-full font-bold z-10 backdrop-blur-sm">Progresi: <span id="lvl">1</span>/5</div>
+        </div>
+        
+        <div class="flex-1 relative bg-slate-50 p-8" id="map-area">
+            <!-- svg path connecting nodes -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                <path id="path-line" d="M 20% 80% Q 40% 20% 60% 50% T 90% 20%" fill="none" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round" stroke-dasharray="16 16" />
+            </svg>
+            <div id="nodes" class="absolute inset-0 w-full h-full"></div>
+        </div>
+        
+        <div id="modal" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-center justify-center">
+            <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-200" id="modal-content">
+                <div class="w-20 h-20 bg-primary/20 text-primary rounded-full flex items-center justify-center text-4xl mx-auto mb-4"><i class="fas fa-star"></i></div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Niveli <span id="m-lvl">1</span></h2>
+                <p class="text-slate-600 mb-8 font-medium">Zgjidheni sfidën e radhës për Rrjeti Elektrik për të kaluar përpara.</p>
+                <button onclick="completeLevel()" class="w-full bg-dark text-white py-4 rounded-xl font-bold text-lg hover:bg-slate-700 shadow-md transition-colors mb-3">Zgjidh Sfidën</button>
+                <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-500 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors">Anulo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const nodesData = [
+            { x: '20%', y: '80%', icon: 'fa-play' },
+            { x: '35%', y: '40%', icon: 'fa-bolt' },
+            { x: '55%', y: '60%', icon: 'fa-atom' },
+            { x: '75%', y: '35%', icon: 'fa-magnet' },
+            { x: '90%', y: '20%', icon: 'fa-trophy' }
+        ];
+        
+        let currentLevel = 1;
+
+        function renderMap() {
+            const container = document.getElementById('nodes');
+            container.innerHTML = '';
+            
+            nodesData.forEach((pos, idx) => {
+                const level = idx + 1;
+                const isLocked = level > currentLevel;
+                const isActive = level === currentLevel;
+                const isCompleted = level < currentLevel;
+                
+                const node = document.createElement('div');
+                node.className = `absolute w-16 h-16 -ml-8 -mt-8 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all ${
+                    isActive ? 'bg-primary text-white scale-110 ring-4 ring-secondary animate-bounce cursor-pointer' : 
+                    isCompleted ? 'bg-emerald-500 text-white cursor-pointer' : 
+                    'bg-slate-300 text-slate-500 cursor-not-allowed opacity-70'
+                }`;
+                node.style.left = pos.x;
+                node.style.top = pos.y;
+                node.innerHTML = `<i class="fas ${pos.icon}"></i>`;
+                
+                if (isActive || isCompleted) {
+                    node.onclick = () => openModal(level);
+                }
+                container.appendChild(node);
+            });
+            document.getElementById('lvl').innerText = Math.min(currentLevel, 5);
+        }
+
+        function openModal(lvl) {
+            if (lvl > currentLevel) return;
+            document.getElementById('m-lvl').innerText = lvl;
+            const modal = document.getElementById('modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => document.getElementById('modal-content').classList.replace('scale-95', 'scale-100'), 10);
+        }
+
+        function closeModal() {
+            document.getElementById('modal-content').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => {
+                document.getElementById('modal').classList.remove('flex');
+                document.getElementById('modal').classList.add('hidden');
+            }, 200);
+        }
+
+        function completeLevel() {
+            const lvl = parseInt(document.getElementById('m-lvl').innerText);
+            if (lvl === currentLevel) {
+                currentLevel++;
+                renderMap();
+                if (currentLevel > 5) {
+                    setTimeout(() => alert('Urime! Keni përfunduar të gjithë hartën e suksesit!'), 500);
+                }
+            }
+            closeModal();
+        }
+
+        renderMap();
+    </script>
+</body>
+</html>

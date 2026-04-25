@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menaxheri i Rrjetit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin:0; padding:20px; font-family:'Roboto Mono', monospace; background:#111827; color:#f3f4f6; overflow-x:hidden; }
+        .dashboard { max-width:900px; margin:0 auto; background:#1f2937; border-radius:12px; padding:25px; border: 1px solid #374151; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #374151; padding-bottom:15px; margin-bottom:20px; }
+        .header h1 { margin:0; font-size:26px; color:#10b981; text-transform:uppercase; letter-spacing:1px; }
+        .header .day { font-weight:700; color:#fbbf24; font-size: 20px; background: #451a1a; padding: 5px 15px; border-radius: 8px; border: 1px solid #fbbf24; background: rgba(251, 191, 36, 0.1); }
+        
+        .station-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .city-card { background:#374151; padding:20px; border-radius:10px; border-left: 5px solid #10b981; position: relative; transition: all 0.3s; }
+        .city-card.warning { border-left-color: #ef4444; background: #451a1a; }
+        .city-card.low-power { border-left-color: #fbbf24; background: #332701; }
+        .city-name { font-weight:700; font-size:20px; margin-bottom:15px; color:#f9fafb; display:flex; justify-content:space-between; align-items:center; }
+        
+        .req-pwr { font-size:15px; color:#9ca3af; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #4b5563; padding-bottom: 10px;}
+        .req-pwr span { padding:4px 10px; background:#111827; border-radius:6px; font-weight:bold; color: #60a5fa; font-size: 18px; }
+        
+        .slider-group { margin-bottom: 18px; background: #1f2937; padding: 10px; border-radius: 8px; }
+        .slider-group label { display:flex; justify-content:space-between; font-size:14px; color:#d1d5db; margin-bottom:8px; font-weight: bold; }
+        .val-badge { color: #facc15; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: #10b981; height: 8px; background: #4b5563; outline: none; border-radius: 4px; -webkit-appearance: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #10b981; cursor: pointer; }
+        input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #10b981; cursor: pointer; border: none; }
+        
+        .actual-pwr { margin-top:20px; font-size:18px; font-weight:bold; text-align:center; padding:15px; border-radius:8px; background:#111827; transition:all 0.3s; display: flex; flex-direction: column; gap: 5px; }
+        .actual-pwr.ok { color: #10b981; border: 2px solid #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+        .actual-pwr.low { color: #fbbf24; border: 2px solid #fbbf24; }
+        .actual-pwr.over { color: #ef4444; border: 2px solid #ef4444; animation: pulse 1s infinite alternate; }
+        .status-text { font-size: 13px; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+        
+        @keyframes pulse { to { box-shadow: inset 0 0 15px #ef4444, 0 0 15px #ef4444; } }
+
+        .btn-dispatch { display:block; width:100%; padding:18px; font-size:20px; font-weight:700; background:#3b82f6; color:white; border:none; border-radius:10px; margin-top:30px; cursor:pointer; font-family:'Roboto Mono'; transition:all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-dispatch:hover:not(:disabled) { background:#2563eb; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.4); }
+        .btn-dispatch:disabled { background:#374151; color:#9ca3af; cursor:not-allowed; box-shadow: none; border: 1px dashed #4b5563; }
+        .btn-dispatch.danger { background: #ef4444; }
+        .btn-dispatch.danger:hover:not(:disabled) { background: #dc2626; }
+
+        .game-over { text-align: center; display: none; padding: 50px 20px; }
+        .game-over i { font-size: 60px; margin-bottom: 20px; color: #ef4444; }
+        .game-over h2 { color: #ef4444; font-size: 36px; margin-top: 0; }
+        .game-over p { font-size: 18px; color: #d1d5db; line-height: 1.6; max-width: 600px; margin: 0 auto 30px auto;}
+        
+        .game-win { border-color: #10b981; display: none; padding: 50px 20px; text-align: center; }
+        .game-win i { color: #10b981; }
+        .game-win h2 { color:#10b981 }
+    </style>
+</head>
+<body>
+
+<div class="dashboard" id="main-dash">
+    <div class="header">
+        <h1><i class="fas fa-bolt"></i> Rrjeti Elektrik</h1>
+        <div class="day"><i class="fas fa-calendar-day"></i> Dita <span id="day-counter">1</span> / 5</div>
+    </div>
+    <p style="color:#9ca3af; font-size:15px; line-height:1.5; border-left: 3px solid #3b82f6; padding-left: 15px; margin-bottom: 25px; background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 0 8px 8px 0;">
+        <strong>Misioni i menaxherit:</strong> Përshtat saktë Tensionin (V) dhe Rrymën (I) me rrëshqitësit për të plotësuar Kërkesën e Fuqisë (<strong style="color:white;">P = V &times; I</strong>) për secilin qytet.<br>
+        Ruaj stabilitetin! Mungesa e energjisë sjell errësirë, ndërsa mbingarkesa djeg transformatorët.
+    </p>
+    
+    <div class="station-grid" id="cities"></div>
+
+    <button class="btn-dispatch" id="btn-dispatch" onclick="nextDay()">KONFIRMO DËRGESËN</button>
+</div>
+
+<div class="dashboard game-over" id="game-over">
+    <i class="fas fa-biohazard"></i>
+    <h2>Blackout Total!</h2>
+    <p>Qytetarët mbetën pa drita ose rrjeti u dëmtua rëndë nga mbingarkesat e pakontrolluara. Një menaxher i mirë e llogarit saktë kapacitetin para dërgimit!</p>
+    <button class="btn-dispatch" onclick="location.reload()"><i class="fas fa-redo"></i> Ristarto Misionin</button>
+</div>
+
+<div class="dashboard game-over game-win" id="game-win">
+    <i class="fas fa-trophy"></i>
+    <h2>Mision i Suksesshëm!</h2>
+    <p>Urime Inxhinier! Ke menaxhuar rrjetin e vendit në mënyrë perfekte gjatë gjithë javës. Qytetet patën energji të pandërprerë!</p>
+    <button class="btn-dispatch" onclick="location.reload()" style="background: #10b981;"><i class="fas fa-play"></i> Luaj Përsëri</button>
+</div>
+
+<script>
+    const cityNames = [
+        { name: "Tirana", icon: "fa-city" },
+        { name: "Prishtina", icon: "fa-building" },
+        { name: "Shkupi", icon: "fa-industry" }
+    ];
+    let currentDay = 1;
+    let gridData = [];
+
+    function generateDay() {
+        const data = [];
+        for(let i=0; i<3; i++) {
+            let pTarget = Math.floor(Math.random() * 5 + 1) * 100 * (currentDay); 
+            if(pTarget > 3000) pTarget = 3000;
+            // Generate random starting positions so the user has to adjust them
+            let initV = Math.floor(Math.random() * 5 + 1) * 10;
+            let initI = Math.floor(Math.random() * 20 + 1);
+            
+            data.push({
+                name: cityNames[i].name,
+                icon: cityNames[i].icon,
+                targetP: pTarget,
+                v: initV,
+                i: initI
+            });
+        }
+        return data;
+    }
+
+    function initUI() {
+        document.getElementById('day-counter').innerText = currentDay;
+        const container = document.getElementById('cities');
+        container.innerHTML = '';
+        
+        gridData.forEach((city, index) => {
+            const card = document.createElement('div');
+            card.className = 'city-card';
+            card.id = `card-${index}`;
+
+            card.innerHTML = `
+                <div class="city-name"><i class="fas ${city.icon}"></i> ${city.name} <span class="status-icon" id="icon-${index}"></span></div>
+                <div class="req-pwr">Kërkesa e Qytetit: <span>${city.targetP} W</span></div>
+                <div class="slider-group">
+                    <label>Tensioni (V): <span class="val-badge" id="val-v-${index}">${city.v} V</span></label>
+                    <input type="range" min="10" max="100" step="10" value="${city.v}" oninput="updateVal(${index}, 'v', this.value)">
+                </div>
+                <div class="slider-group">
+                    <label>Rryma (I): <span class="val-badge" id="val-i-${index}">${city.i} A</span></label>
+                    <input type="range" min="1" max="50" step="1" value="${city.i}" oninput="updateVal(${index}, 'i', this.value)">
+                </div>
+                <div class="actual-pwr" id="pwr-box-${index}">
+                    <div id="pwr-val-${index}">P = ${city.v * city.i} W</div>
+                    <span class="status-text" id="status-text-${index}"></span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Update initially
+        updateAllCards();
+    }
+
+    window.updateVal = function(index, type, val) {
+        gridData[index][type] = parseInt(val);
+        document.getElementById(`val-${type}-${index}`).innerText = val + (type === 'v' ? ' V' : ' A');
+        updateSingleCard(index);
+        checkGlobalStatus();
+    };
+    
+    function updateSingleCard(index) {
+        const city = gridData[index];
+        const actualP = city.v * city.i;
+        const pwrBox = document.getElementById(`pwr-box-${index}`);
+        const pwrVal = document.getElementById(`pwr-val-${index}`);
+        const statusText = document.getElementById(`status-text-${index}`);
+        const card = document.getElementById(`card-${index}`);
+        const iconContainer = document.getElementById(`icon-${index}`);
+        
+        pwrVal.innerText = `Furnizimi: ${actualP} W`;
+        
+        card.classList.remove('warning', 'low-power');
+        pwrBox.className = 'actual-pwr';
+        
+        if(actualP < city.targetP) { 
+            card.classList.add('low-power');
+            pwrBox.classList.add('low');
+            statusText.innerText = 'Rrezik: Nën Kapacitet';
+            iconContainer.innerHTML = '<i class="fas fa-arrow-down" style="color: #fbbf24;"></i>';
+        } else if(actualP > city.targetP) { 
+            card.classList.add('warning');
+            pwrBox.classList.add('over');
+            statusText.innerText = 'MBINGARKESË KRITIKE!';
+            iconContainer.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>';
+        } else {
+            pwrBox.classList.add('ok');
+            statusText.innerText = 'PARAMETRAT OPTIMALË';
+            iconContainer.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i>';
+        }
+    }
+
+    function updateAllCards() {
+        for(let i=0; i<gridData.length; i++) {
+            updateSingleCard(i);
+        }
+        checkGlobalStatus();
+    }
+
+    function checkGlobalStatus() {
+        let allOk = true;
+        let anyCritical = false;
+        
+        gridData.forEach(city => {
+            const actualP = city.v * city.i;
+            if(actualP !== city.targetP) allOk = false;
+            if(actualP > city.targetP) anyCritical = true;
+        });
+
+        const btn = document.getElementById('btn-dispatch');
+        if(allOk) {
+            btn.disabled = false;
+            btn.className = "btn-dispatch";
+            btn.innerHTML = '<i class="fas fa-check"></i> ENERGJIZO RRJETIN (Dita e ardhshme)';
+            btn.style.boxShadow = "0 0 20px rgba(16, 185, 129, 0.4)";
+        } else {
+            btn.disabled = false; 
+            btn.className = "btn-dispatch danger";
+            btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> DËRGO ME RREZIK (Do të shkaktojë defekt)';
+            btn.style.boxShadow = "none";
+        }
+    }
+
+    window.nextDay = function() {
+        let isDead = false;
+        gridData.forEach(c => {
+            if (c.v * c.i !== c.targetP) isDead = true;
+        });
+
+        if(isDead) {
+            document.getElementById('main-dash').style.display = 'none';
+            document.getElementById('game-over').style.display = 'block';
+            return;
+        }
+
+        currentDay++;
+        if(currentDay > 5) {
+            document.getElementById('main-dash').style.display = 'none';
+            document.getElementById('game-win').style.display = 'block';
+            return;
+        }
+
+        gridData = generateDay();
+        initUI();
+    };
+
+    gridData = generateDay();
+    initUI();
+</script>
+</body>
+</html>

@@ -1,12 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ALL_PHYSICS_DATA } from '../constants';
 import { gjeneroKuizPerKategorine } from '../utils/quizGenerator';
-import { PhysicsData, DigitalGame } from '../types';
+import { DigitalGame, CategoryName } from '../types';
 import { useFirebase } from '../contexts/FirebaseContext';
 import { updateUserScore, db, collection, onSnapshot, query, orderBy } from '../firebase';
 import html2pdf from 'html2pdf.js';
-import { DIGITAL_GAMES } from '../gameContent';
 
 
 type MaterialType = 'Lojëra' | 'Kuize' | 'Fletë Pune' | 'Për Mësuesit';
@@ -781,18 +779,7 @@ Diskutoni me nxënësit rreth hapësirave boshe në univers dhe pse udhëtimet h
     actionUrl: "#",
     isFavorite: false
   },
-  {
-    id: 'p4',
-    type: 'Lojëra',
-    topic: 'Gjithëpërfshirëse',
-    title: "Sistemi Diellor 3D",
-    description: "Eksploro sistemin diellor në 3D me këtë lojë interaktive.",
-    icon: "fa-globe",
-    actionText: "Luaj Lojën",
-    actionUrl: "#",
-    isFavorite: true,
-    gameData: DIGITAL_GAMES.find(g => g.id === 'sistemi-diellor-3d')
-  }
+
 ];
 
 export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: DigitalGame) => void }) {
@@ -833,7 +820,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
   }, []);
 
   const ALL_MATERIALS = useMemo(() => {
-    return [...MOCK_MATERIALS, ...PROJECTS, ...uploadedMaterials];
+    return [...uploadedMaterials, ...MOCK_MATERIALS, ...PROJECTS];
   }, [uploadedMaterials]);
 
   const filteredMaterials = useMemo(() => {
@@ -991,7 +978,8 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                 material={m} 
                 onAction={() => {
                   if (m.type === 'Kuize') {
-                    const questions = gjeneroKuizPerKategorine(m.topic, ALL_PHYSICS_DATA as unknown as PhysicsData);
+                    const topic = m.topic as CategoryName;
+                    const questions = gjeneroKuizPerKategorine(topic);
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
@@ -1033,7 +1021,8 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                 material={m} 
                 onAction={() => {
                   if (m.type === 'Kuize') {
-                    const questions = gjeneroKuizPerKategorine(m.topic, ALL_PHYSICS_DATA as unknown as PhysicsData);
+                    const topic = m.topic as CategoryName;
+                    const questions = gjeneroKuizPerKategorine(topic);
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);

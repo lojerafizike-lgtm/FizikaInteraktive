@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energjia Fizike: Moduli 10 - Pro Pixel Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fdf6e3;
+            --text-main: #5c6b73;
+            --primary: #bde0fe;
+            --secondary: #a2d2ff;
+            --accent: #f8edeb;
+            --success: #cdb4db;
+            --danger: #ffc8dd;
+            --border-color: #718096;
+            --pixel-border: 4px solid var(--border-color);
+            --pixel-shadow: 4px 4px 0px var(--border-color);
+        }
+
+        body {
+            font-family: 'VT323', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-size: 1.2rem;
+        }
+
+        h1 {
+            color: var(--border-color);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px var(--primary);
+            font-size: 3rem;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #718096;
+            text-align: center;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--accent);
+            border: var(--pixel-border);
+            box-shadow: var(--pixel-shadow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: var(--secondary);
+            border: var(--pixel-border);
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 350px;
+            background: #e2e8f0;
+            border: var(--pixel-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .interface {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .interface {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: white;
+            border: var(--pixel-border);
+            padding: 20px;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        .level-title {
+            font-size: 1.8rem;
+            color: var(--border-color);
+            margin-top: 0;
+            border-bottom: 2px dashed var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .formula-box {
+            background: var(--primary);
+            color: var(--text-main);
+            padding: 10px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid var(--border-color);
+            margin: 15px 0;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+        }
+
+        .data-box {
+            background: var(--secondary);
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            border: var(--pixel-border);
+            background: var(--bg-color);
+            color: var(--text-main);
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            background: white;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            background: var(--success);
+            color: var(--border-color);
+            border: var(--pixel-border);
+            box-shadow: var(--pixel-shadow);
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--border-color);
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            min-height: 30px;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(253, 246, 227, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            display: none;
+        }
+
+        .overlay h2 {
+            font-size: 4rem;
+            color: var(--primary);
+            text-shadow: 2px 2px 0px var(--border-color);
+            margin: 0 0 20px 0;
+        }
+
+        .overlay button {
+            width: auto;
+            padding: 10px 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Energjia Fizike Pro</h1>
+    <div class="subtitle">Moduli 10 - Edicioni Pastel Pixel</div>
+
+    <div class="game-container">
+        <div class="stats-bar">
+            <div>Niveli: <span id="ui-level">1</span>/10</div>
+            <div>Pikët: <span id="ui-score">0</span></div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            <div id="success-overlay" class="overlay">
+                <h2>Saktë!</h2>
+                <button onclick="nextLevel()">Vazhdo</button>
+            </div>
+            <div id="end-overlay" class="overlay">
+                <h2>Misioni u Krye!</h2>
+                <p style="font-size: 2rem; margin-bottom: 20px;">Pikët totale: <span id="final-score"></span></p>
+                <button onclick="location.reload()">Luaj Përsëri</button>
+            </div>
+        </div>
+
+        <div class="interface">
+            <div class="panel">
+                <h2 id="lvl-title" class="level-title">Titulli</h2>
+                <p id="lvl-desc">Përshkrimi...</p>
+                <div class="formula-box" id="lvl-formula">Formula</div>
+                <div class="data-box" id="lvl-data">Të dhënat...</div>
+            </div>
+
+            <div class="panel">
+                <label style="display: block; margin-bottom: 10px; font-size: 1.5rem;">Përgjigja Jote:</label>
+                <input type="number" id="user-input" placeholder="Shkruaj vlerën..." step="any">
+                <button onclick="checkAnswer()">Verifiko</button>
+                <div id="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    let level = 1;
+    let score = 0;
+    let animFrame = 0;
+    let isAnimating = false;
+
+    function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        draw();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    const levels = [
+        {
+            title: "1: Energjia Potenciale",
+            desc: "Llogarit Ep për një sferë në lartësi.",
+            formula: "Ep = m × g × h",
+            data: "m = 5 kg | h = 8 m | g = 10 m/s²",
+            goal: 400,
+            unit: "J",
+            type: "potential"
+        },
+        {
+            title: "2: Energjia Kinetike",
+            desc: "Llogarit Ek për trupin në lëvizje.",
+            formula: "Ek = 1/2 × m × v²",
+            data: "m = 4 kg | v = 10 m/s",
+            goal: 200,
+            unit: "J",
+            type: "kinetic"
+        },
+        {
+            title: "3: Puna dhe Energjia",
+            desc: "Sa është lartësia (h) nëse Ep = 600 J?",
+            formula: "h = Ep / (m × g)",
+            data: "Ep = 600 J | m = 3 kg | g = 10 m/s²",
+            goal: 20,
+            unit: "m",
+            type: "potential"
+        },
+        {
+            title: "4: Shpejtësia nga Energjia",
+            desc: "Gjej shpejtësinë (v) duke përdorur Ek.",
+            formula: "v = √(2Ek / m)",
+            data: "Ek = 100 J | m = 2 kg",
+            goal: 10,
+            unit: "m/s",
+            type: "kinetic"
+        },
+        {
+            title: "5: Ruajtja e Energjisë",
+            desc: "Gjej Ep nëse Ek = 150J dhe Etot = 500J.",
+            formula: "Etot = Ek + Ep",
+            data: "Etot = 500 J | Ek = 150 J",
+            goal: 350,
+            unit: "J",
+            type: "conservation"
+        },
+        {
+            title: "6: Puna e Forcës",
+            desc: "Një forcë 50N zhvendos trupin 4m. Sa është puna?",
+            formula: "A = F × d",
+            data: "F = 50 N | d = 4 m",
+            goal: 200,
+            unit: "J",
+            type: "work"
+        },
+        {
+            title: "7: Fuqia Mekanike",
+            desc: "Një motor kryen punë 1000J në 5 sekonda. Sa është fuqia?",
+            formula: "P = A / t",
+            data: "A = 1000 J | t = 5 s",
+            goal: 200,
+            unit: "W",
+            type: "power"
+        },
+        {
+            title: "8: Energjia e Sustës",
+            desc: "Një sustë me k=200 N/m ngjeshet 0.1m. Sa është energjia potenciale elastike?",
+            formula: "Epe = 1/2 × k × x²",
+            data: "k = 200 N/m | x = 0.1 m",
+            goal: 1,
+            unit: "J",
+            type: "spring"
+        },
+        {
+            title: "9: Rënia e Lirë",
+            desc: "Një trup 2kg bie nga 5m. Sa është Ek para se të prekë tokën? (g=10)",
+            formula: "Ek = Ep = mgh",
+            data: "m = 2 kg | h = 5 m",
+            goal: 100,
+            unit: "J",
+            type: "potential"
+        },
+        {
+            title: "10: Sfida e Energjisë",
+            desc: "Një makinë 1000kg rrit shpejtësinë nga 10m/s në 20m/s. Sa punë u krye?",
+            formula: "A = ΔEk = 1/2m(v2² - v1²)",
+            data: "m=1000kg, v1=10, v2=20",
+            goal: 150000,
+            unit: "J",
+            type: "kinetic"
+        }
+    ];
+
+    function drawPixelRect(x, y, w, h, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeStyle = "rgba(0,0,0,0.2)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, w, h);
+    }
+
+    function draw() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Background grid
+        ctx.strokeStyle = "rgba(113, 128, 150, 0.1)";
+        ctx.lineWidth = 1;
+        for(let i=0; i<canvas.width; i+=20) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+        }
+        for(let i=0; i<canvas.height; i+=20) {
+            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+        }
+
+        const l = levels[level-1];
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
+        if (l.type === "potential") {
+            drawPixelRect(0, canvas.height - 40, canvas.width, 40, "#718096"); // Toka
+            
+            let yPos = 40 + (isAnimating ? animFrame * 4 : 0);
+            if (yPos > canvas.height - 80) yPos = canvas.height - 80;
+            
+            drawPixelRect(cx - 20, yPos, 40, 40, "#bde0fe"); // Trupi
+            
+            // Vija e lartesise
+            ctx.strokeStyle = "#a2d2ff";
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(cx + 40, 40);
+            ctx.lineTo(cx + 40, canvas.height - 40);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+        } else if (l.type === "kinetic" || l.type === "work") {
+            drawPixelRect(0, cy + 50, canvas.width, 20, "#718096"); // Rruga
+            
+            let xPos = 50 + (isAnimating ? animFrame * 5 : 0);
+            if (xPos > canvas.width - 100) xPos = canvas.width - 100;
+            
+            drawPixelRect(xPos, cy + 10, 60, 40, "#cdb4db"); // Objekti
+            
+            if (isAnimating && xPos < canvas.width - 100) {
+                ctx.fillStyle = "#ffc8dd";
+                ctx.fillRect(xPos - 20, cy + 20, 15, 5);
+                ctx.fillRect(xPos - 35, cy + 30, 20, 5);
+            }
+
+        } else if (l.type === "conservation") {
+            // Nje lavjerres
+            ctx.save();
+            ctx.translate(cx, 20);
+            
+            let angle = Math.PI/4;
+            if (isAnimating) {
+                angle = (Math.PI/4) * Math.cos(animFrame * 0.1);
+            }
+            
+            ctx.rotate(angle);
+            
+            drawPixelRect(-2, 0, 4, 150, "#718096"); // Fija
+            drawPixelRect(-20, 150, 40, 40, "#bde0fe"); // Sfera
+            
+            ctx.restore();
+            
+            drawPixelRect(cx - 50, 10, 100, 10, "#718096"); // Tavani
+            
+        } else if (l.type === "spring") {
+            drawPixelRect(0, cy + 50, canvas.width, 20, "#718096"); // Rruga
+            drawPixelRect(20, cy - 50, 20, 100, "#718096"); // Muri
+            
+            let springLen = 150;
+            if (isAnimating) {
+                springLen = 150 + Math.sin(animFrame * 0.2) * 50;
+            }
+            
+            // Susta (zig-zag)
+            ctx.strokeStyle = "#a2d2ff";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(40, cy + 30);
+            for(let i=1; i<=10; i++) {
+                ctx.lineTo(40 + (springLen/10)*i, cy + 30 + (i%2===0 ? 15 : -15));
+            }
+            ctx.stroke();
+            
+            drawPixelRect(40 + springLen, cy + 10, 40, 40, "#cdb4db"); // Trupi
+            
+        } else if (l.type === "power") {
+            // Nje motor qe ngre nje peshe
+            drawPixelRect(cx - 30, 20, 60, 40, "#bde0fe"); // Motori
+            
+            let yPos = canvas.height - 80 - (isAnimating ? animFrame * 2 : 0);
+            if (yPos < 60) yPos = 60;
+            
+            drawPixelRect(cx - 2, 60, 4, yPos - 60, "#718096"); // Litari
+            drawPixelRect(cx - 20, yPos, 40, 40, "#ffc8dd"); // Pesha
+        }
+    }
+
+    function checkAnswer() {
+        const val = parseFloat(document.getElementById("user-input").value);
+        const current = levels[level-1];
+        const feedback = document.getElementById("feedback");
+
+        if(Math.abs(val - current.goal) < 0.1) {
+            feedback.style.color = "var(--success)";
+            feedback.innerText = "Saktë! " + current.goal + " " + current.unit;
+            score += 100;
+            document.getElementById("ui-score").innerText = score;
+            animateSuccess();
+        } else {
+            feedback.style.color = "#ff4d6d";
+            feedback.innerText = "E gabuar. Provo përsëri!";
+            score = Math.max(0, score - 10);
+            document.getElementById("ui-score").innerText = score;
+        }
+    }
+
+    function animateSuccess() {
+        isAnimating = true;
+        animFrame = 0;
+        
+        function step() {
+            animFrame++;
+            draw();
+            if (animFrame < 60) {
+                requestAnimationFrame(step);
+            } else {
+                isAnimating = false;
+                document.getElementById("success-overlay").style.display = "flex";
+            }
+        }
+        requestAnimationFrame(step);
+    }
+
+    function nextLevel() {
+        document.getElementById("success-overlay").style.display = "none";
+        if(level < levels.length) {
+            level++;
+            initLevel();
+        } else {
+            document.getElementById("final-score").innerText = score;
+            document.getElementById("end-overlay").style.display = "flex";
+        }
+    }
+
+    function initLevel() {
+        const l = levels[level-1];
+        document.getElementById("ui-level").innerText = level;
+        document.getElementById("lvl-title").innerText = l.title;
+        document.getElementById("lvl-desc").innerText = l.desc;
+        document.getElementById("lvl-formula").innerText = l.formula;
+        document.getElementById("lvl-data").innerText = l.data;
+        document.getElementById("user-input").value = "";
+        document.getElementById("feedback").innerText = "";
+        animFrame = 0;
+        isAnimating = false;
+        setTimeout(resizeCanvas, 100);
+    }
+
+    window.onload = initLevel;
+</script>
+</body>
+</html>

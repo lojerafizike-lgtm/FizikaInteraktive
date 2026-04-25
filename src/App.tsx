@@ -3,6 +3,16 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ALL_PHYSICS_DATA } from './constants';
 import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
+
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
 import ClickSpark from './components/ClickSpark';
 import TermDetailsTabs from './components/TermDetailsTabs';
 import BlurText from './components/BlurText';
@@ -18,22 +28,15 @@ import AddMaterialModal from './components/AddMaterialModal';
 import { useFirebase } from './contexts/FirebaseContext';
 import { updateUserScore } from './firebase';
 
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
-}
 
 const App: React.FC = () => {
   const { user, profile, login } = useFirebase();
   const [showSplash, setShowSplash] = useState(true);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
   const [activePage, setActivePage] = useState<'home' | 'category' | 'details' | 'games' | 'movies' | 'instruments' | 'scientists' | 'leaderboard' | 'materials' | 'magazine' | 'exo3d' | 'calendar'>('home');
 
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isAddMaterialOpen, setIsAddMaterialOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
@@ -44,33 +47,7 @@ const App: React.FC = () => {
   const [mobileMenuSelectionOpen, setMobileMenuSelectionOpen] = useState(false);
   const [playingGame, setPlayingGame] = useState<{ title: string, url?: string, html?: string } | null>(null);
   const [activeGameTab, setActiveGameTab] = useState<'digjitale' | 'eksperimente' | 'shkolle' | null>(null);
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  const handleInstallClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-      }
-    } else {
-      alert("Për të instaluar aplikacionin e sigurtë, hapni menunë e shfletuesit tuaj (tre pikat lart djathtas) dhe zgjidhni 'Shto në Ekranin Kryesor' (Add to Home Screen).");
-    }
-  };
   
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -79,7 +56,17 @@ const App: React.FC = () => {
       }
     };
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   const handleStart = () => {
@@ -104,6 +91,19 @@ const App: React.FC = () => {
     if (user && profile?.role !== 'mesues') {
       // Award 10 points for playing a game
       updateUserScore(user.uid, 10);
+    }
+  };
+
+  const handleInstallClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      alert("Për të instaluar aplikacionin e sigurtë, hapni menunë e shfletuesit tuaj (tre pikat lart djathtas) dhe zgjidhni 'Shto në Ekranin Kryesor' (Add to Home Screen).");
     }
   };
 
@@ -270,6 +270,44 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-[#fcf9ff] text-[#4a4e69] font-sans">
         <OnboardingModal />
         <ProfileSetupModal />
+        {showDownloadModal && (
+          <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-center justify-center p-6 animate__animated animate__fadeIn">
+            <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl relative overflow-hidden text-center">
+              <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#ffafcc]/20 rounded-full blur-3xl"></div>
+              <div className="relative z-10">
+                <div className="w-24 h-24 bg-gradient-to-br from-[#ffc8dd] to-[#ffafcc] rounded-[2.5rem] flex items-center justify-center text-white text-5xl mx-auto mb-8 shadow-xl animate-bounce">
+                  <i className="fas fa-cloud-download-alt"></i>
+                </div>
+                <h3 className="text-3xl font-black text-slate-800 mb-4 tracking-tighter">Instalo Aplikacionin!</h3>
+                <p className="text-slate-500 font-medium mb-10 text-lg">Mëso fizikën kudo, pa nevojë për internet dhe me akses të shpejtë direkt nga telefoni juaj.</p>
+                
+                <div className="flex flex-col gap-4">
+                  <button 
+                    onClick={async () => {
+                      setShowDownloadModal(false);
+                      if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') setDeferredPrompt(null);
+                      } else {
+                        alert("Për të instaluar aplikacionin, hapni menunë e shfletuesit tuaj dhe zgjidhni 'Shto në Ekranin Kryesor' (Add to Home Screen).");
+                      }
+                    }}
+                    className="w-full py-5 bg-[#ffafcc] text-white rounded-2xl font-black text-lg uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
+                  >
+                    Instalo Tani
+                  </button>
+                  <button 
+                    onClick={() => setShowDownloadModal(false)}
+                    className="w-full py-4 text-slate-400 font-black text-sm uppercase tracking-widest hover:text-slate-600 transition-colors"
+                  >
+                    Më vonë
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Mobile Bubble Menu */}
         <div className="md:hidden">
           <BubbleMenu
@@ -549,19 +587,13 @@ const App: React.FC = () => {
                       </div>
                     )}
 
-                  <div className="bg-[#4a4e69] text-white p-8 md:p-16 rounded-3xl md:rounded-[3.5rem] mb-10 md:mb-16 text-center shadow-2xl relative">
-    <p className="text-[8px] md:text-[10px] font-black text-white/30 uppercase tracking-[0.3em] md:tracking-[0.6em] mb-4 md:mb-6">Formula Kryesore</p>
-    <div className="flex flex-col items-center gap-3 md:gap-5">
-      {selectedTerm.form.split('\n').map((line, i) => (
-        <code
-          key={i}
-          className="text-xl md:text-4xl font-mono font-black text-[#ffc8dd] break-words"
-        >
-          {line}
-        </code>
-      ))}
-    </div>
-</div>
+                    <div className="bg-[#4a4e69] text-white p-8 md:p-16 rounded-3xl md:rounded-[3.5rem] mb-10 md:mb-16 text-center shadow-2xl relative">
+                        <p className="text-[8px] md:text-[10px] font-black text-white/30 uppercase tracking-[0.3em] md:tracking-[0.6em] mb-4 md:mb-6">Formula Kryesore</p>
+                        <code 
+                          className="text-3xl md:text-7xl font-mono font-black text-[#ffc8dd] break-all"
+                          dangerouslySetInnerHTML={{ __html: selectedTerm.form }}
+                        />
+                    </div>
                     <div className="mb-12 md:mb-20">
                         <h4 className="text-xs md:text-sm font-black text-[#ffafcc] uppercase tracking-[0.3em] md:tracking-[0.5em] mb-4 md:mb-6">Kuptimi fizik</h4>
                         <p className="text-xl md:text-3xl text-slate-600/90 leading-tight font-medium tracking-tight">{selectedTerm.desc}</p>
@@ -874,56 +906,6 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Download Modal */}
-      {showDownloadModal && (
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate__animated animate__fadeIn animate__faster">
-          <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 max-w-3xl w-full shadow-2xl relative animate__animated animate__zoomIn animate__faster">
-            <button 
-              onClick={() => setShowDownloadModal(false)}
-              className="absolute top-3 right-3 md:top-5 md:right-5 w-8 h-8 md:w-10 md:h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition-colors z-20"
-            >
-              <i className="fas fa-times text-base md:text-lg"></i>
-            </button>
-            
-            <div className="text-center mb-5 md:mb-8 relative z-10 mt-2 md:mt-0">
-              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-[#ffafcc] to-[#ffc8dd] rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-lg text-white text-2xl md:text-3xl transform rotate-3">
-                <i className="fas fa-cloud-download-alt"></i>
-              </div>
-              <h2 className="text-xl md:text-3xl font-black text-slate-800 mb-2 md:mb-3 tracking-tight">Instalo Aplikacionin</h2>
-              <p className="text-slate-500 text-sm md:text-base font-medium max-w-lg mx-auto leading-tight">
-                Merrni FizikaInteraktive me vete kudo! Zgjidhni platformën tuaj për të instaluar aplikacionin.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 relative z-10">
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-[#a8e6cf]/20 border-2 border-slate-100 hover:border-[#a8e6cf] rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-android text-3xl md:text-4xl text-[#a8e6cf] mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700 text-sm md:text-base">Android</span>
-                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
-              </a>
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-apple text-3xl md:text-4xl text-slate-700 mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700 text-sm md:text-base">iPhone</span>
-                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
-              </a>
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-[#bde0fe]/20 border-2 border-slate-100 hover:border-[#bde0fe] rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-windows text-3xl md:text-4xl text-[#bde0fe] mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700 text-sm md:text-base">Windows</span>
-                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
-              </a>
-              <a href="#" onClick={handleInstallClick} className="group flex flex-col items-center p-3 md:p-5 bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 hover:border-slate-300 rounded-2xl md:rounded-3xl transition-all hover:-translate-y-1">
-                <i className="fab fa-apple text-3xl md:text-4xl text-slate-700 mb-2 md:mb-3 group-hover:scale-110 transition-transform"></i>
-                <span className="font-black text-slate-700 text-sm md:text-base">Mac</span>
-                <span className="text-[10px] md:text-xs font-bold text-slate-400 mt-1">Instalo (PWA)</span>
-              </a>
-            </div>
-            
-            {/* Decorative blobs */}
-            <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#ffafcc]/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#bde0fe]/20 rounded-full blur-3xl pointer-events-none"></div>
-          </div>
-        </div>
-      )}
 
       <footer className="bg-white text-slate-600 py-16 md:py-24 mt-32 rounded-t-[3rem] md:rounded-t-[5rem] border-t-8 border-[#ffafcc] relative overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
         {/* Decorative background elements */}

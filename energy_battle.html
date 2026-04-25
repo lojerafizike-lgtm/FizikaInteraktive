@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Master: Formula Battle - Pastel Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg-color: #fdf6e3;
+            --text-main: #5c6b73;
+            --primary: #ffb5a7;
+            --secondary: #fcd5ce;
+            --accent: #f8edeb;
+            --success: #a8dadc;
+            --danger: #ffcad4;
+            --border-color: #9d8189;
+            --team-a: #bde0fe;
+            --team-b: #ffc8dd;
+        }
+
+        body {
+            margin: 0; padding: 0; height: 100vh;
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-color); color: var(--text-main); overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* HEADER */
+        .header {
+            background: white; padding: 15px;
+            text-align: center; border-bottom: 4px dashed var(--border-color);
+        }
+        h1 { font-family: 'Nunito'; font-weight: 700; margin: 0; color: var(--border-color); text-transform: uppercase; }
+
+        /* ARENA */
+        .arena {
+            display: flex; flex: 1; padding: 20px; gap: 20px;
+        }
+
+        .team-box {
+            flex: 1; background: white; border: 4px solid var(--border-color);
+            border-radius: 30px; display: flex; flex-direction: column; padding: 20px;
+            position: relative; box-shadow: 8px 8px 0px var(--secondary);
+        }
+
+        .team-a { border-color: var(--team-a); box-shadow: 8px 8px 0px var(--team-a); }
+        .team-b { border-color: var(--team-b); box-shadow: 8px 8px 0px var(--team-b); }
+
+        .score-label { font-family: 'Nunito'; font-size: 1.5rem; margin-bottom: 10px; font-weight: bold; }
+
+        /* Qendra e Pyetjeve */
+        .question-card {
+            background: var(--accent); color: var(--text-main); border-radius: 20px;
+            padding: 20px; margin-bottom: 20px; text-align: center;
+            min-height: 100px; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2rem; border: 2px solid var(--border-color);
+        }
+
+        /* Keyboard-et */
+        .math-kb {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            background: var(--secondary); padding: 15px; border-radius: 15px;
+            border: 2px solid var(--border-color);
+        }
+
+        .key {
+            background: white; border: 2px solid var(--border-color); color: var(--text-main);
+            padding: 12px; border-radius: 10px; cursor: pointer;
+            font-family: 'Nunito'; font-size: 1.1rem; font-weight: bold; transition: 0.1s;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+        .key:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px var(--border-color); }
+        .key.special { background: var(--primary); color: white; }
+
+        .formula-display {
+            background: white; padding: 15px; border-radius: 10px;
+            margin-bottom: 15px; min-height: 40px; border: 2px solid var(--border-color);
+            font-size: 1.4rem; color: var(--text-main); display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Butonat e Energjise */
+        .energy-selector {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;
+        }
+        .energy-btn {
+            padding: 10px; border-radius: 10px; border: 2px solid var(--border-color); cursor: pointer;
+            font-weight: bold; text-transform: uppercase; background: white; color: var(--text-main);
+            box-shadow: 2px 2px 0px var(--border-color); transition: 0.1s;
+        }
+        .energy-btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px var(--border-color); }
+
+        /* Efektet */
+        .correct { background: var(--success) !important; color: white !important; }
+        .wrong { background: var(--danger) !important; color: white !important; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Beteja e Energjisë: Sfida e Formulave</h1>
+    </div>
+
+    <div class="arena">
+        <div class="team-box team-a" id="box-a">
+            <div class="score-label" style="color: #6495ED;">GRUPI A: <span id="score-a">0</span></div>
+            <div id="q-a" class="question-card">Shtyp "START MISIONIN"</div>
+            
+            <div id="controls-a" class="hidden">
+                <div class="energy-selector">
+                    <button class="energy-btn" onclick="checkType('a', 'Ek')">Kinetike</button>
+                    <button class="energy-btn" onclick="checkType('a', 'Ep')">Potenciale</button>
+                    <button class="energy-btn" onclick="checkType('a', 'Em')">Mekanike</button>
+                </div>
+                
+                <div class="formula-display" id="display-a">Pritet formula...</div>
+                
+                <div class="math-kb">
+                    <button class="key" onclick="typeKey('a','E')">E</button>
+                    <button class="key" onclick="typeKey('a','k')">k</button>
+                    <button class="key" onclick="typeKey('a','p')">p</button>
+                    <button class="key" onclick="typeKey('a','m')">m</button>
+                    <button class="key" onclick="typeKey('a','=')">=</button>
+                    <button class="key" onclick="typeKey('a','m')">m</button>
+                    <button class="key" onclick="typeKey('a','g')">g</button>
+                    <button class="key" onclick="typeKey('a','h')">h</button>
+                    <button class="key" onclick="typeKey('a','v')">v</button>
+                    <button class="key" onclick="typeKey('a','^2')">²</button>
+                    <button class="key" onclick="typeKey('a','/')">/</button>
+                    <button class="key" onclick="typeKey('a','2')">2</button>
+                    <button class="key" onclick="typeKey('a','+')">+</button>
+                    <button class="key special" onclick="clearDisplay('a')">C</button>
+                    <button class="key special" style="grid-column: span 2; background: var(--success);" onclick="submitFormula('a')">DËRGO</button>
+                </div>
+            </div>
+            <button id="start-a" class="key" style="background: var(--team-a); color: var(--text-main); font-size: 1.5rem; padding: 20px;" onclick="nextQuestion('a')">START MISIONIN</button>
+        </div>
+
+        <div class="team-box team-b" id="box-b">
+            <div class="score-label" style="color: #FF69B4;">GRUPI B: <span id="score-b">0</span></div>
+            <div id="q-b" class="question-card">Shtyp "START MISIONIN"</div>
+            
+            <div id="controls-b" class="hidden">
+                <div class="energy-selector">
+                    <button class="energy-btn" onclick="checkType('b', 'Ek')">Kinetike</button>
+                    <button class="energy-btn" onclick="checkType('b', 'Ep')">Potenciale</button>
+                    <button class="energy-btn" onclick="checkType('b', 'Em')">Mekanike</button>
+                </div>
+                
+                <div class="formula-display" id="display-b">Pritet formula...</div>
+                
+                <div class="math-kb">
+                    <button class="key" onclick="typeKey('b','E')">E</button>
+                    <button class="key" onclick="typeKey('b','k')">k</button>
+                    <button class="key" onclick="typeKey('b','p')">p</button>
+                    <button class="key" onclick="typeKey('b','m')">m</button>
+                    <button class="key" onclick="typeKey('b','=')">=</button>
+                    <button class="key" onclick="typeKey('b','m')">m</button>
+                    <button class="key" onclick="typeKey('b','g')">g</button>
+                    <button class="key" onclick="typeKey('b','h')">h</button>
+                    <button class="key" onclick="typeKey('b','v')">v</button>
+                    <button class="key" onclick="typeKey('b','^2')">²</button>
+                    <button class="key" onclick="typeKey('b','/')">/</button>
+                    <button class="key" onclick="typeKey('b','2')">2</button>
+                    <button class="key" onclick="typeKey('b','+')">+</button>
+                    <button class="key special" onclick="clearDisplay('b')">C</button>
+                    <button class="key special" style="grid-column: span 2; background: var(--success);" onclick="submitFormula('b')">DËRGO</button>
+                </div>
+            </div>
+            <button id="start-b" class="key" style="background: var(--team-b); color: var(--text-main); font-size: 1.5rem; padding: 20px;" onclick="nextQuestion('b')">START MISIONIN</button>
+        </div>
+    </div>
+
+<script>
+    const questions = [
+        { q: "Cila energji lidhet me lartësinë?", type: "Ep", f: "Ep=mgh" },
+        { q: "Shkruaj formulën e energjisë së lëvizjes.", type: "Ek", f: "Ek=mv^2/2" },
+        { q: "Shuma e energjisë kinetike dhe potenciale.", type: "Em", f: "Em=Ek+Ep" },
+        { q: "Energjia që zotëron një zog në fluturim (vetëm lëvizja).", type: "Ek", f: "Ek=mv^2/2" },
+        { q: "Energjia e një guri në majë të malit.", type: "Ep", f: "Ep=mgh" }
+    ];
+
+    let state = {
+        a: { score: 0, qIdx: 0, typeOk: false, input: "" },
+        b: { score: 0, qIdx: 0, typeOk: false, input: "" }
+    };
+
+    function nextQuestion(team) {
+        document.getElementById('start-' + team).classList.add('hidden');
+        document.getElementById('controls-' + team).classList.remove('hidden');
+        
+        let s = state[team];
+        if(s.qIdx >= questions.length) {
+            document.getElementById('q-' + team).innerHTML = "MISIONI PËRFUNDOI!";
+            document.getElementById('controls-' + team).classList.add('hidden');
+            return;
+        }
+
+        document.getElementById('q-' + team).innerHTML = questions[s.qIdx].q;
+        s.typeOk = false;
+        clearDisplay(team);
+        
+        // Reset buttons
+        document.querySelectorAll(`#box-${team} .energy-btn`).forEach(b => {
+            b.classList.remove('correct', 'wrong');
+        });
+    }
+
+    function checkType(team, type) {
+        let s = state[team];
+        let correctType = questions[s.qIdx].type;
+        
+        document.querySelectorAll(`#box-${team} .energy-btn`).forEach(b => {
+            if(b.innerText.toLowerCase().includes(type.toLowerCase().replace('e',''))) {
+                if(type === correctType) {
+                    b.classList.add('correct');
+                    s.typeOk = true;
+                } else {
+                    b.classList.add('wrong');
+                    setTimeout(() => b.classList.remove('wrong'), 1000);
+                }
+            }
+        });
+    }
+
+    function typeKey(team, val) {
+        state[team].input += val;
+        updateDisplay(team);
+    }
+
+    function clearDisplay(team) {
+        state[team].input = "";
+        updateDisplay(team);
+    }
+
+    function updateDisplay(team) {
+        let disp = document.getElementById('display-' + team);
+        let raw = state[team].input;
+        if(raw === "") {
+            disp.innerHTML = "Pritet formula...";
+            return;
+        }
+        
+        // Format for MathJax
+        let mathStr = raw.replace('^2', '^2').replace('/', '\\over ');
+        disp.innerHTML = `\\(${mathStr}\\)`;
+        if (window.MathJax) MathJax.typesetPromise([disp]);
+    }
+
+    function submitFormula(team) {
+        let s = state[team];
+        if(!s.typeOk) {
+            alert("Zgjidh llojin e energjisë saktë fillimisht!");
+            return;
+        }
+
+        let correctF = questions[s.qIdx].f;
+        let userF = s.input;
+
+        // Simple validation (can be improved)
+        if(userF === correctF || (userF.includes('m') && userF.includes('g') && userF.includes('h') && correctF.includes('mgh'))) {
+            s.score += 10;
+            document.getElementById('score-' + team).innerText = s.score;
+            document.getElementById('display-' + team).classList.add('correct');
+            
+            setTimeout(() => {
+                document.getElementById('display-' + team).classList.remove('correct');
+                s.qIdx++;
+                nextQuestion(team);
+            }, 1500);
+        } else {
+            document.getElementById('display-' + team).classList.add('wrong');
+            setTimeout(() => {
+                document.getElementById('display-' + team).classList.remove('wrong');
+                clearDisplay(team);
+            }, 1000);
+        }
+    }
+</script>
+
+</body>
+</html>

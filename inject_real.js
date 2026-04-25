@@ -1,0 +1,43 @@
+import fs from 'fs';
+
+try {
+  let content = fs.readFileSync('/src/gameContent.ts', 'utf8');
+  const rawHTML = fs.readFileSync('/raw_grid.html', 'utf8');
+  
+  if (!rawHTML.includes('id="val-v-')) {
+    console.log('raw_grid doesn\\'t have the updated UI code!');
+  } else {
+    console.log('raw_grid has the code. Proceeding to inject...');
+  }
+  
+  const encodeValue = (str) => Buffer.from(str).toString('base64');
+  const base64Str = encodeValue(rawHTML);
+
+  const startIdx = content.indexOf('id: "power-grid-manager"');
+  if (startIdx !== -1) {
+      const htmlIdx = content.indexOf('html: "', startIdx);
+      if (htmlIdx !== -1) {
+          let quoteIdx = htmlIdx + 7;
+          while(quoteIdx < content.length) {
+              if (content[quoteIdx] === '"' && content[quoteIdx-1] !== '\\\\') {
+                  break;
+              }
+              quoteIdx++;
+          }
+          // The magic text replacement
+          const beforeStr = content.substring(0, htmlIdx + 6);
+          const afterStr = content.substring(quoteIdx + 1);
+          
+          const newHTML = JSON.stringify(rawHTML);
+          
+          fs.writeFileSync('/src/gameContent.ts', beforeStr + newHTML + afterStr, 'utf8');
+          console.log('Successfully injected power grid HTML');
+      } else {
+        console.log('html: not found after id');
+      }
+  } else {
+    console.log('id: power-grid-manager not found');
+  }
+} catch (err) {
+  console.error(err);
+}
