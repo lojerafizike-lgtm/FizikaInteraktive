@@ -268,4 +268,4 @@ export function gjeneroKuizPerKategorine(
 
     // Kthe pyetjet të përziera plotësisht
     return përzieje(kuizi);
-} 
+}
