@@ -2,31 +2,79 @@ import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Search, User, Heart, MessageCircle, Ghost, ShieldCheck,
-  Star, Brain, FlaskConical, History, X, Camera, CameraOff, Scan, Zap
+  Star, Brain, FlaskConical, History, X, Camera, CameraOff, Zap, Sparkles
 } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import confetti from 'canvas-confetti';
 import { SCIENTISTS_DATA, Scientist } from '../data/scientists';
 
-// ─── AR Modal ────────────────────────────────────────────────────────────────
-const ARModal: React.FC<{ scientist: Scientist; onClose: () => void }> = ({ scientist, onClose }) => {
+// ─── Floating AR Object ───────────────────────────────────────────────────────
+const FloatingARObject: React.FC<{
+  icon: string;
+  x: number; y: number;
+  size: number;
+  delay: number;
+  duration: number;
+  rotateX: number;
+  rotateY: number;
+}> = ({ icon, x, y, size, delay, duration, rotateX, rotateY }) => (
+  <motion.div
+    className="absolute pointer-events-none select-none"
+    style={{ left: `${x}%`, top: `${y}%`, fontSize: size, zIndex: 10 }}
+    initial={{ opacity: 0, scale: 0, y: 40 }}
+    animate={{
+      opacity: [0, 1, 1, 0.8, 1],
+      scale: [0, 1.2, 1, 1.05, 1],
+      y: [40, 0, -10, 5, -8],
+      rotateX: [0, rotateX, -rotateX * 0.5, rotateX * 0.3],
+      rotateY: [0, rotateY, -rotateY * 0.5, rotateY * 0.3],
+    }}
+    transition={{ duration, delay, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+  >
+    {/* Shadow/ground effect */}
+    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-2 bg-black/20 rounded-full blur-sm" style={{ transform: 'translateX(-50%) scaleY(0.3) translateY(8px)' }} />
+    {/* Glow ring */}
+    <motion.div
+      className="absolute inset-0 rounded-full"
+      style={{ background: 'radial-gradient(circle, rgba(255,175,204,0.4) 0%, transparent 70%)' }}
+      animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.1, 0.4] }}
+      transition={{ duration: 2, repeat: Infinity, delay }}
+    />
+    <span style={{ filter: 'drop-shadow(0 8px 20px rgba(255,175,204,0.8)) drop-shadow(0 0 40px rgba(200,150,255,0.6))' }}>
+      {icon}
+    </span>
+  </motion.div>
+);
+
+// ─── AR Camera Modal ──────────────────────────────────────────────────────────
+const ARCameraModal: React.FC<{ scientist: Scientist; onClose: () => void }> = ({ scientist, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [camActive, setCamActive] = useState(false);
   const [camError, setCamError] = useState(false);
-  const [scanPhase, setScanPhase] = useState<'scanning' | 'locked' | 'speaking'>('scanning');
-  const [speechLine, setSpeechLine] = useState(0);
+  const [arReady, setArReady] = useState(false);
+  const [tapCount, setTapCount] = useState(0);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const speechLines = [
-    `Përshëndetje! Unë jam ${scientist.name}.`,
-    `Shikoni shpikjen time: ${scientist.summonItem.name}!`,
-    scientist.summonItem.description,
-    `Përdoreni fizikën për të ndryshuar botën!`,
+  // Multiple floating instances of the invention
+  const arObjects = [
+    { icon: scientist.summonItem.icon, x: 45, y: 25, size: 72, delay: 0,   duration: 4,   rotateX: 15, rotateY: 20  },
+    { icon: scientist.summonItem.icon, x: 15, y: 50, size: 42, delay: 0.8, duration: 5.5, rotateX: -10, rotateY: 15 },
+    { icon: scientist.summonItem.icon, x: 70, y: 55, size: 36, delay: 1.5, duration: 4.8, rotateX: 12, rotateY: -18 },
+    { icon: scientist.summonItem.icon, x: 60, y: 15, size: 28, delay: 2,   duration: 6,   rotateX: -8, rotateY: 22  },
+    { icon: scientist.summonItem.icon, x: 25, y: 20, size: 24, delay: 0.4, duration: 3.5, rotateX: 20, rotateY: -12 },
   ];
+
+  // Particle sparkles
+  const particles = Array.from({ length: 18 }, (_, i) => ({
+    x: Math.random() * 90 + 5,
+    y: Math.random() * 80 + 5,
+    delay: i * 0.3,
+    size: Math.random() * 6 + 4,
+  }));
 
   useEffect(() => {
     let cancelled = false;
-    navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' } })
+    navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
       .then(stream => {
         if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
         streamRef.current = stream;
@@ -34,185 +82,169 @@ const ARModal: React.FC<{ scientist: Scientist; onClose: () => void }> = ({ scie
           videoRef.current.srcObject = stream;
           videoRef.current.play();
           setCamActive(true);
+          setTimeout(() => { if (!cancelled) setArReady(true); }, 1200);
         }
       })
-      .catch(() => { if (!cancelled) setCamError(true); });
+      .catch(() => {
+        if (!cancelled) { setCamError(true); setTimeout(() => setArReady(true), 800); }
+      });
     return () => { cancelled = true; streamRef.current?.getTracks().forEach(t => t.stop()); };
   }, []);
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setScanPhase('locked'), 2200);
-    const t2 = setTimeout(() => setScanPhase('speaking'), 3800);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
-
-  useEffect(() => {
-    if (scanPhase !== 'speaking') return;
-    const iv = setInterval(() => setSpeechLine(l => (l + 1) % speechLines.length), 3000);
-    return () => clearInterval(iv);
-  }, [scanPhase]);
 
   const handleClose = useCallback(() => {
     streamRef.current?.getTracks().forEach(t => t.stop());
     onClose();
   }, [onClose]);
 
+  const handleTap = () => {
+    setTapCount(c => c + 1);
+    confetti({ particleCount: 30, spread: 50, origin: { y: 0.5 }, colors: ['#ffafcc','#cdb4db','#bde0fe'] });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[10001] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.97)' }}
+      className="fixed inset-0 z-[10001] overflow-hidden bg-black"
+      style={{ perspective: '800px' }}
     >
-      <video ref={videoRef} playsInline muted
-        className="absolute inset-0 w-full h-full object-cover opacity-25"
-        style={{ display: camActive ? 'block' : 'none' }}
+      {/* Camera feed */}
+      <video ref={videoRef} playsInline muted autoPlay
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ opacity: camActive ? 0.92 : 0 }}
       />
 
+      {/* Fallback: gradient world when no camera */}
       {(camError || !camActive) && (
-        <div className="absolute inset-0 overflow-hidden">
-          {Array.from({ length: 90 }).map((_, i) => (
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%)' }}>
+          {/* Fake floor grid perspective */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/2" style={{
+            backgroundImage: `linear-gradient(rgba(255,175,204,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,175,204,0.15) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px',
+            transform: 'perspective(300px) rotateX(60deg)',
+            transformOrigin: 'bottom center',
+          }}/>
+          {/* Stars */}
+          {particles.map((p, i) => (
             <motion.div key={i} className="absolute rounded-full bg-white"
-              style={{ width: Math.random()*2+1, height: Math.random()*2+1, left: `${Math.random()*100}%`, top: `${Math.random()*100}%`, opacity: Math.random()*0.5+0.1 }}
-              animate={{ opacity: [0.1, 0.8, 0.1] }}
-              transition={{ duration: 2+Math.random()*3, repeat: Infinity, delay: Math.random()*3 }}
+              style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size/2, height: p.size/2 }}
+              animate={{ opacity: [0.1, 0.9, 0.1], scale: [1, 1.5, 1] }}
+              transition={{ duration: 2 + Math.random() * 2, repeat: Infinity, delay: p.delay }}
             />
           ))}
         </div>
       )}
 
-      {/* Grid overlay */}
+      {/* Holographic scan lines overlay */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: `linear-gradient(rgba(255,175,204,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,175,204,0.04) 1px, transparent 1px)`,
-        backgroundSize: '40px 40px',
-      }} />
+        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,175,204,0.015) 3px, rgba(255,175,204,0.015) 4px)',
+        zIndex: 2,
+      }}/>
 
-      {/* Corner brackets */}
-      {['top-6 left-6 border-t-2 border-l-2','top-6 right-6 border-t-2 border-r-2','bottom-6 left-6 border-b-2 border-l-2','bottom-6 right-6 border-b-2 border-r-2'].map((cls, i) => (
-        <div key={i} className={`absolute w-10 h-10 border-[#ffafcc]/60 ${cls}`} />
-      ))}
+      {/* ── AR OBJECTS ── */}
+      <AnimatePresence>
+        {arReady && (
+          <motion.div
+            className="absolute inset-0"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            style={{ zIndex: 5, transformStyle: 'preserve-3d' }}
+            onClick={handleTap}
+          >
+            {arObjects.map((obj, i) => (
+              <FloatingARObject key={i} {...obj} />
+            ))}
 
-      {/* HUD top */}
-      <div className="absolute top-6 left-6 z-20 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
-        {camActive
-          ? <><Camera className="w-3 h-3 text-[#ffafcc]"/><span className="text-[#ffafcc]">Kamera Aktive</span></>
-          : <><CameraOff className="w-3 h-3 text-slate-500"/><span className="text-slate-500">Modalitet Holografik</span></>}
-      </div>
-      <div className="absolute top-6 right-16 z-20 text-right text-[9px] font-black text-[#ffafcc]/40 uppercase tracking-widest leading-relaxed pointer-events-none">
-        <div>SCI//AR v2.4</div>
-        <div className="flex items-center gap-1 justify-end">
-          <motion.div animate={{ opacity:[1,0,1] }} transition={{ duration:1, repeat:Infinity }} className="w-1.5 h-1.5 rounded-full bg-[#ffafcc]"/>
-          LIVE
+            {/* Sparkle particles */}
+            {particles.map((p, i) => (
+              <motion.div key={`spark-${i}`}
+                className="absolute pointer-events-none"
+                style={{ left: `${p.x}%`, top: `${p.y}%`, zIndex: 6 }}
+                animate={{ opacity: [0, 1, 0], scale: [0, 1, 0], rotate: [0, 180] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: p.delay * 0.8, repeatDelay: 1 + Math.random() * 2 }}
+              >
+                <div style={{ width: p.size, height: p.size, background: i % 3 === 0 ? '#ffafcc' : i % 3 === 1 ? '#cdb4db' : '#bde0fe', borderRadius: '50%', filter: 'blur(1px)' }}/>
+              </motion.div>
+            ))}
+
+            {/* Ground shadow plane */}
+            <div className="absolute bottom-32 left-1/2 -translate-x-1/2 w-48 h-8 rounded-full blur-2xl"
+              style={{ background: 'radial-gradient(ellipse, rgba(255,175,204,0.3) 0%, transparent 70%)' }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── HUD OVERLAY ── */}
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 z-20 p-4 flex items-start justify-between">
+        <div className="flex flex-col gap-1">
+          {/* Status */}
+          <div className="flex items-center gap-2 bg-black/40 backdrop-blur rounded-full px-3 py-1.5">
+            {camActive
+              ? <><motion.div className="w-2 h-2 rounded-full bg-[#ffafcc]" animate={{ opacity:[1,0,1] }} transition={{ duration:1, repeat:Infinity }}/><span className="text-[#ffafcc] text-[10px] font-black uppercase tracking-widest">AR Aktiv</span></>
+              : <><div className="w-2 h-2 rounded-full bg-purple-400"/><span className="text-purple-300 text-[10px] font-black uppercase tracking-widest">Modalitet 3D</span></>
+            }
+          </div>
+          <div className="text-[9px] text-white/30 uppercase tracking-widest ml-1">
+            {scientist.name} · {scientist.summonItem.name}
+          </div>
         </div>
+
+        <button onClick={handleClose}
+          className="w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/70 transition-all">
+          <X className="w-4 h-4"/>
+        </button>
       </div>
 
-      <button onClick={handleClose} className="absolute top-6 right-6 z-20 w-9 h-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white/50 hover:text-white hover:bg-white/20 transition-all">
-        <X className="w-4 h-4"/>
-      </button>
-
-      {/* CENTER */}
-      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-lg px-6 text-center">
-
-        <AnimatePresence>
-          {scanPhase === 'scanning' && (
-            <motion.div key="scan" initial={{ opacity:0, scale:0.8 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:1.1 }} className="flex flex-col items-center">
-              <div className="relative w-48 h-48 mb-8">
-                {[0,1,2].map(i => (
-                  <motion.div key={i} className="absolute rounded-full border border-[#ffafcc]/30"
-                    style={{ inset: i*16 }}
-                    animate={{ rotate: i%2===0 ? 360 : -360 }}
-                    transition={{ duration: 3+i, repeat:Infinity, ease:'linear' }}
-                  />
-                ))}
-                <motion.div className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#ffafcc] to-transparent"
-                  animate={{ top:['10%','90%','10%'] }} transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Scan className="w-10 h-10 text-[#ffafcc]"/>
-                </div>
-              </div>
-              <p className="text-white font-black text-lg uppercase tracking-[0.2em]">Duke Skanuar...</p>
-              <p className="text-[#ffafcc]/60 text-xs uppercase tracking-widest mt-2">Identifikim i shpikjes</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {scanPhase === 'locked' && (
-            <motion.div key="locked" initial={{ opacity:0, scale:0.6 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0 }} transition={{ type:'spring', stiffness:300, damping:20 }} className="flex flex-col items-center">
-              <motion.div animate={{ boxShadow:['0 0 0px #ffafcc','0 0 60px #ffafcc88','0 0 0px #ffafcc'] }} transition={{ duration:0.8, repeat:2 }} className="text-8xl mb-6">
-                {scientist.summonItem.icon}
-              </motion.div>
-              <motion.div initial={{ width:0 }} animate={{ width:'100%' }} className="h-0.5 bg-[#ffafcc] mb-4 max-w-xs"/>
-              <p className="text-[#ffafcc] font-black text-xl uppercase tracking-[0.3em]">IDENTIFIKUAR!</p>
-              <p className="text-white/40 text-xs mt-2 uppercase tracking-widest">{scientist.summonItem.name}</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {scanPhase === 'speaking' && (
-            <motion.div key="speaking" initial={{ opacity:0, y:30 }} animate={{ opacity:1, y:0 }} className="flex flex-col items-center w-full">
-              <div className="relative mb-6">
-                <motion.div animate={{ y:[0,-14,0], rotate:[0,3,-3,0] }} transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
-                  className="text-[7rem] leading-none filter drop-shadow-[0_0_30px_rgba(255,175,204,0.8)]">
-                  {scientist.summonItem.icon}
-                </motion.div>
-                {[80,110,140].map((size, i) => (
-                  <motion.div key={i} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#ffafcc]/20"
-                    style={{ width:size, height:size }}
-                    animate={{ scale:[1,1.15,1], opacity:[0.3,0.05,0.3] }}
-                    transition={{ duration:2+i*0.5, repeat:Infinity, delay:i*0.3 }}
-                  />
-                ))}
-              </div>
-
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#ffafcc]/50 shrink-0">
-                  <img src={scientist.image} alt={scientist.name} className="w-full h-full object-cover"
-                    onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(scientist.name)}&background=ffafcc&color=fff&size=80`; }}
-                  />
-                </div>
-                <div className="text-left">
-                  <p className="text-white font-black text-sm">{scientist.name}</p>
-                  <p className="text-[#ffafcc]/60 text-[10px] uppercase tracking-widest">{scientist.tag}</p>
-                </div>
-                <Zap className="w-4 h-4 text-[#ffafcc] ml-1"/>
-              </div>
-
-              <motion.div key={speechLine} initial={{ opacity:0, y:8, scale:0.97 }} animate={{ opacity:1, y:0, scale:1 }} exit={{ opacity:0 }}
-                className="bg-white/10 backdrop-blur border border-[#ffafcc]/30 rounded-2xl px-6 py-4 max-w-sm w-full mb-6">
-                <p className="text-white font-medium text-sm leading-relaxed italic">"{speechLines[speechLine]}"</p>
-                <div className="flex gap-1.5 mt-3 justify-center">
-                  {speechLines.map((_,i) => (
-                    <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i===speechLine ? 'bg-[#ffafcc] scale-125' : 'bg-white/20'}`}/>
-                  ))}
-                </div>
-              </motion.div>
-
-              <div className="grid grid-cols-2 gap-3 w-full max-w-xs mb-6">
-                <div className="bg-white/5 border border-[#ffafcc]/20 rounded-xl p-3 text-center">
-                  <p className="text-[9px] text-[#ffafcc]/50 uppercase tracking-widest mb-1">Shpikja</p>
-                  <p className="text-white font-black text-xs">{scientist.summonItem.name}</p>
-                </div>
-                <div className="bg-white/5 border border-[#ffafcc]/20 rounded-xl p-3 text-center">
-                  <p className="text-[9px] text-[#ffafcc]/50 uppercase tracking-widest mb-1">Fusha</p>
-                  <p className="text-white font-black text-xs">{scientist.tag}</p>
-                </div>
-              </div>
-
-              <button onClick={handleClose} className="px-8 py-3 bg-white/10 border border-white/20 rounded-xl text-white font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all backdrop-blur">
-                Mbyll AR
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* Corner brackets (AR frame) */}
+      <div className="absolute inset-8 z-10 pointer-events-none">
+        {['top-0 left-0 border-t-2 border-l-2','top-0 right-0 border-t-2 border-r-2','bottom-0 left-0 border-b-2 border-l-2','bottom-0 right-0 border-b-2 border-r-2'].map((cls, i) => (
+          <div key={i} className={`absolute w-8 h-8 border-[#ffafcc]/70 ${cls}`}/>
+        ))}
       </div>
 
-      <div className="absolute bottom-6 left-0 right-0 px-8 flex items-center justify-between text-[9px] font-black text-white/20 uppercase tracking-widest pointer-events-none">
-        <span>AR//FIZIKA INTERAKTIVE</span>
-        <span>{scientist.name.toUpperCase()}</span>
-        <span>SHPIKJET</span>
-      </div>
+      {/* Bottom info panel */}
+      <AnimatePresence>
+        {arReady && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}
+            className="absolute bottom-0 left-0 right-0 z-20 p-4"
+          >
+            <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 flex items-center gap-4">
+              <div className="text-4xl shrink-0">{scientist.summonItem.icon}</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-black text-sm truncate">{scientist.summonItem.name}</p>
+                <p className="text-white/50 text-xs mt-0.5 line-clamp-2 leading-relaxed">{scientist.summonItem.description}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-[#ffafcc] font-black text-xs uppercase tracking-widest">Shpikësi</p>
+                <p className="text-white/70 text-xs">{scientist.name}</p>
+              </div>
+            </div>
+
+            {/* Tap hint */}
+            <motion.p
+              className="text-center text-white/40 text-[10px] uppercase tracking-widest mt-3 font-black"
+              animate={{ opacity: [0.4, 0.9, 0.4] }} transition={{ duration: 2, repeat: Infinity }}
+            >
+              {tapCount === 0 ? '✦ Trokit ekranin për efekte ✦' : `✦ ${tapCount} efekte aktivizuar ✦`}
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Loading state */}
+      <AnimatePresence>
+        {!arReady && (
+          <motion.div exit={{ opacity: 0 }}
+            className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur">
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+              className="w-16 h-16 rounded-full border-2 border-[#ffafcc]/20 border-t-[#ffafcc] mb-6"/>
+            <p className="text-white font-black text-sm uppercase tracking-widest">Duke ngarkuar AR...</p>
+            <p className="text-white/30 text-xs mt-2 uppercase tracking-widest">{camActive ? 'Kamera aktive' : 'Duke inicializuar...'}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
@@ -221,7 +253,7 @@ const ARModal: React.FC<{ scientist: Scientist; onClose: () => void }> = ({ scie
 const ScientistsSection: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedScientist, setSelectedScientist] = useState<Scientist | null>(null);
-  const [isSummoning, setIsSummoning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showAR, setShowAR] = useState(false);
 
   React.useEffect(() => {
@@ -237,10 +269,10 @@ const ScientistsSection: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     );
   }, [searchTerm]);
 
-  const handleSummon = () => {
-    setIsSummoning(true);
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ffafcc','#bde0fe','#cdb4db','#ffc8dd'] });
-    setTimeout(() => { setIsSummoning(false); setShowAR(true); }, 2000);
+  const handleOpenAR = () => {
+    setIsLoading(true);
+    confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 }, colors: ['#ffafcc','#bde0fe','#cdb4db','#ffc8dd'] });
+    setTimeout(() => { setIsLoading(false); setShowAR(true); }, 1400);
   };
 
   return (
@@ -330,28 +362,39 @@ const ScientistsSection: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     </div>
                   </div>
 
-                  {/* AR Preview teaser */}
-                  <div className="w-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 mb-4 border border-slate-700 relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10" style={{
-                      backgroundImage:`linear-gradient(rgba(255,175,204,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(255,175,204,0.3) 1px,transparent 1px)`,
+                  {/* AR preview teaser */}
+                  <div className="w-full rounded-2xl overflow-hidden mb-4 relative cursor-pointer group" onClick={handleOpenAR}
+                    style={{ background: 'linear-gradient(135deg, #1a0a2e, #0f3460)' }}>
+                    <div className="absolute inset-0 opacity-20" style={{
+                      backgroundImage:`linear-gradient(rgba(255,175,204,0.4) 1px,transparent 1px),linear-gradient(90deg,rgba(255,175,204,0.4) 1px,transparent 1px)`,
                       backgroundSize:'20px 20px'
                     }}/>
-                    <div className="relative flex items-center gap-4">
-                      <motion.div animate={{ y:[0,-5,0] }} transition={{ duration:2, repeat:Infinity }} className="text-4xl">
+                    <div className="relative p-5 flex items-center gap-4">
+                      <motion.div animate={{ y:[0,-6,0], rotate:[-5,5,-5] }} transition={{ duration:3, repeat:Infinity }}
+                        className="text-5xl shrink-0 filter drop-shadow-[0_0_20px_rgba(255,175,204,0.9)]">
                         {selectedScientist.summonItem.icon}
                       </motion.div>
                       <div className="text-left">
-                        <p className="text-[9px] text-[#ffafcc]/60 uppercase tracking-widest">Shpikja AR</p>
+                        <p className="text-[9px] text-[#ffafcc]/60 uppercase tracking-widest">Pamje paraprake</p>
                         <p className="text-white font-black text-sm">{selectedScientist.summonItem.name}</p>
                         <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{selectedScientist.summonItem.description}</p>
                       </div>
+                      {/* Sparkle corners */}
+                      {['top-2 right-2','top-2 left-2','bottom-2 right-2'].map((pos,i) => (
+                        <motion.div key={i} className={`absolute ${pos} w-1.5 h-1.5 rounded-full bg-[#ffafcc]`}
+                          animate={{ opacity:[0,1,0], scale:[0,1,0] }}
+                          transition={{ duration:1.5, repeat:Infinity, delay:i*0.4 }}/>
+                      ))}
                     </div>
                   </div>
 
-                  <button onClick={handleSummon}
-                    className="w-full mt-2 py-5 bg-gradient-to-r from-[#cdb4db] to-[#ffafcc] text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 relative overflow-hidden group">
-                    <Ghost className="w-5 h-5 group-hover:animate-bounce"/> THIRR FANTAZMËN (AR)
-                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"/>
+                  {/* THE AR BUTTON */}
+                  <button onClick={handleOpenAR}
+                    className="w-full py-5 bg-gradient-to-r from-[#cdb4db] to-[#ffafcc] text-white rounded-2xl font-black text-sm uppercase tracking-[0.15em] shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 relative overflow-hidden group">
+                    <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform"/>
+                    Shiko në Botën Reale
+                    <Camera className="w-4 h-4 opacity-70"/>
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"/>
                   </button>
                 </div>
 
@@ -423,17 +466,17 @@ const ScientistsSection: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </AnimatePresence>
       </div>
 
-      {/* Loading overlay */}
+      {/* Loading */}
       <AnimatePresence>
-        {isSummoning && (
+        {isLoading && (
           <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-            className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center text-center p-8">
-            <motion.div animate={{ scale:[1,1.2,1], rotate:[0,10,-10,0], filter:["drop-shadow(0 0 0px #ffafcc)","drop-shadow(0 0 40px #ffafcc)","drop-shadow(0 0 0px #ffafcc)"] }}
-              transition={{ repeat:Infinity, duration:1 }} className="text-8xl mb-8">🌌</motion.div>
-            <h3 className="text-4xl font-black text-white mb-4 tracking-tighter uppercase">Duke aktivizuar AR...</h3>
-            <p className="text-slate-400 text-lg uppercase tracking-widest font-black animate-pulse">Duke u lidhur me dimensionin e shkencës...</p>
-            <div className="mt-12 w-64 h-1 bg-white/20 rounded-full overflow-hidden">
-              <motion.div initial={{ width:0 }} animate={{ width:'100%' }} transition={{ duration:1.8 }} className="h-full bg-[#ffafcc]"/>
+            className="fixed inset-0 z-[10000] bg-black/85 backdrop-blur-xl flex flex-col items-center justify-center text-center p-8">
+            <motion.div animate={{ rotate:360 }} transition={{ duration:1.2, repeat:Infinity, ease:'linear' }}
+              className="w-20 h-20 rounded-full border-4 border-white/10 border-t-[#ffafcc] mb-8"/>
+            <h3 className="text-3xl font-black text-white mb-3 tracking-tighter">Duke hapur kamerën...</h3>
+            <p className="text-slate-400 uppercase tracking-widest text-sm font-black animate-pulse">Lejo kamerën për AR të plotë</p>
+            <div className="mt-10 w-56 h-1 bg-white/10 rounded-full overflow-hidden">
+              <motion.div initial={{ width:0 }} animate={{ width:'100%' }} transition={{ duration:1.2 }} className="h-full bg-[#ffafcc]"/>
             </div>
           </motion.div>
         )}
@@ -442,7 +485,7 @@ const ScientistsSection: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       {/* AR Modal */}
       <AnimatePresence>
         {showAR && selectedScientist && (
-          <ARModal scientist={selectedScientist} onClose={() => setShowAR(false)}/>
+          <ARCameraModal scientist={selectedScientist} onClose={() => setShowAR(false)}/>
         )}
       </AnimatePresence>
 
