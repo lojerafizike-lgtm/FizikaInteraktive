@@ -564,6 +564,292 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
               hapi3: "Llogarit: 9 * 10^16 J"
             }
         }
+    ],
+    "Termodinamika": [
+        {
+            name: "1. Numri i molëve", sym: "n",
+            form: "n = m / M",
+            unit: "mol", otherUnits: "", teTjera: "", nature: "Skalare", desc: "Tregon sasinë e lëndës", phetUrl: "https://phet.colorado.edu/en/simulation/gas-properties", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlrh05PBnhvU0qP7RPO3jcyZBK3FDPXZ-WXQ&s", vid: "https://www.youtube.com/embed/lAit7kgABr4", gameUrl: "/loja-numri-moleve.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Gjeni numrin e moleve për 36g ujë (H₂O). (Masa molare e ujit = 18 g/mol).</p></div></div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Gjeni numrin e moleve për 36g ujë (Masa molare e ujit = 18 g/mol).",
+              zgjidhja: "2",
+              hapi1: "Zgjidh formulën: n = m / M",
+              hapi2: "Zëvendëso: n = 36 / 18",
+              hapi3: "Llogarit: 2 mol"
+            }
+        },
+        {
+            name: "2. Vëllimi", sym: "V",
+            form: "V = m / d",
+            unit: "m³", otherUnits: "l (litër)", teTjera: "", nature: "Skalare", desc: "Hapsira që zë trupi.", phetUrl: "https://phet.colorado.edu/en/simulation/gas-properties", img: "https://upload.wikimedia.org/wikipedia/commons/2/27/Simple_Measuring_Cup.jpg", vid: "https://www.youtube.com/embed/tI0faFkAC2k", gameUrl: "/loja-vellimi.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Llogarit dendësinë e trupit me masë 6.6 kg nëse vëllimi i tij është 0.0005 m³.</p></div></div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Llogarit dendësinë (kg/m³) e trupit me masë 6.6 kg nëse vëllimi i tij është 0.0005 m³.",
+              zgjidhja: "13200",
+              hapi1: "Përdor formulën e dendësisë: d = m / V (ose kthe V = m / d)",
+              hapi2: "Zëvendëso: d = 6.6 / 0.0005",
+              hapi3: "Llogarit: 13200 kg/m³"
+            }
+        },
+        {
+            name: "3. Temperatura absolute", sym: "T",
+            form: "T(k) = t(℃) + 273",
+            unit: "K", otherUnits: "-", teTjera: "", nature: "Skalare", desc: "Temperatura që matet me K (kelvin)", phetUrl: "https://phet.colorado.edu/en/simulation/states-of-matter", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi-hOUCF0QGFxwKpgxIbUsv6hUUUmG9qapvfQGz74sZELicbCsgjc0W6Pg8hpKrOMkHXmFgOMssQ89IIQSHq-_g0mxRdb3OZ2DPnjOS83kKxAEQk_tYyZyjKbwRAYE45S43qvFymGFM_E6u2HU1xcf_K7U6WvC6REZJXnOnqEPytlll7wsZmnWgNj-D4kU/s636/temperature%20scales.webp", vid: "https://www.youtube.com/embed/MvrME5I3Iu8", gameUrl: "/loja-temperatura-absolute.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Ktheni temperaturën 27 ℃ në Kelvin.</p></div></div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Ktheni temperaturën 27 ℃ në Kelvin.",
+              zgjidhja: "300",
+              hapi1: "Zgjidh formulën: T(k) = t(℃) + 273",
+              hapi2: "Zëvendëso: T = 27 + 273",
+              hapi3: "Llogarit: 300 K"
+            }
+        },
+        { 
+            name: "4. Energjia e brendshme termike", sym: "U",
+            form: "U = 3/2 · nRT  (gaz 1 atomik)\nU = 5/2 · nRT  (gaz 2 atomik)",
+            unit: "J", otherUnits: "cal, kcal", teTjera: "", nature: "Skalare", desc: "Shuma e energjisë kinetike dhe potenciale të të gjitha grimcave që përbëjnë një sistem.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-forms-and-changes", img: "https://solarschools.net/build/img/learn/energy/types/thermal//heat-tranfer-diagram_400_resize_q95.jpg", vid: "https://www.youtube.com/embed/mm_vaHqJvfw", gameUrl:"/loja-energjia-termike.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni energjine e brendshme per 2 mole gaz 1 atomik ne temperaturen 100 K. R=8.31.</p></div></div>`,
+            ushtrimInteraktiv: { pyetja: "Gjeni energjine e brendshme per 2 mole gaz 1 atomik ne temperaturen 100 K. R=8.31.", zgjidhja: "2493", hapi1: "Zgjidh formulen: U = 3/2 * n * R * T", hapi2: "Zevendeso: U = 3/2 * 2 * 8.31 * 100", hapi3: "Llogarit: 3 * 831 = 2493 J" }
+        },
+        { 
+            name: "5. Shtypja", sym: "P",
+            form: "P = F / S",
+            unit: "Pa", otherUnits: "atm, bar, mmHg, N/m²",
+            teTjera: "Në gazra → shtypja tregon goditjet e molekulave me faqet e enës.\nTek lëngjet në thellësi: P = P_atmo + dgh\nLigji i Paskalit → Në të njëjtin nivel lëngu shtypja është e njëjtë.\nÇdo ndryshim shtypjeje në lëng përhapet njëlloj në të gjitha drejtimet.",
+            nature: "Skalare", desc: "Forca që ushtrohet pingul mbi njësinë e sipërfaqes së një trupi.", phetUrl: "https://phet.colorado.edu/en/simulation/gas-properties", img: "https://ademgllavica.wordpress.com/wp-content/uploads/2020/03/image-391.png?w=571", vid: "https://www.youtube.com/embed/LDGohoxWZY4", gameUrl: "/loja-shtypja.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni shtypjen nese forca pingule eshte 100 N ne nje siperfaqe 2 m².</p></div></div>`,
+            ushtrimInteraktiv: { pyetja: "Gjeni shtypjen nese forca pingule eshte 100 N ne nje siperfaqe 2 m².", zgjidhja: "50", hapi1: "Zgjidh formulen: P = F / S", hapi2: "Zevendeso: P = 100 / 2", hapi3: "Llogarit: 50 Pa" }
+        },
+        {
+            name: "6. Nxehtësia specifike e lëndës", sym: "c",
+            form: "c = Q / mΔt\nQ = c · m · Δt",
+            unit: "J/kg·K", otherUnits: "", teTjera: "Q = c · m · Δt", 
+            kuic: {
+              titulli: "Nxehtësia dhe Ndryshimi i Gjendjes",
+              pyetjet: [
+                {
+                  pyetja: "1. Në pjesën DE të grafikut të varësisë së temperaturës nga koha gjatë ngrohjes me shpejtësi konstante për ujin, gjendja e lëndës është:",
+                  opsionet: [
+                    "A) avull dhe ujë i lëngshëm",
+                    "B) ujë i lëngshëm",
+                    "C) akull dhe ujë i lëngshëm",
+                    "D) avull"
+                  ],
+                  sakte: 0,
+                  svg: `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><line x1="40" y1="20" x2="40" y2="180" stroke="black" stroke-width="2"/><line x1="30" y1="140" x2="280" y2="140" stroke="black" stroke-width="2"/><text x="15" y="100" transform="rotate(-90 15,100)" font-family="Arial" font-size="14">Temperatura / °C</text><text x="240" y="160" font-family="Arial" font-size="14">Koha</text><text x="20" y="145" font-family="Arial" font-size="12">0</text><text x="10" y="65" font-family="Arial" font-size="12">100</text><line x1="35" y1="60" x2="40" y2="60" stroke="black" stroke-width="1"/><line x1="40" y1="60" x2="260" y2="60" stroke="black" stroke-dasharray="5,5"/><polyline points="40,170 80,140 120,140 200,60 260,60 280,30" fill="none" stroke="#22d3ee" stroke-width="3"/><text x="45" y="175" font-family="Arial" font-size="12">A</text><text x="75" y="135" font-family="Arial" font-size="12">B</text><text x="115" y="135" font-family="Arial" font-size="12">C</text><text x="200" y="75" font-family="Arial" font-size="12">D</text><text x="260" y="75" font-family="Arial" font-size="12">E</text><text x="280" y="25" font-family="Arial" font-size="12">F</text></svg>`
+                },
+                {
+                  pyetja: "2. Grafiku tregon ndryshimin e temperaturës në funksion të kohës për 2kg të një lënde që merr nxehtësi në mënyrë konstante prej 80000J/min. Në fillim të ngrohjes lënda është në gjendje të ngurtë. Nxehtësia e fshehtë e avullimit të lëndës është:",
+                  opsionet: [
+                    "A) 20kJ/kg",
+                    "B) 40 kJ/kg",
+                    "C) 60 kJ/kg",
+                    "D) 80 kJ/kg"
+                  ],
+                  sakte: 3,
+                  svg: `<svg width="320" height="200" xmlns="http://www.w3.org/2000/svg"><text x="15" y="20" font-family="Arial" font-size="12">temperatura °C</text><line x1="40" y1="30" x2="40" y2="160" stroke="black" stroke-width="2"/><line x1="40" y1="160" x2="300" y2="160" stroke="black" stroke-width="2"/><text x="290" y="150" font-family="Arial" font-size="12">t(min)</text><text x="15" y="165" font-family="Arial" font-size="10">0</text><text x="15" y="145" font-family="Arial" font-size="10">40</text><text x="15" y="125" font-family="Arial" font-size="10">80</text><text x="10" y="105" font-family="Arial" font-size="10">120</text><text x="10" y="85" font-family="Arial" font-size="10">160</text><text x="10" y="65" font-family="Arial" font-size="10">200</text><text x="10" y="45" font-family="Arial" font-size="10">240</text><text x="62" y="175" font-family="Arial" font-size="10">1</text><text x="87" y="175" font-family="Arial" font-size="10">2</text><text x="112" y="175" font-family="Arial" font-size="10">3</text><text x="137" y="175" font-family="Arial" font-size="10">4</text><text x="162" y="175" font-family="Arial" font-size="10">5</text><text x="187" y="175" font-family="Arial" font-size="10">6</text><text x="212" y="175" font-family="Arial" font-size="10">7</text><text x="237" y="175" font-family="Arial" font-size="10">8</text><text x="262" y="175" font-family="Arial" font-size="10">9</text><line x1="40" y1="120" x2="65" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="65" y1="160" x2="65" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="90" y1="160" x2="90" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="40" y1="60" x2="165" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="165" y1="160" x2="165" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="215" y1="160" x2="215" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="40" y1="40" x2="240" y2="40" stroke="black" stroke-dasharray="2,2"/><line x1="240" y1="160" x2="240" y2="40" stroke="black" stroke-dasharray="2,2"/><polyline points="40,160 65,120 90,120 165,60 215,60 240,40" fill="none" stroke="black" stroke-width="2"/></svg>`
+                },
+                {
+                  pyetja: "3. Një sasi prej 2kg ujë fillimisht në temperaturën 80°C shndërrohet plotësisht në avull. Sasia e nxehtësisë që merr uji është: (cu=4200J/kgK dhe Lv=2,26MJ/kg)",
+                  opsionet: [
+                    "A) 4,688J",
+                    "B) 4,688kJ",
+                    "C) 4,688MJ",
+                    "D) 4,688TJ"
+                  ],
+                  sakte: 2
+                },
+                {
+                  pyetja: "4. Një sasi hekuri me masë 100kg ndodhet në gjendje të lëngët në temperaturën e shkrirjes. Gjatë procesit të ngurtësimit të kësaj mase hekuri, sasia e nxehtësisë dhe kahu i shkëmbimit të saj janë: (Lfe=33kJ/kg)",
+                  opsionet: [
+                    "A) hekuri jep 3 kJ nxehtësi.",
+                    "B) hekuri nuk shkëmben nxehtësi.",
+                    "C) hekuri merr 33·10⁵ J nxehtësi.",
+                    "D) hekuri jep 33·10⁵ J nxehtësi."
+                  ],
+                  sakte: 3
+                },
+                {
+                  pyetja: "5. Grafiku tregon ndryshimin e temperaturës së 2kg lënde gjatë ngrohjes me shpejtësi konstante prej 2000J/min. Në fillim të ngrohjes lënda është në gjendje të ngurtë. Treshja e vlerave të nxehtësisë specifike të ngrohjes së trupit të ngurtë, të nxehtësisë latente të shkrirjes dhe nxehtësisë specifike të ngrohjes së lëngut është:",
+                  opsionet: [
+                    "A) 8000 J/kg°C ; 6000 J/kg ; 3000 J/kg°C",
+                    "B) 1330 J/kg°C ; 6000 J/kg ; 600 J/kg°C",
+                    "C) 4000 J/kg°C ; 3000 J/kg ; 1200 J/kg°C",
+                    "D) 1330 J/kg°C ; 3000 J/kg ; 600 J/kg°C"
+                  ],
+                  sakte: 3,
+                  svg: `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><text x="15" y="25" font-family="Arial" font-size="12">t(°C)</text><line x1="40" y1="30" x2="40" y2="160" stroke="black" stroke-width="2"/><line x1="40" y1="160" x2="260" y2="160" stroke="black" stroke-width="2"/><text x="245" y="175" font-family="Arial" font-size="12">t(min)</text><text x="20" y="165" font-family="Arial" font-size="10">0</text><text x="20" y="135" font-family="Arial" font-size="10">2</text><text x="20" y="105" font-family="Arial" font-size="10">4</text><text x="20" y="75" font-family="Arial" font-size="10">6</text><text x="20" y="45" font-family="Arial" font-size="10">8</text><text x="75" y="175" font-family="Arial" font-size="10">2</text><text x="115" y="175" font-family="Arial" font-size="10">4</text><text x="155" y="175" font-family="Arial" font-size="10">6</text><text x="195" y="175" font-family="Arial" font-size="10">8</text><text x="230" y="175" font-family="Arial" font-size="10">10</text><text x="45" y="155" font-family="Arial" font-size="10">O</text><text x="115" y="110" font-family="Arial" font-size="10">A</text><text x="175" y="110" font-family="Arial" font-size="10">B</text><text x="245" y="35" font-family="Arial" font-size="10">C</text><line x1="40" y1="115" x2="120" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="120" y1="160" x2="120" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="180" y1="160" x2="180" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="40" y1="40" x2="240" y2="40" stroke="black" stroke-dasharray="4,4"/><line x1="240" y1="160" x2="240" y2="40" stroke="black" stroke-dasharray="4,4"/><polyline points="40,160 120,115 180,115 240,40" fill="none" stroke="black" stroke-width="2"/></svg>`
+                }
+              ]
+            },
+            nature: "Skalare", desc: "Tregon sasinë e nxehtësisë që i duhet 1kg lënde për tia ndrzshuar temperaturën me një gradë.", phetUrl: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_all.html", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrYVDdn8xNWJ3UWc7Hm6scbbUimOg5qHpVWg&s", vid: "https://www.youtube.com/embed/Wet3sna514o", gameUrl: "/loja-c-specifike.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Cila është nxehtësia që i duhet një trupi 2kg me c=800 J/kgK për tu ngrohur me 30 gradë?</p></div></div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Cila është nxehtësia Q që i duhet një trupi 2kg me c=800 J/kgK për tu ngrohur me 30 gradë?",
+              zgjidhja: "48000",
+              hapi1: "Zgjidh formulën: Q = c * m * Δt",
+              hapi2: "Zëvendëso: Q = 800 * 2 * 30",
+              hapi3: "Llogarit: 48000 J"
+            }
+        },
+        {
+            name: "7. Nxehtësia specifike e shkrirjes", sym: "L_sh",
+            form: "L_sh = Q / m",
+            unit: "J/kg", otherUnits: "", teTjera: "Q = L_sh · m", 
+            kuic: {
+              titulli: "Nxehtësia dhe Ndryshimi i Gjendjes",
+              pyetjet: [
+                {
+                  pyetja: "1. Në pjesën DE të grafikut të varësisë së temperaturës nga koha gjatë ngrohjes me shpejtësi konstante për ujin, gjendja e lëndës është:",
+                  opsionet: [
+                    "A) avull dhe ujë i lëngshëm",
+                    "B) ujë i lëngshëm",
+                    "C) akull dhe ujë i lëngshëm",
+                    "D) avull"
+                  ],
+                  sakte: 0,
+                  svg: `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><line x1="40" y1="20" x2="40" y2="180" stroke="black" stroke-width="2"/><line x1="30" y1="140" x2="280" y2="140" stroke="black" stroke-width="2"/><text x="15" y="100" transform="rotate(-90 15,100)" font-family="Arial" font-size="14">Temperatura / °C</text><text x="240" y="160" font-family="Arial" font-size="14">Koha</text><text x="20" y="145" font-family="Arial" font-size="12">0</text><text x="10" y="65" font-family="Arial" font-size="12">100</text><line x1="35" y1="60" x2="40" y2="60" stroke="black" stroke-width="1"/><line x1="40" y1="60" x2="260" y2="60" stroke="black" stroke-dasharray="5,5"/><polyline points="40,170 80,140 120,140 200,60 260,60 280,30" fill="none" stroke="#22d3ee" stroke-width="3"/><text x="45" y="175" font-family="Arial" font-size="12">A</text><text x="75" y="135" font-family="Arial" font-size="12">B</text><text x="115" y="135" font-family="Arial" font-size="12">C</text><text x="200" y="75" font-family="Arial" font-size="12">D</text><text x="260" y="75" font-family="Arial" font-size="12">E</text><text x="280" y="25" font-family="Arial" font-size="12">F</text></svg>`
+                },
+                {
+                  pyetja: "2. Grafiku tregon ndryshimin e temperaturës në funksion të kohës për 2kg të një lënde që merr nxehtësi në mënyrë konstante prej 80000J/min. Në fillim të ngrohjes lënda është në gjendje të ngurtë. Nxehtësia e fshehtë e avullimit të lëndës është:",
+                  opsionet: [
+                    "A) 20kJ/kg",
+                    "B) 40 kJ/kg",
+                    "C) 60 kJ/kg",
+                    "D) 80 kJ/kg"
+                  ],
+                  sakte: 3,
+                  svg: `<svg width="320" height="200" xmlns="http://www.w3.org/2000/svg"><text x="15" y="20" font-family="Arial" font-size="12">temperatura °C</text><line x1="40" y1="30" x2="40" y2="160" stroke="black" stroke-width="2"/><line x1="40" y1="160" x2="300" y2="160" stroke="black" stroke-width="2"/><text x="290" y="150" font-family="Arial" font-size="12">t(min)</text><text x="15" y="165" font-family="Arial" font-size="10">0</text><text x="15" y="145" font-family="Arial" font-size="10">40</text><text x="15" y="125" font-family="Arial" font-size="10">80</text><text x="10" y="105" font-family="Arial" font-size="10">120</text><text x="10" y="85" font-family="Arial" font-size="10">160</text><text x="10" y="65" font-family="Arial" font-size="10">200</text><text x="10" y="45" font-family="Arial" font-size="10">240</text><text x="62" y="175" font-family="Arial" font-size="10">1</text><text x="87" y="175" font-family="Arial" font-size="10">2</text><text x="112" y="175" font-family="Arial" font-size="10">3</text><text x="137" y="175" font-family="Arial" font-size="10">4</text><text x="162" y="175" font-family="Arial" font-size="10">5</text><text x="187" y="175" font-family="Arial" font-size="10">6</text><text x="212" y="175" font-family="Arial" font-size="10">7</text><text x="237" y="175" font-family="Arial" font-size="10">8</text><text x="262" y="175" font-family="Arial" font-size="10">9</text><line x1="40" y1="120" x2="65" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="65" y1="160" x2="65" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="90" y1="160" x2="90" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="40" y1="60" x2="165" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="165" y1="160" x2="165" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="215" y1="160" x2="215" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="40" y1="40" x2="240" y2="40" stroke="black" stroke-dasharray="2,2"/><line x1="240" y1="160" x2="240" y2="40" stroke="black" stroke-dasharray="2,2"/><polyline points="40,160 65,120 90,120 165,60 215,60 240,40" fill="none" stroke="black" stroke-width="2"/></svg>`
+                },
+                {
+                  pyetja: "3. Një sasi prej 2kg ujë fillimisht në temperaturën 80°C shndërrohet plotësisht në avull. Sasia e nxehtësisë që merr uji është: (cu=4200J/kgK dhe Lv=2,26MJ/kg)",
+                  opsionet: [
+                    "A) 4,688J",
+                    "B) 4,688kJ",
+                    "C) 4,688MJ",
+                    "D) 4,688TJ"
+                  ],
+                  sakte: 2
+                },
+                {
+                  pyetja: "4. Një sasi hekuri me masë 100kg ndodhet në gjendje të lëngët në temperaturën e shkrirjes. Gjatë procesit të ngurtësimit të kësaj mase hekuri, sasia e nxehtësisë dhe kahu i shkëmbimit të saj janë: (Lfe=33kJ/kg)",
+                  opsionet: [
+                    "A) hekuri jep 3 kJ nxehtësi.",
+                    "B) hekuri nuk shkëmben nxehtësi.",
+                    "C) hekuri merr 33·10⁵ J nxehtësi.",
+                    "D) hekuri jep 33·10⁵ J nxehtësi."
+                  ],
+                  sakte: 3
+                },
+                {
+                  pyetja: "5. Grafiku tregon ndryshimin e temperaturës së 2kg lënde gjatë ngrohjes me shpejtësi konstante prej 2000J/min. Në fillim të ngrohjes lënda është në gjendje të ngurtë. Treshja e vlerave të nxehtësisë specifike të ngrohjes së trupit të ngurtë, të nxehtësisë latente të shkrirjes dhe nxehtësisë specifike të ngrohjes së lëngut është:",
+                  opsionet: [
+                    "A) 8000 J/kg°C ; 6000 J/kg ; 3000 J/kg°C",
+                    "B) 1330 J/kg°C ; 6000 J/kg ; 600 J/kg°C",
+                    "C) 4000 J/kg°C ; 3000 J/kg ; 1200 J/kg°C",
+                    "D) 1330 J/kg°C ; 3000 J/kg ; 600 J/kg°C"
+                  ],
+                  sakte: 3,
+                  svg: `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><text x="15" y="25" font-family="Arial" font-size="12">t(°C)</text><line x1="40" y1="30" x2="40" y2="160" stroke="black" stroke-width="2"/><line x1="40" y1="160" x2="260" y2="160" stroke="black" stroke-width="2"/><text x="245" y="175" font-family="Arial" font-size="12">t(min)</text><text x="20" y="165" font-family="Arial" font-size="10">0</text><text x="20" y="135" font-family="Arial" font-size="10">2</text><text x="20" y="105" font-family="Arial" font-size="10">4</text><text x="20" y="75" font-family="Arial" font-size="10">6</text><text x="20" y="45" font-family="Arial" font-size="10">8</text><text x="75" y="175" font-family="Arial" font-size="10">2</text><text x="115" y="175" font-family="Arial" font-size="10">4</text><text x="155" y="175" font-family="Arial" font-size="10">6</text><text x="195" y="175" font-family="Arial" font-size="10">8</text><text x="230" y="175" font-family="Arial" font-size="10">10</text><text x="45" y="155" font-family="Arial" font-size="10">O</text><text x="115" y="110" font-family="Arial" font-size="10">A</text><text x="175" y="110" font-family="Arial" font-size="10">B</text><text x="245" y="35" font-family="Arial" font-size="10">C</text><line x1="40" y1="115" x2="120" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="120" y1="160" x2="120" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="180" y1="160" x2="180" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="40" y1="40" x2="240" y2="40" stroke="black" stroke-dasharray="4,4"/><line x1="240" y1="160" x2="240" y2="40" stroke="black" stroke-dasharray="4,4"/><polyline points="40,160 120,115 180,115 240,40" fill="none" stroke="black" stroke-width="2"/></svg>`
+                }
+              ]
+            },
+            nature: "Skalare", desc: "Nxehtësia specifike e shkrirjes është nxehtësia që i duhet 1 kg lënde për ta shkrirë plotësisht, marrë në temperaturën e shkrirjes.", phetUrl: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_all.html", img: "https://chemistrytalk.org/wp-content/uploads/2023/03/fusion-article-heating-curve-standard-1-1024x679.png", vid: "https://www.youtube.com/embed/JzaVEQoL578", gameUrl: "/loja-lsh.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Sa nxehtësi nevojitet për të shkrirë 2kg akull në 0℃? (L_sh = 334000 J/kg)</p></div></div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Sa nxehtësi nevojitet për të shkrirë 2kg akull në 0℃? (L_sh = 334000 J/kg)",
+              zgjidhja: "668000",
+              hapi1: "Zgjidh formulën: Q = L_sh * m",
+              hapi2: "Zëvendëso: Q = 334000 * 2",
+              hapi3: "Llogarit: 668000 J"
+            }
+        },
+        {
+            name: "8. Nxehtësia specifike e avullimit", sym: "L_av",
+            form: "L_av = Q / m\nQ_av = L_av · m",
+            unit: "J/kg", otherUnits: "", teTjera: "Q_av = L_av · m", 
+            kuic: {
+              titulli: "Nxehtësia dhe Ndryshimi i Gjendjes",
+              pyetjet: [
+                {
+                  pyetja: "1. Në pjesën DE të grafikut të varësisë së temperaturës nga koha gjatë ngrohjes me shpejtësi konstante për ujin, gjendja e lëndës është:",
+                  opsionet: [
+                    "A) avull dhe ujë i lëngshëm",
+                    "B) ujë i lëngshëm",
+                    "C) akull dhe ujë i lëngshëm",
+                    "D) avull"
+                  ],
+                  sakte: 0,
+                  svg: `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><line x1="40" y1="20" x2="40" y2="180" stroke="black" stroke-width="2"/><line x1="30" y1="140" x2="280" y2="140" stroke="black" stroke-width="2"/><text x="15" y="100" transform="rotate(-90 15,100)" font-family="Arial" font-size="14">Temperatura / °C</text><text x="240" y="160" font-family="Arial" font-size="14">Koha</text><text x="20" y="145" font-family="Arial" font-size="12">0</text><text x="10" y="65" font-family="Arial" font-size="12">100</text><line x1="35" y1="60" x2="40" y2="60" stroke="black" stroke-width="1"/><line x1="40" y1="60" x2="260" y2="60" stroke="black" stroke-dasharray="5,5"/><polyline points="40,170 80,140 120,140 200,60 260,60 280,30" fill="none" stroke="#22d3ee" stroke-width="3"/><text x="45" y="175" font-family="Arial" font-size="12">A</text><text x="75" y="135" font-family="Arial" font-size="12">B</text><text x="115" y="135" font-family="Arial" font-size="12">C</text><text x="200" y="75" font-family="Arial" font-size="12">D</text><text x="260" y="75" font-family="Arial" font-size="12">E</text><text x="280" y="25" font-family="Arial" font-size="12">F</text></svg>`
+                },
+                {
+                  pyetja: "2. Grafiku tregon ndryshimin e temperaturës në funksion të kohës për 2kg të një lënde që merr nxehtësi në mënyrë konstante prej 80000J/min. Në fillim të ngrohjes lënda është në gjendje të ngurtë. Nxehtësia e fshehtë e avullimit të lëndës është:",
+                  opsionet: [
+                    "A) 20kJ/kg",
+                    "B) 40 kJ/kg",
+                    "C) 60 kJ/kg",
+                    "D) 80 kJ/kg"
+                  ],
+                  sakte: 3,
+                  svg: `<svg width="320" height="200" xmlns="http://www.w3.org/2000/svg"><text x="15" y="20" font-family="Arial" font-size="12">temperatura °C</text><line x1="40" y1="30" x2="40" y2="160" stroke="black" stroke-width="2"/><line x1="40" y1="160" x2="300" y2="160" stroke="black" stroke-width="2"/><text x="290" y="150" font-family="Arial" font-size="12">t(min)</text><text x="15" y="165" font-family="Arial" font-size="10">0</text><text x="15" y="145" font-family="Arial" font-size="10">40</text><text x="15" y="125" font-family="Arial" font-size="10">80</text><text x="10" y="105" font-family="Arial" font-size="10">120</text><text x="10" y="85" font-family="Arial" font-size="10">160</text><text x="10" y="65" font-family="Arial" font-size="10">200</text><text x="10" y="45" font-family="Arial" font-size="10">240</text><text x="62" y="175" font-family="Arial" font-size="10">1</text><text x="87" y="175" font-family="Arial" font-size="10">2</text><text x="112" y="175" font-family="Arial" font-size="10">3</text><text x="137" y="175" font-family="Arial" font-size="10">4</text><text x="162" y="175" font-family="Arial" font-size="10">5</text><text x="187" y="175" font-family="Arial" font-size="10">6</text><text x="212" y="175" font-family="Arial" font-size="10">7</text><text x="237" y="175" font-family="Arial" font-size="10">8</text><text x="262" y="175" font-family="Arial" font-size="10">9</text><line x1="40" y1="120" x2="65" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="65" y1="160" x2="65" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="90" y1="160" x2="90" y2="120" stroke="black" stroke-dasharray="2,2"/><line x1="40" y1="60" x2="165" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="165" y1="160" x2="165" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="215" y1="160" x2="215" y2="60" stroke="black" stroke-dasharray="2,2"/><line x1="40" y1="40" x2="240" y2="40" stroke="black" stroke-dasharray="2,2"/><line x1="240" y1="160" x2="240" y2="40" stroke="black" stroke-dasharray="2,2"/><polyline points="40,160 65,120 90,120 165,60 215,60 240,40" fill="none" stroke="black" stroke-width="2"/></svg>`
+                },
+                {
+                  pyetja: "3. Një sasi prej 2kg ujë fillimisht në temperaturën 80°C shndërrohet plotësisht në avull. Sasia e nxehtësisë që merr uji është: (cu=4200J/kgK dhe Lv=2,26MJ/kg)",
+                  opsionet: [
+                    "A) 4,688J",
+                    "B) 4,688kJ",
+                    "C) 4,688MJ",
+                    "D) 4,688TJ"
+                  ],
+                  sakte: 2
+                },
+                {
+                  pyetja: "4. Një sasi hekuri me masë 100kg ndodhet në gjendje të lëngët në temperaturën e shkrirjes. Gjatë procesit të ngurtësimit të kësaj mase hekuri, sasia e nxehtësisë dhe kahu i shkëmbimit të saj janë: (Lfe=33kJ/kg)",
+                  opsionet: [
+                    "A) hekuri jep 3 kJ nxehtësi.",
+                    "B) hekuri nuk shkëmben nxehtësi.",
+                    "C) hekuri merr 33·10⁵ J nxehtësi.",
+                    "D) hekuri jep 33·10⁵ J nxehtësi."
+                  ],
+                  sakte: 3
+                },
+                {
+                  pyetja: "5. Grafiku tregon ndryshimin e temperaturës së 2kg lënde gjatë ngrohjes me shpejtësi konstante prej 2000J/min. Në fillim të ngrohjes lënda është në gjendje të ngurtë. Treshja e vlerave të nxehtësisë specifike të ngrohjes së trupit të ngurtë, të nxehtësisë latente të shkrirjes dhe nxehtësisë specifike të ngrohjes së lëngut është:",
+                  opsionet: [
+                    "A) 8000 J/kg°C ; 6000 J/kg ; 3000 J/kg°C",
+                    "B) 1330 J/kg°C ; 6000 J/kg ; 600 J/kg°C",
+                    "C) 4000 J/kg°C ; 3000 J/kg ; 1200 J/kg°C",
+                    "D) 1330 J/kg°C ; 3000 J/kg ; 600 J/kg°C"
+                  ],
+                  sakte: 3,
+                  svg: `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><text x="15" y="25" font-family="Arial" font-size="12">t(°C)</text><line x1="40" y1="30" x2="40" y2="160" stroke="black" stroke-width="2"/><line x1="40" y1="160" x2="260" y2="160" stroke="black" stroke-width="2"/><text x="245" y="175" font-family="Arial" font-size="12">t(min)</text><text x="20" y="165" font-family="Arial" font-size="10">0</text><text x="20" y="135" font-family="Arial" font-size="10">2</text><text x="20" y="105" font-family="Arial" font-size="10">4</text><text x="20" y="75" font-family="Arial" font-size="10">6</text><text x="20" y="45" font-family="Arial" font-size="10">8</text><text x="75" y="175" font-family="Arial" font-size="10">2</text><text x="115" y="175" font-family="Arial" font-size="10">4</text><text x="155" y="175" font-family="Arial" font-size="10">6</text><text x="195" y="175" font-family="Arial" font-size="10">8</text><text x="230" y="175" font-family="Arial" font-size="10">10</text><text x="45" y="155" font-family="Arial" font-size="10">O</text><text x="115" y="110" font-family="Arial" font-size="10">A</text><text x="175" y="110" font-family="Arial" font-size="10">B</text><text x="245" y="35" font-family="Arial" font-size="10">C</text><line x1="40" y1="115" x2="120" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="120" y1="160" x2="120" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="180" y1="160" x2="180" y2="115" stroke="black" stroke-dasharray="4,4"/><line x1="40" y1="40" x2="240" y2="40" stroke="black" stroke-dasharray="4,4"/><line x1="240" y1="160" x2="240" y2="40" stroke="black" stroke-dasharray="4,4"/><polyline points="40,160 120,115 180,115 240,40" fill="none" stroke="black" stroke-width="2"/></svg>`
+                }
+              ]
+            },
+            nature: "Skalare", desc: "Nxehtësia specifike e avullimit është nxehtësia që i duhet 1 kg lënde për ta avulluar plotësisht, marrë në temperaturën e vlimit.", phetUrl: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_all.html", img: "https://www.chemistrylearner.com/wp-content/uploads/2022/10/Heat-of-Vaporization.jpg", vid: "https://www.youtube.com/embed/ocV8l66Ssec", gameUrl: "/loja-lav.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Sa nxehtësi i duhen 2 kg ujë në 100℃ për tu avulluar plotësisht? (L_av = 2300000 J/kg)</p></div></div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Sa nxehtësi (Q_av) i duhen 2 kg ujë në 100℃ për tu avulluar plotësisht? (L_av = 2300000 J/kg)",
+              zgjidhja: "4600000",
+              hapi1: "Zgjidh formulën: Q = L_av * m",
+              hapi2: "Zëvendëso: Q = 2300000 * 2",
+              hapi3: "Llogarit: 4600000 J"
+            }
+        },
+        {
+            name: "9. Puna në TD", sym: "A",
+            form: "A = p ΔV",
+            unit: "J/kg", otherUnits: "1J = 1 N·m", teTjera: "Tek grafiku p(V) puna gjendet me syprinën në grafik. Tek procesi izohorik A = 0 sepse nuk ndryshon vëllimi.", nature: "Skalare", desc: "Efekti zhvendosës i një force të brendshme të gazit. ( Puna e gazit )", phetUrl: "https://phet.colorado.edu/en/simulation/gas-properties", img: "https://saylordotorg.github.io/text_general-chemistry-principles-patterns-and-applications-v1.0/section_22/b47b25398b05c27b31c9824243dfa2e0.jpg", vid: "https://www.youtube.com/embed/ocV8l66Ssec", gameUrl: "/loja-puna-td.html",
+            ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Një gaz ideal zgjerohet duke kaluar nga vëllimi 1 m³ në 3 m³ nën një shtypje konstante prej 100,000 Pa. Gjeni punën e kryer.</p></div><div class="bg-red-50 p-4 rounded-xl border border-red-100"><p class="font-bold text-red-800 mb-2">Ushtrim i vështirë:</p><p>Gjatë një procesi izobarik vëllimi i gazit ideal rritet 2 herë. Shtypja e gazit gjatë këtij procesi: a) rritet 4 herë b) rritet 2 herë; c) zvogëlohet 2 herë; d) nuk ndryshon. (Përgjigje: d)</p></div></div>`,
+            ushtrimInteraktiv: {
+              pyetja: "Një gaz ideal zgjerohet izobarikisht (p=100,000 Pa) duke kaluar nga vëllimi 1 m³ në 3 m³. Gjeni punën e kryer nga gazi.",
+              zgjidhja: "200000",
+              hapi1: "Zgjidh formulën e punës: A = p * ΔV",
+              hapi2: "Gjej ndryshimin e vëllimit: ΔV = V₂ - V₁ = 3 - 1 = 2 m³",
+              hapi3: "Llogarit: A = 100000 * 2 = 200000 J"
+            }
+        }
     ]
 };
 
@@ -724,5 +1010,9 @@ export const MEDIA_MAPPING: Record<string, { img: string, vid: string }> = {
     "Fizika Kuantike": {
         img: "https://www.sciencefacts.net/wp-content/uploads/2023/10/de-Broglie-Wavelength.jpg",
         vid: "https://www.youtube.com/embed/ZhXCMoa6j58"
+    },
+    "Termodinamika": {
+        img: "https://solarschools.net/build/img/learn/energy/types/thermal//heat-tranfer-diagram_400_resize_q95.jpg",
+        vid: "https://www.youtube.com/embed/mm_vaHqJvfw"
     }
 };

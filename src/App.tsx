@@ -4,7 +4,7 @@ import { DIGITAL_GAMES } from './gameContent';
 import { PhysicsTerm, CategoryName, DigitalGame } from './types';
 import ClickSpark from './components/ClickSpark';
 import TermDetailsTabs from './components/TermDetailsTabs';
-import BlurText from './components/BlurText';
+// import BlurText from './components/BlurText';
 import MoviesSection from './components/MoviesSection';
 import InstrumentsSection from './components/InstrumentsSection';
 import BubbleMenu from './components/BubbleMenu';
@@ -16,6 +16,10 @@ import MaterialsSection from './components/MaterialsSection';
 import AddMaterialModal from './components/AddMaterialModal';
 import { useFirebase } from './contexts/FirebaseContext';
 import { updateUserScore } from './firebase';
+import ScientistsSection from './components/ScientistsSection';
+import { PhysicsNoteTool } from './components/PhysicsNoteTool';
+import Fizika8Dashboard from './components/Fizika8Dashboard';
+
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -43,8 +47,24 @@ const App: React.FC = () => {
   const [mobileMenuSelectionOpen, setMobileMenuSelectionOpen] = useState(false);
   const [playingGame, setPlayingGame] = useState<{ title: string, url?: string, html?: string } | null>(null);
   const [activeGameTab, setActiveGameTab] = useState<'digjitale' | 'eksperimente' | 'shkolle' | null>(null);
+  const [showFizika8, setShowFizika8] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   
+  useEffect(() => {
+    if (showFizika8) {
+      window.scrollTo(0, 0);
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [showFizika8]);
+
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -85,7 +105,6 @@ const App: React.FC = () => {
     setIsWarping(true);
     setTimeout(() => {
       setShowSplash(false);
-      setTimeout(() => setShowDownloadModal(true), 600);
     }, 800);
   };
 
@@ -134,6 +153,7 @@ const App: React.FC = () => {
       case 'Magnetizmi': return { icon: 'fa-magnet', color: 'bg-[#a2d2ff]', text: 'text-[#4895ef]' };
       case 'Fizika Kuantike': return { icon: 'fa-atom', color: 'bg-[#a7f3d0]', text: 'text-[#059669]' };
       case 'Libri Interaktiv': return { icon: 'fa-book-open', color: 'bg-[#ffc8dd]', text: 'text-[#ff758f]' };
+      case 'Termodinamika': return { icon: 'fa-temperature-high', color: 'bg-[#ff99c8]', text: 'text-[#d00000]' };
       default: return { icon: 'fa-atom', color: 'bg-slate-100', text: 'text-slate-400' };
     }
   };
@@ -226,7 +246,7 @@ const App: React.FC = () => {
 
   if (showSplash) {
     return (
-      <div className={`fixed inset-0 galactic-aurora z-[100] flex flex-col items-center justify-center overflow-hidden ${isWarping ? 'warp-out' : ''}`}>
+      <div className={`fixed inset-0 bg-gradient-to-br from-[#e0f2fe] via-[#f0f9ff] to-[#fce7f3] z-[100] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000 ${isWarping ? 'opacity-0' : 'opacity-100'}`}>
         <div className="relative z-50 flex flex-col items-center">
           {/* ATOM ANIMATION */}
           <div className="atom-wrap mb-16 animate__animated animate__zoomIn">
@@ -248,14 +268,14 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-center text-4xl md:text-8xl font-black tracking-tighter mb-12 font-orbitron">
-            <BlurText text="Fizika" delay={50} animateBy="letters" direction="top" className="text-[#4a4e69]" />
-            <BlurText text="Interaktive" delay={50} animateBy="letters" direction="bottom" className="text-[#ffafcc]" />
+          <div className="flex items-center justify-center text-5xl md:text-8xl font-black tracking-tighter mb-12">
+            <span className="text-[#4a4e69]">Fizika</span>
+            <span className="text-[#ffafcc]">Interaktive</span>
           </div>
           
           <button 
             onClick={handleStart}
-            className="btn-vazhdo px-16 py-7 rounded-3xl font-black text-xl uppercase tracking-widest shadow-2xl animate__animated animate__fadeInUp animate__delay-1s"
+            className="px-8 py-4 bg-white text-[#4a4e69] rounded-2xl font-bold text-sm md:text-xl uppercase tracking-[0.2em] shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:scale-105 transition-all animate__animated animate__fadeInUp animate__delay-1s font-mono"
           >
             Vazhdo më tej!
           </button>
@@ -435,7 +455,7 @@ const App: React.FC = () => {
                         <i className={`fas ${theme.icon}`}></i>
                       </div>
                       <div className="relative z-10">
-                        <h3 className="text-2xl md:text-5xl font-black mb-2 md:mb-4 tracking-tighter">{cat}</h3>
+                        <h3 className="text-2xl md:text-4xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-black mb-2 md:mb-4 tracking-tighter break-words line-clamp-2">{cat}</h3>
                         <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Eksploro Terma</p>
                       </div>
                     </div>
@@ -456,21 +476,21 @@ const App: React.FC = () => {
               <div className={`w-16 h-16 md:w-28 md:h-28 ${getCategoryTheme(selectedCategory).color} rounded-2xl md:rounded-[2.5rem] flex items-center justify-center ${getCategoryTheme(selectedCategory).text} text-3xl md:text-6xl shadow-xl`}>
                 <i className={`fas ${getCategoryTheme(selectedCategory).icon}`}></i>
               </div>
-              <h2 className="text-3xl md:text-7xl font-black tracking-tighter text-slate-800">{selectedCategory}</h2>
+              <h2 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter text-slate-800 break-words">{selectedCategory}</h2>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-16">
               {(ALL_PHYSICS_DATA[selectedCategory] as PhysicsTerm[]).map((term: PhysicsTerm, i: number) => (
                 <div 
                   key={i}
                   onClick={() => navigate('details', term)}
-                  className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border border-transparent hover:border-[#ffafcc]/20 group flex flex-col h-32 md:h-60 justify-between card-fusha"
+                  className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[3rem] shadow-sm hover:shadow-xl transition-all cursor-pointer border border-transparent hover:border-[#ffafcc]/20 group flex flex-col min-h-[8rem] md:min-h-[15rem] justify-between card-fusha"
                 >
                   <div 
                     className="text-[7px] md:text-[10px] font-black text-[#ffafcc] uppercase tracking-[0.2em] md:tracking-[0.4em] truncate"
                     dangerouslySetInnerHTML={{ __html: term.sym }}
                   />
-                  <h4 className="text-sm md:text-3xl font-black group-hover:text-[#ffafcc] transition-colors leading-tight tracking-tighter line-clamp-2">{term.name}</h4>
-                  <div className="flex items-center gap-1 md:gap-2 text-slate-300 font-black uppercase text-[7px] md:text-[9px] tracking-[0.1em] md:tracking-[0.2em] group-hover:text-slate-800 transition-colors mt-2">
+                  <h4 className="text-sm md:text-2xl font-black group-hover:text-[#ffafcc] transition-colors leading-tight tracking-tighter mt-2 mb-2">{term.name}</h4>
+                  <div className="flex items-center gap-1 md:gap-2 text-slate-300 font-black uppercase text-[7px] md:text-[9px] tracking-[0.1em] md:tracking-[0.2em] group-hover:text-slate-800 transition-colors mt-auto">
                     DETAJET <i className="fas fa-arrow-right text-[6px] md:text-[7px] ml-1"></i>
                   </div>
                 </div>
@@ -606,9 +626,8 @@ const App: React.FC = () => {
                             
                             {selectedTerm.teTjera && (
                               <div className="bg-[#fcfdfe] p-8 rounded-[2rem] border border-slate-50 shadow-inner mb-8">
-                                  <p className="text-2xl font-serif italic text-[#4a4e69] leading-relaxed whitespace-pre-wrap">
-                                      {selectedTerm.teTjera}
-                                  </p>
+                                  <div className="text-2xl font-serif text-[#4a4e69] leading-relaxed" dangerouslySetInnerHTML={{ __html: selectedTerm.teTjera.replace(/\n/g, '<br />') }}>
+                                  </div>
                               </div>
                             )}
 
@@ -669,6 +688,11 @@ const App: React.FC = () => {
 
         {/* Games View */}
         {activePage === 'games' && (
+          showFizika8 ? (
+            <div className="fixed inset-0 z-[9999] bg-white overflow-hidden m-0 p-0 h-[100dvh] w-screen">
+               <Fizika8Dashboard onBack={() => setShowFizika8(false)} />
+            </div>
+          ) : (
            <div className="animate__animated animate__fadeIn p-8">
              <button onClick={() => navigate('home')} className="mb-8 md:mb-12 flex items-center gap-4 font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-[#ffafcc] transition-colors">
               <i className="fas fa-arrow-left"></i> Kthehu mbrapa
@@ -714,6 +738,21 @@ const App: React.FC = () => {
             {activeGameTab === 'digjitale' && (
               <div className="mb-20 animate__animated animate__fadeIn">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                      {/* FIZIKA 8 Moduli i Veçantë */}
+                      <div onClick={() => setShowFizika8(true)} className="bg-white p-6 md:p-8 rounded-3xl md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent group flex flex-col justify-between h-auto md:h-80 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A365D, #2E4057)' }}>
+                          <div className="absolute top-6 right-6 px-3 py-1 bg-white/20 text-white rounded-full text-[8px] font-black uppercase tracking-widest transition-colors">
+                              Kurrikula
+                          </div>
+                          <div className="flex flex-col gap-4 mb-6 mt-4">
+                              <div className="w-16 h-16 bg-white/10 text-white rounded-2xl flex items-center justify-center text-3xl group-hover:bg-white/20 transition-all shadow-inner shrink-0">
+                                  <i className="fas fa-graduation-cap"></i>
+                              </div>
+                              <h4 className="text-xl md:text-2xl font-black tracking-tighter leading-tight line-clamp-3 text-white">Fizika 8</h4>
+                              <p className="text-white/70 text-xs font-medium">Sfida, testime dhe mjedis komplet interaktiv për klasën e 8-të.</p>
+                          </div>
+                          <button className="w-full py-4 bg-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] group-hover:bg-white group-hover:text-[#1A365D] transition-all">HAP MODULIN</button>
+                      </div>
+
                       {DIGITAL_GAMES.filter(g => g.type === 'digital').map((game, i) => (
                           <div key={i} onClick={() => handlePlayGame(game)} className="bg-white p-6 md:p-8 rounded-3xl md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all cursor-pointer border-2 border-transparent hover:border-[#ffc8dd]/40 group flex flex-col justify-between h-auto md:h-80 card-fusha relative overflow-hidden">
                               <div className="absolute top-6 right-6 px-3 py-1 bg-slate-100 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest group-hover:bg-[#4a4e69] group-hover:text-white transition-colors">
@@ -794,7 +833,8 @@ const App: React.FC = () => {
                   </div>
               </div>
             )}
-          </div>
+           </div>
+          )
         )}
         {activePage === 'scientists' && (
           <div className="animate__animated animate__fadeIn h-full flex flex-col overflow-hidden">
@@ -806,7 +846,13 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
-        {activePage === 'calendar' && (
+        
+        {activePage === 'scientists' && (
+          <div className="fixed inset-0 z-[100] bg-[#fcf9ff] animate__animated animate__fadeIn flex flex-col">
+            <ScientistsSection onBack={() => navigate('home')} />
+          </div>
+        )}
+{activePage === 'calendar' && (
         <div className="fixed inset-0 z-[100] bg-[#fcf9ff] animate__animated animate__fadeIn animate__faster flex flex-col">
           <div className="bg-white p-4 flex items-center justify-between shadow-sm relative z-10">
             <div className="flex items-center gap-4">
@@ -1200,6 +1246,12 @@ const App: React.FC = () => {
           </div>
           <iframe src="/notes.html" className="w-full flex-1 border-none" title="Shënimet"></iframe>
         </div>
+      )}
+
+      
+      {/* Floating Notes Widget */}
+      {isNotesOpen && (
+        <PhysicsNoteTool onClose={() => setIsNotesOpen(false)} />
       )}
 
       {/* Mobile Selection Modal */}

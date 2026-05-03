@@ -15,6 +15,15 @@ export interface PhysicsTerm {
     hapi2: string;
     hapi3: string;
   };
+  kuic?: {
+    titulli: string;
+    pyetjet: {
+      pyetja: string;
+      opsionet: string[];
+      sakte: number;
+      svg?: string;
+    }[];
+  };
   mjetMat?: string;
   nature: 'Vektoriale' | 'Skalare' | '-';
   desc: string;
@@ -27,7 +36,7 @@ export interface PhysicsTerm {
   digitalGameId?: string;
 }
 
-export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Fizika Kuantike" | "Libri Interaktiv" | "Fizika 8";
+export type CategoryName = "Kinematika" | "Dinamika" | "Energjia" | "Elektriciteti" | "Magnetizmi" | "Fizika Kuantike" | "Libri Interaktiv" | "Fizika 8" | "Termodinamika";
 
 export interface PhysicsData {
   [key: string]: PhysicsTerm[];

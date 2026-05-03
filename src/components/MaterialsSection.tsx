@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { gjeneroKuizPerKategorine } from '../utils/quizGenerator';
+import { ALL_PHYSICS_DATA } from '../constants';
 import { DigitalGame, CategoryName } from '../types';
 import { useFirebase } from '../contexts/FirebaseContext';
-import { updateUserScore, db, collection, onSnapshot, query, orderBy } from '../firebase';
+import { updateUserScore, db, collection, onSnapshot, query, orderBy, handleFirestoreError, OperationType } from '../firebase';
 import html2pdf from 'html2pdf.js';
 
 
@@ -813,7 +814,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
       });
       setUploadedMaterials(materials);
     }, (error) => {
-      console.error("Error fetching materials:", error);
+      handleFirestoreError(error, OperationType.LIST, 'materials');
     });
 
     return () => unsubscribe();
@@ -979,7 +980,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                 onAction={() => {
                   if (m.type === 'Kuize') {
                     const topic = m.topic as CategoryName;
-                    const questions = gjeneroKuizPerKategorine(topic);
+                    const questions = gjeneroKuizPerKategorine(topic, ALL_PHYSICS_DATA);
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);
@@ -1022,7 +1023,7 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
                 onAction={() => {
                   if (m.type === 'Kuize') {
                     const topic = m.topic as CategoryName;
-                    const questions = gjeneroKuizPerKategorine(topic);
+                    const questions = gjeneroKuizPerKategorine(topic, ALL_PHYSICS_DATA);
                     setActiveQuiz({ topic: m.topic, questions });
                   } else if (m.gameData && onPlayGame) {
                     onPlayGame(m.gameData);

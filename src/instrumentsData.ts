@@ -163,6 +163,41 @@ export const instrumentsData = [
     bubBg: "rgba(253,230,138,0.3)"
   },
 
+  { cat: 'Termodinamika', name: 'Vëllimi', sym: 'V', unit: 'm³', nature: 'Skalare',
+    instrument: 'Menzura / Ena e shkallëzuar', icon: '🥛',
+    desc: 'Menzura shërben për të matur saktë vëllimin e lëngjeve. Për trupat e ngurtë përdoret zhytja në lëng, ndërsa për gazet - ena e tyre mbajtëse.',
+    simType: 'calorimeter', color: '#FFD6B0' },
+
+  { cat: 'Termodinamika', name: 'Temperatura absolute', sym: 'T', unit: 'K', nature: 'Skalare',
+    instrument: 'Termometri', icon: '🌡️',
+    desc: 'Termometri mat temperaturën. Zgjerimi i lëngut (alkool/zhivë) ose ndryshimi i rezistencës tregon vlerën e saktë termike.',
+    simType: 'manometer', color: '#FFB6C1' },
+
+  { cat: 'Termodinamika', name: 'Energjia e brendshme termike', sym: 'U', unit: 'J', nature: 'Skalare',
+    instrument: 'Termometri + Manometër', icon: '🔥',
+    desc: 'Mund të matet indirekt duke gjetur temperaturën dhe shtypjen e gazit përmes sensorëve termokompensues dhe termometrave.',
+    simType: 'manometer', color: '#FFB6C1' },
+
+  { cat: 'Termodinamika', name: 'Shtypja', sym: 'P', unit: 'Pa', nature: 'Skalare',
+    instrument: 'Barometër / Manometër', icon: '⏱️',
+    desc: 'Barometri mat shtypjen atmosferike, ndërsa manometri mat shtypjen e gazeve ose lëngjeve në hapësira të mbyllura.',
+    simType: 'manometer', color: '#FFB6C1' },
+
+  { cat: 'Termodinamika', name: 'Nxehtësia specifike e lëndës', sym: 'c', unit: 'J/kg·K', nature: 'Skalare',
+    instrument: 'Kalorimetri', icon: '🔬',
+    desc: 'Kalorimetri përdoret për të përcaktuar sasinë e nxehtësisë të nevojshme për të ndryshuar temperaturën e trupave (për një matje të saktë nxehtësie).',
+    simType: 'calorimeter', color: '#FFD6B0' },
+
+  { cat: 'Termodinamika', name: 'Nxehtësia specifike e shkrirjes', sym: 'L_sh', unit: 'J/kg', nature: 'Skalare',
+    instrument: 'Kalorimetri + Termometri', icon: '🧊',
+    desc: 'Përdoret për të llogaritur nxehtësinë e kërkuar gjatë procesit të kthimit fazor nga i ngurtë në lëng pa ndryshuar temperaturën.',
+    simType: 'calorimeter', color: '#FFD6B0' },
+
+  { cat: 'Termodinamika', name: 'Nxehtësia specifike e avullimit', sym: 'L_av', unit: 'J/kg', nature: 'Skalare',
+    instrument: 'Kalorimetri avullues', icon: '♨️',
+    desc: 'Nxehtësia e nevojshme që matet me formën kalorimetrike për avullimin e plotë të një mase uji pas arritjes së vlimit.',
+    simType: 'calorimeter', color: '#FFD6B0' },
+
   // MAGNETIZMI
   { cat: 'Magnetizmi', name: 'Induksioni magnetik', sym: 'B', unit: 'T', nature: 'Vektoriale',
     instrument: 'Teslametër / Hall sensori', icon: '🧲',

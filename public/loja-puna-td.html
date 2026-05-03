@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Train - Puna në TD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2e1065; /* dark purple */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Press Start 2P', cursive;
+            color: #e2e8f0;
+            overflow: hidden;
+            background-image: radial-gradient(circle, #4c1d95 20%, #2e1065 80%);
+        }
+        #game-board {
+            width: 100%;
+            max-width: 650px;
+            background: #1e293b;
+            border: 8px solid #64748b;
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+            text-align: center;
+            image-rendering: pixelated;
+        }
+        h1 { font-size: 20px; color: #38bdf8; margin-top: 20px; text-shadow: 2px 2px #0f172a;}
+        .scene {
+            height: 180px;
+            background: linear-gradient(#0f172a, #1e293b);
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid #475569;
+            border-bottom: 8px solid #0f172a;
+            margin-bottom: 20px;
+        }
+        .stars {
+            position: absolute;
+            top: 0; left: 0; width: 200%; height: 100%;
+            background-image: radial-gradient(white 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
+            animation: moveStars 10s linear infinite;
+        }
+        .track {
+            position: absolute;
+            bottom: 10px;
+            width: 200%;
+            height: 12px;
+            background: repeating-linear-gradient(90deg, #94a3b8 0px, #94a3b8 5px, transparent 5px, transparent 40px),
+                        linear-gradient(to right, #475569, #475569);
+            background-size: 100% 4px, 100% 4px;
+            background-position: bottom, bottom;
+            background-repeat: no-repeat;
+            animation: moveTrack 1.5s linear infinite;
+            animation-play-state: paused;
+        }
+        .train {
+            position: absolute;
+            bottom: 22px;
+            left: 50px;
+            font-size: 50px;
+            transition: left 1s;
+            z-index: 2;
+            transform: scaleX(-1); /* makes the train face right! */
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
+        }
+        .smoke {
+            position: absolute;
+            background: rgba(226,232,240,0.8);
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            bottom: 60px;
+            left: 60px;
+            opacity: 0;
+            z-index: 1;
+        }
+        @keyframes puff {
+            0% { opacity: 1; transform: scale(1) translateY(0) translateX(0); }
+            100% { opacity: 0; transform: scale(4) translateY(-40px) translateX(40px); }
+        }
+        @keyframes moveTrack {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-40px); }
+        }
+        @keyframes moveStars {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .panel {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 20px;
+            font-size: 10px;
+            line-height: 2.2;
+        }
+        .data-box {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 4px solid #334155;
+            color: #38bdf8;
+            text-align: left;
+        }
+        .data-box span { color: #f8fafc; }
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        input {
+            font-family: inherit;
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+            border: 4px solid #475569;
+            background: #0f172a;
+            color: #fb923c;
+            border-radius: 4px;
+            width: 130px;
+            outline: none;
+        }
+        input:focus { border-color: #38bdf8; }
+        button {
+            font-family: inherit;
+            padding: 12px 15px;
+            background: #ea580c;
+            color: #fff;
+            border: 4px solid #9a3412;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        button:active {
+            transform: translateY(4px);
+            border-bottom: 0px solid #9a3412;
+            margin-bottom: 4px;
+        }
+        #msg {
+            height: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: #94a3b8;
+        }
+        .v-marker {
+            position: absolute;
+            bottom: 12px;
+            border-left: 2px dashed #fbbf24;
+            height: 90%;
+            font-size: 10px;
+            color: #fbbf24;
+            padding-left: 5px;
+            display: flex;
+            align-items: flex-start;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-board">
+    <h1>PIXEL TRAIN: Puna në TD</h1>
+    <div id="msg">A = p · (V2 - V1)</div>
+    <div class="scene">
+        <div class="stars"></div>
+        <div class="track" id="track"></div>
+        <div class="v-marker" style="left: 50px;">V1</div>
+        <div class="v-marker" id="v2-marker" style="left: 300px;">V2</div>
+        <div class="train" id="train">🚂</div>
+        <div class="smoke" id="smoke1"></div>
+        <div class="smoke" id="smoke2" style="animation-delay: 0.5s;"></div>
+    </div>
+    
+    <div class="panel">
+        <div class="data-box">
+            Shtypja (p): <span id="p-val"></span> Pa<br>
+            Vëllimi 1: <span id="v1-val"></span> m³<br>
+            Vëllimi 2: <span id="v2-val"></span> m³
+        </div>
+        <div class="input-box">
+            <span style="color: #cbd5e1">Karburant (Puna)</span>
+            <input type="number" id="ans" placeholder="Zgjidhe (J)">
+            <button onclick="check()">NDIZ MOTORIN</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const pEl = document.getElementById('p-val');
+    const v1El = document.getElementById('v1-val');
+    const v2El = document.getElementById('v2-val');
+    const ansEl = document.getElementById('ans');
+    const msgEl = document.getElementById('msg');
+    const train = document.getElementById('train');
+    const track = document.getElementById('track');
+    const smoke1 = document.getElementById('smoke1');
+    const smoke2 = document.getElementById('smoke2');
+    const v2Marker = document.getElementById('v2-marker');
+    
+    let currentWork = 0;
+
+    function generate() {
+        train.style.left = '50px';
+        track.style.animationPlayState = 'paused';
+        smoke1.style.animation = 'none';
+        smoke2.style.animation = 'none';
+        msgEl.innerText = "Gati për nisje. Llogarit Punën (A).";
+        msgEl.style.color = '#38bdf8';
+        ansEl.value = '';
+        
+        // Use manageable numbers
+        let p = (Math.floor(Math.random() * 5) + 1) * 10; 
+        let v1 = Math.floor(Math.random() * 3) + 1;
+        let v2 = v1 + Math.floor(Math.random() * 4) + 1;
+        
+        currentWork = p * (v2 - v1);
+        
+        pEl.innerText = p;
+        v1El.innerText = v1;
+        v2El.innerText = v2;
+        
+        // adjust marker visually
+        let diff = (v2 - v1);
+        v2Marker.style.left = (50 + diff * 50) + 'px';
+    }
+
+    function check() {
+        let val = parseInt(ansEl.value);
+        if(isNaN(val)) return;
+        
+        if(val === currentWork) {
+            msgEl.innerText = "SAKTË! Treni u nis!";
+            msgEl.style.color = '#34d399';
+            
+            // Animate train
+            track.style.animationPlayState = 'running';
+            smoke1.style.animation = 'puff 1s infinite linear';
+            smoke2.style.animation = 'puff 1s infinite linear';
+            
+            let dest = v2Marker.style.left;
+            train.style.left = dest;
+            
+            setTimeout(() => {
+                track.style.animationPlayState = 'paused';
+                smoke1.style.animation = 'none';
+                smoke2.style.animation = 'none';
+                setTimeout(generate, 1500);
+            }, 1000);
+            
+        } else {
+            msgEl.innerText = "GABIM! Nuk e llogarite saktë.";
+            msgEl.style.color = '#ef4444';
+            // train shakes
+            train.style.transform = 'scaleX(-1) translateX(10px)';
+            setTimeout(() => train.style.transform = 'scaleX(-1) translateX(-10px)', 100);
+            setTimeout(() => train.style.transform = 'scaleX(-1) translateX(10px)', 200);
+            setTimeout(() => train.style.transform = 'scaleX(-1) translateX(0)', 300);
+        }
+    }
+    
+    ansEl.addEventListener('keypress', e => {
+        if(e.key === 'Enter') check();
+    });
+
+    generate();
+</script>
+</body>
+</html>

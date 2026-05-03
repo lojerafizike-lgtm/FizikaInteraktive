@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sfida e Vëllimit - Rregullim Simulimi</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #064e3b; /* dark green */
+            font-family: 'VT323', monospace;
+            color: #d1fae5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(0deg, #022c22 0%, #064e3b 100%);
+        }
+        #game-container {
+            width: 90%;
+            max-width: 500px;
+            background: #1e293b; /* slate 800 */
+            border-radius: 4px;
+            border: 8px solid #0f172a;
+            box-shadow: 0 0 0 4px #475569, 0 10px 40px rgba(0,0,0,0.5);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            image-rendering: pixelated;
+        }
+        h1 {
+            margin-top: 0;
+            color: #34d399; /* emerald 400 */
+            font-size: 42px;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 0px #022c22;
+        }
+        .tank {
+            width: 160px;
+            height: 200px;
+            border: 8px solid #94a3b8;
+            border-top: none;
+            margin: 0 auto 30px;
+            position: relative;
+            background: #334155;
+            overflow: hidden;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            background: rgba(56, 189, 248, 0.7); /* sky blue semi transparent */
+            border-top: 4px solid #7dd3fc;
+            transition: height 0.5s linear;
+        }
+        .leak {
+            position: absolute;
+            bottom: 30px;
+            right: -8px;
+            width: 8px;
+            height: 24px;
+            background: #0f172a;
+        }
+        .water-spray {
+            position: absolute;
+            bottom: 30px;
+            right: -80px;
+            width: 80px;
+            height: 12px;
+            background: #38bdf8;
+            border-radius: 2px;
+            animation: spray 0.1s infinite alternate;
+            transform-origin: left center;
+        }
+        @keyframes spray {
+            0% { transform: scaleX(0.8) scaleY(1.2) translateY(2px); opacity: 0.8;}
+            100% { transform: scaleX(1.3) scaleY(0.8) translateY(-2px); opacity: 0.5;}
+        }
+        .plug {
+            position: absolute;
+            right: -40px;
+            bottom: 30px;
+            background: #fcd34d;
+            border: 4px solid #b45309;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: normal;
+            color: #78350f;
+            opacity: 0;
+            box-shadow: -4px 4px 0 rgba(0,0,0,0.5);
+        }
+        .ui {
+            background: #0f172a;
+            padding: 15px;
+            border: 4px dashed #475569;
+            margin-bottom: 25px;
+            font-size: 22px;
+            color: #cbd5e1;
+            text-align: left;
+        }
+        .ui b { color: #facc15; }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        input {
+            font-family: inherit;
+            font-size: 28px;
+            padding: 10px;
+            width: 140px;
+            text-align: center;
+            border: 4px solid #64748b;
+            background: #020617;
+            color: #2dd4bf;
+            outline: none;
+        }
+        input:focus { border-color: #34d399; }
+        button {
+            font-family: inherit;
+            font-size: 24px;
+            padding: 10px 20px;
+            background: #10b981;
+            color: #064e3b;
+            border: 4px solid #047857;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        button:active {
+            transform: translateY(4px);
+            border-bottom-width: 0px;
+            margin-bottom: 4px;
+        }
+        button:hover { background: #34d399; }
+        .alert {
+            color: #fb7185;
+            font-size: 22px;
+            margin-top: 15px;
+            min-height: 25px;
+            text-shadow: 2px 2px 0px #020617;
+        }
+        
+        /* CRT overlay */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>NDALO RRJEDHJEN!</h1>
+    
+    <div class="tank">
+        <div id="water" class="water"></div>
+        <div class="leak"></div>
+        <div id="spray" class="water-spray"></div>
+        <div id="plug" class="plug"></div>
+    </div>
+    
+    <div class="ui">
+        > Tapë gome për t'u krijuar:<br>
+        > Masë (m)   : <b id="m-val"></b> g<br>
+        > Dendësi (d): <b id="d-val"></b> g/cm³<br>
+        <span style="font-size: 18px; color: #64748b; display: block; margin-top:10px;">[Formula: V = m / d]</span>
+    </div>
+    
+    <div class="input-group">
+        <input type="number" id="ans" placeholder="Vëllimi?" step="0.1">
+        <button onclick="check()">FIKSOJE</button>
+    </div>
+    <div id="msg" class="alert"></div>
+</div>
+
+<script>
+    const mEl = document.getElementById('m-val');
+    const dEl = document.getElementById('d-val');
+    const ansEl = document.getElementById('ans');
+    const msgEl = document.getElementById('msg');
+    const spray = document.getElementById('spray');
+    const plug = document.getElementById('plug');
+    const water = document.getElementById('water');
+    
+    let currentV = 0;
+    let waterLevel = 80;
+    let leakInterval;
+
+    function generate() {
+        plug.style.opacity = '0';
+        plug.style.right = '-60px'; // reset position
+        spray.style.display = 'block';
+        waterLevel = 80;
+        water.style.height = waterLevel + '%';
+        msgEl.innerText = "";
+        ansEl.value = "";
+        
+        const m = Math.floor(Math.random() * 50) + 10; // 10 to 60
+        const d = (Math.random() * 1.5 + 0.5).toFixed(1); // 0.5 to 2.0
+        
+        currentV = (m / d).toFixed(1);
+        
+        mEl.innerText = m;
+        dEl.innerText = d;
+        
+        clearInterval(leakInterval);
+        leakInterval = setInterval(() => {
+            waterLevel -= 1.5;
+            if(waterLevel < 10) waterLevel = 10;
+            water.style.height = waterLevel + '%';
+        }, 1000);
+    }
+    
+    function check() {
+        let val = parseFloat(ansEl.value);
+        if(isNaN(val)) return;
+        
+        // check with 1 decimal accuracy
+        if(val.toFixed(1) === currentV || Math.abs(val - parseFloat(currentV)) < 0.2) {
+            clearInterval(leakInterval);
+            spray.style.display = 'none';
+            
+            // animate plug
+            plug.style.width = Math.min(Math.max((val * 2), 20), 80) + 'px'; // visual size based on volume
+            plug.style.height = '24px';
+            plug.innerText = val + "cm³";
+            plug.style.opacity = '1';
+            
+            setTimeout(() => {
+                plug.style.right = '-8px';
+                msgEl.style.color = '#34d399';
+                msgEl.innerText = "SYSTEM: Rrjedhja u ndalua!";
+                setTimeout(generate, 2500);
+            }, 100);
+            
+        } else {
+            msgEl.style.color = '#f43f5e';
+            msgEl.innerText = "ERROR: Tapa nuk përshtatet! Uji rrjedh!";
+            // penalty
+            waterLevel -= 5;
+            water.style.height = waterLevel + '%';
+        }
+    }
+
+    ansEl.addEventListener('keypress', e => {
+        if(e.key === 'Enter') check();
+    });
+
+    generate();
+</script>
+</body>
+</html>

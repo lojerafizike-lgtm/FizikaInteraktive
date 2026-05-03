@@ -1,116 +1,97 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: users/{userId}
-    // Fields:
-    //   - email: string (required)
-    //
-    // Collection: profiles/{userId}
-    // Fields:
-    //   - displayName: string (required)
-    //   - username: string (optional)
-    //   - role: string (optional, 'mesues' or 'nxenes')
-    //   - school: string (optional)
-    //   - photoURL: string (optional)
-    //   - totalScore: number (required)
-    //   - lastUpdated: timestamp (optional)
-    //
-    // ===============================================================
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
 
-    // Helper Functions
-    function isAuthenticated() {
+    // --- HELPERS ---
+    function isSignedIn() {
       return request.auth != null;
     }
 
     function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    function isAdmin() {
-      return isAuthenticated() &&
-        ((exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) && 
-          get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'admin') ||
-         (request.auth.token.email == "lojerafizike@gmail.com" && request.auth.token.email_verified == true));
+    function isValidId(id) {
+       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
-    function isTeacher() {
-      return isAuthenticated() && 
-        exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'mesues';
+    function incoming() {
+      return request.resource.data;
     }
 
-    // Domain Validators
-    function isValidUserPrivate(data) {
-      return data.keys().hasOnly(['email']) &&
-             data.email is string && data.email.size() > 0;
+    function existing() {
+      return resource.data;
     }
 
-    function isValidUserProfile(data) {
-      return data.keys().hasAll(['displayName', 'totalScore']) &&
-             data.keys().hasOnly(['displayName', 'username', 'role', 'school', 'photoURL', 'totalScore', 'lastUpdated']) &&
-             data.displayName is string && data.displayName.size() < 100 &&
-             data.totalScore is number &&
-             (!('username' in data) || (data.username is string && data.username.size() < 50)) &&
-             (!('role' in data) || (data.role in ['mesues', 'nxenes'])) &&
-             (!('school' in data) || (data.school is string && data.school.size() < 100)) &&
-             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() < 500));
+    // --- VALIDATION HELPERS ---
+    function isValidNote(data) {
+      return data.keys().hasAll(['userId', 'title', 'content', 'planet', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() <= 200 &&
+             data.content is string && data.content.size() <= 100000 &&
+             data.planet is string &&
+             data.createdAt == request.time;
+    }
+
+    function isValidProfile(data) {
+      return (data.keys().hasAny(['displayName', 'photoURL', 'totalScore', 'lastUpdated']) || 
+              data.keys().hasAny(['username', 'school', 'role'])) &&
+             (data.get('displayName', '') is string) &&
+             (data.get('photoURL', '') is string) &&
+             (data.get('username', '') is string) &&
+             (data.get('school', '') is string) &&
+             (data.get('role', 'nxenes') in ['mesues', 'nxenes', 'admin']) &&
+             (data.get('totalScore', 0) is number);
     }
 
     function isValidMaterial(data) {
-      return data.keys().hasAll(['type', 'topic', 'title', 'authorId', 'authorName', 'createdAt']) &&
-             data.keys().hasOnly(['type', 'topic', 'title', 'authorId', 'authorName', 'createdAt', 'fileUrl', 'fileName']) &&
-             data.type is string && data.type.size() < 50 &&
-             data.topic is string && data.topic.size() < 50 &&
-             data.title is string && data.title.size() < 200 &&
+      return data.keys().hasAll(['type', 'topic', 'title', 'authorId', 'authorName', 'createdAt', 'fileUrl', 'fileName']) &&
+             data.type is string &&
+             data.topic is string &&
+             data.title is string && data.title.size() <= 200 &&
              data.authorId == request.auth.uid &&
-             data.authorName is string && data.authorName.size() < 100 &&
-             data.createdAt is timestamp &&
-             (!('fileUrl' in data) || (data.fileUrl is string && data.fileUrl.size() < 1048576)) &&
-             (!('fileName' in data) || (data.fileName is string && data.fileName.size() < 255));
+             data.authorName is string &&
+             data.createdAt == request.time &&
+             data.fileUrl is string && 
+             data.fileName is string;
     }
 
-    // Rules
-    match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) && isValidUserPrivate(request.resource.data);
-      allow update: if isOwner(userId) && isValidUserPrivate(request.resource.data);
-      allow delete: if isAdmin();
+    // --- COLLECTIONS ---
+
+    match /materials/{materialId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && isValidMaterial(incoming());
+      allow update: if isSignedIn() && isOwner(existing().authorId) && isValidMaterial(incoming()) && incoming().authorId == existing().authorId;
+      allow delete: if isSignedIn() && isOwner(existing().authorId);
+    }
+
+    match /notes/{noteId} {
+      function isCollaborator() {
+        return isSignedIn() && (request.auth.uid in resource.data.collaborators || request.auth.token.email in resource.data.collaborators);
+      }
+
+      allow read: if isSignedIn() && (isOwner(resource.data.userId) || isCollaborator());
+      allow create: if isSignedIn() && isValidNote(incoming());
+      allow update: if isSignedIn() && (isOwner(resource.data.userId) || isCollaborator()) && 
+                     (incoming().userId == existing().userId); // Prevent ownership transfer
+      allow delete: if isSignedIn() && isOwner(resource.data.userId);
     }
 
     match /profiles/{userId} {
-      // Publicly readable for leaderboard
-      allow read: if true;
-      
-      allow create: if isOwner(userId) && isValidUserProfile(request.resource.data) && request.resource.data.totalScore == 0;
-      
-      allow update: if isAuthenticated() && (
-        // Owner can update their own profile/score
-        (isOwner(userId) && isValidUserProfile(request.resource.data)) ||
-        // Admin can update anything
-        isAdmin()
-      );
-      
-      allow delete: if isAdmin();
+      allow get: if isSignedIn();
+      allow list: if isSignedIn(); // Allow leaderboard listing
+      allow create: if isSignedIn() && isOwner(userId) && isValidProfile(incoming());
+      allow update: if isSignedIn() && (isOwner(userId)) && isValidProfile(incoming());
     }
 
-    match /materials/{materialId} {
-      allow read: if true;
-      allow create: if (isTeacher() || isAdmin()) && isValidMaterial(request.resource.data);
-      allow update: if (isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid)) && isValidMaterial(request.resource.data);
-      allow delete: if isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
-    }
-  }
-}
-
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /materials/{userId}/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+    match /users/{userId} {
+      allow read: if isSignedIn() && isOwner(userId);
+      allow write: if isSignedIn() && isOwner(userId);
     }
   }
 }

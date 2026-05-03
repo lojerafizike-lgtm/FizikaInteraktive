@@ -1,32 +1,8 @@
 {
   "entities": {
-    "UserPrivate": {
-      "title": "User Private",
-      "description": "Private data for a user.",
-      "type": "object",
-      "properties": {
-        "email": { "type": "string" }
-      },
-      "required": ["email"]
-    },
-    "UserProfile": {
-      "title": "User Profile",
-      "description": "Public profile and score for the leaderboard.",
-      "type": "object",
-      "properties": {
-        "displayName": { "type": "string" },
-        "username": { "type": "string" },
-        "role": { "type": "string", "enum": ["mesues", "nxenes"] },
-        "school": { "type": "string" },
-        "photoURL": { "type": "string" },
-        "totalScore": { "type": "number" },
-        "lastUpdated": { "type": "string", "format": "date-time" }
-      },
-      "required": ["displayName", "totalScore"]
-    },
     "Material": {
       "title": "Material",
-      "description": "Educational material added by a teacher.",
+      "description": "A study or teaching material.",
       "type": "object",
       "properties": {
         "type": { "type": "string" },
@@ -39,20 +15,61 @@
         "fileName": { "type": "string" }
       },
       "required": ["type", "topic", "title", "authorId", "authorName", "createdAt", "fileUrl", "fileName"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "A student's physics note.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "planet": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "collaborators": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["userId", "title", "content", "planet", "createdAt"]
+    },
+    "Profile": {
+      "title": "Profile",
+      "description": "Public user profile.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "username": { "type": "string" },
+        "school": { "type": "string" },
+        "role": { "type": "string", "enum": ["mesues", "nxenes", "admin"] },
+        "photoURL": { "type": "string" },
+        "totalScore": { "type": "number" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      }
+    },
+    "PrivateUser": {
+      "title": "PrivateUser",
+      "description": "Private user information.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" }
+      }
     }
   },
   "firestore": {
-    "/users/{userId}": {
-      "schema": "UserPrivate",
-      "description": "Private user data."
-    },
-    "/profiles/{userId}": {
-      "schema": "UserProfile",
-      "description": "Public user profiles for leaderboard."
-    },
     "/materials/{materialId}": {
       "schema": "Material",
-      "description": "Collection of educational materials."
+      "description": "Collection of learning materials."
+    },
+    "/notes/{noteId}": {
+      "schema": "Note",
+      "description": "Collection of user notes."
+    },
+    "/profiles/{userId}": {
+      "schema": "Profile",
+      "description": "Public user profiles."
+    },
+    "/users/{userId}": {
+      "schema": "PrivateUser",
+      "description": "Private user data."
     }
   }
 }
