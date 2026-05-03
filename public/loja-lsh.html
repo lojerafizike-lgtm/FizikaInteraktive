@@ -1,102 +1,276 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akullthyesi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #cffafe; color: #334155; font-family: 'Inter', system-ui, sans-serif; overflow: hidden; margin: 0; display:flex; justify-content:center; align-items:center; height: 100vh;}
-        .game-card { background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 90%; max-width: 500px; padding: 2rem; text-align: center; position: relative; overflow: hidden; border: 4px solid white;}
-        .btn { padding: 1rem 2rem; border-radius: 1.5rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: inline-block; margin-top: 1rem; text-transform: uppercase; letter-spacing: 0.1em; border:none; outline:none;}
-        .btn-primary { background-color: #0891b2; color: white; box-shadow: 0 10px 20px #0891b266; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px #0891b288; }
-        .input-field { padding: 1rem; border-radius: 1rem; border: 3px solid #e2e8f0; width: 100%; max-width: 200px; text-align: center; font-size: 1.5rem; font-weight: 900; margin: 1rem 0; outline: none; transition: all 0.3s; color: #0891b2}
-        .input-field:focus { border-color: #0891b2; }
-        .icon-large { font-size: 5rem; color: #0891b2; margin-bottom: 1rem; text-shadow: 0 10px 20px #0891b244; }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
-        .animate-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .animate-shake { animation: shake 0.3s ease-in-out; }
-        .result-msg { font-size: 1.25rem; font-weight: 800; min-height: 2.5rem; margin-top: 1rem; border-radius: 1rem; padding: 0.5rem; transition: all 0.3s;}
-        .level-badge { position: absolute; top: 1rem; right: 1rem; background: #cffafe; color: #0891b2; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 900; font-size: 0.875rem; text-transform: uppercase;}
-        .question-box { background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700; color: #475569; border: 2px dashed #cffafe;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akullthyesi · Nxehtësia Latente</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ice:#C8F0FF;--icedk:#2880B8;
+  --sky:#B8E0FF;--skydk:#3A80C8;
+  --mint:#B8F4E0;--mintdk:#28A870;
+  --lav:#D4C4FF;--lavdk:#7858CC;
+  --rose:#FFAFC5;--rosedk:#D44070;
+  --sun:#FFE8A0;--sundk:#B87820;
+  --snow:#F0FAFF;
+  --ink:#182838;--soft:#4878A0;--white:#FFFFFF;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  background:radial-gradient(ellipse 80% 80% at 40% 20%,#D8F8FF 0%,#C8E8FF 45%,#D8D0FF 100%);
+  display:flex;justify-content:center;align-items:center;
+  font-family:'M PLUS Rounded 1c',sans-serif;
+}
+.orb{position:fixed;border-radius:50%;filter:blur(65px);pointer-events:none;opacity:.28;animation:ob ease-in-out infinite alternate}
+@keyframes ob{from{transform:translate(0,0)}to{transform:translate(18px,-22px)}}
+.snowflake{
+  position:fixed;font-size:20px;opacity:.2;pointer-events:none;
+  animation:snowfall linear infinite;
+}
+@keyframes snowfall{
+  from{transform:translateY(-40px) rotate(0deg)}
+  to{transform:translateY(110vh) rotate(720deg)}
+}
+
+.card{
+  width:min(560px,94vw);
+  background:var(--white);
+  border-radius:32px;
+  box-shadow:0 4px 0 var(--icedk),0 12px 60px rgba(24,40,56,.12),inset 0 1px 0 #fff;
+  overflow:hidden;
+}
+.stripe{height:8px;background:linear-gradient(90deg,var(--ice) 0 20%,var(--sky) 20% 40%,var(--mint) 40% 60%,var(--lav) 60% 80%,var(--rose) 80% 100%)}
+.header{
+  background:linear-gradient(135deg,var(--snow) 0%,#F0EEFF 100%);
+  padding:16px 24px 14px;border-bottom:1.5px solid #D8EEF8;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.title{font-family:'DotGothic16',monospace;font-size:17px;color:var(--ink);letter-spacing:1px}
+.title em{color:var(--icedk);font-style:normal}
+.badge{background:var(--ice);border:1.5px solid var(--icedk);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:800;color:var(--icedk)}
+
+.body{padding:22px 24px;display:flex;flex-direction:column;gap:16px;align-items:center}
+
+/* Ice block visual */
+.ice-scene{
+  width:100%;height:110px;
+  background:linear-gradient(180deg,#E8F8FF 0%,#F0FAFF 50%,#D0E8F8 100%);
+  border-radius:16px;border:1.5px solid var(--ice);
+  position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:16px;
+}
+.ice-block{
+  font-size:52px;
+  filter:drop-shadow(0 4px 8px rgba(40,128,184,.25));
+  transition:all .5s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:center;justify-content:center;
+}
+.heat-arrow{
+  font-size:30px;opacity:.7;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:1}}
+.water-drop{
+  font-size:52px;opacity:0;
+  transition:opacity .5s;transform:scale(.7);
+}
+/* melt animation */
+@keyframes melt{
+  0%{transform:scale(1) rotate(0)}
+  30%{transform:scale(1.08) rotate(-2deg)}
+  60%{transform:scale(.92) rotate(2deg)}
+  100%{transform:scale(.5) rotate(0);opacity:0}
+}
+
+/* Formula */
+.formula-card{
+  background:linear-gradient(135deg,var(--ice) 0%,#E8F8FF 100%);
+  border:1.5px solid var(--icedk);border-radius:16px;
+  padding:12px 20px;text-align:center;width:100%;
+  box-shadow:0 3px 0 var(--icedk);
+}
+.fm{font-family:'DotGothic16',monospace;font-size:14px;color:var(--icedk);letter-spacing:1px}
+.fmsub{font-size:10px;color:var(--soft);margin-top:4px;font-weight:700}
+
+/* Question cards */
+.qbox{
+  background:var(--snow);border:1.5px solid var(--ice);border-radius:16px;
+  padding:14px 20px;font-size:14px;font-weight:700;color:var(--ink);
+  text-align:center;line-height:1.8;width:100%;
+  box-shadow:0 3px 0 var(--icedk);
+}
+.qbox b{color:var(--icedk)}
+
+/* Progress */
+.progress{display:flex;gap:8px}
+.dot{
+  width:14px;height:14px;border-radius:50%;
+  background:#DCF0FC;border:2px solid #A8D4EC;transition:all .3s;
+}
+.dot.done{background:var(--mint);border-color:var(--mintdk);box-shadow:0 2px 0 var(--mintdk)}
+.dot.active{background:var(--icedk);border-color:#1A6090;box-shadow:0 2px 0 #1A6090;transform:scale(1.15)}
+
+/* Input */
+.input-row{display:flex;gap:12px;align-items:center}
+input[type=number]{
+  font-family:'DotGothic16',monospace;font-size:18px;text-align:center;
+  padding:11px 14px;width:200px;
+  background:#F0FAFF;border:2px solid var(--ice);border-radius:14px;
+  color:var(--icedk);outline:none;transition:border-color .2s,box-shadow .2s;
+}
+input:focus{border-color:var(--icedk);box-shadow:0 0 0 4px rgba(200,240,255,.4)}
+input::placeholder{color:#90C8E0}
+.btn{
+  font-family:'DotGothic16',monospace;font-size:12px;letter-spacing:1px;
+  padding:12px 20px;background:var(--icedk);color:#fff;border:none;border-radius:14px;
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 4px 0 #1A5888,0 6px 18px rgba(40,128,184,.28);
+  transition:all .12s;
+}
+.btn:hover{background:#38A0D8;transform:translateY(-1px)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #1A5888}
+
+.msgtxt{font-family:'DotGothic16',monospace;font-size:10px;color:var(--soft);letter-spacing:.5px;text-align:center;min-height:18px;transition:color .2s}
+
+.statusbar{
+  padding:10px 24px;background:var(--snow);border-top:1.5px solid #D8EEF8;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.stxt{font-family:'DotGothic16',monospace;font-size:9px;color:var(--soft)}
+.chips{display:flex;gap:6px}
+.chip{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:800}
+.chip-ok{background:var(--mint);color:var(--mintdk)}
+.chip-err{background:var(--rose);color:var(--rosedk)}
+
+@keyframes popIn{from{opacity:0;transform:scale(.85) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+.pop{animation:popIn .45s cubic-bezier(.175,.885,.32,1.275)}
+.shake{animation:shakeX .3s ease-in-out}
+</style>
 </head>
 <body>
-    <div class="game-card animate-pop" id="card">
-        <div class="level-badge" id="level">Niveli 1</div>
-        <i class="fas fa-icicles icon-large"></i>
-        <h1 class="text-3xl font-black mb-2 text-slate-800 tracking-tight">Akullthyesi</h1>
-        
-            <div class="question-box" id="question">Q = L_sh · m</div>
-            <input type="number" class="input-field" id="answer" placeholder="0">
-            <div>
-                <button class="btn btn-primary" onclick="checkAnswer()">KONTROLLO</button>
-            </div>
-            <div id="msg" class="result-msg text-slate-400">Gjeni Q për shkrirje</div>
-        
+
+<div class="orb" style="width:300px;height:300px;background:#C8F0FF;top:-80px;left:-60px;animation-duration:9s"></div>
+<div class="orb" style="width:220px;height:220px;background:#D4C4FF;bottom:-60px;right:-50px;animation-duration:7s;animation-delay:-3s"></div>
+
+<!-- Snowflakes -->
+<div class="snowflake" style="left:8%;animation-duration:9s;animation-delay:0s">❄️</div>
+<div class="snowflake" style="left:22%;animation-duration:12s;animation-delay:-3s;font-size:14px">❅</div>
+<div class="snowflake" style="left:60%;animation-duration:10s;animation-delay:-6s">❄️</div>
+<div class="snowflake" style="right:10%;animation-duration:8s;animation-delay:-1s;font-size:15px">❅</div>
+<div class="snowflake" style="right:28%;animation-duration:14s;animation-delay:-8s;font-size:13px">❄️</div>
+
+<div class="card" id="card">
+  <div class="stripe"></div>
+  <div class="header">
+    <div class="title">🧊 AKULL<em>THYESI</em></div>
+    <div class="badge">Q = L · m</div>
+  </div>
+
+  <div class="body">
+    <div class="ice-scene">
+      <div class="ice-block" id="iceblock">🧊</div>
+      <div class="heat-arrow" id="arrow">🔥</div>
+      <div class="water-drop" id="waterdrop">💧</div>
     </div>
-    <script>
-        
-            const qEl = document.getElementById('question');
-            const aEl = document.getElementById('answer');
-            const msgEl = document.getElementById('msg');
-            const levelEl = document.getElementById('level');
-            const card = document.getElementById('card');
-            
-            let level = 1;
-            let currentAnswer = 0;
-            
-            const qs = [
-                { m: 1, l: 334000, obj: "Akull (L=334kJ/kg)" },
-                { m: 2, l: 334000, obj: "Akull" },
-                { m: 1, l: 25000, obj: "Plumb shkrirje (L=25kJ/kg)" },
-                { m: 5, l: 393000, obj: "Alumin shkrirje (L=393kJ/kg)" }
-            ];
-            
-            function loadLevel() {
-                if(level > qs.length) {
-                    qEl.innerHTML = "Ke shkrirë çdo gjë! 🏆";
-                    aEl.style.display = 'none';
-                    document.querySelector('.btn').style.display = 'none';
-                    msgEl.innerHTML = "Perfekt!";
-                    msgEl.style.color = '#10b981';
-                    return;
-                }
-                levelEl.innerText = "Niveli " + level;
-                let q = qs[level-1];
-                currentAnswer = q.l * q.m;
-                qEl.innerHTML = `A do të shkrijmë <b>${q.m} kg</b> ${q.obj}?<br><br>Sa J nxehtësi duhen?`;
-                aEl.value = '';
-                aEl.focus();
-                msgEl.innerText = "Shumëzo Masën me L_sh";
-                msgEl.style.color = '#94a3b8';
-                card.classList.remove('animate-shake');
-            }
-            
-            function checkAnswer() {
-                let ans = parseInt(aEl.value);
-                if(ans === currentAnswer) {
-                    msgEl.innerHTML = "U shkri plotësisht! 💧";
-                    msgEl.style.color = '#10b981';
-                    level++;
-                    setTimeout(loadLevel, 1500);
-                } else {
-                    msgEl.innerHTML = "Jo saktë. Kujdes zerot!";
-                    msgEl.style.color = '#ef4444';
-                    card.classList.remove('animate-shake');
-                    void card.offsetWidth;
-                    card.classList.add('animate-shake');
-                }
-            }
-            loadLevel();
-            aEl.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') checkAnswer();
-            });
-        
-    </script>
+
+    <div class="formula-card">
+      <div class="fm">Q = L<sub>sh</sub> · m</div>
+      <div class="fmsub">Nxehtësi = Nxehtësia specifike e shkrirjes × Masa</div>
+    </div>
+
+    <div class="qbox" id="qbox">Duke ngarkuar…</div>
+
+    <div class="progress" id="progress"></div>
+
+    <div class="input-row">
+      <input type="number" id="ans" placeholder="? Joule" autocomplete="off">
+      <button class="btn" onclick="checkAns()">SHKRI ▶</button>
+    </div>
+    <div class="msgtxt" id="msg">Shumëzo masën me L_sh</div>
+  </div>
+
+  <div class="statusbar">
+    <span class="stxt">Niveli <span id="slvl">1</span> / 4</span>
+    <div class="chips">
+      <div class="chip chip-ok">✓ <span id="sc">0</span></div>
+      <div class="chip chip-err">✗ <span id="sw">0</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const QS=[
+  {m:1,l:334000,obj:'Akull (L = 334 kJ/kg)',icon:'🧊'},
+  {m:2,l:334000,obj:'Akull × 2 kg',icon:'🧊'},
+  {m:1,l:25000,obj:'Plumb (L = 25 kJ/kg)',icon:'🪨'},
+  {m:5,l:393000,obj:'Alumin (L = 393 kJ/kg)',icon:'🔩'},
+];
+let lvl=1,cans=0,sc=0,sw=0;
+
+function buildProg(){
+  const p=$('progress'); p.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i<lvl-1?' done':i===lvl-1?' active':'');
+    p.appendChild(d);
+  });
+}
+function setMsg(t,c){$('msg').textContent=t;$('msg').style.color=c}
+
+function meltAnim(cb){
+  const ice=$('iceblock'),drop=$('waterdrop');
+  ice.style.animation='melt .8s ease forwards';
+  setTimeout(()=>{
+    drop.style.opacity='1';drop.style.transform='scale(1)';
+    setTimeout(()=>{
+      ice.style.animation='';ice.style.opacity='1';ice.style.transform='';
+      drop.style.opacity='0';drop.style.transform='scale(.7)';
+      cb();
+    },600);
+  },800);
+}
+
+function loadLvl(){
+  if(lvl>QS.length){
+    $('iceblock').textContent='💧';
+    $('arrow').style.display='none';
+    $('qbox').innerHTML='🏆 Ke shkrirë gjithçka! Ekspert termik!';
+    $('ans').style.display='none';
+    document.querySelector('.btn').style.display='none';
+    setMsg('Perfekt!','var(--mintdk)');
+    return;
+  }
+  buildProg();
+  $('slvl').textContent=lvl;
+  const q=QS[lvl-1];
+  cans=q.l*q.m;
+  $('iceblock').textContent=q.icon;
+  $('iceblock').style.opacity='1';$('iceblock').style.transform='scale(1)';
+  $('qbox').innerHTML=`Shkrijmë <b>${q.m} kg</b> ${q.obj}.<br>Sa Xhaul nxehtësi duhen?`;
+  $('ans').value=''; $('ans').focus();
+  setMsg('Shumëzo masën me L_sh','var(--soft)');
+  $('card').classList.remove('shake');
+}
+
+function checkAns(){
+  const val=parseInt($('ans').value); if(isNaN(val))return;
+  if(val===cans){
+    sc++; $('sc').textContent=sc;
+    setMsg('💧 U shkri plotësisht! Saktë!','var(--icedk)');
+    meltAnim(()=>{lvl++;loadLvl();});
+  } else {
+    sw++; $('sw').textContent=sw;
+    setMsg('🧊 Jo saktë. Kujdes zerot!','var(--rosedk)');
+    $('card').classList.remove('shake');
+    void $('card').offsetWidth;
+    $('card').classList.add('shake');
+  }
+}
+$('ans').addEventListener('keypress',e=>{if(e.key==='Enter')checkAns()});
+loadLvl();
+</script>
 </body>
 </html>
