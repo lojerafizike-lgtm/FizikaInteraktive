@@ -276,7 +276,7 @@ const App: React.FC = () => {
           <button 
             onClick={handleStart}
             className="px-8 py-4 bg-white text-[#4a4e69] rounded-2xl font-bold text-sm md:text-xl uppercase tracking-[0.2em] shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:scale-105 transition-all animate__animated animate__fadeInUp animate__delay-1s font-mono"
-          >
+            >
             Vazhdo më tej!
           </button>
         </div>
