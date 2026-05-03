@@ -456,7 +456,7 @@ const App: React.FC = () => {
                       </div>
                       <div className="relative z-10">
                         <h3 className="text-2xl md:text-4xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-black mb-2 md:mb-4 tracking-tighter break-words line-clamp-2">{cat}</h3>
-                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Eksploro Terma</p>
+                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Eksploro Madhësitë Fizike</p>
                       </div>
                     </div>
                   );
