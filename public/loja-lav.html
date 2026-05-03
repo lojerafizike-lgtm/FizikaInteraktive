@@ -1,101 +1,602 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sq">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laboratori i Avullit</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f3e8ff; color: #334155; font-family: 'Inter', system-ui, sans-serif; overflow: hidden; margin: 0; display:flex; justify-content:center; align-items:center; height: 100vh;}
-        .game-card { background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 90%; max-width: 500px; padding: 2rem; text-align: center; position: relative; overflow: hidden; border: 4px solid white;}
-        .btn { padding: 1rem 2rem; border-radius: 1.5rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: inline-block; margin-top: 1rem; text-transform: uppercase; letter-spacing: 0.1em; border:none; outline:none;}
-        .btn-primary { background-color: #9333ea; color: white; box-shadow: 0 10px 20px #9333ea66; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px #9333ea88; }
-        .input-field { padding: 1rem; border-radius: 1rem; border: 3px solid #e2e8f0; width: 100%; max-width: 200px; text-align: center; font-size: 1.5rem; font-weight: 900; margin: 1rem 0; outline: none; transition: all 0.3s; color: #9333ea}
-        .input-field:focus { border-color: #9333ea; }
-        .icon-large { font-size: 5rem; color: #9333ea; margin-bottom: 1rem; text-shadow: 0 10px 20px #9333ea44; }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
-        .animate-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .animate-shake { animation: shake 0.3s ease-in-out; }
-        .result-msg { font-size: 1.25rem; font-weight: 800; min-height: 2.5rem; margin-top: 1rem; border-radius: 1rem; padding: 0.5rem; transition: all 0.3s;}
-        .level-badge { position: absolute; top: 1rem; right: 1rem; background: #f3e8ff; color: #9333ea; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 900; font-size: 0.875rem; text-transform: uppercase;}
-        .question-box { background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700; color: #475569; border: 2px dashed #f3e8ff;}
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #e8f4fd;
+            --card: #ffffff;
+            --purple: #c9b8f0;
+            --purple-dark: #8b6fcd;
+            --purple-soft: #f0ebfd;
+            --pink: #f7c5d8;
+            --pink-dark: #d4789a;
+            --teal: #a8e6df;
+            --teal-dark: #4dada3;
+            --yellow: #fde8a0;
+            --yellow-dark: #c9a830;
+            --green: #b8e8c8;
+            --green-dark: #4da870;
+            --red-soft: #fde0e0;
+            --red-dark: #d46060;
+            --text: #3a2d5c;
+            --muted: #9a8fc0;
+            --border: #ddd5f5;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background-image:
+                radial-gradient(circle at 10% 15%, rgba(201,184,240,0.3) 0%, transparent 40%),
+                radial-gradient(circle at 90% 85%, rgba(168,230,223,0.25) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(247,197,216,0.15) 0%, transparent 60%);
+        }
+
+        /* Floating pixel clouds background */
+        .bg-deco {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            image-rendering: pixelated;
+            opacity: 0.18;
+            animation: floatCloud linear infinite;
+        }
+
+        @keyframes floatCloud {
+            0%   { transform: translateX(-120px); }
+            100% { transform: translateX(calc(100vw + 120px)); }
+        }
+
+        /* pixel cloud via box-shadow */
+        .pcloud {
+            width: 8px; height: 8px;
+            position: absolute;
+            animation: floatCloud linear infinite;
+        }
+
+        /* CARD */
+        .card {
+            background: var(--card);
+            border-radius: 0px;
+            width: 100%;
+            max-width: 460px;
+            position: relative;
+            z-index: 1;
+            /* pixel border */
+            box-shadow:
+                0 0 0 4px var(--purple),
+                0 0 0 8px var(--card),
+                0 0 0 10px var(--purple-dark),
+                0 20px 60px rgba(139,111,205,0.15);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            image-rendering: pixelated;
+        }
+
+        @keyframes popIn {
+            0%   { opacity: 0; transform: scale(0.88) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* TOP HEADER BAR */
+        .top-bar {
+            background: var(--purple);
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--purple-dark);
+        }
+
+        .game-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.55rem;
+            color: var(--purple-dark);
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+        }
+
+        .game-title span { color: #ffffff; display: block; font-size: 0.65rem; }
+
+        .hp-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .hp-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.45rem;
+            color: var(--purple-dark);
+        }
+
+        .hp-track {
+            display: flex;
+            gap: 4px;
+        }
+
+        .hp-block {
+            width: 14px; height: 14px;
+            background: var(--pink);
+            border: 2px solid var(--pink-dark);
+            image-rendering: pixelated;
+            transition: all 0.3s;
+        }
+
+        .hp-block.empty {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(212,120,154,0.3);
+        }
+
+        .hp-block.active { background: var(--pink-dark); }
+
+        /* INNER */
+        .card-inner { padding: 1.75rem 1.75rem 2rem; }
+
+        /* Sprite area */
+        .sprite-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            height: 80px;
+        }
+
+        /* CSS pixel flask */
+        .flask {
+            position: relative;
+            width: 36px;
+            animation: bounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-6px); }
+        }
+
+        .flask-body {
+            width: 36px; height: 44px;
+            background: var(--teal);
+            border: 3px solid var(--teal-dark);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flask-liquid {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: var(--purple);
+            border-top: 3px solid var(--purple-dark);
+            transition: height 0.8s cubic-bezier(0.16,1,0.3,1);
+            height: 30%;
+        }
+
+        .flask-neck {
+            width: 16px; height: 14px;
+            background: var(--teal);
+            border: 3px solid var(--teal-dark);
+            border-bottom: none;
+            margin: 0 auto;
+        }
+
+        .flask-cap {
+            width: 24px; height: 6px;
+            background: var(--teal-dark);
+            margin: 0 auto;
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* Steam puffs */
+        .steam-puff {
+            position: absolute;
+            top: -8px; left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 3px;
+        }
+
+        .puff {
+            width: 6px; height: 6px;
+            background: var(--purple-soft);
+            border: 2px solid var(--purple);
+            border-radius: 50%;
+            animation: puffUp 1.2s ease-out infinite;
+        }
+
+        .puff:nth-child(2) { animation-delay: 0.3s; width: 8px; height: 8px; }
+        .puff:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes puffUp {
+            0%   { opacity: 0.8; transform: translateY(0) scale(1); }
+            100% { opacity: 0;   transform: translateY(-18px) scale(1.5); }
+        }
+
+        /* Score / level area */
+        .score-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .score-chip {
+            flex: 1;
+            background: var(--purple-soft);
+            border: 2px solid var(--border);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0;
+        }
+
+        .score-chip-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.4rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .score-chip-val {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            color: var(--purple-dark);
+        }
+
+        /* Question box */
+        .question-box {
+            background: var(--purple-soft);
+            border: 3px solid var(--border);
+            border-left: 5px solid var(--purple-dark);
+            padding: 1rem 1.1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.88rem;
+            color: var(--text);
+            line-height: 1.7;
+            position: relative;
+        }
+
+        /* pixel corner decorations */
+        .question-box::before,
+        .question-box::after {
+            content: '';
+            position: absolute;
+            width: 8px; height: 8px;
+            background: var(--purple-dark);
+        }
+
+        .question-box::before { top: -3px; right: -3px; }
+        .question-box::after  { bottom: -3px; left: -3px; }
+
+        .question-box b { color: var(--purple-dark); font-weight: 700; }
+
+        .formula-badge {
+            display: inline-flex;
+            margin-top: 0.6rem;
+            background: var(--yellow);
+            border: 2px solid var(--yellow-dark);
+            padding: 0.2rem 0.6rem;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.5rem;
+            color: var(--yellow-dark);
+            letter-spacing: 0.05em;
+        }
+
+        /* Input */
+        .input-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.45rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+            letter-spacing: 0.05em;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 0.625rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 3px solid var(--border);
+            background: #fdfcff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.75rem;
+            color: var(--purple-dark);
+            outline: none;
+            border-radius: 0;
+            transition: all 0.2s;
+            -moz-appearance: textfield;
+        }
+
+        .input-field::-webkit-inner-spin-button,
+        .input-field::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+        .input-field::placeholder {
+            color: var(--border);
+            font-size: 0.55rem;
+        }
+
+        .input-field:focus {
+            border-color: var(--purple-dark);
+            background: var(--purple-soft);
+        }
+
+        .btn {
+            padding: 0 1.25rem;
+            background: var(--purple-dark);
+            color: white;
+            border: none;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.5rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            position: relative;
+            box-shadow: 0 5px 0 #5d3fa0;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #5d3fa0; }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #5d3fa0; }
+
+        /* Message */
+        .result-msg {
+            min-height: 2.5rem;
+            border: 3px solid transparent;
+            padding: 0.6rem 0.875rem;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.45rem;
+            line-height: 1.8;
+            letter-spacing: 0.03em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s;
+        }
+
+        .msg-idle    { color: var(--muted); background: transparent; }
+        .msg-success { color: var(--green-dark); background: var(--green); border-color: var(--green-dark); }
+        .msg-error   { color: var(--red-dark); background: var(--red-soft); border-color: var(--red-dark); }
+
+        /* pixel star */
+        .px-star::before { content: '★'; margin-right: 4px; }
+
+        /* Animations */
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%      { transform: translateX(-8px); }
+            60%      { transform: translateX(8px); }
+            80%      { transform: translateX(-4px); }
+        }
+
+        @keyframes levelUp {
+            0%   { transform: scale(1); }
+            30%  { transform: scale(1.04) rotate(-1deg); }
+            60%  { transform: scale(1.04) rotate(1deg); }
+            100% { transform: scale(1); }
+        }
+
+        .shake    { animation: shake 0.35s ease; }
+        .level-up { animation: levelUp 0.4s ease; }
+
+        /* Win */
+        .win-area { text-align: center; padding: 0.5rem 0 1rem; }
+
+        .win-sprite {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .win-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            color: var(--purple-dark);
+            margin-bottom: 0.75rem;
+            line-height: 1.7;
+        }
+
+        .win-sub {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-restart {
+            background: var(--teal-dark);
+            box-shadow: 0 5px 0 #2d7a76;
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .btn-restart:hover { box-shadow: 0 7px 0 #2d7a76; }
+        .btn-restart:active { transform: translateY(3px); box-shadow: 0 2px 0 #2d7a76; }
     </style>
 </head>
 <body>
-    <div class="game-card animate-pop" id="card">
-        <div class="level-badge" id="level">Niveli 1</div>
-        <i class="fas fa-cloud-meatball icon-large"></i>
-        <h1 class="text-3xl font-black mb-2 text-slate-800 tracking-tight">Laboratori i Avullit</h1>
-        
-            <div class="question-box" id="question">Q = L_av · m</div>
-            <input type="number" class="input-field" id="answer" placeholder="0">
-            <div>
-                <button class="btn btn-primary" onclick="checkAnswer()">KONTROLLO</button>
+
+<div class="card" id="card">
+    <!-- Top bar -->
+    <div class="top-bar">
+        <div class="game-title">
+            LAB 🧪
+            <span>AVULLI</span>
+        </div>
+        <div class="hp-bar">
+            <div class="hp-label">PROGRESI</div>
+            <div class="hp-track" id="hpTrack">
+                <div class="hp-block"></div>
+                <div class="hp-block"></div>
+                <div class="hp-block"></div>
             </div>
-            <div id="msg" class="result-msg text-slate-400">Gjeni Q për avullim</div>
-        
+        </div>
     </div>
-    <script>
-        
-            const qEl = document.getElementById('question');
-            const aEl = document.getElementById('answer');
-            const msgEl = document.getElementById('msg');
-            const levelEl = document.getElementById('level');
-            const card = document.getElementById('card');
-            
-            let level = 1;
-            let currentAnswer = 0;
-            
-            const qs = [
-                { m: 1, l: 2260000, obj: "Ujë në 100C (L=2260kJ/kg)" },
-                { m: 3, l: 2260000, obj: "Ujë në 100C" },
-                { m: 2, l: 850000, obj: "Alkool avullim (L=850kJ/kg)" },
-            ];
-            
-            function loadLevel() {
-                if(level > qs.length) {
-                    qEl.innerHTML = "Avulluat gjithçka! 🏆";
-                    aEl.style.display = 'none';
-                    document.querySelector('.btn').style.display = 'none';
-                    msgEl.innerHTML = "Perfekt!";
-                    msgEl.style.color = '#10b981';
-                    return;
-                }
-                levelEl.innerText = "Niveli " + level;
-                let q = qs[level-1];
-                currentAnswer = q.l * q.m;
-                qEl.innerHTML = `Trupi: <b>${q.m} kg</b> ${q.obj}.<br><br>Sa J duhen për ta avulluar gjer në fund?`;
-                aEl.value = '';
-                aEl.focus();
-                msgEl.innerText = "Q = L_av * m";
-                msgEl.style.color = '#94a3b8';
-                card.classList.remove('animate-shake');
-            }
-            
-            function checkAnswer() {
-                let ans = parseInt(aEl.value);
-                if(ans === currentAnswer) {
-                    msgEl.innerHTML = "U bë avull! ☁️";
-                    msgEl.style.color = '#10b981';
-                    level++;
-                    setTimeout(loadLevel, 1500);
-                } else {
-                    msgEl.innerHTML = "Kujdes vlerat e mëdha!";
-                    msgEl.style.color = '#ef4444';
-                    card.classList.remove('animate-shake');
-                    void card.offsetWidth;
-                    card.classList.add('animate-shake');
-                }
-            }
-            loadLevel();
-            aEl.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') checkAnswer();
-            });
-        
-    </script>
+
+    <div class="card-inner">
+
+        <!-- Sprite -->
+        <div class="sprite-row">
+            <div class="flask" id="flask">
+                <div style="position:relative;">
+                    <div class="steam-puff">
+                        <div class="puff"></div>
+                        <div class="puff"></div>
+                        <div class="puff"></div>
+                    </div>
+                </div>
+                <div class="flask-cap"></div>
+                <div class="flask-neck"></div>
+                <div class="flask-body">
+                    <div class="flask-liquid" id="flaskLiquid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score row -->
+        <div class="score-row">
+            <div class="score-chip">
+                <div class="score-chip-label">Niveli</div>
+                <div class="score-chip-val" id="levelVal">1 / 3</div>
+            </div>
+            <div class="score-chip">
+                <div class="score-chip-label">Formula</div>
+                <div class="score-chip-val">Q=L<sub style="font-size:0.5rem">av</sub>·m</div>
+            </div>
+        </div>
+
+        <div id="gameArea">
+            <!-- Question -->
+            <div class="question-box" id="question">Duke ngarkuar...</div>
+
+            <!-- Input -->
+            <label class="input-label" for="answer">▶ Shkruaj Q në Xhaul:</label>
+            <div class="input-row">
+                <input type="number" class="input-field" id="answer" placeholder="0">
+                <button class="btn" onclick="checkAnswer()">OK ▶</button>
+            </div>
+
+            <div class="result-msg msg-idle" id="msg">▷ prit pyetjen dhe jep përgjigjen</div>
+        </div>
+
+        <div id="winArea" style="display:none;">
+            <div class="win-area">
+                <span class="win-sprite">🏆</span>
+                <div class="win-title">NIVELI<br> U KRYE!</div>
+                <div class="win-sub">Të lumtë! ☁️✨</div>
+                <button class="btn btn-restart" onclick="restart()">▶ LUAJ SËRISH</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { m: 1, l: 2260000, substance: "ujë (H₂O)", temp: "100°C", lLabel: "2 260 kJ/kg" },
+        { m: 3, l: 2260000, substance: "ujë (H₂O)", temp: "100°C", lLabel: "2 260 kJ/kg" },
+        { m: 2, l: 850000,  substance: "alkool",    temp: "78°C",  lLabel: "850 kJ/kg"   },
+    ];
+
+    let level = 0;
+
+    const qEl       = document.getElementById('question');
+    const aEl       = document.getElementById('answer');
+    const msgEl     = document.getElementById('msg');
+    const levelVal  = document.getElementById('levelVal');
+    const card      = document.getElementById('card');
+    const gameArea  = document.getElementById('gameArea');
+    const winArea   = document.getElementById('winArea');
+    const liquid    = document.getElementById('flaskLiquid');
+    const hpTrack   = document.getElementById('hpTrack');
+
+    function updateHP() {
+        const blocks = hpTrack.querySelectorAll('.hp-block');
+        blocks.forEach((b, i) => {
+            b.classList.remove('active', 'empty');
+            if (i < level) b.classList.add('active');
+            else b.classList.add('empty');
+        });
+        liquid.style.height = (20 + (level / questions.length) * 65) + '%';
+    }
+
+    function loadLevel() {
+        if (level >= questions.length) { showWin(); return; }
+
+        const q = questions[level];
+        const ans = q.l * q.m;
+        window._currentAnswer = ans;
+
+        levelVal.textContent = `${level + 1} / ${questions.length}`;
+        updateHP();
+
+        qEl.innerHTML = `Kemi <b>${q.m} kg</b> ${q.substance} në <b>${q.temp}</b>.<br>Nxehtësia specifike e avullimit: <b>L<sub>av</sub> = ${q.lLabel}</b>.<br><br>Sa Xhaul (Q) duhen për avullim të plotë?<br><div class="formula-badge">Q = L<sub>av</sub> × m</div>`;
+        aEl.value = '';
+        aEl.focus();
+        setMsg('idle', '▷ shkruaj përgjigjen dhe shtyp OK');
+    }
+
+    function setMsg(type, text) {
+        msgEl.className = 'result-msg msg-' + type;
+        msgEl.textContent = text;
+    }
+
+    function checkAnswer() {
+        const val = parseInt(aEl.value);
+        if (isNaN(val)) { setMsg('error', '✗ shkruaj një numër!'); return; }
+
+        if (val === window._currentAnswer) {
+            setMsg('success', `★ SAKTË! Q = ${window._currentAnswer.toLocaleString()} Xh`);
+            card.classList.add('level-up');
+            card.addEventListener('animationend', () => card.classList.remove('level-up'), { once: true });
+            level++;
+            setTimeout(loadLevel, 1500);
+        } else {
+            setMsg('error', `✗ jo! kujdes: vendos në Xhaul, jo kXh!`);
+            card.classList.remove('shake');
+            void card.offsetWidth;
+            card.classList.add('shake');
+            card.addEventListener('animationend', () => card.classList.remove('shake'), { once: true });
+        }
+    }
+
+    function showWin() {
+        updateHP();
+        gameArea.style.display = 'none';
+        winArea.style.display = 'block';
+        levelVal.textContent = 'U KRYE!';
+    }
+
+    function restart() {
+        level = 0;
+        gameArea.style.display = 'block';
+        winArea.style.display = 'none';
+        loadLevel();
+    }
+
+    aEl.addEventListener('keypress', e => { if (e.key === 'Enter') checkAnswer(); });
+    loadLevel();
+</script>
 </body>
 </html>
