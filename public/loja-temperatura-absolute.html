@@ -1,259 +1,97 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Konvertuesi Kelvin</title>
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --rose:#FFAFC5;--rosedk:#D44070;
-  --orange:#FFD0A0;--orangedk:#C06030;
-  --sun:#FFE8A0;--sundk:#B87820;
-  --mint:#B8F4DC;--mintdk:#28A068;
-  --sky:#B8DCFF;--skydk:#3A80C8;
-  --lav:#D4C4FF;--lavdk:#7858CC;
-  --peach:#FFD8C0;--peachdk:#C06840;
-  --ink:#2A1838;--soft:#8A7898;--white:#FFFFFF;
-}
-html,body{height:100%;overflow:hidden}
-body{
-  background:radial-gradient(ellipse 80% 80% at 60% 30%,#FFE8D0 0%,#FFD8E8 35%,#E8D0FF 70%,#D0E8FF 100%);
-  display:flex;justify-content:center;align-items:center;
-  font-family:'M PLUS Rounded 1c',sans-serif;
-}
-.orb{position:fixed;border-radius:50%;filter:blur(65px);pointer-events:none;opacity:.28;animation:ob ease-in-out infinite alternate}
-@keyframes ob{from{transform:translate(0,0)}to{transform:translate(-15px,20px)}}
-
-.card{
-  width:min(500px,94vw);
-  background:var(--white);
-  border-radius:32px;
-  box-shadow:0 4px 0 var(--orangedk),0 12px 60px rgba(42,24,56,.13),inset 0 1px 0 #fff;
-  overflow:hidden;
-}
-.stripe{height:8px;background:linear-gradient(90deg,var(--rose) 0 20%,var(--orange) 20% 40%,var(--sun) 40% 60%,var(--mint) 60% 80%,var(--sky) 80% 100%)}
-.header{
-  background:linear-gradient(135deg,#FFF4EE 0%,#FFF0F8 100%);
-  padding:18px 24px 14px;border-bottom:1.5px solid #F0E4D4;
-  text-align:center;
-}
-.title{font-family:'DotGothic16',monospace;font-size:17px;color:var(--ink);letter-spacing:1px}
-.title em{color:var(--orangedk);font-style:normal}
-.sub{font-size:10px;color:var(--soft);margin-top:5px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
-
-.body{padding:24px;display:flex;flex-direction:column;align-items:center;gap:18px}
-
-/* Thermometer visual */
-.thermo-wrap{position:relative;width:100px;height:160px;display:flex;justify-content:center}
-.thermo-tube{
-  width:28px;height:120px;
-  background:linear-gradient(180deg,#F8E8D8 0%,#FAEEE4 100%);
-  border:2.5px solid var(--orangedk);border-radius:14px 14px 0 0;
-  position:absolute;top:0;left:50%;transform:translateX(-50%);
-  overflow:hidden;
-}
-.thermo-fill{
-  position:absolute;bottom:0;width:100%;
-  background:linear-gradient(180deg,var(--rose) 0%,var(--orangedk) 100%);
-  transition:height .6s cubic-bezier(.4,0,.2,1);
-}
-.thermo-ball{
-  width:42px;height:42px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,var(--rose) 0%,var(--orangedk) 70%);
-  border:2.5px solid var(--orangedk);
-  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  box-shadow:0 3px 0 #A04030,0 4px 12px rgba(192,96,48,.3);
-}
-.thermo-ticks{
-  position:absolute;right:-18px;top:4px;height:110px;
-  display:flex;flex-direction:column;justify-content:space-between;
-  font-family:'DotGothic16',monospace;font-size:8px;color:var(--soft);
-}
-.thermo-temp{
-  font-family:'DotGothic16',monospace;font-size:28px;color:var(--orangedk);
-  text-align:center;position:absolute;bottom:-38px;left:50%;transform:translateX(-50%);
-  white-space:nowrap;
-}
-
-/* Level badge */
-.level-ring{
-  background:var(--lav);border:2px solid var(--lavdk);border-radius:50%;
-  width:48px;height:48px;display:flex;align-items:center;justify-content:center;
-  font-family:'DotGothic16',monospace;font-size:11px;color:var(--lavdk);
-  box-shadow:0 3px 0 var(--lavdk);
-  position:absolute;top:16px;right:16px;
-}
-
-/* Formula */
-.formula-card{
-  background:linear-gradient(135deg,var(--sun) 0%,var(--orange) 100%);
-  border:1.5px solid var(--sundk);border-radius:16px;
-  padding:12px 20px;text-align:center;width:100%;
-  box-shadow:0 3px 0 var(--sundk);
-}
-.formula-card .fm{font-family:'DotGothic16',monospace;font-size:14px;color:var(--sundk);letter-spacing:1px}
-
-/* Question */
-.qbox{
-  background:#FFF8F0;border:1.5px solid var(--orange);border-radius:16px;
-  padding:14px 20px;text-align:center;line-height:1.8;font-size:14px;
-  font-weight:700;color:var(--ink);width:100%;
-  box-shadow:0 3px 0 var(--orangedk);
-}
-.qbox b{color:var(--orangedk)}
-
-/* Progress dots */
-.progress{display:flex;gap:8px;justify-content:center}
-.dot{
-  width:12px;height:12px;border-radius:50%;
-  background:#F0E8D8;border:2px solid #D8C8A8;
-  transition:all .3s;
-}
-.dot.done{background:var(--sun);border-color:var(--sundk);box-shadow:0 2px 0 var(--sundk)}
-.dot.active{background:var(--orangedk);border-color:#904020;box-shadow:0 2px 0 #904020}
-
-/* Input */
-.input-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
-input[type=number]{
-  font-family:'DotGothic16',monospace;font-size:22px;text-align:center;
-  width:100%;max-width:200px;padding:11px 14px;
-  background:#FFF4EC;border:2px solid var(--orange);border-radius:14px;
-  color:var(--orangedk);outline:none;transition:border-color .2s,box-shadow .2s;
-}
-input:focus{border-color:var(--orangedk);box-shadow:0 0 0 4px rgba(255,208,160,.35)}
-input::placeholder{color:#D8B090}
-.btn{
-  font-family:'DotGothic16',monospace;font-size:13px;letter-spacing:1px;
-  padding:11px 24px;width:200px;
-  background:var(--orangedk);color:#fff;border:none;border-radius:14px;cursor:pointer;
-  box-shadow:0 4px 0 #904020,0 6px 18px rgba(192,96,48,.28);
-  transition:all .12s;
-}
-.btn:hover{background:#D87840;transform:translateY(-1px)}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #904020}
-
-.msgtxt{font-family:'DotGothic16',monospace;font-size:10px;color:var(--soft);letter-spacing:.5px;text-align:center;min-height:18px;transition:color .2s}
-
-.statusbar{
-  padding:10px 24px;background:#FFF8F0;border-top:1.5px solid #F0E4D4;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.stxt{font-family:'DotGothic16',monospace;font-size:9px;color:var(--soft)}
-.chips{display:flex;gap:6px}
-.chip{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:800}
-.chip-ok{background:var(--mint);color:var(--mintdk)}
-.chip-err{background:var(--rose);color:var(--rosedk)}
-
-@keyframes popIn{from{opacity:0;transform:scale(.85) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
-.pop{animation:popIn .45s cubic-bezier(.175,.885,.32,1.275)}
-.shake{animation:shakeX .3s ease-in-out}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konvertuesi Kelvin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #fce7f3; color: #334155; font-family: 'Inter', system-ui, sans-serif; overflow: hidden; margin: 0; display:flex; justify-content:center; align-items:center; height: 100vh;}
+        .game-card { background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 90%; max-width: 500px; padding: 2rem; text-align: center; position: relative; overflow: hidden; border: 4px solid white;}
+        .btn { padding: 1rem 2rem; border-radius: 1.5rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: inline-block; margin-top: 1rem; text-transform: uppercase; letter-spacing: 0.1em; border:none; outline:none;}
+        .btn-primary { background-color: #ec4899; color: white; box-shadow: 0 10px 20px #ec489966; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px #ec489988; }
+        .input-field { padding: 1rem; border-radius: 1rem; border: 3px solid #e2e8f0; width: 100%; max-width: 200px; text-align: center; font-size: 1.5rem; font-weight: 900; margin: 1rem 0; outline: none; transition: all 0.3s; color: #ec4899}
+        .input-field:focus { border-color: #ec4899; }
+        .icon-large { font-size: 5rem; color: #ec4899; margin-bottom: 1rem; text-shadow: 0 10px 20px #ec489944; }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .animate-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+        .result-msg { font-size: 1.25rem; font-weight: 800; min-height: 2.5rem; margin-top: 1rem; border-radius: 1rem; padding: 0.5rem; transition: all 0.3s;}
+        .level-badge { position: absolute; top: 1rem; right: 1rem; background: #fce7f3; color: #ec4899; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 900; font-size: 0.875rem; text-transform: uppercase;}
+        .question-box { background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700; color: #475569; border: 2px dashed #fce7f3;}
+    </style>
 </head>
 <body>
-<div class="orb" style="width:280px;height:280px;background:#FFD0A0;top:-70px;right:-60px;animation-duration:8s"></div>
-<div class="orb" style="width:200px;height:200px;background:#D4C4FF;bottom:-50px;left:-40px;animation-duration:10s;animation-delay:-4s"></div>
-
-<div class="card" id="card">
-  <div class="stripe"></div>
-  <div class="header" style="position:relative">
-    <div class="level-ring" id="lvlring">L<span id="lvlnum">1</span></div>
-    <div class="title">🌡️ TEMPERATURA <em>ABSOLUTE</em></div>
-    <div class="sub">Temperatura °C → K</div>
-  </div>
-
-  <div class="body">
-    <div class="thermo-wrap">
-      <div class="thermo-tube"><div class="thermo-fill" id="thfill" style="height:60%"></div></div>
-      <div class="thermo-ball"></div>
-      <div class="thermo-ticks">
-        <span>100°</span><span>50°</span><span>0°</span><span>-50°</span>
-      </div>
-      <div class="thermo-temp" id="thtemp">—</div>
+    <div class="game-card animate-pop" id="card">
+        <div class="level-badge" id="level">Niveli 1</div>
+        <i class="fas fa-temperature-half icon-large"></i>
+        <h1 class="text-3xl font-black mb-2 text-slate-800 tracking-tight">Konvertuesi Kelvin</h1>
+        
+            <div class="question-box" id="question">℃ në K</div>
+            <input type="number" class="input-field" id="answer" placeholder="0">
+            <div>
+                <button class="btn btn-primary" onclick="checkAnswer()">KONTROLLO</button>
+            </div>
+            <div id="msg" class="result-msg text-slate-400">T(K) = t(℃) + 273</div>
+        
     </div>
-
-    <div class="formula-card"><div class="fm">T(K) = t(°C) + 273</div></div>
-
-    <div class="qbox" id="qbox">Duke ngarkuar…</div>
-
-    <div class="progress" id="progress"></div>
-
-    <div class="input-wrap">
-      <input type="number" id="ans" placeholder="? Kelvin" autocomplete="off">
-      <button class="btn" onclick="checkAns()">KONTROLLO ▶</button>
-    </div>
-    <div class="msgtxt" id="msg">T(K) = t(°C) + 273</div>
-  </div>
-
-  <div class="statusbar">
-    <span class="stxt">Niveli <span id="slvl">1</span> / 6</span>
-    <div class="chips">
-      <div class="chip chip-ok">✓ <span id="sc">0</span></div>
-      <div class="chip chip-err">✗ <span id="sw">0</span></div>
-    </div>
-  </div>
-</div>
-
-<script>
-const $=id=>document.getElementById(id);
-let lvl=1,cans=0,sc=0,sw=0;
-const TOTAL=6;
-
-function buildProgress(){
-  const p=$('progress'); p.innerHTML='';
-  for(let i=1;i<=TOTAL;i++){
-    const d=document.createElement('div');
-    d.className='dot'+(i<lvl?' done':i===lvl?' active':'');
-    p.appendChild(d);
-  }
-}
-
-function setMsg(t,c){$('msg').textContent=t;$('msg').style.color=c}
-
-function setThermo(c){
-  const pct=Math.min(100,Math.max(0,((c+50)/200)*100));
-  $('thfill').style.height=pct+'%';
-  $('thtemp').textContent=c+'°C';
-}
-
-function loadLvl(){
-  if(lvl>TOTAL){
-    $('qbox').innerHTML='🏆 Ke mbaruar të gjitha nivelet!';
-    $('ans').style.display='none';
-    document.querySelector('.btn').style.display='none';
-    setMsg('Të lumtë!','var(--mintdk)');
-    return;
-  }
-  buildProgress();
-  $('lvlnum').textContent=lvl; $('slvl').textContent=lvl;
-  const c=Math.floor(Math.random()*201)-50;
-  cans=c+273;
-  setThermo(c);
-  $('qbox').innerHTML=`Temperatura jepet si <b>${c} °C</b>.<br>Sa është kjo në gradë Kelvin?`;
-  $('ans').value=''; $('ans').focus();
-  setMsg('T(K) = t(°C) + 273','var(--soft)');
-  $('card').classList.remove('shake');
-}
-
-function checkAns(){
-  const val=parseInt($('ans').value); if(isNaN(val))return;
-  if(val===cans){
-    sc++; $('sc').textContent=sc;
-    setMsg('🎉 Saktë! +'+cans+' K','var(--mintdk)');
-    lvl++;
-    setTimeout(loadLvl,1400);
-  } else {
-    sw++; $('sw').textContent=sw;
-    setMsg('💥 Gabim! Kontrollo llogaritjen.','var(--rosedk)');
-    $('card').classList.remove('shake');
-    void $('card').offsetWidth;
-    $('card').classList.add('shake');
-  }
-}
-$('ans').addEventListener('keypress',e=>{if(e.key==='Enter')checkAns()});
-loadLvl();
-</script>
+    <script>
+        
+            const qEl = document.getElementById('question');
+            const aEl = document.getElementById('answer');
+            const msgEl = document.getElementById('msg');
+            const levelEl = document.getElementById('level');
+            const card = document.getElementById('card');
+            
+            let level = 1;
+            let currentAnswer = 0;
+            
+            function getRand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
+            
+            function loadLevel() {
+                if(level > 6) {
+                    qEl.innerHTML = "Termometër njerëzor! 🏆";
+                    aEl.style.display = 'none';
+                    document.querySelector('.btn').style.display = 'none';
+                    msgEl.innerHTML = "Perfekt!";
+                    msgEl.style.color = '#10b981';
+                    return;
+                }
+                levelEl.innerText = "Niveli " + level;
+                let c = getRand(-50, 150);
+                currentAnswer = c + 273;
+                qEl.innerHTML = `Temperatura jepet <b>${c} ℃</b>.<br><br>Sa është kjo në gradë Kelvin?`;
+                aEl.value = '';
+                aEl.focus();
+                msgEl.innerText = "T(K) = t(℃) + 273";
+                msgEl.style.color = '#94a3b8';
+                card.classList.remove('animate-shake');
+            }
+            
+            function checkAnswer() {
+                let ans = parseInt(aEl.value);
+                if(ans === currentAnswer) {
+                    msgEl.innerHTML = "Aaaaa e nxehtë! Saktë! 🔥";
+                    msgEl.style.color = '#10b981';
+                    level++;
+                    setTimeout(loadLevel, 1500);
+                } else {
+                    msgEl.innerHTML = "Gabim matematik! Kujdes formën.";
+                    msgEl.style.color = '#ef4444';
+                    card.classList.remove('animate-shake');
+                    void card.offsetWidth;
+                    card.classList.add('animate-shake');
+                }
+            }
+            loadLevel();
+            aEl.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') checkAnswer();
+            });
+        
+    </script>
 </body>
 </html>

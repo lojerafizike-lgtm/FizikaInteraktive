@@ -1,459 +1,103 @@
+
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mjeshtri i Moleve</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --bg: #f0edf8;
-            --card: #ffffff;
-            --accent: #a78bdc;
-            --accent-soft: #ede8f9;
-            --accent-dark: #7c5cbf;
-            --green: #6dbf9e;
-            --green-soft: #e2f5ed;
-            --red: #e07a8a;
-            --red-soft: #fce8eb;
-            --text: #2d2540;
-            --muted: #9e97b4;
-            --border: #e8e3f5;
-            --shadow: 0 8px 40px rgba(167,139,220,0.13);
-            --shadow-hover: 0 16px 50px rgba(167,139,220,0.22);
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            background-image:
-                radial-gradient(circle at 15% 20%, rgba(167,139,220,0.12) 0%, transparent 50%),
-                radial-gradient(circle at 85% 80%, rgba(109,191,158,0.10) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(255,200,210,0.07) 0%, transparent 60%);
-        }
-
-        .card {
-            background: var(--card);
-            border-radius: 2.5rem;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 480px;
-            padding: 3rem 2.5rem 2.5rem;
-            position: relative;
-            border: 1.5px solid var(--border);
-            animation: floatIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #c4b0f0, #a78bdc, #7c9fe0, #6dbf9e);
-            border-radius: 2.5rem 2.5rem 0 0;
-        }
-
-        @keyframes floatIn {
-            from { opacity: 0; transform: translateY(24px) scale(0.97); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Level badge */
-        .level-badge {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: var(--accent-soft);
-            color: var(--accent-dark);
-            padding: 0.35rem 0.9rem;
-            border-radius: 2rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        /* Icon area */
-        .icon-wrap {
-            width: 72px;
-            height: 72px;
-            background: var(--accent-soft);
-            border-radius: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-        }
-
-        .icon-wrap svg {
-            width: 36px;
-            height: 36px;
-        }
-
-        /* Title */
-        h1 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 2rem;
-            color: var(--text);
-            text-align: center;
-            margin-bottom: 0.4rem;
-            letter-spacing: -0.01em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.875rem;
-            font-weight: 400;
-            margin-bottom: 2rem;
-        }
-
-        /* Progress bar */
-        .progress-wrap {
-            background: var(--border);
-            border-radius: 999px;
-            height: 6px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #7c9fe0);
-            border-radius: 999px;
-            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* Question box */
-        .question-box {
-            background: var(--accent-soft);
-            border-radius: 1.25rem;
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.75rem;
-            font-size: 0.95rem;
-            font-weight: 400;
-            color: var(--text);
-            line-height: 1.7;
-            border: 1.5px solid rgba(167,139,220,0.2);
-        }
-
-        .question-box b {
-            color: var(--accent-dark);
-            font-weight: 600;
-        }
-
-        .formula-hint {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--text);
-            color: white;
-            font-family: 'DM Serif Display', serif;
-            font-size: 0.9rem;
-            padding: 0.3rem 0.9rem;
-            border-radius: 0.5rem;
-            margin-top: 0.75rem;
-            letter-spacing: 0.03em;
-        }
-
-        /* Input */
-        .input-wrap {
-            position: relative;
-            margin-bottom: 1.25rem;
-        }
-
-        .input-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            border: 2px solid var(--border);
-            font-family: 'DM Serif Display', serif;
-            font-size: 1.75rem;
-            color: var(--accent-dark);
-            text-align: center;
-            outline: none;
-            transition: all 0.25s;
-            background: #fdfcff;
-            -moz-appearance: textfield;
-        }
-
-        .input-field::-webkit-outer-spin-button,
-        .input-field::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-        .input-field:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(167,139,220,0.12);
-        }
-
-        /* Button */
-        .btn {
-            width: 100%;
-            padding: 1rem 2rem;
-            border-radius: 1rem;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            background: var(--accent);
-            color: white;
-            box-shadow: 0 4px 20px rgba(167,139,220,0.35);
-        }
-
-        .btn:hover {
-            background: var(--accent-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(124,92,191,0.35);
-        }
-
-        .btn:active { transform: translateY(0); }
-
-        /* Message */
-        .result-msg {
-            margin-top: 1.25rem;
-            min-height: 2.5rem;
-            border-radius: 0.875rem;
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-align: center;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .msg-idle    { background: transparent; color: var(--muted); }
-        .msg-success { background: var(--green-soft); color: #2d7a5e; }
-        .msg-error   { background: var(--red-soft); color: #b0394a; }
-
-        /* Animations */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%       { transform: translateX(-8px); }
-            60%       { transform: translateX(8px); }
-            80%       { transform: translateX(-4px); }
-        }
-
-        @keyframes successPulse {
-            0%   { transform: scale(1); }
-            50%  { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .shake         { animation: shake 0.35s ease; }
-        .success-pulse { animation: successPulse 0.4s ease; }
-
-        /* Win state */
-        .win-icon {
-            font-size: 3.5rem;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .win-title {
-            font-family: 'DM Serif Display', serif;
-            font-size: 1.75rem;
-            text-align: center;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .win-sub {
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .btn-restart {
-            background: var(--green);
-            box-shadow: 0 4px 20px rgba(109,191,158,0.35);
-        }
-
-        .btn-restart:hover {
-            background: #4fa882;
-            box-shadow: 0 8px 28px rgba(109,191,158,0.4);
-        }
-
-        /* Stars */
-        .stars {
-            display: flex;
-            justify-content: center;
-            gap: 0.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .star {
-            width: 12px; height: 12px;
-            border-radius: 999px;
-            background: var(--border);
-            transition: background 0.4s;
-        }
-
-        .star.filled { background: var(--accent); }
+        body { background-color: #dbeafe; color: #334155; font-family: 'Inter', system-ui, sans-serif; overflow: hidden; margin: 0; display:flex; justify-content:center; align-items:center; height: 100vh;}
+        .game-card { background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 90%; max-width: 500px; padding: 2rem; text-align: center; position: relative; overflow: hidden; border: 4px solid white;}
+        .btn { padding: 1rem 2rem; border-radius: 1.5rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: inline-block; margin-top: 1rem; text-transform: uppercase; letter-spacing: 0.1em; border:none; outline:none;}
+        .btn-primary { background-color: #3b82f6; color: white; box-shadow: 0 10px 20px #3b82f666; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px #3b82f688; }
+        .input-field { padding: 1rem; border-radius: 1rem; border: 3px solid #e2e8f0; width: 100%; max-width: 200px; text-align: center; font-size: 1.5rem; font-weight: 900; margin: 1rem 0; outline: none; transition: all 0.3s; color: #3b82f6}
+        .input-field:focus { border-color: #3b82f6; }
+        .icon-large { font-size: 5rem; color: #3b82f6; margin-bottom: 1rem; text-shadow: 0 10px 20px #3b82f644; }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .animate-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+        .result-msg { font-size: 1.25rem; font-weight: 800; min-height: 2.5rem; margin-top: 1rem; border-radius: 1rem; padding: 0.5rem; transition: all 0.3s;}
+        .level-badge { position: absolute; top: 1rem; right: 1rem; background: #dbeafe; color: #3b82f6; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 900; font-size: 0.875rem; text-transform: uppercase;}
+        .question-box { background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700; color: #475569; border: 2px dashed #dbeafe;}
     </style>
 </head>
 <body>
-<div class="card" id="card">
-    <div class="level-badge" id="levelBadge">Niveli 1 / 5</div>
-
-    <div class="icon-wrap">
-        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 4L4 28h28L18 4z" stroke="#a78bdc" stroke-width="2.5" stroke-linejoin="round" fill="rgba(167,139,220,0.12)"/>
-            <circle cx="18" cy="22" r="2.5" fill="#a78bdc"/>
-            <path d="M18 14v5" stroke="#a78bdc" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
+    <div class="game-card animate-pop" id="card">
+        <div class="level-badge" id="level">Niveli 1</div>
+        <i class="fas fa-balance-scale icon-large"></i>
+        <h1 class="text-3xl font-black mb-2 text-slate-800 tracking-tight">Mjeshtri i Moleve</h1>
+        
+            <div class="question-box" id="question">Sa mole ka në ...?</div>
+            <input type="number" step="0.1" class="input-field" id="answer" placeholder="0.0">
+            <div>
+                <button class="btn btn-primary" onclick="checkAnswer()">KONTROLLO</button>
+            </div>
+            <div id="msg" class="result-msg text-slate-400">Pritja e përgjigjes...</div>
+        
     </div>
-
-    <h1>Mjeshtri i Moleve</h1>
-    <p class="subtitle">Zgjidh problemin dhe kalo të gjitha nivelet</p>
-
-    <div class="stars" id="stars">
-        <div class="star" id="s1"></div>
-        <div class="star" id="s2"></div>
-        <div class="star" id="s3"></div>
-        <div class="star" id="s4"></div>
-        <div class="star" id="s5"></div>
-    </div>
-
-    <div class="progress-wrap">
-        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-    </div>
-
-    <div id="gameArea">
-        <div class="question-box" id="question">
-            Duke ngarkuar pyetjen...
-        </div>
-
-        <div class="input-wrap">
-            <label class="input-label" for="answer">Përgjigja juaj (mol)</label>
-            <input type="number" step="0.01" class="input-field" id="answer" placeholder="0.00">
-        </div>
-
-        <button class="btn" id="checkBtn" onclick="checkAnswer()">Kontrollo përgjigjen</button>
-
-        <div class="result-msg msg-idle" id="msg">
-            Shkruaj përgjigjen dhe kliko kontrollo
-        </div>
-    </div>
-
-    <div id="winArea" style="display:none;">
-        <div class="win-icon">🏆</div>
-        <div class="win-title">Bravo, Mjeshtar!</div>
-        <div class="win-sub">Ke përfunduar të gjitha 5 nivelet me sukses.</div>
-        <button class="btn btn-restart" onclick="restart()">Luaj Sërish</button>
-    </div>
-</div>
-
-<script>
-    const questions = [
-        { m: 36,  M: 18, substance: "ujë (H₂O)" },
-        { m: 88,  M: 44, substance: "gaz karbonik (CO₂)" },
-        { m: 10,  M: 2,  substance: "hidrogjen (H₂)" },
-        { m: 96,  M: 32, substance: "oksigjen (O₂)" },
-        { m: 140, M: 28, substance: "azot (N₂)" },
-    ];
-
-    let level = 0;
-    let currentAnswer = 0;
-
-    const qEl        = document.getElementById('question');
-    const aEl        = document.getElementById('answer');
-    const msgEl      = document.getElementById('msg');
-    const levelEl    = document.getElementById('levelBadge');
-    const progressEl = document.getElementById('progressBar');
-    const card       = document.getElementById('card');
-    const gameArea   = document.getElementById('gameArea');
-    const winArea    = document.getElementById('winArea');
-
-    function loadLevel() {
-        if (level >= questions.length) { showWin(); return; }
-
-        const q = questions[level];
-        currentAnswer = Math.round((q.m / q.M) * 100) / 100;
-
-        levelEl.textContent = `Niveli ${level + 1} / ${questions.length}`;
-        progressEl.style.width = `${(level / questions.length) * 100}%`;
-
-        // Update stars
-        for (let i = 1; i <= questions.length; i++) {
-            document.getElementById('s' + i).classList.toggle('filled', i <= level);
-        }
-
-        qEl.innerHTML = `Një mostër ka masë <b>${q.m} g</b> ${q.substance}, me masë molare <b>${q.M} g/mol</b>.<br><br>Sa mole (n) ka mostra?<br><div class="formula-hint">n = m ÷ M</div>`;
-        aEl.value = '';
-        aEl.focus();
-        setMsg('idle', 'Shkruaj përgjigjen dhe kliko kontrollo');
-    }
-
-    function setMsg(type, text) {
-        msgEl.className = 'result-msg';
-        if (type === 'success') msgEl.classList.add('msg-success');
-        else if (type === 'error') msgEl.classList.add('msg-error');
-        else msgEl.classList.add('msg-idle');
-        msgEl.textContent = text;
-    }
-
-    function checkAnswer() {
-        const val = parseFloat(aEl.value);
-        if (isNaN(val)) { setMsg('error', 'Ju lutem shkruaj një numër.'); return; }
-
-        if (Math.abs(val - currentAnswer) < 0.01) {
-            setMsg('success', '✓ Saktë! Kaloje nivelin tjetër...');
-            card.classList.add('success-pulse');
-            card.addEventListener('animationend', () => card.classList.remove('success-pulse'), { once: true });
-            level++;
-            setTimeout(loadLevel, 1400);
-        } else {
-            setMsg('error', `✗ Gabim! Përgjigja e saktë është ${currentAnswer} mol.`);
-            card.classList.remove('shake');
-            void card.offsetWidth;
-            card.classList.add('shake');
-            card.addEventListener('animationend', () => card.classList.remove('shake'), { once: true });
-        }
-    }
-
-    function showWin() {
-        progressEl.style.width = '100%';
-        for (let i = 1; i <= questions.length; i++) document.getElementById('s' + i).classList.add('filled');
-        gameArea.style.display = 'none';
-        winArea.style.display = 'block';
-        levelEl.textContent = 'Përfunduar!';
-    }
-
-    function restart() {
-        level = 0;
-        gameArea.style.display = 'block';
-        winArea.style.display = 'none';
-        loadLevel();
-    }
-
-    aEl.addEventListener('keypress', e => { if (e.key === 'Enter') checkAnswer(); });
-    loadLevel();
-</script>
+    <script>
+        
+            const qEl = document.getElementById('question');
+            const aEl = document.getElementById('answer');
+            const msgEl = document.getElementById('msg');
+            const levelEl = document.getElementById('level');
+            const card = document.getElementById('card');
+            
+            let level = 1;
+            let currentAnswer = 0;
+            
+            const questions = [
+                { m: 36, M: 18, substance: "ujë (H2O)" },
+                { m: 88, M: 44, substance: "gaz karbonik (CO2)" },
+                { m: 10, M: 2, substance: "hidrogjen (H2)" },
+                { m: 96, M: 32, substance: "oksigjen (O2)" },
+                { m: 140, M: 28, substance: "azot (N2)" }
+            ];
+            
+            function loadLevel() {
+                if(level > questions.length) {
+                    qEl.innerHTML = "Urime! Ti je Mjeshtri i Moleve! 🏆";
+                    aEl.style.display = 'none';
+                    document.querySelector('.btn').style.display = 'none';
+                    msgEl.innerHTML = "Perfekt!";
+                    msgEl.style.color = '#10b981';
+                    return;
+                }
+                levelEl.innerText = "Niveli " + level;
+                let q = questions[level-1];
+                currentAnswer = q.m / q.M;
+                qEl.innerHTML = `Një mostër ka masë <b>${q.m}g</b> ${q.substance}. Masa molare <b>${q.M} g/mol</b>.<br><br>Sa mole (n) janë?`;
+                aEl.value = '';
+                aEl.focus();
+                msgEl.innerText = "n = m / M";
+                msgEl.style.color = '#94a3b8';
+                card.classList.remove('animate-shake');
+            }
+            
+            function checkAnswer() {
+                let ans = parseFloat(aEl.value);
+                if(ans === currentAnswer) {
+                    msgEl.innerHTML = "Saktë! 🎉";
+                    msgEl.style.color = '#10b981';
+                    level++;
+                    setTimeout(loadLevel, 1500);
+                } else {
+                    msgEl.innerHTML = "Gabim! Provo sërish.";
+                    msgEl.style.color = '#ef4444';
+                    card.classList.remove('animate-shake');
+                    void card.offsetWidth;
+                    card.classList.add('animate-shake');
+                }
+            }
+            loadLevel();
+            aEl.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') checkAnswer();
+            });
+        
+    </script>
 </body>
 </html>

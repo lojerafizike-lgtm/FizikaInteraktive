@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 
 interface KuicTabProps {
   kuic: {
@@ -30,7 +30,6 @@ const KuicTab: React.FC<KuicTabProps> = ({ kuic }) => {
       <div className="space-y-12">
         {kuic.pyetjet.map((q, qIdx) => {
           const isAnswered = answers[qIdx] !== undefined;
-          const isCorrect = isAnswered && answers[qIdx] === q.sakte;
 
           return (
             <div key={qIdx} className="bg-white p-6 md:p-10 rounded-[2rem] shadow-sm border border-slate-100 relative overflow-hidden group">

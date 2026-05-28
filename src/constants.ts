@@ -683,7 +683,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
                 }
               ]
             },
-            nature: "Skalare", desc: "Tregon sasinë e nxehtësisë që i duhet 1kg lënde për t'ia ndryshuar temperaturën me një gradë.", phetUrl: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_all.html", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrYVDdn8xNWJ3UWc7Hm6scbbUimOg5qHpVWg&s", vid: "https://www.youtube.com/embed/Wet3sna514o", gameUrl: "/loja-c-specifike.html",
+            nature: "Skalare", desc: "Tregon sasinë e nxehtësisë që i duhet 1kg lënde për tia ndrzshuar temperaturën me një gradë.", phetUrl: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_all.html", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrYVDdn8xNWJ3UWc7Hm6scbbUimOg5qHpVWg&s", vid: "https://www.youtube.com/embed/Wet3sna514o", gameUrl: "/loja-c-specifike.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Cila është nxehtësia që i duhet një trupi 2kg me c=800 J/kgK për tu ngrohur me 30 gradë?</p></div></div>`,
             ushtrimInteraktiv: {
               pyetja: "Cila është nxehtësia Q që i duhet një trupi 2kg me c=800 J/kgK për tu ngrohur me 30 gradë?",

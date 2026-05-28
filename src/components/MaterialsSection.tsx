@@ -799,6 +799,21 @@ export default function MaterialsSection({ onPlayGame }: { onPlayGame?: (game: D
       snapshot.forEach((doc) => {
         const data = doc.data();
         console.log("Material data:", data);
+        
+        const titleLower = (data.title || '').toLowerCase();
+        const authorLower = (data.authorName || '').toLowerCase();
+        
+        // Hide Labirinti i fizikës or Ushtrime Cambridge/stil kahoot uploaded by luljeta prendi
+        if (
+          titleLower.includes('labirinti') ||
+          titleLower.includes('cambridge') ||
+          titleLower.includes('kahoot') ||
+          authorLower.includes('luljeta') ||
+          authorLower.includes('prendi')
+        ) {
+          return;
+        }
+
         // Map Firestore data to Material interface
         materials.push({
           id: doc.id,

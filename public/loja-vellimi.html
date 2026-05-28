@@ -1,269 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ndalo Rrjedhjen · Vëllimi</title>
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --teal:#A8EEE0;--tealdk:#1E9E82;--teal2:#C8F8F0;
-  --sky:#B0D8FF;--skydk:#3A8FCC;
-  --lemon:#E8F8B0;--lemdk:#80A020;
-  --rose:#FFB8C8;--rosedk:#CC4466;
-  --lav:#D0C4FF;--lavdk:#7460CC;
-  --sun:#FFE8A0;--sundk:#B88020;
-  --ink:#1E2E2A;--soft:#5A8078;--white:#FFFFFF;
-}
-html,body{height:100%;overflow:hidden}
-body{
-  background:radial-gradient(ellipse 80% 80% at 70% 20%,#B8FFE8 0%,#B8E8FF 50%,#E0D8FF 100%);
-  display:flex;justify-content:center;align-items:center;
-  font-family:'M PLUS Rounded 1c',sans-serif;
-}
-.orb{position:fixed;border-radius:50%;filter:blur(65px);pointer-events:none;opacity:.3;animation:ob ease-in-out infinite alternate}
-@keyframes ob{from{transform:translate(0,0)}to{transform:translate(-15px,22px)}}
-
-.card{
-  width:min(600px,96vw);
-  background:var(--white);
-  border-radius:28px;
-  box-shadow:0 4px 0 var(--tealdk),0 12px 60px rgba(30,46,42,.12),inset 0 1px 0 #fff;
-  overflow:hidden;
-}
-.stripe{height:8px;background:linear-gradient(90deg,var(--teal) 0 20%,var(--sky) 20% 40%,var(--lemon) 40% 60%,var(--rose) 60% 80%,var(--lav) 80% 100%)}
-.header{
-  background:linear-gradient(135deg,#F0FFFC 0%,#F0F8FF 100%);
-  padding:16px 24px;border-bottom:1.5px solid #DDF4EE;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.title{font-family:'DotGothic16',monospace;font-size:17px;color:var(--ink);letter-spacing:1px}
-.title em{color:var(--tealdk);font-style:normal}
-.badge{background:var(--lemon);border:1.5px solid var(--lemdk);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:800;color:var(--lemdk)}
-
-/* Main layout */
-.body{
-  display:grid;grid-template-columns:auto 1fr;gap:0;
-  padding:24px;gap:24px;align-items:start;
-}
-
-/* Tank */
-.tank-section{display:flex;flex-direction:column;align-items:center;gap:10px}
-.tank-title{font-family:'DotGothic16',monospace;font-size:9px;letter-spacing:2px;color:var(--soft);text-transform:uppercase}
-.tank-outer{
-  width:120px;height:200px;
-  border:3px solid #AADDD0;border-top:none;
-  border-radius:0 0 12px 12px;
-  background:linear-gradient(180deg,#F8FFFE 0%,#EEFAF8 100%);
-  position:relative;overflow:hidden;
-  box-shadow:inset 0 0 12px rgba(30,158,130,.06);
-}
-.water-body{
-  position:absolute;bottom:0;left:0;width:100%;height:80%;
-  background:linear-gradient(180deg,#A0E4FF 0%,#60C8F0 60%,#38A8D8 100%);
-  border-top:3px solid #88D4F8;
-  transition:height .5s linear;
-}
-.water-body::after{
-  content:'';position:absolute;top:-3px;left:0;width:200%;height:6px;
-  background:repeating-linear-gradient(90deg,rgba(255,255,255,.6) 0,rgba(255,255,255,.6) 8px,transparent 8px,transparent 16px);
-  animation:rip .9s linear infinite;
-}
-@keyframes rip{from{transform:translateX(0)}to{transform:translateX(-16px)}}
-
-.hole{position:absolute;right:-2px;bottom:40px;width:5px;height:18px;background:#DDF4EE;border-radius:0 3px 3px 0}
-.spray{
-  position:absolute;right:-58px;bottom:44px;
-  width:56px;height:7px;border-radius:0 8px 8px 0;
-  background:linear-gradient(90deg,#60C8F0 0%,transparent 100%);
-  animation:sprayanim .1s steps(2) infinite alternate;transform-origin:left center;
-}
-@keyframes sprayanim{
-  from{transform:scaleY(1.4) translateY(-1px);opacity:.9}
-  to{transform:scaleY(.7) translateY(1px);opacity:.55}
-}
-.plug{
-  position:absolute;right:-46px;bottom:34px;
-  background:var(--sun);border:2px solid var(--sundk);
-  padding:4px 7px;font-size:8px;font-weight:800;color:var(--sundk);
-  border-radius:8px;box-shadow:0 2px 0 var(--sundk);
-  opacity:0;transition:all .4s cubic-bezier(.175,.885,.32,1.275);
-  white-space:nowrap;font-family:'DotGothic16',monospace;
-}
-
-/* Water level bar */
-.level-bar-bg{
-  width:120px;height:10px;
-  background:#DDF4EE;border-radius:5px;border:1.5px solid #AADDD0;overflow:hidden;
-}
-.level-bar{height:100%;background:linear-gradient(90deg,var(--tealdk),var(--sky));border-radius:5px;transition:width .4s}
-
-/* Right side */
-.right-side{display:flex;flex-direction:column;gap:14px}
-
-.formula-card{
-  background:linear-gradient(135deg,var(--lav) 0%,#E8E0FF 100%);
-  border:1.5px solid var(--lavdk);border-radius:16px;
-  padding:14px 16px;text-align:center;
-  box-shadow:0 3px 0 var(--lavdk);
-}
-.formula-card .f-main{font-family:'DotGothic16',monospace;font-size:18px;color:var(--lavdk);letter-spacing:1px}
-.formula-card .f-sub{font-size:10px;color:var(--lavdk);opacity:.7;margin-top:4px;font-weight:700}
-
-.data-card{
-  background:linear-gradient(135deg,#F8FFFC 0%,#F0FAF8 100%);
-  border:1.5px solid var(--teal);border-radius:16px;
-  padding:14px 16px;
-}
-.dc-title{font-family:'DotGothic16',monospace;font-size:9px;letter-spacing:2px;color:var(--soft);text-transform:uppercase;margin-bottom:12px}
-.drow{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
-.dkey{font-size:12px;color:var(--soft);font-weight:700}
-.dval{font-family:'DotGothic16',monospace;font-size:18px;color:var(--tealdk)}
-.dunit{font-size:10px;color:var(--soft)}
-
-.input-card{
-  background:var(--white);border:1.5px solid #DDF4EE;border-radius:16px;
-  padding:14px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;
-}
-.ilabel{font-size:10px;font-weight:800;color:var(--soft);letter-spacing:1px;text-transform:uppercase}
-
-input[type=number]{
-  font-family:'DotGothic16',monospace;font-size:18px;text-align:center;
-  width:100%;padding:10px 12px;
-  background:#F2FFFC;border:2px solid var(--teal);border-radius:12px;
-  color:var(--tealdk);outline:none;transition:border-color .2s,box-shadow .2s;
-}
-input:focus{border-color:var(--tealdk);box-shadow:0 0 0 4px rgba(168,238,224,.35)}
-input::placeholder{color:#90D0C0}
-
-.btn{
-  font-family:'DotGothic16',monospace;font-size:12px;letter-spacing:1px;
-  padding:11px 20px;width:100%;
-  background:var(--tealdk);color:#fff;border:none;border-radius:12px;cursor:pointer;
-  box-shadow:0 4px 0 #126652,0 6px 18px rgba(30,158,130,.28);
-  transition:all .12s;
-}
-.btn:hover{background:#22B890;transform:translateY(-1px);box-shadow:0 5px 0 #126652,0 8px 22px rgba(30,158,130,.34)}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #126652}
-
-.statusbar{
-  padding:10px 24px;background:#F8FFFC;border-top:1.5px solid #DDF4EE;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.msgtxt{font-family:'DotGothic16',monospace;font-size:10px;color:var(--soft);letter-spacing:.5px;transition:color .2s}
-.chips{display:flex;gap:7px}
-.chip{padding:4px 11px;border-radius:20px;font-size:9px;font-weight:800}
-.chip-ok{background:var(--teal);color:var(--tealdk)}
-.chip-str{background:var(--sun);color:var(--sundk)}
-.chip-err{background:var(--rose);color:var(--rosedk)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sfida e Vëllimit - Rregullim Simulimi</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #064e3b; /* dark green */
+            font-family: 'VT323', monospace;
+            color: #d1fae5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(0deg, #022c22 0%, #064e3b 100%);
+        }
+        #game-container {
+            width: 90%;
+            max-width: 500px;
+            background: #1e293b; /* slate 800 */
+            border-radius: 4px;
+            border: 8px solid #0f172a;
+            box-shadow: 0 0 0 4px #475569, 0 10px 40px rgba(0,0,0,0.5);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            image-rendering: pixelated;
+        }
+        h1 {
+            margin-top: 0;
+            color: #34d399; /* emerald 400 */
+            font-size: 42px;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 0px #022c22;
+        }
+        .tank {
+            width: 160px;
+            height: 200px;
+            border: 8px solid #94a3b8;
+            border-top: none;
+            margin: 0 auto 30px;
+            position: relative;
+            background: #334155;
+            overflow: hidden;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            background: rgba(56, 189, 248, 0.7); /* sky blue semi transparent */
+            border-top: 4px solid #7dd3fc;
+            transition: height 0.5s linear;
+        }
+        .leak {
+            position: absolute;
+            bottom: 30px;
+            right: -8px;
+            width: 8px;
+            height: 24px;
+            background: #0f172a;
+        }
+        .water-spray {
+            position: absolute;
+            bottom: 30px;
+            right: -80px;
+            width: 80px;
+            height: 12px;
+            background: #38bdf8;
+            border-radius: 2px;
+            animation: spray 0.1s infinite alternate;
+            transform-origin: left center;
+        }
+        @keyframes spray {
+            0% { transform: scaleX(0.8) scaleY(1.2) translateY(2px); opacity: 0.8;}
+            100% { transform: scaleX(1.3) scaleY(0.8) translateY(-2px); opacity: 0.5;}
+        }
+        .plug {
+            position: absolute;
+            right: -40px;
+            bottom: 30px;
+            background: #fcd34d;
+            border: 4px solid #b45309;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: normal;
+            color: #78350f;
+            opacity: 0;
+            box-shadow: -4px 4px 0 rgba(0,0,0,0.5);
+        }
+        .ui {
+            background: #0f172a;
+            padding: 15px;
+            border: 4px dashed #475569;
+            margin-bottom: 25px;
+            font-size: 22px;
+            color: #cbd5e1;
+            text-align: left;
+        }
+        .ui b { color: #facc15; }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        input {
+            font-family: inherit;
+            font-size: 28px;
+            padding: 10px;
+            width: 140px;
+            text-align: center;
+            border: 4px solid #64748b;
+            background: #020617;
+            color: #2dd4bf;
+            outline: none;
+        }
+        input:focus { border-color: #34d399; }
+        button {
+            font-family: inherit;
+            font-size: 24px;
+            padding: 10px 20px;
+            background: #10b981;
+            color: #064e3b;
+            border: 4px solid #047857;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        button:active {
+            transform: translateY(4px);
+            border-bottom-width: 0px;
+            margin-bottom: 4px;
+        }
+        button:hover { background: #34d399; }
+        .alert {
+            color: #fb7185;
+            font-size: 22px;
+            margin-top: 15px;
+            min-height: 25px;
+            text-shadow: 2px 2px 0px #020617;
+        }
+        
+        /* CRT overlay */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
-<div class="orb" style="width:280px;height:280px;background:#A8EEE0;top:-70px;right:-60px;animation-duration:8s"></div>
-<div class="orb" style="width:200px;height:200px;background:#B0D8FF;bottom:-50px;left:-40px;animation-duration:10s;animation-delay:-4s"></div>
 
-<div class="card">
-  <div class="stripe"></div>
-  <div class="header">
-    <div class="title">💧 NDALO <em>RRJEDHJEN</em></div>
-    <div class="badge">V = m ÷ d</div>
-  </div>
-
-  <div class="body">
-    <div class="tank-section">
-      <div class="tank-title">🪣 Rezervuari</div>
-      <div class="tank-outer">
-        <div class="water-body" id="water"></div>
-        <div class="hole"></div>
-        <div class="spray" id="spray"></div>
-        <div class="plug" id="plug">✓ FIX!</div>
-      </div>
-      <div class="level-bar-bg">
-        <div class="level-bar" id="lbar" style="width:80%"></div>
-      </div>
+<div id="game-container">
+    <h1>NDALO RRJEDHJEN!</h1>
+    
+    <div class="tank">
+        <div id="water" class="water"></div>
+        <div class="leak"></div>
+        <div id="spray" class="water-spray"></div>
+        <div id="plug" class="plug"></div>
     </div>
-
-    <div class="right-side">
-      <div class="formula-card">
-        <div class="f-main">V = m ÷ d</div>
-        <div class="f-sub">Vëllimi = Masa / Dendësia</div>
-      </div>
-
-      <div class="data-card">
-        <div class="dc-title">📋 Të dhënat</div>
-        <div class="drow"><span class="dkey">Masa (m)</span><span class="dval" id="mv">—</span><span class="dunit">g</span></div>
-        <div class="drow"><span class="dkey">Dendësia (d)</span><span class="dval" id="dv">—</span><span class="dunit">g/cm³</span></div>
-      </div>
-
-      <div class="input-card">
-        <div class="ilabel">🔧 Jep Vëllimin</div>
-        <input type="number" id="ans" placeholder="? cm³" step="0.1" autocomplete="off">
-        <button class="btn" onclick="check()">FIKSOJE ▶</button>
-      </div>
+    
+    <div class="ui">
+        > Tapë gome për t'u krijuar:<br>
+        > Masë (m)   : <b id="m-val"></b> g<br>
+        > Dendësi (d): <b id="d-val"></b> g/cm³<br>
+        <span style="font-size: 18px; color: #64748b; display: block; margin-top:10px;">[Formula: V = m / d]</span>
     </div>
-  </div>
-
-  <div class="statusbar">
-    <div class="msgtxt" id="msg">Llogarit vëllimin e tapës!</div>
-    <div class="chips">
-      <div class="chip chip-ok">✓ <span id="sc">0</span></div>
-      <div class="chip chip-str">🔥 <span id="str">0</span></div>
-      <div class="chip chip-err">✗ <span id="sw">0</span></div>
+    
+    <div class="input-group">
+        <input type="number" id="ans" placeholder="Vëllimi?" step="0.1">
+        <button onclick="check()">FIKSOJE</button>
     </div>
-  </div>
+    <div id="msg" class="alert"></div>
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-let cv=0,wl=80,timer,sc=0,sw=0,streak=0;
+    const mEl = document.getElementById('m-val');
+    const dEl = document.getElementById('d-val');
+    const ansEl = document.getElementById('ans');
+    const msgEl = document.getElementById('msg');
+    const spray = document.getElementById('spray');
+    const plug = document.getElementById('plug');
+    const water = document.getElementById('water');
+    
+    let currentV = 0;
+    let waterLevel = 80;
+    let leakInterval;
 
-function setMsg(t,c){$('msg').textContent=t;$('msg').style.color=c}
+    function generate() {
+        plug.style.opacity = '0';
+        plug.style.right = '-60px'; // reset position
+        spray.style.display = 'block';
+        waterLevel = 80;
+        water.style.height = waterLevel + '%';
+        msgEl.innerText = "";
+        ansEl.value = "";
+        
+        const m = Math.floor(Math.random() * 50) + 10; // 10 to 60
+        const d = (Math.random() * 1.5 + 0.5).toFixed(1); // 0.5 to 2.0
+        
+        currentV = (m / d).toFixed(1);
+        
+        mEl.innerText = m;
+        dEl.innerText = d;
+        
+        clearInterval(leakInterval);
+        leakInterval = setInterval(() => {
+            waterLevel -= 1.5;
+            if(waterLevel < 10) waterLevel = 10;
+            water.style.height = waterLevel + '%';
+        }, 1000);
+    }
+    
+    function check() {
+        let val = parseFloat(ansEl.value);
+        if(isNaN(val)) return;
+        
+        // check with 1 decimal accuracy
+        if(val.toFixed(1) === currentV || Math.abs(val - parseFloat(currentV)) < 0.2) {
+            clearInterval(leakInterval);
+            spray.style.display = 'none';
+            
+            // animate plug
+            plug.style.width = Math.min(Math.max((val * 2), 20), 80) + 'px'; // visual size based on volume
+            plug.style.height = '24px';
+            plug.innerText = val + "cm³";
+            plug.style.opacity = '1';
+            
+            setTimeout(() => {
+                plug.style.right = '-8px';
+                msgEl.style.color = '#34d399';
+                msgEl.innerText = "SYSTEM: Rrjedhja u ndalua!";
+                setTimeout(generate, 2500);
+            }, 100);
+            
+        } else {
+            msgEl.style.color = '#f43f5e';
+            msgEl.innerText = "ERROR: Tapa nuk përshtatet! Uji rrjedh!";
+            // penalty
+            waterLevel -= 5;
+            water.style.height = waterLevel + '%';
+        }
+    }
 
-function generate(){
-  $('plug').style.opacity='0'; $('plug').style.right='-46px';
-  $('spray').style.display='block';
-  wl=80; $('water').style.height='80%'; $('lbar').style.width='80%';
-  $('lbar').style.background='linear-gradient(90deg,var(--tealdk),var(--sky))';
-  setMsg('Llogarit vëllimin e tapës!','var(--soft)');
-  $('ans').value=''; $('ans').focus();
+    ansEl.addEventListener('keypress', e => {
+        if(e.key === 'Enter') check();
+    });
 
-  const m=Math.floor(Math.random()*50)+10;
-  const d=((Math.random()*1.5)+0.5).toFixed(1);
-  cv=(m/d).toFixed(1);
-  $('mv').textContent=m; $('dv').textContent=d;
-
-  clearInterval(timer);
-  timer=setInterval(()=>{
-    wl=Math.max(8,wl-1.4);
-    $('water').style.height=wl+'%';
-    $('lbar').style.width=wl+'%';
-    if(wl<30) $('lbar').style.background='linear-gradient(90deg,#CC4466,#FF8844)';
-  },900);
-}
-
-function check(){
-  const val=parseFloat($('ans').value); if(isNaN(val))return;
-  if(Math.abs(val-parseFloat(cv))<0.21){
-    clearInterval(timer);
-    $('spray').style.display='none';
-    sc++; streak++;
-    $('sc').textContent=sc; $('str').textContent=streak;
-    const p=$('plug');
-    p.style.opacity='1'; p.textContent='✓ '+val+' cm³';
-    setTimeout(()=>{ p.style.right='-2px'; },80);
-    setMsg('✨ Rrjedhja u ndalua! Saktë!','var(--tealdk)');
-    setTimeout(generate,2200);
-  } else {
-    sw++; streak=0;
-    $('sw').textContent=sw; $('str').textContent=0;
-    setMsg('💥 Tapa nuk përshtatet! Provo sërisht.','var(--rosedk)');
-    wl=Math.max(8,wl-7);
-    $('water').style.height=wl+'%'; $('lbar').style.width=wl+'%';
-  }
-}
-$('ans').addEventListener('keypress',e=>{if(e.key==='Enter')check()});
-generate();
+    generate();
 </script>
 </body>
 </html>
