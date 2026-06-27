@@ -38,11 +38,11 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: { pyetja: "Gjeni intervalin kohor nese koha fillestare t0 = 2 s dhe koha perfundimtare t = 8 s.", zgjidhja: "6", hapi1: "Zgjidh formulen: Δt = t - t0", hapi2: "Zevendeso: Δt = 8 - 2", hapi3: "Llogarit: Δt = 6 s" }
         },
         { 
-            name: "6. Shpejtësia mesatare", sym: "Vmes",
-            form: "v.mes = l / t",
+            name: "6. Shpejtësia mesatare", sym: "V<sub>mes</sub>",
+            form: "v<sub>mes</sub> = l / t",
             unit: "m/s", otherUnits: "km/h", teTjera: "", nature: "Vektoriale", desc: "Raporti i zhvendosjes me intervalin e kohës gjatë të cilit ka ndodhur kjo zhvendosje.", phetUrl: "https://phet.colorado.edu/en/simulation/moving-man", img: "https://study.com/cimages/videopreview/screencapture_measuringspeed_140291.jpg", vid: "https://www.youtube.com/embed/UVKbAAw07Bg", gameUrl: "/loja-shpejtesia-mesatare.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni shpejtesine mesatare nese rruga eshte 150 m dhe koha 10 s.</p></div></div>`,
-            ushtrimInteraktiv: { pyetja: "Gjeni shpejtesine mesatare nese rruga eshte 150 m dhe koha 10 s.", zgjidhja: "15", hapi1: "Zgjidh formulen: v.mes = l / t", hapi2: "Zevendeso: v.mes = 150 / 10", hapi3: "Llogarit: 15 m/s" }
+            ushtrimInteraktiv: { pyetja: "Gjeni shpejtesine mesatare nese rruga eshte 150 m dhe koha 10 s.", zgjidhja: "15", hapi1: "Zgjidh formulen: v<sub>mes</sub> = l / t", hapi2: "Zevendeso: v.mes = 150 / 10", hapi3: "Llogarit: 15 m/s" }
         },
         { 
             name: "7. Shpejtësia e castit", sym: "v",
