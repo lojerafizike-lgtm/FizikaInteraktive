@@ -39,7 +39,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
         },
         { 
             name: "6. Shpejtësia mesatare", sym: "V<sub>mes</sub>",
-            form: "v<sub>mes</sub> = <span class="fraction"><span class="top">l</span><span class="bottom">t</span></span>",
+            form: "v.mes = l/t",
             unit: "m/s", otherUnits: "km/h", teTjera: "", nature: "Vektoriale", desc: "Raporti i zhvendosjes me intervalin e kohës gjatë të cilit ka ndodhur kjo zhvendosje.", phetUrl: "https://phet.colorado.edu/en/simulation/moving-man", img: "https://study.com/cimages/videopreview/screencapture_measuringspeed_140291.jpg", vid: "https://www.youtube.com/embed/UVKbAAw07Bg", gameUrl: "/loja-shpejtesia-mesatare.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni shpejtesine mesatare nese rruga eshte 150 m dhe koha 10 s.</p></div></div>`,
             ushtrimInteraktiv: { pyetja: "Gjeni shpejtesine mesatare nese rruga eshte 150 m dhe koha 10 s.", zgjidhja: "15", hapi1: "Zgjidh formulen: v<sub>mes</sub> = l / t", hapi2: "Zevendeso: v<sub>mes</sub> = 150 / 10", hapi3: "Llogarit: 15 m/s" }
@@ -98,11 +98,11 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: { pyetja: "Gjeni shpejtesine lineare v nese shpejtesia kendore eshte 4 rad/s dhe rrezja 2 m.", zgjidhja: "8", hapi1: "Zgjidh formulen: V = ω * r", hapi2: "Zevendeso: V = 4 * 2", hapi3: "Llogarit: 8 m/s" }
         },
         { 
-            name: "14. Nxitimi qendërsynues", sym: "a_c",
+            name: "14. Nxitimi qendërsynues", sym: "a<sub>c</sub>",
             form: "a_c = v² / r\na_qs = v² / R = ω²R = 4π²f²R",
             unit: "m/s²", otherUnits: "-", teTjera: "", nature: "Vektoriale", desc: "Nxitimi qendërsynues lidhet me ndryshimin e vektorit të shpejtësisë në njësinë e kohës gjatë lëvizjes rrethore.", phetUrl: "https://phet.colorado.edu/en/simulation/gravity-and-orbits", img: "https://sq.swewe.net/upimage/21/ca/21cac8394f2f5a72c4110c172e1372e0.jpg", vid: "https://www.youtube.com/embed/c2rgbtG43_4", gameUrl:"/aqs.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni nxitimin qendersynues nese shpejtesia eshte 6 m/s dhe rrezja 3 m.</p></div></div>`,
-            ushtrimInteraktiv: { pyetja: "Gjeni nxitimin qendersynues nese shpejtesia eshte 6 m/s dhe rrezja 3 m.", zgjidhja: "12", hapi1: "Zgjidh formulen: a_c = v² / r", hapi2: "Zevendeso: a_c = 6² / 3", hapi3: "Llogarit: 36 / 3 = 12 m/s²" }
+            ushtrimInteraktiv: { pyetja: "Gjeni nxitimin qendersynues nese shpejtesia eshte 6 m/s dhe rrezja 3 m.", zgjidhja: "12", hapi1: "Zgjidh formulen: a<sub>c</sub> = v² / r", hapi2: "Zevendeso: a<sub>c</sub> = 6² / 3", hapi3: "Llogarit: 36 / 3 = 12 m/s²" }
         },
         { 
             name: "15. Këndi", sym: "θ",
@@ -124,7 +124,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             name: "1. Forca", sym: "F",
             form: "F = ma",
             unit: "N", otherUnits: "1N = 1kg·m/s²",
-            teTjera: "3 Ligjet e Njutonit:\n1 - Nëse s'ka F ose F_R = 0 → trupi në prehje ose L.D.NJ.\n2 - a = F/m,  a ∝ F,  a ∝ 1/m\n3 - F₂,₁ = –F₁,₂",
+            teTjera: "3 Ligjet e Njutonit:\n1 - Nëse s'ka F ose F<sub>R</sub> = 0 → trupi në prehje ose L.D.NJ.\n2 - a = F/m,  a ∝ F,  a ∝ 1/m\n3 - F₂,₁ = –F₁,₂",
             nature: "Vektoriale", desc: "Veprimi i një trupi mbi një tjetër.", phetUrl: "https://phet.colorado.edu/en/simulation/forces-and-motion-basics", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiDRnwxNuMkmLvPY5p1CvEK61OuaW7qVGHb1pcym-TbWBBNj1s1PxvkIwFjcHVjtAysPbi-93OW7bIcQCc5vSX_jHq9B0gmYAhjaJOOsG8XO5qCvo6wmz1N3W2_JRNtIUKZkdFrMv-6bkA/s1600/4c004beab8150bef9ba245b7f3b589f4cf708850.gif", vid: "https://www.youtube.com/embed/56y06xK21es", gameUrl: "/loja-forca.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni forcen F nese masa m = 5 kg dhe nxitimi a = 3 m/s².</p></div></div>`,
             ushtrimInteraktiv: { pyetja: "Gjeni forcen F nese masa m = 5 kg dhe nxitimi a = 3 m/s².", zgjidhja: "15", hapi1: "Zgjidh formulen: F = m * a", hapi2: "Zevendeso: F = 5 * 3", hapi3: "Llogarit: 15 N" }
@@ -151,21 +151,21 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: { pyetja: "Gjeni forcen e rendeses G per masen m = 10 kg (merr g = 9.8).", zgjidhja: "98", hapi1: "Zgjidh formulen: G = m * g", hapi2: "Zevendeso: G = 10 * 9.8", hapi3: "Llogarit: 98 N" }
         },
         { 
-            name: "5. Forca e fërkimit", sym: "F_f",
+            name: "5. Forca e fërkimit", sym: "F<sub>f</sub>",
             form: "F_f = μN",
             unit: "N", otherUnits: "1N = 1kg·m/s²", teTjera: "", nature: "Vektoriale", desc: "Forca që lind gjatë sipërfaqes fërkuese të 2 trupave dhe pengon rrëshqitjen.", phetUrl: "https://phet.colorado.edu/en/simulation/forces-and-motion-basics", img: "https://images.my.labster.com/v2/NL1/803332e1-5a17-4356-90f0-4daa5a9584f0/NL1_Friction_Force_.en.x1024.png", vid: "https://www.youtube.com/embed/2Tz7osdJkiM", gameUrl: "/loja-ferkimi.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni forcen e ferkimit nese koeficienti eshte 0.2 dhe forca normale N = 50 N.</p></div></div>`,
-            ushtrimInteraktiv: { pyetja: "Gjeni forcen e ferkimit nese koeficienti eshte 0.2 dhe forca normale N = 50 N.", zgjidhja: "10", hapi1: "Zgjidh formulen: F_f = μ * N", hapi2: "Zevendeso: F_f = 0.2 * 50", hapi3: "Llogarit: 10 N" }
+            ushtrimInteraktiv: { pyetja: "Gjeni forcen e ferkimit nese koeficienti eshte 0.2 dhe forca normale N = 50 N.", zgjidhja: "10", hapi1: "Zgjidh formulen: F<sub>f</sub> = μ * N", hapi2: "Zevendeso: F<sub>f</sub> = 0.2 * 50", hapi3: "Llogarit: 10 N" }
         },
         { 
             name: "6. Koeficienti i fërkimit", sym: "μ",
             form: "μ = F_f / N",
             unit: "—", otherUnits: "-", teTjera: "", nature: "Skalare", desc: "Madhësi pa njësi që tregon ashpërsine e sipërfaqeve takuese.", phetUrl: "https://phet.colorado.edu/en/simulation/forces-and-motion-basics", img: "https://force-channel.com/wp-content/uploads/2023/11/en_%E6%91%A9%E6%93%A6%E5%8A%9B%E3%81%A8%E6%91%A9%E6%93%A6%E4%BF%82%E6%95%B0%E3%81%AE%E9%96%A2%E4%BF%82.jpg", vid: "https://www.youtube.com/embed/BKQ8gQLQRnI", gameUrl: "/loja-koef-ferkimi.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni koeficientin μ nese forca e ferkimit eshte 20 N dhe N = 100 N.</p></div></div>`,
-            ushtrimInteraktiv: { pyetja: "Gjeni koeficientin μ nese forca e ferkimit eshte 20 N dhe N = 100 N.", zgjidhja: "0.2", hapi1: "Zgjidh formulen: μ = F_f / N", hapi2: "Zevendeso: μ = 20 / 100", hapi3: "Llogarit: 0.2" }
+            ushtrimInteraktiv: { pyetja: "Gjeni koeficientin μ nese forca e ferkimit eshte 20 N dhe N = 100 N.", zgjidhja: "0.2", hapi1: "Zgjidh formulen: μ = F<sub>f</sub> / N", hapi2: "Zevendeso: μ = 20 / 100", hapi3: "Llogarit: 0.2" }
         },
         { 
-            name: "7. Forca elastike", sym: "F_e",
+            name: "7. Forca elastike", sym: "F<sub>e</sub>",
             form: "F = -kx",
             unit: "N", otherUnits: "1N = 1kg·m/s²",
             teTjera: "Ligji i Hukut.\nForca elastike është në përpjestim të drejtë me shformimin dhe ka kah të kundërt me të.",
@@ -183,20 +183,20 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: { pyetja: "Gjeni konstanten k nese forca F = 50 N shkakton shformim x = 0.5 m.", zgjidhja: "100", hapi1: "Zgjidh formulen: k = F / x", hapi2: "Zevendeso: k = 50 / 0.5", hapi3: "Llogarit: 100 N/m" }
         },
         { 
-            name: "9. Forca qendërsynuese", sym: "F_c",
+            name: "9. Forca qendërsynuese", sym: "F<sub>c</sub>",
             form: "F_c = mv² / r",
             unit: "N", otherUnits: "1N = 1kg·m/s²",
             teTjera: "Forca qendërsynuese nuk është forcë e re shtesë.\nRolin e saj mund ta luajë çdo forcë apo grup forcash.",
             nature: "Vektoriale", desc: "Forca rezultante që detyron një trup të lëvizë sipas një trajektoreje rrethore.", phetUrl: "https://phet.colorado.edu/en/simulation/gravity-and-orbits", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Force_acting_as_centripetal_force.svg/500px-Force_acting_as_centripetal_force.svg.png", vid: "https://www.youtube.com/embed/aLOzqPgBpV0", gameUrl: "/loja-qendersynuese.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni forcen qendersynuese nese m = 2 kg, v = 3 m/s dhe r = 1 m.</p></div></div>`,
-            ushtrimInteraktiv: { pyetja: "Gjeni forcen qendersynuese nese m = 2 kg, v = 3 m/s dhe r = 1 m.", zgjidhja: "18", hapi1: "Zgjidh formulen: F_c = m * v² / r", hapi2: "Zevendeso: F_c = 2 * 3² / 1", hapi3: "Llogarit: 2 * 9 = 18 N" }
+            ushtrimInteraktiv: { pyetja: "Gjeni forcen qendersynuese nese m = 2 kg, v = 3 m/s dhe r = 1 m.", zgjidhja: "18", hapi1: "Zgjidh formulen: F<sub>c</sub> = m * v² / r", hapi2: "Zevendeso: F<sub>c</sub> = 2 * 3² / 1", hapi3: "Llogarit: 2 * 9 = 18 N" }
         },
         { 
-            name: "10. Forca gravitacionale", sym: "F_G",
+            name: "10. Forca gravitacionale", sym: "F<sub>G</sub>",
             form: "F = G(m₁m₂) / r²",
             unit: "N", otherUnits: "1N = 1kg·m/s²  (G → γ)", teTjera: "", nature: "Vektoriale", desc: "Forca tërheqëse e gjithësisë që vepron midis çdo dy trupave që kanë masë.", phetUrl: "https://phet.colorado.edu/en/simulation/gravity-force-lab", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0rpECqNLFAKZhNUiLZtbt2Q-pgPY88-b4uw&s", vid: "https://www.youtube.com/embed/yzjB32cooEo", gameUrl: "/loja-gravitacionale.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Sa eshte forca gravitacionale nese prodhimi i masave eshte 100 dhe rrezja 1 m? (Jep pergjigjen ne funksion te G, psh shkruaj 100)</p></div></div>`,
-            ushtrimInteraktiv: { pyetja: "Sa eshte forca gravitacionale nese prodhimi i masave eshte 100 dhe rrezja 1 m? (Jep pergjigjen ne funksion te G, psh shkruaj 100)", zgjidhja: "100", hapi1: "Zgjidh formulen: F_G = G * (m1*m2) / r²", hapi2: "Zevendeso: F_G = G * 100 / 1²", hapi3: "Llogarit: 100 * G" }
+            ushtrimInteraktiv: { pyetja: "Sa eshte forca gravitacionale nese prodhimi i masave eshte 100 dhe rrezja 1 m? (Jep pergjigjen ne funksion te G, psh shkruaj 100)", zgjidhja: "100", hapi1: "Zgjidh formulen: F<sub>G</sub> = G * (m1*m2) / r²", hapi2: "Zevendeso: F<sub>G</sub> = G * 100 / 1²", hapi3: "Llogarit: 100 * G" }
         },
         { 
             name: "11. Impulsi i forcës", sym: "Δp",
@@ -298,7 +298,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: { pyetja: "Gjeni energjine elektrike nese pajisja ka fuqi 100 W dhe punon per 10 s.", zgjidhja: "1000", hapi1: "Zgjidh formulen: E = P * t", hapi2: "Zevendeso: E = 100 * 10", hapi3: "Llogarit: 1000 J" }
         },
         { 
-            name: "9. Energjia kimike", sym: "E_kim",
+            name: "9. Energjia kimike", sym: "E<sub>kim</sub>",
             form: "—",
             unit: "J", otherUnits: "cal, kcal", teTjera: "", nature: "Skalare", desc: "Energjia e ruajtur në lidhjet kimike të substancave, e cila çlirohet gjatë reaksioneve.", phetUrl: "https://phet.colorado.edu/en/simulation/energy-forms-and-changes", img: "https://www.sciencefacts.net/wp-content/uploads/2022/07/Chemical-Energy.jpg", vid: "https://www.youtube.com/embed/Iqwrl79a55A", gameUrl:"/energjia kimike.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Nese 1 gram i nje lende jep 4 J, sa energji japin 5 gram?</p></div></div>`,
@@ -409,7 +409,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: { pyetja: "Gjeni vleren absolute te f.e.m nese N=1, ndryshimi i fluksit eshte 10 Wb per koken 2 s.", zgjidhja: "5", hapi1: "Zgjidh formulen: ε = N * ΔΦ / Δt (vlere absolute)", hapi2: "Zevendeso: ε = 1 * 10 / 2", hapi3: "Llogarit: 5 V" }
         },
         { 
-            name: "5. Rryme e induktuar", sym: "I_in",
+            name: "5. Rryme e induktuar", sym: "I<sub>in</sub>",
             form: "I = ε / R",
             unit: "A", otherUnits: "mA", teTjera: "", nature: "Skalare", desc: "Rryma elektrike që lind në një përcjellës të mbyllur kur ai ndodhet në një fushë magnetike të ndryshueshme.", phetUrl: "https://phet.colorado.edu/en/simulation/faradays-law", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqk5jc32xKcLRo2y10dfbSwmELAekKYKdSSw&s", vid: "https://www.youtube.com/embed/fOeWUbvqRgY", gameUrl: "/halelujahhhhh.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni rrymen e induktuar nese f.e.m = 10 V dhe R = 2 Ω.</p></div></div>`,
@@ -455,7 +455,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             form: "A<sub>d</sub> = h f<sub>prag</sub>", 
             unit: "J", 
             otherUnits: "eV", 
-            teTjera: "E = A_d + E_k është ekuacioni i Ajnshtajnit për fotoefektin. Për E ≥ A_d ndodh fotoefekti.", 
+            teTjera: "E = A<sub>d</sub> + E<sub>k</sub> është ekuacioni i Ajnshtajnit për fotoefektin. Për E ≥ A_d ndodh fotoefekti.", 
             ushtrime: `<div class="space-y-4 text-slate-600 text-left">
   <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
     <p class="font-bold text-blue-800 mb-2">Ushtrim mbi fotoefektin:</p>
@@ -466,8 +466,8 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: {
               pyetja: "Mbi nje pllake metali bie rrezatim elektromagnetik. Duhet te gjendet gjatesia valore maksimale qe shkakton fotoefekt. Jepet: A_d = 3 eV, h = 6.63 × 10⁻³⁴ J·s, c = 3 × 10⁸ m/s, e = 1.6 × 10⁻¹⁹ C. (Jep pergjigjen ne μm)",
               zgjidhja: "0.4",
-              hapi1: "Zgjidh formulen: A_d = hf = hc / λ  =>  λ = hc / A_d",
-              hapi2: "Zevendeso vlerat: A_d = 3 × 1.6 × 10⁻¹⁹ = 4.8 × 10⁻¹⁹ J. λ = (6.63 × 10⁻³⁴ × 3 × 10⁸) / (4.8 × 10⁻¹⁹)",
+              hapi1: "Zgjidh formulen: A<sub>d</sub> = hf = hc / λ  =>  λ = hc / A_d",
+              hapi2: "Zevendeso vlerat: A<sub>d</sub> = 3 × 1.6 × 10⁻¹⁹ = 4.8 × 10⁻¹⁹ J. λ = (6.63 × 10⁻³⁴ × 3 × 10⁸) / (4.8 × 10⁻¹⁹)",
               hapi3: "Llogarit: λ = 0.4 × 10⁻⁶ m = 0.4 μm"
             },
             nature: "Skalare", 
@@ -493,10 +493,10 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
   </div>
 </div>`,
             ushtrimInteraktiv: {
-              pyetja: "Nje elektron ka energji kinetike E_k = 2 eV. Gjej gjatesine e vales se De Brojit. (Jep pergjigjen ne nm)",
+              pyetja: "Nje elektron ka energji kinetike E<sub>k</sub> = 2 eV. Gjej gjatesine e vales se De Brojit. (Jep pergjigjen ne nm)",
               zgjidhja: "0.87",
-              hapi1: "Zgjidh formulen: λ = h / (mv) dhe E_k = mv² / 2 => v = √(2E_k / m)",
-              hapi2: "Zevendeso vlerat: λ = h / √(2mE_k)",
+              hapi1: "Zgjidh formulen: λ = h / (mv) dhe E<sub>k</sub> = mv² / 2 => v = √(2E_k / m)",
+              hapi2: "Zevendeso vlerat: λ = h / √(2mE<sub>k</sub>)",
               hapi3: "Llogarit: Pas zevendesimit te mases se elektronit dhe h, λ ≈ 0.87 nm"
             },
             nature: "Skalare", 
@@ -524,9 +524,9 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             ushtrimInteraktiv: {
               pyetja: "Nje izotop radioaktiv e ka perioden e gjysmezberthimit 2 ore. Sa pjese ka mbetur pas 4 oresh? (Shkruaj si thyese p.sh. 1/4)",
               zgjidhja: "1/4",
-              hapi1: "Zgjidh formulen: N = N_0 / 2^(t/T)",
-              hapi2: "Zevendeso vlerat: Pas 1 periode (2 ore): N = N_0 / 2. Pas 2 periodash (4 ore = 2T).",
-              hapi3: "Llogarit: N = (N_0 / 2) / 2 = N_0 / 4. Pra ka mbetur 1/4"
+              hapi1: "Zgjidh formulen: N = N₀ / 2^(t/T)",
+              hapi2: "Zevendeso vlerat: Pas 1 periode (2 ore): N = N₀ / 2. Pas 2 periodash (4 ore = 2T).",
+              hapi3: "Llogarit: N = (N₀ / 2) / 2 = N₀ / 4. Pra ka mbetur 1/4"
             },
             nature: "Skalare", 
             desc: "Koha gjatë së cilës zbërthehet gjysma e bërthamave radioaktive të lëndës së dhëne.", 
@@ -694,9 +694,9 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             }
         },
         {
-            name: "7. Nxehtësia specifike e shkrirjes", sym: "L_sh",
+            name: "7. Nxehtësia specifike e shkrirjes", sym: "L<sub>sh</sub>",
             form: "L_sh = Q / m",
-            unit: "J/kg", otherUnits: "", teTjera: "Q = L_sh · m", 
+            unit: "J/kg", otherUnits: "", teTjera: "Q = L<sub>sh</sub> · m", 
             kuic: {
               titulli: "Nxehtësia dhe Ndryshimi i Gjendjes",
               pyetjet: [
@@ -758,17 +758,17 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             nature: "Skalare", desc: "Nxehtësia specifike e shkrirjes është nxehtësia që i duhet 1 kg lënde për ta shkrirë plotësisht, marrë në temperaturën e shkrirjes.", phetUrl: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_all.html", img: "https://chemistrytalk.org/wp-content/uploads/2023/03/fusion-article-heating-curve-standard-1-1024x679.png", vid: "https://www.youtube.com/embed/JzaVEQoL578", gameUrl: "/loja-lsh.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Sa nxehtësi nevojitet për të shkrirë 2kg akull në 0℃? (L_sh = 334000 J/kg)</p></div></div>`,
             ushtrimInteraktiv: {
-              pyetja: "Sa nxehtësi nevojitet për të shkrirë 2kg akull në 0℃? (L_sh = 334000 J/kg)",
+              pyetja: "Sa nxehtësi nevojitet për të shkrirë 2kg akull në 0℃? (L<sub>sh</sub> = 334000 J/kg)",
               zgjidhja: "668000",
-              hapi1: "Zgjidh formulën: Q = L_sh * m",
+              hapi1: "Zgjidh formulën: Q = L<sub>sh</sub> * m",
               hapi2: "Zëvendëso: Q = 334000 * 2",
               hapi3: "Llogarit: 668000 J"
             }
         },
         {
-            name: "8. Nxehtësia specifike e avullimit", sym: "L_av",
+            name: "8. Nxehtësia specifike e avullimit", sym: "L<sub>av</sub>",
             form: "L_av = Q / m\nQ_av = L_av · m",
-            unit: "J/kg", otherUnits: "", teTjera: "Q_av = L_av · m", 
+            unit: "J/kg", otherUnits: "", teTjera: "Q<sub>av</sub>= L<sub>av</sub> · m", 
             kuic: {
               titulli: "Nxehtësia dhe Ndryshimi i Gjendjes",
               pyetjet: [
@@ -830,9 +830,9 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             nature: "Skalare", desc: "Nxehtësia specifike e avullimit është nxehtësia që i duhet 1 kg lënde për ta avulluar plotësisht, marrë në temperaturën e vlimit.", phetUrl: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_all.html", img: "https://www.chemistrylearner.com/wp-content/uploads/2022/10/Heat-of-Vaporization.jpg", vid: "https://www.youtube.com/embed/ocV8l66Ssec", gameUrl: "/loja-lav.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim (Zbatim):</p><p>Sa nxehtësi i duhen 2 kg ujë në 100℃ për tu avulluar plotësisht? (L_av = 2300000 J/kg)</p></div></div>`,
             ushtrimInteraktiv: {
-              pyetja: "Sa nxehtësi (Q_av) i duhen 2 kg ujë në 100℃ për tu avulluar plotësisht? (L_av = 2300000 J/kg)",
+              pyetja: "Sa nxehtësi (Q_av) i duhen 2 kg ujë në 100℃ për tu avulluar plotësisht? (L<sub>av</sub> = 2300000 J/kg)",
               zgjidhja: "4600000",
-              hapi1: "Zgjidh formulën: Q = L_av * m",
+              hapi1: "Zgjidh formulën: Q = L<sub>av</sub> * m",
               hapi2: "Zëvendëso: Q = 2300000 * 2",
               hapi3: "Llogarit: 4600000 J"
             }
