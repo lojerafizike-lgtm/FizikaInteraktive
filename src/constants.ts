@@ -107,7 +107,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
         { 
             name: "15. Këndi", sym: "θ",
             form: "θ = s / r",
-            unit: "rad", otherUnits: "gradë", teTjera: "", nature: "Skalare", desc: "Hapësira midis dy rrezeve që nisin nga e njëjta pikë, e matur në radian.", phetUrl: "https://phet.colorado.edu/en/simulation/projectile-motion", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Angle_measure.svg/250px-Angle_measure.svg.png", vid: "https://www.youtube.com/embed/XhEX-4eDb-c", gameUrl:"/shpejtesiakendore",
+            unit: "rad", otherUnits: "gradë", teTjera: "", nature: "Skalare", desc: "Hapësira midis dy rrezeve që nisin nga e njëjta pikë, e matur në radian.", phetUrl: "https://phet.colorado.edu/en/simulation/projectile-motion", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Angle_measure.svg/250px-Angle_measure.svg.png", vid: "https://www.youtube.com/embed/XhEX-4eDb-c", gameUrl:"/kendi.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Gjeni kendin θ ne radian nese harku s eshte 10 m dhe rrezja r eshte 2 m.</p></div></div>`,
             ushtrimInteraktiv: { pyetja: "Gjeni kendin θ ne radian nese harku s eshte 10 m dhe rrezja r eshte 2 m.", zgjidhja: "5", hapi1: "Zgjidh formulen: θ = s / r", hapi2: "Zevendeso: θ = 10 / 2", hapi3: "Llogarit: 5 rad" }
         },
