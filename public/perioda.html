@@ -3,219 +3,454 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmonia e Fizikës</title>
+    <title>Perioda e Lëkundjes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #f0f4f8;
-            --card: #ffffff;
-            --primary: #a3cdf1;
-            --secondary: #ffcfd2;
-            --accent: #b9fbc0;
-            --text: #4a5568;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            font-family: 'Nunito', sans-serif;
+            background: #FAF5FF;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
         }
 
         .container {
-            background: var(--card);
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            width: 90%;
-            max-width: 380px;
-            text-align: center;
-        }
-
-        h1 { font-size: 1.5rem; color: #718096; margin-bottom: 10px; }
-
-        .formula {
-            background: var(--bg);
-            padding: 15px;
-            border-radius: 20px;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: #2d3748;
-        }
-
-        /* Zona e lëkundjes */
-        .oscillator-box {
-            height: 100px;
-            background: #f8fafc;
-            border-radius: 20px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            border: 2px solid #edf2f7;
-            overflow: hidden;
-        }
-
-        .ball {
-            width: 40px;
-            height: 40px;
-            background: var(--secondary);
-            border-radius: 50%;
-            position: absolute;
-            left: 0;
-            box-shadow: 0 4px 10px rgba(255, 207, 210, 0.6);
-        }
-
-        .target-box {
-            background: var(--primary);
-            color: white;
-            padding: 10px;
-            border-radius: 15px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .slider-container {
-            margin: 20px 0;
-        }
-
-        input[type="range"] {
+            background: white;
+            border-radius: 28px;
+            padding: 26px 22px 20px;
+            box-shadow: 0 8px 36px rgba(139,92,246,0.08);
+            max-width: 440px;
             width: 100%;
-            cursor: pointer;
-            accent-color: var(--primary);
+            position: relative;
+            z-index: 1;
+            border: 2px solid #EDE9FE;
         }
 
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 20px;
+        .title-section { text-align: center; margin-bottom: 14px; }
+        h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: #C4B5FD; margin-bottom: 2px; }
+        .subtitle { font-size: 0.82rem; color: #A1A1AA; font-weight: 700; }
+
+        .prog { display: flex; justify-content: center; gap: 7px; margin-bottom: 14px; }
+        .prog-d { width: 11px; height: 11px; border-radius: 50%; background: #EDE9FE; transition: all 0.4s ease; }
+        .prog-d.done { background: #BBF7D0; transform: scale(1.15); }
+        .prog-d.cur { background: #C4B5FD; animation: pPulse 1.2s ease-in-out infinite; }
+        @keyframes pPulse { 0%,100%{box-shadow:0 0 0 0 rgba(196,181,253,0.4)} 50%{box-shadow:0 0 0 6px rgba(196,181,253,0)} }
+
+        .wave-area {
+            position: relative; width: 100%;
+            background: #F5F0FF; border-radius: 20px; overflow: hidden;
+            margin-bottom: 16px; border: 2px solid #EDE9FE;
         }
+        .wave-canvas { display: block; width: 100%; height: 200px; }
+        .wave-label {
+            position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+            font-family: 'Fredoka One', cursive; font-size: 0.85rem; color: #C4B5FD;
+            background: rgba(255,255,255,0.85); padding: 3px 14px; border-radius: 8px; pointer-events: none;
+        }
+
+        .info-row { display: flex; gap: 10px; margin-bottom: 14px; }
+        .ic { flex: 1; border-radius: 16px; padding: 13px 10px; text-align: center; border: 2px solid #EDE9FE; background: #F5F0FF; transition: all 0.3s; }
+        .ic-t.ok { background: #ECFDF5; border-color: #BBF7D0; animation: icGlow 0.5s ease; }
+        @keyframes icGlow { 50%{box-shadow:0 0 18px rgba(134,239,172,0.3)} }
+        .ic-l { font-size: 0.7rem; color: #A1A1AA; font-weight: 800; margin-bottom: 3px; }
+        .ic-v { font-family: 'Fredoka One', cursive; font-size: 1.25rem; color: #6B7280; }
+        .ic-u { font-size: 0.75rem; color: #A1A1AA; }
+
+        .sl-sec { margin-bottom: 18px; }
+        .sl-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .sl-title { font-weight: 800; color: #6B7280; font-size: 0.9rem; }
+        .sl-val { font-family: 'Fredoka One', cursive; color: #C4B5FD; font-size: 1.1rem; }
+
+        .sl-track {
+            position: relative; width: 100%; height: 14px;
+            background: #F5F0FF; border-radius: 7px; cursor: pointer; border: 2px solid #EDE9FE;
+        }
+        .sl-fill {
+            position: absolute; top: 0; left: 0; height: 100%;
+            background: #DDD6FE; border-radius: 5px 0 0 5px; transition: width 0.05s;
+        }
+        .sl-thumb {
+            position: absolute; top: 50%; transform: translate(-50%, -50%);
+            width: 26px; height: 26px; background: white;
+            border: 3px solid #C4B5FD; border-radius: 50%; cursor: grab;
+            box-shadow: 0 2px 10px rgba(196,181,253,0.25); transition: box-shadow 0.2s;
+        }
+        .sl-thumb:hover { box-shadow: 0 2px 16px rgba(196,181,253,0.4); }
+        .sl-thumb:active { cursor: grabbing; box-shadow: 0 2px 20px rgba(196,181,253,0.5); }
+        .sl-target {
+            position: absolute; top: -6px; transform: translateX(-50%);
+            width: 3px; height: 26px; background: #BBF7D0; border-radius: 2px; opacity: 0.6; pointer-events: none;
+        }
+        .sl-target::after {
+            content: 'T'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+            font-family: 'Fredoka One', cursive; font-size: 0.6rem; color: #86EFAC;
+        }
+
+        #fb { text-align: center; font-family: 'Fredoka One', cursive; font-size: 0.95rem; min-height: 26px; margin-bottom: 10px; }
+        .fb-ok { color: #86EFAC; animation: fbP .45s ease; }
+        .fb-err { color: #FCA5A5; animation: fbS .45s ease; }
+        @keyframes fbP { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+        @keyframes fbS { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 50%{transform:translateX(7px)} 75%{transform:translateX(-5px)} }
 
         .btn {
-            background: var(--accent);
-            color: #2d3748;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s;
+            font-family: 'Fredoka One', cursive; width: 100%; padding: 13px;
+            background: #DDD6FE; color: white; border: none; border-radius: 14px;
+            cursor: pointer; font-size: 1.05rem;
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 4px 0 #C4B5FD, 0 6px 16px rgba(196,181,253,0.2); margin-bottom: 14px;
         }
+        .btn:hover { background: #EDE9FE; color: #C4B5FD; transform: translateY(-2px); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #C4B5FD; }
 
-        .btn:active { transform: scale(0.98); }
+        .stats { display: flex; gap: 8px; }
+        .st { flex: 1; border-radius: 12px; padding: 9px 8px; text-align: center; background: #F5F0FF; }
+        .st-l { font-size: 0.68rem; color: #A1A1AA; font-weight: 800; }
+        .st-v { font-family: 'Fredoka One', cursive; font-size: 1.05rem; color: #6B7280; }
 
-        /* Mesazhi përfundimtar */
-        #result {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
+        .hint {
+            background: #FEF9C3; border: 2px solid #FDE68A; border-radius: 12px;
+            padding: 10px 14px; margin-top: 10px; font-size: 0.82rem;
+            color: #92400E; font-weight: 700; display: none;
         }
+        .hint.show { display: block; animation: hSlide 0.3s ease; }
+        @keyframes hSlide { 0%{transform:translateY(-8px);opacity:0} 100%{transform:translateY(0);opacity:1} }
+
+        .cft { position: fixed; pointer-events: none; z-index: 100; animation: cftF linear forwards; }
+        @keyframes cftF { 0%{transform:translateY(-15px) rotate(0deg) scale(1);opacity:1} 100%{transform:translateY(100vh) rotate(600deg) scale(.2);opacity:0} }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Rrjedha Harmonike</h1>
-        
-        <div class="formula">
-            Formula: $$T = \frac{1}{f}$$
-        </div>
-
-        <div class="target-box">
-            Synimi: Perioda T = <span id="target-T">0.50</span>s
-        </div>
-
-        <div class="oscillator-box">
-            <div class="ball" id="ball"></div>
-        </div>
-
-        <div class="stats">
-            <span>f = <span id="f-val">1.0</span> Hz</span>
-            <span>T ≈ <span id="t-calc">1.00</span>s</span>
-        </div>
-
-        <div class="slider-container">
-            <input type="range" id="f-slider" min="0.5" max="4.0" step="0.1" value="1.0">
-        </div>
-
-        <button class="btn" onclick="kontrollo()">KONTROLLO</button>
+<div class="container">
+    <div class="title-section">
+        <h2>Perioda e Lëkundjes</h2>
+        <p class="subtitle">Gjej periodën e duhur nga vala!</p>
     </div>
 
-    <div id="result">
-        <h2 id="res-title"></h2>
-        <p id="res-msg"></p>
-        <button class="btn" style="width: auto; background: var(--primary);" onclick="mbyll()">Vazhdo</button>
+    <div class="prog" id="prog">
+        <div class="prog-d cur"></div>
+        <div class="prog-d"></div>
+        <div class="prog-d"></div>
+        <div class="prog-d"></div>
+        <div class="prog-d"></div>
     </div>
 
-    <script>
-        const nivelet = [0.50, 0.25, 1.00, 0.40, 0.80];
-        let niveliAktual = 0;
-        let f = 1.0;
-        const ball = document.getElementById('ball');
-        const slider = document.getElementById('f-slider');
+    <div class="wave-area">
+        <canvas class="wave-canvas" id="waveCanvas"></canvas>
+        <div class="wave-label" id="waveLabel">Perioda e synuar: 0.50 s</div>
+    </div>
 
-        // Animacioni i lëvizjes
-        let nisja = Date.now();
-        function lëviz() {
-            let tani = Date.now();
-            let koha = (tani - nisja) / 1000;
-            // Pozicioni x: Qendra (140) + Amplituda (120) * sin(2 * PI * f * koha)
-            let x = 140 + 120 * Math.sin(2 * Math.PI * f * koha);
-            ball.style.left = x + "px";
-            requestAnimationFrame(lëviz);
+    <div class="info-row">
+        <div class="ic">
+            <div class="ic-l">Frekuenca (f)</div>
+            <div class="ic-v" id="freqV">2.00 <span class="ic-u">Hz</span></div>
+        </div>
+        <div class="ic ic-t" id="targetCard">
+            <div class="ic-l">Perioda e synuar (T)</div>
+            <div class="ic-v" id="targetV">0.50 <span class="ic-u">s</span></div>
+        </div>
+    </div>
+
+    <div class="sl-sec">
+        <div class="sl-head">
+            <span class="sl-title">Perioda juaj (T):</span>
+            <span class="sl-val" id="slDisp">1.00 s</span>
+        </div>
+        <div class="sl-track" id="slTrack">
+            <div class="sl-fill" id="slFill" style="width:50%"></div>
+            <div class="sl-target" id="slTarget"></div>
+            <div class="sl-thumb" id="slThumb" style="left:50%"></div>
+        </div>
+    </div>
+
+    <div id="fb"></div>
+
+    <button class="btn" onclick="check()">Kontrollo Periodën</button>
+
+    <div class="stats">
+        <div class="st"><div class="st-l">Niveli</div><div class="st-v" id="dLvl">1</div></div>
+        <div class="st"><div class="st-l">Pikë</div><div class="st-v" id="dScr">0</div></div>
+        <div class="st"><div class="st-l">Precizion</div><div class="st-v" id="dAcc">--</div></div>
+    </div>
+
+    <div class="hint" id="hint"></div>
+</div>
+
+<script>
+    const canvas = document.getElementById('waveCanvas');
+    const ctx = canvas.getContext('2d');
+    let lvl = 1, scr = 0, targetT = 0.5, curT = 1.0, totalA = 0, okA = 0;
+    const minT = 0.2, maxT = 3.0;
+    let animFrame = null;
+    let phase = 0;
+
+    function resizeCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * 2;
+        canvas.height = 400;
+        canvas.style.height = '200px';
+    }
+
+    function drawWave() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const dpr = W / (canvas.clientWidth || 350);
+        const padX = 40 * dpr;
+        const padY = 30 * dpr;
+        const plotW = W - padX * 2;
+        const plotH = H - padY * 2;
+        const midY = padY + plotH / 2;
+
+        // Grid
+        ctx.strokeStyle = 'rgba(196,181,253,0.12)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+            const y = padY + (plotH / 4) * i;
+            ctx.beginPath(); ctx.moveTo(padX, y); ctx.lineTo(padX + plotW, y); ctx.stroke();
         }
-        lëviz();
+        for (let i = 0; i <= 8; i++) {
+            const x = padX + (plotW / 8) * i;
+            ctx.beginPath(); ctx.moveTo(x, padY); ctx.lineTo(x, padY + plotH); ctx.stroke();
+        }
 
-        slider.addEventListener('input', (e) => {
-            f = parseFloat(e.target.value);
-            document.getElementById('f-val').innerText = f.toFixed(1);
-            document.getElementById('t-calc').innerText = (1/f).toFixed(2);
+        // Axis
+        ctx.strokeStyle = 'rgba(161,161,170,0.3)';
+        ctx.lineWidth = 2 * dpr;
+        ctx.beginPath(); ctx.moveTo(padX, midY); ctx.lineTo(padX + plotW, midY); ctx.stroke();
+
+        // Arrows
+        ctx.fillStyle = 'rgba(161,161,170,0.4)';
+        ctx.beginPath(); ctx.moveTo(padX, padY - 5 * dpr); ctx.lineTo(padX - 5 * dpr, padY + 5 * dpr); ctx.lineTo(padX + 5 * dpr, padY + 5 * dpr); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(padX + plotW + 5 * dpr, midY); ctx.lineTo(padX + plotW - 5 * dpr, midY - 5 * dpr); ctx.lineTo(padX + plotW - 5 * dpr, midY + 5 * dpr); ctx.fill();
+
+        const displayFreq = 1 / targetT;
+        const totalDisplayTime = 3 / displayFreq;
+        const pixelsPerSec = plotW / totalDisplayTime;
+        const amplitude = plotH * 0.38;
+
+        // Target wave (dashed, light)
+        ctx.strokeStyle = 'rgba(196,181,253,0.35)';
+        ctx.lineWidth = 3 * dpr;
+        ctx.setLineDash([6 * dpr, 4 * dpr]);
+        ctx.beginPath();
+        for (let px = 0; px <= plotW; px++) {
+            const t = px / pixelsPerSec;
+            const y = midY - amplitude * Math.sin(2 * Math.PI * displayFreq * t + phase);
+            if (px === 0) ctx.moveTo(padX + px, y);
+            else ctx.lineTo(padX + px, y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // User wave (solid)
+        const userFreq = 1 / curT;
+        ctx.strokeStyle = '#C4B5FD';
+        ctx.lineWidth = 3.5 * dpr;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        for (let px = 0; px <= plotW; px++) {
+            const t = px / pixelsPerSec;
+            const y = midY - amplitude * Math.sin(2 * Math.PI * userFreq * t + phase);
+            if (px === 0) ctx.moveTo(padX + px, y);
+            else ctx.lineTo(padX + px, y);
+        }
+        ctx.stroke();
+
+        // Period markers
+        const periodPx = targetT * pixelsPerSec;
+        const startOffset = (phase / (2 * Math.PI * displayFreq)) * pixelsPerSec;
+        let markerStart = padX + ((startOffset % periodPx) + periodPx) % periodPx;
+        if (markerStart + periodPx > padX + plotW - 10 * dpr) markerStart -= periodPx;
+        if (markerStart < padX + 5 * dpr) markerStart += periodPx;
+
+        const m1 = markerStart;
+        const m2 = markerStart + periodPx;
+
+        // Red vertical lines
+        ctx.strokeStyle = '#FCA5A5';
+        ctx.lineWidth = 3 * dpr;
+        ctx.beginPath(); ctx.moveTo(m1, midY - amplitude - 15 * dpr); ctx.lineTo(m1, midY + amplitude + 15 * dpr); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(m2, midY - amplitude - 15 * dpr); ctx.lineTo(m2, midY + amplitude + 15 * dpr); ctx.stroke();
+
+        // Horizontal arrows
+        const arrowY = midY + amplitude + 28 * dpr;
+        ctx.strokeStyle = '#FCA5A5';
+        ctx.lineWidth = 2 * dpr;
+        ctx.beginPath(); ctx.moveTo(m1, arrowY); ctx.lineTo(m2, arrowY); ctx.stroke();
+
+        ctx.fillStyle = '#FCA5A5';
+        ctx.beginPath(); ctx.moveTo(m2, arrowY); ctx.lineTo(m2 - 6 * dpr, arrowY - 4 * dpr); ctx.lineTo(m2 - 6 * dpr, arrowY + 4 * dpr); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(m1, arrowY); ctx.lineTo(m1 + 6 * dpr, arrowY - 4 * dpr); ctx.lineTo(m1 + 6 * dpr, arrowY + 4 * dpr); ctx.fill();
+
+        // Period label
+        ctx.font = `bold ${14 * dpr}px 'Fredoka One', cursive`;
+        ctx.fillStyle = '#FCA5A5';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('Period', (m1 + m2) / 2, arrowY + 6 * dpr);
+
+        // Dots at zero crossings
+        ctx.fillStyle = '#FCA5A5';
+        ctx.beginPath(); ctx.arc(m1, midY, 4 * dpr, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(m2, midY, 4 * dpr, 0, Math.PI * 2); ctx.fill();
+
+        // Axis labels
+        ctx.font = `bold ${11 * dpr}px 'Nunito', sans-serif`;
+        ctx.fillStyle = 'rgba(161,161,170,0.5)';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('y', padX - 10 * dpr, padY);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('t', padX + plotW + 10 * dpr, midY + 5 * dpr);
+
+        // Legend
+        const legX = padX + 8 * dpr, legY = padY + 4 * dpr;
+        ctx.font = `bold ${10 * dpr}px 'Nunito', sans-serif`;
+
+        ctx.strokeStyle = 'rgba(196,181,253,0.4)';
+        ctx.lineWidth = 2.5 * dpr;
+        ctx.setLineDash([4 * dpr, 3 * dpr]);
+        ctx.beginPath(); ctx.moveTo(legX, legY + 6 * dpr); ctx.lineTo(legX + 20 * dpr, legY + 6 * dpr); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(161,161,170,0.6)';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText('Sinjal target', legX + 24 * dpr, legY + 6 * dpr);
+
+        ctx.strokeStyle = '#C4B5FD';
+        ctx.lineWidth = 2.5 * dpr;
+        ctx.beginPath(); ctx.moveTo(legX, legY + 22 * dpr); ctx.lineTo(legX + 20 * dpr, legY + 22 * dpr); ctx.stroke();
+        ctx.fillStyle = '#C4B5FD';
+        ctx.fillText('Sinjal juaj', legX + 24 * dpr, legY + 22 * dpr);
+
+        phase += 0.03;
+        animFrame = requestAnimationFrame(drawWave);
+    }
+
+    function gen() {
+        if (lvl <= 2) {
+            targetT = [0.5, 1.0, 1.5, 2.0, 2.5][~~(Math.random() * 5)];
+        } else if (lvl <= 4) {
+            targetT = Math.round((0.3 + Math.random() * 2.2) * 10) / 10;
+        } else {
+            targetT = Math.round((0.3 + Math.random() * 2.2) * 100) / 100;
+        }
+
+        const freq = 1 / targetT;
+        document.getElementById('freqV').innerHTML = freq.toFixed(2) + ' <span class="ic-u">Hz</span>';
+        document.getElementById('targetV').innerHTML = targetT.toFixed(2) + ' <span class="ic-u">s</span>';
+        document.getElementById('waveLabel').textContent = 'Perioda e synuar: ' + targetT.toFixed(2) + ' s';
+        document.getElementById('dLvl').textContent = lvl;
+        document.getElementById('fb').textContent = '';
+        document.getElementById('fb').className = '';
+        document.getElementById('hint').classList.remove('show');
+        document.getElementById('targetCard').classList.remove('ok');
+
+        document.querySelectorAll('.prog-d').forEach((d, i) => {
+            d.className = 'prog-d';
+            if (i < lvl - 1) d.classList.add('done');
+            else if (i === lvl - 1) d.classList.add('cur');
         });
 
-        function kontrollo() {
-            const synimi = nivelet[niveliAktual];
-            const kohaIme = 1 / f;
-            const diferenca = Math.abs(kohaIme - synimi);
-            
-            const overlay = document.getElementById('result');
-            const titulli = document.getElementById('res-title');
-            const mesazhi = document.getElementById('res-msg');
+        const pct = ((targetT - minT) / (maxT - minT)) * 100;
+        document.getElementById('slTarget').style.left = pct + '%';
 
-            overlay.style.display = "flex";
+        setT(1.0);
+    }
 
-            if (diferenca < 0.05) {
-                titulli.innerText = "Saktë!";
-                mesazhi.innerText = `Llogaritja jote është e saktë për periodën ${synimi}s.`;
-                window.fitore = true;
-            } else {
-                titulli.innerText = "Gabim";
-                mesazhi.innerText = `Perioda jote doli ${kohaIme.toFixed(2)}s. Provo përsëri!`;
-                window.fitore = false;
-            }
+    function setT(v) {
+        curT = Math.max(minT, Math.min(maxT, v));
+        const pct = ((curT - minT) / (maxT - minT)) * 100;
+        document.getElementById('slFill').style.width = pct + '%';
+        document.getElementById('slThumb').style.left = pct + '%';
+        document.getElementById('slDisp').textContent = curT.toFixed(2) + ' s';
+    }
+
+    let dragging = false;
+    function slInteract(e) {
+        const track = document.getElementById('slTrack');
+        const rect = track.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        let pct = ((cx - rect.left) / rect.width) * 100;
+        pct = Math.max(0, Math.min(100, pct));
+        setT(minT + (pct / 100) * (maxT - minT));
+    }
+
+    document.getElementById('slTrack').addEventListener('mousedown', e => { dragging = true; slInteract(e); });
+    document.getElementById('slThumb').addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
+    document.addEventListener('mousemove', e => { if (dragging) slInteract(e); });
+    document.addEventListener('mouseup', () => { dragging = false; });
+    document.getElementById('slTrack').addEventListener('touchstart', e => { dragging = true; slInteract(e); }, { passive: true });
+    document.getElementById('slThumb').addEventListener('touchstart', e => { dragging = true; e.preventDefault(); }, { passive: true });
+    document.addEventListener('touchmove', e => { if (dragging) slInteract(e); }, { passive: true });
+    document.addEventListener('touchend', () => { dragging = false; });
+
+    function confetti() {
+        const cs = ['#DDD6FE', '#EDE9FE', '#C4B5FD', '#BBF7D0', '#FDE68A', '#FECACA'];
+        for (let i = 0; i < 25; i++) {
+            const c = document.createElement('div');
+            c.className = 'cft';
+            c.style.left = Math.random() * 100 + '%';
+            c.style.top = '-10px';
+            c.style.width = (6 + Math.random() * 8) + 'px';
+            c.style.height = (6 + Math.random() * 8) + 'px';
+            c.style.background = cs[~~(Math.random() * cs.length)];
+            c.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+            c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+            c.style.animationDelay = Math.random() * 0.4 + 's';
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 4000);
+        }
+    }
+
+    function check() {
+        const fb = document.getElementById('fb');
+        const hint = document.getElementById('hint');
+        totalA++;
+
+        const tol = lvl <= 2 ? 0.1 : (lvl <= 4 ? 0.05 : 0.02);
+        const diff = Math.abs(curT - targetT);
+        const ok = diff <= tol;
+
+        if (ok) {
+            okA++;
+            const pts = Math.max(10, Math.round(50 - diff * 200));
+            scr += pts;
+            fb.textContent = 'Perfekt! +' + pts + ' pikë';
+            fb.className = 'fb-ok';
+            document.getElementById('targetCard').classList.add('ok');
+            confetti();
+
+            setTimeout(() => {
+                if (lvl < 5) {
+                    lvl++;
+                    gen();
+                } else {
+                    fb.textContent = 'Misioni perfundoi!';
+                    document.getElementById('dAcc').textContent = Math.round((okA / totalA) * 100) + '%';
+                }
+            }, 1500);
+        } else {
+            fb.textContent = 'Gjej perioden e sakte!';
+            fb.className = 'fb-err';
+            hint.innerHTML = '<strong>Hint:</strong> T = 1/f = 1/' + (1 / targetT).toFixed(2) + ' = ' + targetT.toFixed(2) + ' s';
+            hint.classList.add('show');
         }
 
-        function mbyll() {
-            if (window.fitore) {
-                niveliAktual = (niveliAktual + 1) % nivelet.length;
-                document.getElementById('target-T').innerText = nivelet[niveliAktual].toFixed(2);
-            }
-            document.getElementById('result').style.display = "none";
-        }
-    </script>
+        document.getElementById('dScr').textContent = scr;
+        document.getElementById('dAcc').textContent = Math.round((okA / totalA) * 100) + '%';
+    }
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    gen();
+    drawWave();
+</script>
 </body>
 </html>
