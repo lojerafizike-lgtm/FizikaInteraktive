@@ -1,81 +1,304 @@
-<!DOCTYPE html>
-<html lang="sq">
-<head>
-    <meta charset="UTF-8">
-    <title>Speed Trap - Minigame</title>
-    <style>
-        body { background: #222; color: #fff; font-family: 'Press Start 2P', cursive, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .game-box { background: #333; padding: 20px; border: 4px solid #f1c40f; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 10px 10px 0px #000; box-sizing: border-box; }
-        .formula { font-size: 1.2rem; color: #f1c40f; margin: 15px 0; border: 2px dashed #f1c40f; padding: 10px; }
-        .display { font-size: 1.5rem; background: #000; padding: 15px; border-radius: 5px; margin-bottom: 20px; color: #0f0; }
-        .input-group { margin-bottom: 20px; }
-        input { width: 80px; padding: 10px; font-size: 1.2rem; text-align: center; border: none; }
-        button { background: #f1c40f; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; font-family: inherit; }
-        button:hover { background: #fff; }
-        .track { height: 50px; background: #555; position: relative; margin: 20px 0; border-top: 2px solid #fff; border-bottom: 2px solid #fff; }
-        #car { position: absolute; left: 0; font-size: 2rem; transition: left 0.5s linear; }
-    </style>
-</head>
-<body>
 
-<div class="game-box">
-    <h2 style="font-size: 1rem;">SHPEJTËSIA E ÇASTIT</h2>
-    
-    <div class="formula">
-        v = Δx / Δt
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --mint:#d4f0e4;--mint-d:#4a9e7a;
+  --sky:#d4eaf8;--sky-d:#5a9ec8;
+  --lav:#e8e0f8;--lav-d:#8a72cc;
+  --peach:#f8e4d4;--peach-d:#c08060;
+  --yellow:#f8f0cc;--yellow-d:#a08820;
+  --pink:#f8dce8;--pink-d:#b06080;
+  --sand:#f4f0e8;
+  --white:#fdfcfa;
+  --txt:#4a4460;
+}
+body{margin:0;background:#ede8f8;font-family:'Nunito',sans-serif;width:100vw;height:100vh;overflow:hidden}
+.screen{display:none;animation:fadeIn 0.4s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.board{background:var(--white);width:100vw;height:100vh;padding:30px;border:none;border-radius:0;box-shadow:none;overflow:auto}
+
+/* INTRO */
+.intro-icon{width:88px;height:88px;margin:0 auto 16px;background:var(--lav);border-radius:50%;border:2px solid var(--lav-d);display:flex;align-items:center;justify-content:center;animation:floatY 2.4s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.intro-title{font-size:1.6rem;font-weight:900;color:var(--lav-d);text-align:center;margin-bottom:6px}
+.intro-sub{font-size:0.88rem;font-weight:700;color:var(--txt);opacity:0.65;text-align:center;margin-bottom:20px}
+.formula-card{background:var(--yellow);border-radius:16px;border:1.5px solid var(--yellow-d);padding:12px 16px;text-align:center;margin-bottom:16px}
+.formula-label{font-size:0.65rem;font-weight:800;color:var(--yellow-d);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.formula-big{font-size:1.6rem;font-weight:900;color:var(--yellow-d)}
+.explain-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px}
+.explain-card{background:var(--sand);border-radius:12px;border:1.5px solid #ddd8cc;padding:9px 8px;text-align:center}
+.explain-sym{font-size:1rem;font-weight:900;color:var(--lav-d)}
+.explain-desc{font-size:0.65rem;font-weight:700;color:var(--txt);opacity:0.6;margin-top:2px}
+.start-btn{width:100%;padding:15px;background:var(--lav-d);color:#fff;border:none;border-radius:16px;font-size:1.1rem;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 5px 0 #6a52aa;transition:transform 0.12s,box-shadow 0.12s}
+.start-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #6a52aa}
+
+/* GAME */
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.round-badge{background:var(--lav);border-radius:20px;padding:5px 14px;font-size:0.75rem;font-weight:800;color:var(--lav-d);border:1.5px solid var(--lav-d)}
+.dots{display:flex;gap:5px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--lav);border:1.5px solid var(--lav-d);transition:background 0.3s,transform 0.3s}
+.dot.filled{background:var(--peach-d);border-color:var(--peach-d);transform:scale(1.15)}
+
+.track-wrapper{background:var(--sky);border-radius:18px;border:1.5px solid var(--sky-d);padding:12px 14px;margin-bottom:14px}
+.track-label{font-size:0.65rem;font-weight:800;color:var(--sky-d);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.track{background:#e8f4fc;border-radius:12px;height:66px;position:relative;border:1.5px solid #b0d8f0;overflow:hidden}
+.track-dashes{position:absolute;top:50%;left:0;right:0;height:2px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,#b0d8f0 0,#b0d8f0 14px,transparent 14px,transparent 26px)}
+
+/* Car starts LEFT, moves RIGHT — left property goes from 4px → near right edge */
+.car-wrap{position:absolute;left:4px;top:50%;transform:translateY(-50%);transition:left 0.65s cubic-bezier(0.34,1.42,0.64,1)}
+
+/* Flag on the RIGHT */
+.finish-flag{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--mint);border-radius:14px;border:1.5px solid var(--mint-d);padding:10px 12px;text-align:center}
+.stat-label{font-size:0.65rem;font-weight:800;color:var(--mint-d);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px}
+.stat-val{font-size:1.5rem;font-weight:900;color:var(--mint-d)}
+.stat-unit{font-size:0.72rem;font-weight:800;color:var(--mint-d);opacity:0.65}
+
+.input-row{display:flex;gap:10px;margin-bottom:12px;align-items:stretch}
+.ans-input{flex:1;padding:13px 14px;font-size:1.25rem;font-weight:900;font-family:'Nunito',sans-serif;border-radius:14px;border:2px solid var(--lav-d);background:var(--lav);color:var(--lav-d);outline:none;text-align:center;transition:transform 0.15s}
+.ans-input:focus{transform:scale(1.02);box-shadow:0 0 0 4px rgba(138,114,204,0.15)}
+.ans-input::placeholder{color:rgba(138,114,204,0.38);font-size:0.9rem}
+.go-btn{background:var(--peach-d);color:#fff;border:none;border-radius:14px;padding:13px 20px;font-size:1rem;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 4px 0 #a06040;transition:transform 0.1s,box-shadow 0.1s;white-space:nowrap}
+.go-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #a06040}
+
+.feedback{border-radius:14px;padding:11px 14px;text-align:center;font-size:0.9rem;font-weight:800;min-height:44px;display:flex;align-items:center;justify-content:center;transition:all 0.25s;border:1.5px solid transparent}
+.feedback.neutral{background:var(--sand);color:var(--txt);border-color:#ddd8cc;opacity:0.8}
+.feedback.correct{background:var(--mint);color:var(--mint-d);border-color:var(--mint-d);animation:pop 0.38s cubic-bezier(0.34,1.56,0.64,1)}
+.feedback.wrong{background:var(--pink);color:var(--pink-d);border-color:var(--pink-d);animation:shake 0.38s ease}
+@keyframes pop{0%{transform:scale(0.88)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.back-link{display:block;text-align:center;margin-top:14px;font-size:0.75rem;font-weight:700;color:var(--lav-d);opacity:0.55;cursor:pointer;border:none;background:none;font-family:'Nunito',sans-serif;text-decoration:underline}
+
+/* WIN */
+.win-icon{width:80px;height:80px;margin:8px auto 14px;background:var(--yellow);border-radius:50%;border:2px solid var(--yellow-d);display:flex;align-items:center;justify-content:center;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes popIn{0%{transform:scale(0.5)}100%{transform:scale(1)}}
+.win-title{font-size:1.5rem;font-weight:900;color:var(--yellow-d);text-align:center;margin-bottom:6px}
+.win-sub{font-size:0.88rem;font-weight:700;color:var(--txt);opacity:0.65;text-align:center;margin-bottom:16px}
+.score-big{font-size:3.2rem;font-weight:900;color:var(--lav-d);text-align:center;line-height:1}
+.score-label{font-size:0.75rem;font-weight:800;color:var(--lav-d);opacity:0.6;text-align:center;margin-top:4px;margin-bottom:20px}
+.replay-btn{width:100%;padding:14px;background:var(--mint-d);color:#fff;border:none;border-radius:16px;font-size:1rem;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 4px 0 #3a7e5a;transition:transform 0.12s,box-shadow 0.12s;margin-bottom:8px}
+.replay-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #3a7e5a}
+</style>
+
+<h2 class="sr-only">Speed Trap — lojë fizike për shpejtësinë e çastit</h2>
+<div class="board">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro-screen">
+    <div class="intro-icon">
+      <!-- Car facing RIGHT -->
+      <svg width="56" height="30" viewBox="0 0 56 30" fill="none">
+        <rect x="4" y="12" width="44" height="13" rx="5" fill="#c4b4e8"/>
+        <rect x="10" y="6" width="24" height="10" rx="4" fill="#d8ccf4"/>
+        <rect x="12" y="7" width="9" height="7" rx="2" fill="#b8e4f8"/>
+        <rect x="23" y="7" width="8" height="7" rx="2" fill="#b8e4f8"/>
+        <!-- headlights right -->
+        <rect x="47" y="15" width="5" height="5" rx="2" fill="#f8f0cc"/>
+        <!-- taillights left -->
+        <rect x="3" y="15" width="4" height="5" rx="2" fill="#f4c0c0"/>
+        <circle cx="14" cy="25" r="5" fill="#8a72cc"/>
+        <circle cx="14" cy="25" r="2.2" fill="#e8e0f8"/>
+        <circle cx="40" cy="25" r="5" fill="#8a72cc"/>
+        <circle cx="40" cy="25" r="2.2" fill="#e8e0f8"/>
+      </svg>
+    </div>
+    <div class="intro-title">Speed Trap</div>
+    <div class="intro-sub">Llogarit shpejtësinë e makinës</div>
+    <div class="formula-card">
+      <div class="formula-label">Formula</div>
+      <div class="formula-big">v = Δx ÷ Δt</div>
+    </div>
+    <div class="explain-row">
+      <div class="explain-card">
+        <div class="explain-sym">v</div>
+        <div class="explain-desc">shpejtësia (m/s)</div>
+      </div>
+      <div class="explain-card">
+        <div class="explain-sym">Δx</div>
+        <div class="explain-desc">distanca (m)</div>
+      </div>
+      <div class="explain-card">
+        <div class="explain-sym">Δt</div>
+        <div class="explain-desc">koha (s)</div>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startGame()">Fillo lojën</button>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="game-screen">
+    <div class="top-row">
+      <div class="round-badge" id="round-badge">Rundi 1</div>
+      <div class="dots" id="dots"></div>
     </div>
 
-    <div class="track">
-        <div id="car">🏎️</div>
+    <div class="track-wrapper">
+      <div class="track-label">Pista e garës</div>
+      <div class="track" id="track">
+        <div class="track-dashes"></div>
+
+        <!-- Car on the LEFT, moves to the RIGHT -->
+        <div class="car-wrap" id="car-wrap">
+          <svg width="52" height="28" viewBox="0 0 52 28" fill="none">
+            <rect x="2" y="10" width="44" height="13" rx="5" fill="#c4b4e8"/>
+            <rect x="8" y="4" width="24" height="10" rx="4" fill="#d8ccf4"/>
+            <rect x="10" y="5" width="9" height="7" rx="2" fill="#b8e4f8"/>
+            <rect x="21" y="5" width="8" height="7" rx="2" fill="#b8e4f8"/>
+            <!-- headlights pointing RIGHT -->
+            <rect x="46" y="13" width="5" height="5" rx="2" fill="#f8f0cc"/>
+            <!-- taillights on LEFT -->
+            <rect x="1" y="13" width="4" height="5" rx="2" fill="#f4c0c0"/>
+            <circle cx="13" cy="23" r="5" fill="#8a72cc"/>
+            <circle cx="13" cy="23" r="2.2" fill="#e8e0f8"/>
+            <circle cx="38" cy="23" r="5" fill="#8a72cc"/>
+            <circle cx="38" cy="23" r="2.2" fill="#e8e0f8"/>
+          </svg>
+        </div>
+
+        <!-- Finish flag on the RIGHT -->
+        <div class="finish-flag">
+          <svg width="18" height="32" viewBox="0 0 18 32" fill="none">
+            <rect x="3" y="0" width="2.5" height="32" rx="1" fill="#8a72cc"/>
+            <rect x="5.5" y="1" width="7" height="5" rx="1" fill="#8a72cc"/>
+            <rect x="5.5" y="6" width="7" height="5" rx="1" fill="#e8e0f8"/>
+            <rect x="5.5" y="11" width="7" height="5" rx="1" fill="#8a72cc"/>
+            <rect x="5.5" y="16" width="7" height="5" rx="1" fill="#e8e0f8"/>
+          </svg>
+        </div>
+      </div>
     </div>
 
-    <div class="display">
-        Δx = <span id="dx">10</span> m<br>
-        Δt = <span id="dt">2</span> s
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Distanca Δx</div>
+        <div><span class="stat-val" id="dx-val">—</span> <span class="stat-unit">m</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Koha Δt</div>
+        <div><span class="stat-val" id="dt-val">—</span> <span class="stat-unit">s</span></div>
+      </div>
     </div>
 
-    <div class="input-group">
-        <input type="number" id="ans" placeholder="?">
-        <button onclick="check()">GO!</button>
+    <div class="input-row">
+      <input class="ans-input" type="number" id="ans" placeholder="v = ? m/s"/>
+      <button class="go-btn" onclick="check()">Shko!</button>
     </div>
 
-    <div id="feedback">GATI?</div>
+    <div class="feedback neutral" id="feedback">Llogarit shpejtësinë dhe shtyp Shko!</div>
+    <button class="back-link" onclick="showScreen('intro-screen')">← Kthehu</button>
+  </div>
+
+  <!-- WIN -->
+  <div class="screen" id="win-screen">
+    <div class="win-icon">
+      <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+        <path d="M24 4l4.5 9.5L39 15l-7.5 7 1.8 10.5L24 28l-9.3 4.5L16.5 22 9 15l10.5-1.5L24 4z" fill="#e8c840" stroke="#a08820" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <div class="win-title">Bravo, kampion!</div>
+    <div class="win-sub">Ke përfunduar të gjitha rundat</div>
+    <div class="score-big" id="final-score">0</div>
+    <div class="score-label">pikë nga 5</div>
+    <button class="replay-btn" onclick="startGame()">Luaj përsëri</button>
+    <button class="back-link" onclick="showScreen('intro-screen')">← Kthehu te hyrja</button>
+  </div>
+
 </div>
 
 <script>
-    let dx, dt, v;
+let dx,dt,v,score=0,round=1,totalRounds=5;
 
-    function newRound() {
-        // Numra të thjeshtë që pjesëtohen lehtë
-        dt = Math.floor(Math.random() * 4) + 1; // 1, 2, 3, 4
-        v = Math.floor(Math.random() * 9) + 2;  // 2 deri 10
-        dx = v * dt;
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-        document.getElementById('dx').innerText = dx;
-        document.getElementById('dt').innerText = dt;
-        document.getElementById('ans').value = "";
-        document.getElementById('feedback').innerText = "LLOGARIT SHPEJT!";
-        document.getElementById('car').style.left = "0px";
+function startGame(){
+  score=0; round=1;
+  showScreen('game-screen');
+  newRound();
+}
+
+function buildDots(){
+  const c=document.getElementById('dots');
+  c.innerHTML='';
+  for(let i=0;i<totalRounds;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i<score?' filled':'');
+    c.appendChild(d);
+  }
+}
+
+function newRound(){
+  dt=Math.floor(Math.random()*4)+1;
+  v=Math.floor(Math.random()*9)+2;
+  dx=v*dt;
+  document.getElementById('dx-val').textContent=dx;
+  document.getElementById('dt-val').textContent=dt;
+  document.getElementById('ans').value='';
+  document.getElementById('feedback').className='feedback neutral';
+  document.getElementById('feedback').textContent='Llogarit shpejtësinë dhe shtyp Shko!';
+  document.getElementById('round-badge').textContent='Rundi '+round;
+  buildDots();
+  resetCar();
+}
+
+function resetCar(){
+  const wrap=document.getElementById('car-wrap');
+  wrap.style.transition='none';
+  wrap.style.left='4px';   /* start at left edge */
+}
+
+function animateCar(success){
+  const wrap=document.getElementById('car-wrap');
+  const track=document.getElementById('track');
+  if(success){
+    /* move to near right edge (track width minus car width minus flag space) */
+    const dest=track.offsetWidth - 52 - 28;
+    wrap.style.transition='left 0.65s cubic-bezier(0.34,1.42,0.64,1)';
+    wrap.style.left=dest+'px';
+  } else {
+    /* little bump forward then back */
+    wrap.style.transition='left 0.15s ease';
+    wrap.style.left='20px';
+    setTimeout(()=>{ wrap.style.left='4px'; },220);
+  }
+}
+
+function check(){
+  const userAns=parseInt(document.getElementById('ans').value);
+  const fb=document.getElementById('feedback');
+  if(isNaN(userAns)){
+    fb.className='feedback wrong';
+    fb.textContent='Shkruaj një numër!';
+    return;
+  }
+  if(userAns===v){
+    fb.className='feedback correct';
+    fb.textContent='Saktë! '+dx+' ÷ '+dt+' = '+v+' m/s';
+    score++;
+    animateCar(true);
+    buildDots();
+    if(round<totalRounds){
+      round++;
+      setTimeout(newRound,1600);
+    } else {
+      setTimeout(()=>{
+        document.getElementById('final-score').textContent=score;
+        showScreen('win-screen');
+      },1600);
     }
+  } else {
+    fb.className='feedback wrong';
+    fb.textContent='Jo saktë! Provo: '+dx+' ÷ '+dt;
+    animateCar(false);
+  }
+}
 
-    function check() {
-        let userAns = parseInt(document.getElementById('ans').value);
-        let fb = document.getElementById('feedback');
-        let car = document.getElementById('car');
-
-        if(userAns === v) {
-            fb.innerText = "E SAKTË! 🔥";
-            fb.style.color = "#0f0";
-            car.style.left = "80%"; // Makina ecën shpejt
-            setTimeout(newRound, 1500);
-        } else {
-            fb.innerText = "GABIM! PROVO PËRSËRI";
-            fb.style.color = "#f00";
-        }
-    }
-
-    newRound();
+document.getElementById('ans').addEventListener('keydown',e=>{if(e.key==='Enter')check();});
 </script>
-
-</body>
-</html>
