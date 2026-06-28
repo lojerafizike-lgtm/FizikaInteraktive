@@ -1,241 +1,428 @@
 <!DOCTYPE html>
 <html lang="sq">
-<head>
+<head><base href="autoclaw-local-html://5dd6210a-091f-4428-b6fd-bf97824ada32/C%3A/Users/User/.openclaw-autoclaw/workspace/loja-koordinata.html">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gjuetia e Thesarit - Loja e Koordinatave</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gjuetia e Thesarit — Harta e Koordinatave</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #3498db; /* Blue */
-            --secondary-color: #2ecc71; /* Green */
-            --accent-color: #f39c12; /* Orange */
-            --text-color: #2c3e50; /* Dark Blue */
-            --background-light: #ecf0f1; /* Light Grey */
-            --background-dark: #bdc3c7; /* Medium Grey */
+            --bg: #fef9ef; --panel: #ffffff;
+            --text: #5d4037; --dim: #8d6e63;
+            --gold: #ffb74d; --gold2: #ffa726;
+            --green: #a5d6a7; --green2: #81c784;
+            --blue: #90caf9; --blue2: #64b5f6;
+            --purple: #ce93d8; --purple2: #ba68c8;
+            --red: #ef9a9a;
+            --shadow: rgba(0,0,0,0.06);
+            --border: #f5e6d3;
+            --parchment: #fff8e1;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-light);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            font-family: 'Press Start 2P', monospace;
+            background: var(--bg);
+            background-image:
+                radial-gradient(circle at 15% 20%, rgba(165,214,167,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 80%, rgba(144,202,249,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255,183,77,0.06) 0%, transparent 60%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 15px;
         }
 
         .game-container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 90%;
-            width: 400px;
-            text-align: center;
-            position: relative;
-            overflow: hidden; /* For future animations */
+            background: var(--panel); border: 2px solid var(--border);
+            border-radius: 18px; padding: 20px 16px;
+            box-shadow: 0 8px 32px var(--shadow);
+            max-width: 440px; width: 100%; text-align: center;
+            position: relative; overflow: hidden;
         }
 
-        h1 {
-            color: var(--text-color);
-            margin-bottom: 15px;
-            font-size: clamp(1.5em, 5vw, 2em);
-        }
+        .screen { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+        .hidden { display: none; }
 
-        p {
-            color: #7f8c8d;
-            line-height: 1.6;
-        }
+        /* ===== LEVEL SELECTION ===== */
+        #level-selection-screen h1 { font-size: 0.65rem; color: var(--gold2); margin-bottom: 4px; }
+        #level-selection-screen .subtitle { font-size: 0.35rem; color: var(--dim); line-height: 2; margin-bottom: 3px; }
 
-        .screen {
-            transition: opacity 0.5s ease-in-out;
+        .pixel-chest { display: inline-block; width: 56px; height: 56px; position: relative; margin-bottom: 6px; }
+        .pixel-chest::before {
+            content: ''; display: block; width: 56px; height: 56px; position: absolute;
+            background:
+                linear-gradient(#795548 0, #795548 0) 6px 0px / 44px 6px no-repeat,
+                linear-gradient(#8d6e63 0, #8d6e63 0) 10px 6px / 36px 8px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 22px 4px / 12px 10px no-repeat,
+                linear-gradient(#5d4037 0, #5d4037 0) 6px 14px / 44px 4px no-repeat,
+                linear-gradient(#8d6e63 0, #8d6e63 0) 6px 18px / 44px 26px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 6px 28px / 44px 4px no-repeat,
+                linear-gradient(#5d4037 0, #5d4037 0) 6px 44px / 44px 6px no-repeat;
+            animation: chestBreathe 3.5s ease-in-out infinite;
         }
+        @keyframes chestBreathe { 0%,100%{transform:scale(1) rotate(0)} 30%{transform:scale(1.04) rotate(0.5deg)} 60%{transform:scale(1) rotate(-0.3deg)} }
 
-        .hidden {
-            display: none;
-            opacity: 0;
-        }
-
-        /* --- Level Selection Screen --- */
+        .level-options { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; }
         .level-option {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin: 8px 0;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-family: 'Press Start 2P', monospace;
+            color: white; border: none; padding: 13px 14px; border-radius: 10px;
+            font-size: 0.38rem; cursor: pointer; transition: all 0.25s ease;
+            text-align: left; position: relative; overflow: hidden;
         }
-        .level-option:nth-of-type(2) { background-color: #2980b9; } /* Darker Blue */
-        .level-option:nth-of-type(3) { background-color: var(--text-color); } /* Darker Grey */
-        .level-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .level-option:active {
-            transform: translateY(0);
-        }
+        .level-option .level-num { display: inline-block; background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 4px; margin-right: 8px; font-size: 0.5rem; }
+        .level-option .level-sub { display: block; font-size: 0.3rem; margin-top: 5px; opacity: 0.75; margin-left: 34px; }
+        .level-option:nth-child(1) { background: #a5d6a7; box-shadow: 0 4px 0 #81c784; }
+        .level-option:nth-child(1):hover { background: #c8e6c9; }
+        .level-option:nth-child(2) { background: #90caf9; box-shadow: 0 4px 0 #64b5f6; }
+        .level-option:nth-child(2):hover { background: #bbdefb; }
+        .level-option:nth-child(3) { background: #ce93d8; box-shadow: 0 4px 0 #ba68c8; }
+        .level-option:nth-child(3):hover { background: #e1bee7; }
+        .level-option:hover { transform: translateY(-2px); }
+        .level-option:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
 
-        /* --- Game Play Screen --- */
-        #game-screen .level-info {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
+        /* ===== GAME SCREEN ===== */
+        .level-badge {
+            display: inline-block; color: white; padding: 7px 14px;
+            border-radius: 20px; font-size: 0.34rem; margin-bottom: 10px;
+            transition: background 0.5s ease;
         }
+        #game-screen h1 { font-size: 0.5rem; color: var(--text); margin-bottom: 10px; }
 
-        .feedback-box {
-            background-color: var(--background-light);
-            color: var(--text-color);
-            padding: 15px;
+        /* --- Harta (Grid Map) --- */
+        .map-container {
+            background: var(--parchment);
+            border: 3px solid #e0d5c1;
             border-radius: 10px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-weight: 600;
-            font-size: 1.1em;
-            border: 1px solid var(--background-dark);
+            padding: 8px;
+            margin: 0 auto 12px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(139,90,43,0.08);
+            max-width: 300px;
         }
 
-        .input-coords {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
+        .map-container::before {
+            content: 'HARTA';
+            position: absolute; top: -12px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--parchment); padding: 2px 10px;
+            font-size: 0.34rem; color: #8d6e63;
+            border: 1px solid #e0d5c1; border-radius: 4px;
+            z-index: 2;
         }
 
-        .input-group {
-            text-align: left;
+        /* Compass rose on map corner */
+        .map-compass {
+            position: absolute; top: 4px; right: 6px;
+            font-size: 0.28rem; color: var(--dim);
+            z-index: 3; pointer-events: none;
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-color);
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .input-group input[type="number"] {
-            width: 80px;
-            padding: 10px;
-            border: 2px solid var(--background-dark);
-            border-radius: 8px;
-            font-size: 1.1em;
-            text-align: center;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        .input-group input[type="number"]:focus {
-            border-color: var(--primary-color);
-        }
-
-        .btn-guess, .btn-reset-game {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            margin-top: 10px;
-            border-radius: 8px;
+        .map-grid {
+            display: grid;
+            gap: 2px;
             width: 100%;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .btn-guess:hover, .btn-reset-game:hover {
-            background-color: #e08e0b;
-            transform: translateY(-2px);
-        }
-        .btn-guess:active, .btn-reset-game:active {
-            transform: translateY(0);
+            aspect-ratio: 1;
         }
 
-        .btn-reset-game {
-            background-color: #95a5a6; /* Grey */
-            font-size: 0.9em;
-            margin-top: 25px;
+        .map-cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.6);
+            border-radius: 2px;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.5rem;
+            cursor: default;
         }
-        .btn-reset-game:hover {
-            background-color: #7f8c8d;
+
+        .map-cell.guessed { animation: cellPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes cellPop { 0%{transform:scale(0.3);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+        .map-cell.warm { background: #ffe0b2; box-shadow: inset 0 0 6px rgba(255,152,0,0.15); }
+        .map-cell.hot { background: #ffcc80; box-shadow: inset 0 0 10px rgba(255,152,0,0.25); }
+        .map-cell.cold { background: #e3f2fd; box-shadow: inset 0 0 4px rgba(33,150,243,0.1); }
+        .map-cell.found { background: var(--gold); box-shadow: 0 0 12px rgba(255,183,77,0.6); animation: treasureGlow 0.8s ease-in-out infinite; }
+        @keyframes treasureGlow { 0%,100%{box-shadow:0 0 8px rgba(255,183,77,0.4)} 50%{box-shadow:0 0 20px rgba(255,183,77,0.8)} }
+
+        /* Pixel X mark */
+        .map-cell .x-mark {
+            width: 60%; height: 60%;
+            position: relative;
         }
+        .map-cell .x-mark::before, .map-cell .x-mark::after {
+            content: ''; position: absolute;
+            width: 2px; height: 100%;
+            background: #e53935; border-radius: 1px;
+        }
+        .map-cell .x-mark::before { transform: rotate(45deg); left: 50%; margin-left: -1px; }
+        .map-cell .x-mark::after { transform: rotate(-45deg); left: 50%; margin-left: -1px; }
+
+        /* Pixel treasure on map */
+        .map-cell .treasure-icon {
+            width: 70%; height: 70%;
+            position: relative;
+        }
+        .map-cell .treasure-icon::before {
+            content: ''; display: block; width: 100%; height: 100%; position: absolute;
+            background:
+                linear-gradient(#8d6e63 0, #8d6e63 0) 20% 0% / 60% 15% no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 30% 10% / 40% 10% no-repeat,
+                linear-gradient(#a1887f 0, #a1887f 0) 15% 20% / 70% 40% no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 15% 35% / 70% 8% no-repeat,
+                linear-gradient(#6d4c41 0, #6d4c41 0) 15% 55% / 70% 15% no-repeat;
+        }
+
+        /* Axis labels */
+        .map-axis-x {
+            display: flex; justify-content: space-around;
+            font-size: 0.3rem; color: var(--dim); margin-top: 4px;
+        }
+        .map-axis-y {
+            display: flex; flex-direction: column; justify-content: space-around;
+            position: absolute; left: -18px; top: 8px; bottom: 8px;
+            font-size: 0.3rem; color: var(--dim);
+        }
+
+        /* --- Feedback & Warmth --- */
+        .feedback-box {
+            background: #fffdf7; border: 2px solid var(--border);
+            border-radius: 10px; padding: 12px; margin-bottom: 10px;
+            min-height: 48px; display: flex; align-items: center; justify-content: center;
+            flex-direction: column; font-size: 0.36rem; color: var(--text);
+            line-height: 2; transition: all 0.3s ease;
+        }
+        .feedback-box .hint-main { font-size: 0.42rem; margin-bottom: 1px; }
+        .feedback-box .hint-detail { font-size: 0.33rem; color: var(--dim); }
+
+        .warmth-meter {
+            display: flex; align-items: center; justify-content: center;
+            gap: 2px; margin-bottom: 10px; opacity: 0.4; transition: opacity 0.3s ease;
+        }
+        .warmth-bar {
+            width: 14px; height: 5px; border-radius: 3px; background: #e0e0e0;
+            transition: all 0.4s ease;
+        }
+        .warmth-bar.on { background: var(--gold); box-shadow: 0 0 6px rgba(255,183,77,0.5); }
+        .warmth-bar.on.hot { background: #ef5350; box-shadow: 0 0 8px rgba(239,83,80,0.5); }
+        .warmth-label { font-size: 0.28rem; color: var(--dim); }
+
+        /* Pixel arrows */
+        .pixel-arrow {
+            display: inline-block; width: 18px; height: 18px;
+            position: relative; vertical-align: middle; margin: 0 2px;
+        }
+        .pixel-arrow.n::before {
+            content: ''; display: block; width: 18px; height: 18px; position: absolute;
+            background:
+                linear-gradient(#e53935 0, #e53935 0) 7px 0px / 4px 4px no-repeat,
+                linear-gradient(#e53935 0, #e53935 0) 5px 4px / 8px 3px no-repeat,
+                linear-gradient(#e53935 0, #e53935 0) 3px 7px / 12px 3px no-repeat,
+                linear-gradient(#e53935 0, #e53935 0) 1px 10px / 16px 3px no-repeat;
+        }
+        .pixel-arrow.s::before {
+            content: ''; display: block; width: 18px; height: 18px; position: absolute;
+            background:
+                linear-gradient(#546e7a 0, #546e7a 0) 1px 5px / 16px 3px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 3px 8px / 12px 3px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 5px 11px / 8px 3px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 7px 14px / 4px 4px no-repeat;
+        }
+        .pixel-arrow.e::before {
+            content: ''; display: block; width: 18px; height: 18px; position: absolute;
+            background:
+                linear-gradient(#546e7a 0, #546e7a 0) 5px 3px / 3px 12px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 8px 5px / 3px 8px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 11px 7px / 3px 4px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 14px 8px / 4px 2px no-repeat;
+        }
+        .pixel-arrow.w::before {
+            content: ''; display: block; width: 18px; height: 18px; position: absolute;
+            background:
+                linear-gradient(#546e7a 0, #546e7a 0) 10px 3px / 3px 12px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 7px 5px / 3px 8px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 4px 7px / 3px 4px no-repeat,
+                linear-gradient(#546e7a 0, #546e7a 0) 0px 8px / 4px 2px no-repeat;
+        }
+
+        /* Inputs */
+        .input-coords { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .input-group { text-align: left; flex: 1; }
+        .input-group label { display: block; margin-bottom: 5px; color: var(--dim); font-size: 0.33rem; }
+        .input-group input {
+            width: 100%; padding: 11px; background: #fafafa;
+            border: 2px solid var(--border); border-radius: 8px;
+            color: var(--text); font-family: 'Press Start 2P', monospace;
+            font-size: 0.48rem; text-align: center; outline: none; transition: all 0.3s ease;
+        }
+        .input-group input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(255,183,77,0.12); }
+
+        .btn-guess {
+            font-family: 'Press Start 2P', monospace; width: 100%;
+            padding: 13px; background: var(--gold); color: white;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.42rem; box-shadow: 0 4px 0 var(--gold2);
+            margin-bottom: 6px; transition: all 0.2s ease;
+        }
+        .btn-guess:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--gold2); background: #ffcc80; }
+        .btn-guess:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--gold2); }
 
         .game-stats {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-around;
-            color: #7f8c8d;
-            font-size: 0.95em;
+            display: flex; justify-content: center; align-items: center; gap: 16px;
+            padding: 8px; background: #fffdf7; border-radius: 8px;
+            border: 1px solid var(--border); margin: 8px 0;
+        }
+        .game-stats .stat { font-size: 0.32rem; color: var(--dim); }
+        .game-stats .stat span { color: var(--text); font-size: 0.42rem; }
+
+        .btn-reset {
+            font-family: 'Press Start 2P', monospace; width: 100%;
+            padding: 11px; background: #efebe9; color: var(--dim);
+            border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.34rem; box-shadow: 0 3px 0 #d7ccc8;
+            transition: all 0.2s ease;
+        }
+        .btn-reset:hover { background: #d7ccc8; color: var(--text); transform: translateY(-1px); }
+
+        /* ===== WIN SCREEN ===== */
+        #win-screen h2 { font-size: 0.62rem; color: var(--gold2); margin: 6px 0; animation: titlePop 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes titlePop { 0%{transform:scale(0.3);opacity:0} 100%{transform:scale(1);opacity:1} }
+        #win-screen .win-detail { font-size: 0.34rem; color: var(--dim); line-height: 2.2; margin-bottom: 6px; }
+        #win-screen .win-detail b { color: var(--text); }
+
+        .pixel-trophy { display: inline-block; width: 52px; height: 52px; position: relative; margin-bottom: 4px; }
+        .pixel-trophy::before {
+            content: ''; display: block; width: 52px; height: 52px; position: absolute;
+            background:
+                linear-gradient(var(--gold) 0, var(--gold) 0) 2px 10px / 8px 4px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 42px 10px / 8px 4px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 6px 0px / 40px 4px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 6px 18px / 4px 4px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 42px 18px / 4px 4px no-repeat,
+                linear-gradient(#ffcc80 0, #ffcc80 0) 10px 4px / 32px 18px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 20px 22px / 12px 10px no-repeat,
+                linear-gradient(var(--gold) 0, var(--gold) 0) 12px 32px / 28px 4px no-repeat;
+            animation: trophyShine 2.5s ease-in-out infinite;
+        }
+        @keyframes trophyShine { 0%,100%{filter:brightness(1)} 40%{filter:brightness(1.25)} 70%{filter:brightness(1.05)} }
+
+        .btn-play-again {
+            font-family: 'Press Start 2P', monospace; width: 100%;
+            padding: 13px; background: var(--green); color: white;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.4rem; box-shadow: 0 4px 0 var(--green2);
+            transition: all 0.2s ease;
+        }
+        .btn-play-again:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--green2); background: #c8e6c9; }
+
+        /* Sparkle effects */
+        .treasure-sparkle {
+            position: fixed; pointer-events: none; z-index: 200;
+            animation: sparkleFly 1.8s ease-out forwards; font-size: 0.55rem;
+        }
+        @keyframes sparkleFly {
+            0%{transform:translate(0,0) scale(0) rotate(0);opacity:1}
+            60%{opacity:1}
+            100%{transform:translate(var(--sx),var(--sy)) scale(1.2) rotate(360deg);opacity:0}
         }
 
-        /* --- Win/Lose Screen --- */
-        #win-screen h2 { color: var(--secondary-color); font-size: 2.2em; margin-bottom: 10px; }
-        #win-screen p { font-size: 1.1em; margin-bottom: 25px; }
-        #win-screen .btn-play-again { background-color: var(--primary-color); }
-        #win-screen .btn-play-again:hover { background-color: #2980b9; }
-
-        .emoji { font-size: 2em; display: block; margin-bottom: 10px; }
+        /* Footstep animation for map */
+        .footstep-marker {
+            position: absolute; pointer-events: none; z-index: 5;
+            animation: footstepFade 1.5s ease-out forwards;
+            font-size: 0.45rem; color: var(--dim);
+        }
+        @keyframes footstepFade {
+            0%{opacity:1;transform:scale(0.5) translateY(0)}
+            100%{opacity:0;transform:scale(1) translateY(-10px)}
+        }
     </style>
 </head>
 <body>
 
 <div class="game-container">
+    <!-- LEVEL SELECTION -->
     <div id="level-selection-screen" class="screen">
+        <div class="pixel-chest"></div>
         <h1>Gjuetia e Thesarit</h1>
-        <p>Gjej thesarin e fshehur në rrjetin e koordinatave!</p>
-        <p>Zgjidh nivelin e vështirësisë:</p>
-        <button class="level-option" onclick="selectLevel(1)">Niveli 1: Fusha me Diell (1-5)</button>
-        <button class="level-option" onclick="selectLevel(2)">Niveli 2: Pylli i Mysterishëm (1-10)</button>
-        <button class="level-option" onclick="selectLevel(3)">Niveli 3: Mali i Vështirë (-10 deri 10)</button>
+        <p class="subtitle">Gjej thesarin e fshehur në hartë!</p>
+        <p class="subtitle" style="margin-bottom:0;">Zgjidh aventurën tënde:</p>
+        <div class="level-options">
+            <button class="level-option" onclick="selectLevel(1)">
+                <span class="level-num">I</span>Fusha me Diell
+                <span class="level-sub">Rrjeti 1–5  •  E lehtë  •  Për fillestarë</span>
+            </button>
+            <button class="level-option" onclick="selectLevel(2)">
+                <span class="level-num">II</span>Pylli i Misterit
+                <span class="level-sub">Rrjeti 1–10  •  Mesatare  •  Për eksplorues</span>
+            </button>
+            <button class="level-option" onclick="selectLevel(3)">
+                <span class="level-num">III</span>Mali i Vështirë
+                <span class="level-sub">Rrjeti -10 deri 10  •  E vështirë  •  Për aventurierë</span>
+            </button>
+        </div>
     </div>
 
+    <!-- GAME SCREEN -->
     <div id="game-screen" class="screen hidden">
-        <div class="level-info" id="current-level-info">Niveli i Zgjedhur</div>
-        <h1>Ku është thesar! 🗺️</h1>
-        
-        <div class="feedback-box" id="feedback-message">
-            Jep koordinatat X dhe Y për të gërmuar!
+        <div class="level-badge" id="level-badge">Niveli i Zgjedhur</div>
+        <h1>Ku është thesari?</h1>
+
+        <!-- MAP -->
+        <div class="map-container" id="map-container">
+            <div class="map-compass">🧭 N</div>
+            <div class="map-grid" id="map-grid"></div>
+            <div class="map-axis-x" id="map-axis-x"></div>
         </div>
 
+        <!-- Feedback -->
+        <div class="feedback-box" id="feedback-message">
+            <span class="hint-main">Zgjidh koordinatat X dhe Y</span>
+            <span class="hint-detail">dhe gërmo në hartë!</span>
+        </div>
+
+        <!-- Warmth meter -->
+        <div class="warmth-meter" id="warmth-meter">
+            <span class="warmth-label">❄</span>
+            <div class="warmth-bar" id="wb1"></div>
+            <div class="warmth-bar" id="wb2"></div>
+            <div class="warmth-bar" id="wb3"></div>
+            <div class="warmth-bar" id="wb4"></div>
+            <div class="warmth-bar" id="wb5"></div>
+            <span class="warmth-label">🔥</span>
+        </div>
+
+        <!-- Inputs -->
         <div class="input-coords">
             <div class="input-group">
-                <label for="inputX">Koordinata X:</label>
-                <input type="number" id="inputX" placeholder="X" min="-10" max="10">
+                <label for="inputX">X</label>
+                <input type="number" id="inputX" placeholder="X" autocomplete="off">
             </div>
             <div class="input-group">
-                <label for="inputY">Koordinata Y:</label>
-                <input type="number" id="inputY" placeholder="Y" min="-10" max="10">
+                <label for="inputY">Y</label>
+                <input type="number" id="inputY" placeholder="Y" autocomplete="off">
             </div>
         </div>
 
         <button class="btn-guess" onclick="checkGuess()">GËRMO KËTU!</button>
-        
+
         <div class="game-stats">
-            <p>Tentativa: <span id="attempts-count">0</span></p>
+            <div class="stat">TENTATIVA<br><span id="attempts-count">0</span></div>
+            <div class="stat" id="dist-stat" style="display:none;">DISTANCA<br><span id="dist-value">-</span></div>
         </div>
 
-        <button class="btn-reset-game" onclick="resetGame()">Rinis Lojën</button>
+        <button class="btn-reset" onclick="resetGame()">Rinis Aventurën</button>
     </div>
 
+    <!-- WIN SCREEN -->
     <div id="win-screen" class="screen hidden">
-        <span class="emoji">🏆</span>
-        <h2>Urime! E gjetët!</h2>
-        <p>E gjete thesarin në <span id="final-coords"></span> me <span id="final-attempts"></span> tentativa!</p>
-        <button class="btn-level-select btn-play-again" onclick="resetGame()">Luaj Përsëri</button>
+        <div class="pixel-trophy"></div>
+        <h2>Thesari u gjet!</h2>
+        <div class="win-detail">
+            Koordinatat: <b id="final-coords">(0,0)</b><br>
+            Tentativa: <b id="final-attempts">0</b><br>
+            <span id="final-rating"></span>
+        </div>
+        <button class="btn-play-again" onclick="resetGame()">Aventurë e Re</button>
     </div>
 </div>
 
@@ -244,21 +431,99 @@
     let attempts = 0;
     let minRange, maxRange;
     let currentLevel = 0;
+    let gameHistory = [];
+    let gridSize = 0;
 
     const levelInfo = {
-        1: { name: "Fusha me Diell", range: { min: 1, max: 5 } },
-        2: { name: "Pylli i Mysterishëm", range: { min: 1, max: 10 } },
-        3: { name: "Mali i Vështirë", range: { min: -10, max: 10 } }
+        1: { name: 'Fusha me Diell', range: { min: 1, max: 5 }, badgeBg: '#a5d6a7' },
+        2: { name: 'Pylli i Misterit', range: { min: 1, max: 10 }, badgeBg: '#90caf9' },
+        3: { name: 'Mali i Vështirë', range: { min: -10, max: 10 }, badgeBg: '#ce93d8' }
     };
 
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(screen => {
-            screen.classList.add('hidden');
-            screen.style.opacity = '0';
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        const target = document.getElementById(id);
+        target.classList.remove('hidden');
+        target.style.opacity = '0';
+        target.style.transform = 'translateY(10px) scale(0.97)';
+        requestAnimationFrame(() => {
+            target.style.transition = 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+            target.style.opacity = '1';
+            target.style.transform = 'translateY(0) scale(1)';
         });
-        const activeScreen = document.getElementById(screenId);
-        activeScreen.classList.remove('hidden');
-        setTimeout(() => activeScreen.style.opacity = '1', 50); // Small delay for fade effect
+    }
+
+    function buildMapGrid() {
+        const mapGrid = document.getElementById('map-grid');
+        const axisX = document.getElementById('map-axis-x');
+        gridSize = maxRange - minRange + 1;
+
+        // Configure grid columns
+        mapGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+        mapGrid.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+        mapGrid.innerHTML = '';
+
+        // Build cells row by row (Y axis from max to min — top of map is max Y)
+        for (let gy = maxRange; gy >= minRange; gy--) {
+            for (let gx = minRange; gx <= maxRange; gx++) {
+                const cell = document.createElement('div');
+                cell.className = 'map-cell';
+                cell.dataset.x = gx;
+                cell.dataset.y = gy;
+                cell.title = `(${gx}, ${gy})`;
+                mapGrid.appendChild(cell);
+            }
+        }
+
+        // X axis labels
+        axisX.innerHTML = '';
+        for (let gx = minRange; gx <= maxRange; gx++) {
+            const label = document.createElement('span');
+            label.textContent = gx;
+            axisX.appendChild(label);
+        }
+
+        // Y axis labels on the left
+        const existingY = document.querySelector('.map-axis-y');
+        if (existingY) existingY.remove();
+
+        const axisY = document.createElement('div');
+        axisY.className = 'map-axis-y';
+        for (let gy = maxRange; gy >= minRange; gy--) {
+            const label = document.createElement('span');
+            label.textContent = gy;
+            axisY.appendChild(label);
+        }
+        document.getElementById('map-container').appendChild(axisY);
+    }
+
+    function updateMapCell(x, y, cssClass, iconHtml) {
+        const cell = document.querySelector(`.map-cell[data-x="${x}"][data-y="${y}"]`);
+        if (!cell) return;
+        cell.classList.add(cssClass, 'guessed');
+        if (iconHtml) cell.innerHTML = iconHtml;
+    }
+
+    function colorNearbyCells(gx, gy) {
+        // Color cells based on distance from treasure
+        const maxDist = Math.sqrt(Math.pow(maxRange - minRange, 2) * 2);
+
+        // Update only the guessed cell and mark adjacent zones
+        const dist = Math.sqrt(Math.pow(gx - targetX, 2) + Math.pow(gy - targetY, 2));
+        const ratio = 1 - dist / maxDist;
+        const cell = document.querySelector(`.map-cell[data-x="${gx}"][data-y="${gy}"]`);
+        if (!cell) return;
+
+        if (ratio > 0.8) {
+            cell.style.background = '#ffcc80';
+        } else if (ratio > 0.5) {
+            cell.style.background = '#ffe0b2';
+        } else if (ratio > 0.2) {
+            cell.style.background = '#e3f2fd';
+        } else {
+            cell.style.background = '#f5f5f5';
+        }
+        cell.style.boxShadow = 'inset 0 0 ' + (ratio * 12 + 2) + 'px rgba(255,152,0,' + (ratio * 0.3) + ')';
     }
 
     function selectLevel(level) {
@@ -270,7 +535,8 @@
         targetY = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
 
         attempts = 0;
-        document.getElementById('attempts-count').innerText = attempts;
+        gameHistory = [];
+        document.getElementById('attempts-count').innerText = '0';
         document.getElementById('inputX').value = '';
         document.getElementById('inputY').value = '';
         document.getElementById('inputX').min = minRange;
@@ -278,65 +544,196 @@
         document.getElementById('inputY').min = minRange;
         document.getElementById('inputY').max = maxRange;
 
+        const badge = document.getElementById('level-badge');
+        badge.innerText = `Niveli ${level}: ${levelInfo[level].name} (${minRange}–${maxRange})`;
+        badge.style.background = levelInfo[level].badgeBg;
 
-        document.getElementById('current-level-info').innerText = `Niveli ${currentLevel}: ${levelInfo[currentLevel].name} (Rrjeti ${minRange} deri ${maxRange})`;
-        document.getElementById('feedback-message').innerText = `Gjej thesarin në rrjetin nga ${minRange} deri ${maxRange}!`;
+        document.getElementById('feedback-message').innerHTML =
+            `<span class="hint-main">Gjej thesarin në hartë</span><span class="hint-detail">Koord. nga ${minRange} deri ${maxRange}</span>`;
+        document.getElementById('dist-stat').style.display = 'none';
 
+        updateWarmth(-1);
+        document.getElementById('warmth-meter').style.opacity = '0.4';
+
+        buildMapGrid();
         showScreen('game-screen');
+        setTimeout(() => document.getElementById('inputX').focus(), 500);
+    }
+
+    function updateWarmth(levels) {
+        const bars = [document.getElementById('wb1'), document.getElementById('wb2'),
+                      document.getElementById('wb3'), document.getElementById('wb4'), document.getElementById('wb5')];
+        bars.forEach((b, i) => {
+            b.classList.remove('on', 'hot');
+            if (levels >= 0 && i < levels) {
+                b.classList.add('on');
+                if (levels >= 4) b.classList.add('hot');
+            }
+        });
+        if (levels >= 0) document.getElementById('warmth-meter').style.opacity = '1';
+    }
+
+    function getDistance(x, y) {
+        return Math.sqrt(Math.pow(x - targetX, 2) + Math.pow(y - targetY, 2));
+    }
+
+    function makeArrow(dir) {
+        return `<span class="pixel-arrow ${dir}"></span>`;
+    }
+
+    function spawnSparkles(x, y, count) {
+        const symbols = ['✦', '✧', '★', '◈', '◆', '✶', '·'];
+        for (let i = 0; i < count; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'treasure-sparkle';
+            sparkle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            sparkle.style.color = ['#ffb74d','#ffa726','#ffcc80','#ffd54f','#fff176'][Math.floor(Math.random()*5)];
+            sparkle.style.left = x + '%';
+            sparkle.style.top = y + '%';
+            sparkle.style.setProperty('--sx', (Math.random() * 300 - 150) + 'px');
+            sparkle.style.setProperty('--sy', (Math.random() * -200 - 50) + 'px');
+            sparkle.style.animationDuration = (1.2 + Math.random() * 2) + 's';
+            sparkle.style.animationDelay = Math.random() * 0.4 + 's';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 3000);
+        }
+    }
+
+    function spawnFootsteps(x, y) {
+        const container = document.getElementById('map-container');
+        const rect = container.getBoundingClientRect();
+        const cell = document.querySelector(`.map-cell[data-x="${x}"][data-y="${y}"]`);
+        if (!cell) return;
+        const cellRect = cell.getBoundingClientRect();
+        const foot = document.createElement('div');
+        foot.className = 'footstep-marker';
+        foot.textContent = '👣';
+        foot.style.left = (cellRect.left - rect.left + cellRect.width/2 - 8) + 'px';
+        foot.style.top = (cellRect.top - rect.top) + 'px';
+        container.appendChild(foot);
+        setTimeout(() => foot.remove(), 1500);
+    }
+
+    function revealTreasureOnMap() {
+        // Clear all cells first, mark the treasure
+        const treasureCell = document.querySelector(`.map-cell[data-x="${targetX}"][data-y="${targetY}"]`);
+        if (treasureCell) {
+            treasureCell.classList.add('found');
+            const icon = document.createElement('div');
+            icon.className = 'treasure-icon';
+            treasureCell.innerHTML = '';
+            treasureCell.appendChild(icon);
+        }
     }
 
     function checkGuess() {
         const guessX = parseInt(document.getElementById('inputX').value);
         const guessY = parseInt(document.getElementById('inputY').value);
-        const feedbackMessage = document.getElementById('feedback-message');
+        const fb = document.getElementById('feedback-message');
 
         if (isNaN(guessX) || isNaN(guessY)) {
-            feedbackMessage.innerText = "🚨 Vendos numra të vlefshëm për X dhe Y!";
+            fb.innerHTML = '<span class="hint-main" style="color:#ef5350;">Vendos numra të vlefshëm!</span>';
+            fb.style.borderColor = '#ef9a9a';
+            setTimeout(() => { fb.style.borderColor = 'var(--border)'; }, 500);
             return;
         }
 
         if (guessX < minRange || guessX > maxRange || guessY < minRange || guessY > maxRange) {
-            feedbackMessage.innerText = `🚨 Koordinatat duhet të jenë brenda rrjetit: ${minRange} deri ${maxRange}!`;
+            fb.innerHTML = `<span class="hint-main" style="color:#ef5350;">Jashtë hartës!</span><span class="hint-detail">Midis ${minRange} dhe ${maxRange}</span>`;
+            fb.style.borderColor = '#ef9a9a';
+            setTimeout(() => { fb.style.borderColor = 'var(--border)'; }, 500);
             return;
         }
 
         attempts++;
         document.getElementById('attempts-count').innerText = attempts;
+        gameHistory.push({ x: guessX, y: guessY });
 
+        const dist = getDistance(guessX, guessY);
+        const maxDist = Math.sqrt(Math.pow(maxRange - minRange, 2) * 2);
+
+        document.getElementById('dist-stat').style.display = 'block';
+        document.getElementById('dist-value').innerText = dist.toFixed(1);
+
+        const warmth = Math.max(0, Math.min(5, Math.round((1 - dist / maxDist) * 5)));
+        updateWarmth(warmth);
+
+        // Update map
         if (guessX === targetX && guessY === targetY) {
+            // WIN!
+            revealTreasureOnMap();
+            spawnFootsteps(guessX, guessY);
+
             document.getElementById('final-coords').innerText = `(${targetX}, ${targetY})`;
             document.getElementById('final-attempts').innerText = attempts;
+
+            let rating = '';
+            if (attempts <= 3) rating = 'Mjeshtër i Hartave!';
+            else if (attempts <= 6) rating = 'Eksplorues i Zoti!';
+            else if (attempts <= 10) rating = 'Aventurier Këmbëngulës!';
+            else rating = 'Gjuetar i Durueshëm!';
+            document.getElementById('final-rating').innerText = rating;
+
             showScreen('win-screen');
+            spawnSparkles(50, 40, 40);
+
+            // Multiple sparkle waves for dramatic effect
+            setTimeout(() => spawnSparkles(60, 35, 30), 500);
+            setTimeout(() => spawnSparkles(40, 45, 25), 900);
+            setTimeout(() => spawnSparkles(55, 35, 35), 1400);
         } else {
-            let hintX = '';
-            if (guessX < targetX) hintX = "Djathtas ➡️";
-            else if (guessX > targetX) hintX = "Majtas ⬅️";
-            else hintX = "X saktë! ✅";
+            // Mark on map
+            updateMapCell(guessX, guessY, '', '<div class="x-mark"></div>');
+            colorNearbyCells(guessX, guessY);
+            spawnFootsteps(guessX, guessY);
 
-            let hintY = '';
-            if (guessY < targetY) hintY = "Lart ⬆️";
-            else if (guessY > targetY) hintY = "Poshtë ⬇️";
-            else hintY = "Y saktë! ✅";
+            // Build hints
+            let hints = [];
+            if (guessX < targetX) hints.push(`${makeArrow('e')} Djathtas`);
+            else if (guessX > targetX) hints.push(`${makeArrow('w')} Majtas`);
+            else hints.push('X saktë!');
 
-            feedbackMessage.innerHTML = `Jo, nuk është këtu. Kërko: <strong>${hintX}</strong> dhe <strong>${hintY}</strong>`;
+            if (guessY < targetY) hints.push(`${makeArrow('n')} Lart`);
+            else if (guessY > targetY) hints.push(`${makeArrow('s')} Poshtë`);
+            else hints.push('Y saktë!');
+
+            let flavor = '';
+            if (warmth >= 5) flavor = 'Shumë afër! Vazhdo...';
+            else if (warmth >= 4) flavor = 'Po nxeh! Gati aty je.';
+            else if (warmth >= 2) flavor = 'Po ngrohesh. Kërko më tej.';
+            else if (warmth >= 1) flavor = 'Ende ftohtë...';
+            else flavor = 'Je shumë larg thesarit.';
+
+            fb.innerHTML = `
+                <span class="hint-main">${flavor}</span>
+                <span class="hint-detail">${hints.join(' &nbsp;|&nbsp; ')}</span>
+            `;
+
+            fb.style.borderColor = warmth >= 4 ? '#ffcc80' : '#e3f2fd';
+            setTimeout(() => { fb.style.borderColor = 'var(--border)'; }, 400);
+
+            document.getElementById('inputX').value = '';
+            document.getElementById('inputY').value = '';
+            document.getElementById('inputX').focus();
         }
     }
 
     function resetGame() {
+        targetX = 0; targetY = 0;
+        attempts = 0; currentLevel = 0;
+        gameHistory = [];
+        updateWarmth(-1);
+        document.getElementById('warmth-meter').style.opacity = '0.4';
         showScreen('level-selection-screen');
-        // Reset game state for next play
-        targetX = 0;
-        targetY = 0;
-        attempts = 0;
-        currentLevel = 0;
     }
 
-    // Initialize by showing the level selection screen
-    document.addEventListener('DOMContentLoaded', () => {
-        showScreen('level-selection-screen');
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (!document.getElementById('game-screen').classList.contains('hidden')) checkGuess();
+        }
     });
 
+    document.addEventListener('DOMContentLoaded', () => showScreen('level-selection-screen'));
 </script>
-
 </body>
 </html>
