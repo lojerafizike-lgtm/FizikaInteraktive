@@ -1,161 +1,462 @@
 <!DOCTYPE html>
 <html lang="sq">
-<head>
+<head><base href="autoclaw-local-html://6dff4042-78ce-489c-88cd-292083d60667/C%3A/Users/User/.openclaw-autoclaw/workspace/shpejtesiakendore.html">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shpejtësia Kendore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shpejtësia Kendore — ω = θ/t</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --track: #e2e8f0;
-            --car: #ff9a9e;
-            --info: #a1887f;
-            --accent: #fbc2eb;
-            --text: #4a5568;
+            --bg: #f5f0ff; --panel: #ffffff;
+            --text: #4a148c; --dim: #7b1fa2; --muted: #b39ddb;
+            --accent: #e1bee7; --accent2: #ce93d8;
+            --blue: #b3e5fc; --green: #c8e6c9;
+            --border: #ede7f6;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0; font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg); color: var(--text);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 100vh;
+            font-family: 'Press Start 2P', monospace;
+            background: var(--bg);
+            background-image:
+                radial-gradient(circle at 25% 25%, rgba(225,190,231,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(179,229,252,0.1) 0%, transparent 50%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 15px;
         }
 
-        .game-card {
-            background: var(--card); padding: 30px; border-radius: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-            width: 90%; max-width: 400px; text-align: center;
+        .container {
+            background: var(--panel); border: 2px solid var(--border);
+            border-radius: 16px; padding: 22px 18px;
+            box-shadow: var(--shadow); max-width: 420px; width: 100%;
+            text-align: center; position: relative; overflow: hidden;
         }
 
-        .formula-display {
-            background: var(--accent); padding: 12px; border-radius: 20px;
-            font-size: 1.4rem; margin-bottom: 20px; display: inline-block; width: 100%;
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeSlideIn 0.35s ease; }
+        @keyframes fadeSlideIn {
+            0% { opacity: 0; transform: translateY(6px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* Pista e Garave */
-        .track-area {
-            width: 200px; height: 200px; background: var(--track);
-            border-radius: 50%; margin: 0 auto 25px;
-            position: relative; border: 8px solid #cbd5e1;
+        /* INTRO */
+        .intro-icon {
+            width: 64px; height: 64px; margin: 0 auto 12px;
+            background: #f3e5f5; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
+            border: 2px solid #e1bee7;
+        }
+        .intro-icon svg { width: 32px; height: 32px; }
+        h1 { font-size: 0.68rem; color: var(--text); margin-bottom: 4px; }
+        .subtitle { font-size: 0.38rem; color: var(--dim); margin-bottom: 4px; line-height: 1.8; }
+        .objective {
+            background: #f3e5f5; border-radius: 10px; padding: 10px 14px;
+            margin: 12px 0; font-size: 0.35rem; color: #6a1b9a; line-height: 1.8;
+        }
+        .btn-primary {
+            font-family: 'Press Start 2P', monospace; font-size: 0.45rem;
+            padding: 12px 28px; background: var(--accent); color: #6a1b9a;
+            border: none; border-radius: 8px; cursor: pointer;
+            box-shadow: 0 4px 0 var(--accent2); transition: all 0.15s ease;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--accent2); }
+        .btn-primary:active { transform: translateY(1px); box-shadow: 0 2px 0 var(--accent2); }
+
+        /* GAME */
+        .game-header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+        }
+        .level-tag {
+            background: #f3e5f5; color: #6a1b9a; padding: 5px 12px;
+            border-radius: 6px; font-size: 0.35rem;
         }
 
-        .car {
-            width: 25px; height: 40px; background: var(--car);
-            border-radius: 6px; position: absolute;
-            box-shadow: 0 4px 10px rgba(255, 154, 158, 0.6);
-            /* Pozicionimi fillestar */
-            transform-origin: center 100px;
-            top: 0; left: calc(50% - 12.5px);
+        .formula-strip {
+            background: #ede7f6; border: 1px solid #d1c4e9;
+            border-radius: 8px; padding: 10px; margin-bottom: 12px;
+            font-size: 0.45rem; color: var(--text);
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px;
         }
+        .formula-strip span { color: #7b1fa2; }
 
-        .center-point {
-            width: 10px; height: 10px; background: #94a3b8; border-radius: 50%;
+        /* Canvas */
+        .track-canvas-wrap {
+            background: #fafafa; border: 1px solid var(--border);
+            border-radius: 12px; margin: 0 auto 12px;
+            position: relative; width: 250px; height: 250px;
         }
+        canvas { display: block; }
 
-        .input-group { margin: 20px 0; }
-
-        input[type="number"] {
-            width: 100px; padding: 12px; border-radius: 15px;
-            border: 2px solid var(--accent); text-align: center; font-size: 1.1rem;
+        /* Data cards */
+        .data-cards {
+            display: flex; gap: 6px; margin-bottom: 12px;
         }
-
-        .btn-check {
-            background: var(--accent); color: #444; border: none;
-            padding: 15px 40px; border-radius: 20px; font-weight: bold;
-            cursor: pointer; width: 100%;
+        .data-card {
+            flex: 1; background: #fafafa; border-radius: 8px;
+            padding: 10px 6px; text-align: center; border: 1px solid var(--border);
         }
+        .data-card .card-label { font-size: 0.3rem; color: var(--muted); }
+        .data-card .card-val { font-size: 0.5rem; color: var(--text); margin-top: 3px; font-weight: bold; }
+        .data-card .card-unit { font-size: 0.28rem; color: var(--muted); }
 
-        #modal {
-            position: fixed; inset: 0; background: rgba(255,255,255,0.95);
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; z-index: 100; text-align: center; padding: 20px;
+        /* Input */
+        .input-group { margin-bottom: 8px; }
+        .input-group label {
+            display: block; font-size: 0.34rem; color: var(--dim);
+            margin-bottom: 5px; text-align: left;
         }
+        .input-row { display: flex; gap: 6px; }
+        .input-row input {
+            flex: 1; padding: 10px 12px; border-radius: 8px;
+            border: 2px solid var(--border); background: #fafafa;
+            font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
+            text-align: center; color: var(--text); outline: none;
+            transition: all 0.2s ease;
+        }
+        .input-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(225,190,231,0.25); }
+        .input-row button {
+            font-family: 'Press Start 2P', monospace; padding: 10px 14px;
+            background: var(--accent); color: #6a1b9a; border: none;
+            border-radius: 8px; font-size: 0.35rem; cursor: pointer;
+            box-shadow: 0 3px 0 var(--accent2); transition: all 0.15s ease; white-space: nowrap;
+        }
+        .input-row button:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--accent2); }
+        .input-row button:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--accent2); }
+
+        #msg { font-size: 0.34rem; font-weight: bold; min-height: 1.2em; margin-top: 4px; }
+
+        .btn-back {
+            font-family: 'Press Start 2P', monospace; width: 100%; padding: 8px;
+            background: none; color: var(--muted); border: 1px solid var(--border);
+            border-radius: 8px; cursor: pointer; font-size: 0.3rem; margin-top: 6px;
+            transition: all 0.15s ease;
+        }
+        .btn-back:hover { background: #fafafa; color: var(--text); }
+        .btn-back:hover { background: #fafafa; color: var(--text); }
+
+        /* Overlay */
+        #overlay {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.9);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100;
+        }
+        .overlay-card {
+            background: white; border-radius: 14px; padding: 24px 20px;
+            text-align: center; max-width: 340px; width: 90%;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1); border: 2px solid var(--border);
+            animation: cardIn 0.3s ease;
+        }
+        @keyframes cardIn {
+            0% { transform: scale(0.92) translateY(16px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .overlay-icon {
+            width: 48px; height: 48px; margin: 0 auto 10px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .overlay-icon.ok { background: #e8f5e9; }
+        .overlay-icon.warn { background: #fff3e0; }
+        .overlay-icon.fail { background: #ffebee; }
+        #overlay h2 { font-size: 0.55rem; margin-bottom: 6px; }
+        #overlay p { font-size: 0.34rem; color: var(--dim); line-height: 1.8; margin-bottom: 14px; }
+        .btn-overlay {
+            font-family: 'Press Start 2P', monospace; font-size: 0.38rem;
+            padding: 10px 22px; border: none; border-radius: 8px;
+            cursor: pointer; transition: all 0.15s ease;
+            background: var(--accent); color: #6a1b9a; box-shadow: 0 3px 0 var(--accent2);
+        }
+        .btn-overlay:hover { transform: translateY(-1px); box-shadow: 0 5px 0 var(--accent2); }
     </style>
 </head>
 <body>
 
-    <div class="game-card">
-        <div class="formula-display">
-            ω = θ / t
+<div class="container">
+    <!-- INTRO -->
+    <div class="screen active" id="intro-screen">
+        <div class="intro-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6a1b9a" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 3 A9 9 0 0 1 19 10" stroke-dasharray="3 2"/>
+                <polygon points="17,6 19,4 21,8"/>
+            </svg>
+        </div>
+        <h1>Shpejtësia Kendore</h1>
+        <p class="subtitle">Llogarit shpejtësinë kendore ω nga këndi i përshkuar dhe koha.</p>
+        <div class="objective">
+            ω = θ / t &nbsp;·&nbsp; Shpejtësia kendore = këndi i përshkuar për njësi kohe.
+        </div>
+        <button class="btn-primary" onclick="startGame()">FILLO</button>
+    </div>
+
+    <!-- GAME -->
+    <div class="screen" id="game-screen">
+        <div class="game-header">
+            <span class="level-tag" id="level-tag">Niveli 1</span>
         </div>
 
-        <p style="font-weight: bold;">Llogarit shpejtësinë kendore (ω):</p>
-
-        <div class="track-area">
-            <div class="center-point"></div>
-            <div class="car" id="car"></div>
+        <div class="formula-strip">
+            <span>ω = θ / t</span>
         </div>
 
-        <div style="background: #f1f5f9; padding: 10px; border-radius: 15px; margin-bottom: 15px;">
-            Zhvendosja: <b>&theta; = <span id="val-theta">3.14</span> rad</b><br>
-            Koha e kthesës: <b>t = <span id="val-t">2.0</span> s</b>
+        <div class="track-canvas-wrap">
+            <canvas id="track-canvas" width="250" height="250"></canvas>
+        </div>
+
+        <div class="data-cards">
+            <div class="data-card">
+                <div class="card-label">θ (këndi)</div>
+                <div class="card-val" id="th-val">3.14</div>
+                <div class="card-unit">rad</div>
+            </div>
+            <div class="data-card">
+                <div class="card-label">t (koha)</div>
+                <div class="card-val" id="t-val">2.0</div>
+                <div class="card-unit">s</div>
+            </div>
         </div>
 
         <div class="input-group">
-            <input type="number" id="user-omega" step="0.01" placeholder="ω = ?">
-            <span style="font-weight: bold; margin-left: 5px;">rad/s</span>
+            <label>Llogarit <b>ω</b> (rad/s):</label>
+            <div class="input-row">
+                <input type="number" id="userAns" step="0.01" placeholder="ω = ?">
+                <button onclick="checkAnswer()">KONTROLLO</button>
+            </div>
         </div>
 
-        <button class="btn-check" onclick="verifiko()">KONTROLLO KTHESËN</button>
+        <div id="msg"></div>
+        <button class="btn-back" onclick="goToIntro()">← KTHEHU</button>
     </div>
+</div>
 
-    <div id="modal">
-        <h1 id="mod-titulli"></h1>
-        <p id="mod-teksti" style="font-size: 1.1rem;"></p>
-        <button class="btn-check" style="width: auto; background: var(--car); color: white;" onclick="vazhdo()">Vazhdo</button>
+<div id="overlay">
+    <div class="overlay-card">
+        <div class="overlay-icon" id="ov-icon"></div>
+        <h2 id="res-title"></h2>
+        <p id="res-msg"></p>
+        <button class="btn-overlay" onclick="nextLevel()">NIVELI TJETËR</button>
     </div>
+</div>
 
-    <script>
-        const nivelet = [
-            { theta: 3.14, t: 2.0, omega: 1.57 }, // Gjysmë rrethi në 2 sekonda
-            { theta: 6.28, t: 4.0, omega: 1.57 }, // Rreth i plotë në 4 sekonda
-            { theta: 1.57, t: 0.5, omega: 3.14 }, // Çerek rrethi shumë shpejt
-            { theta: 4.71, t: 3.0, omega: 1.57 }  // 270 gradë
-        ];
+<script>
+    const levels = [
+        { theta: 3.14, t: 2.0, answer: 1.57, desc: 'gjysmë rrethi' },
+        { theta: 6.28, t: 4.0, answer: 1.57, desc: 'rreth i plotë' },
+        { theta: 1.57, t: 0.5, answer: 3.14, desc: 'çerek rrethi' },
+        { theta: 4.71, t: 3.0, answer: 1.57, desc: '270°' },
+        { theta: 9.42, t: 2.0, answer: 4.71, desc: '1.5 rrathë' }
+    ];
 
-        let idx = 0;
-        const car = document.getElementById('car');
-        let currentRotation = 0;
+    let idx = 0;
+    let animFrame;
+    let progress = 0; // 0..1 animation progress through theta
 
-        function animo() {
-            let omegaAktuale = nivelet[idx].omega;
-            // Ndryshimi i këndit: dTheta = omega * dt
-            currentRotation += omegaAktuale * (180 / Math.PI) * 0.016; 
-            car.style.transform = `rotate(${currentRotation}deg)`;
-            requestAnimationFrame(animo);
+    const canvas = document.getElementById('track-canvas');
+    const ctx = canvas.getContext('2d');
+    const cx = 125, cy = 125;
+    const trackR = 92;
+
+    function drawTrack(carAngle) {
+        ctx.clearRect(0, 0, 250, 250);
+
+        const lvl = levels[idx];
+
+        // Track circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, trackR, 0, Math.PI*2);
+        ctx.strokeStyle = '#d1c4e9';
+        ctx.lineWidth = 6;
+        ctx.stroke();
+
+        // Inner ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, trackR-18, 0, Math.PI*2);
+        ctx.strokeStyle = 'rgba(179,157,219,0.18)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 8]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Center dot
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, Math.PI*2);
+        ctx.fillStyle = '#b39ddb';
+        ctx.fill();
+
+        // Radius reference line (0°)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + trackR, cy);
+        ctx.strokeStyle = 'rgba(179,157,219,0.2)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Theta arc - animated to show current progress
+        const sweepAngle = carAngle; // goes from 0 to theta
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, 50, 0, sweepAngle);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(225,190,231,0.25)';
+        ctx.fill();
+        ctx.strokeStyle = '#ce93d8';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Theta label
+        const midA = sweepAngle / 2;
+        ctx.fillStyle = '#7b1fa2';
+        ctx.font = '8px "Press Start 2P"';
+        ctx.fillText('θ', cx + 56 * Math.cos(midA), cy + 56 * Math.sin(midA) + 3);
+
+        // Start marker (0 position)
+        ctx.beginPath();
+        ctx.arc(cx + trackR, cy, 5, 0, Math.PI*2);
+        ctx.fillStyle = '#b39ddb';
+        ctx.fill();
+
+        // Car at current angle
+        const carX = cx + trackR * Math.cos(carAngle);
+        const carY = cy + trackR * Math.sin(carAngle);
+
+        // Ghost trail along theta path
+        for (let i = 1; i <= 4; i++) {
+            const ta = carAngle * (1 - i*0.15);
+            if (ta < 0) continue;
+            const gx = cx + trackR * Math.cos(ta);
+            const gy = cy + trackR * Math.sin(ta);
+            ctx.beginPath();
+            ctx.arc(gx, gy, 2 + i*0.6, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(206,147,216,${0.25 - i*0.05})`;
+            ctx.fill();
         }
-        animo();
 
-        function verifiko() {
-            const userOmega = parseFloat(document.getElementById('user-omega').value);
-            const saktOmega = nivelet[idx].omega;
-            const diff = Math.abs(userOmega - saktOmega);
-            
-            const modal = document.getElementById('modal');
-            modal.style.display = "flex";
+        // Car
+        ctx.save();
+        ctx.translate(carX, carY);
+        ctx.rotate(carAngle + Math.PI/2);
 
-            if (diff < 0.1) {
-                document.getElementById('mod-titulli').innerText = "Kthesë e Perkryer!";
-                document.getElementById('mod-teksti').innerText = `Saktë! Shpejtësia kendore është ${saktOmega} rad/s. Makina qëndroi në pistë!`;
-                window.isCorrect = true;
-            } else {
-                document.getElementById('mod-titulli').innerText = "Jashtë piste!";
-                document.getElementById('mod-teksti').innerText = `Llogaritja jote nuk ishte e saktë. Pjesto këndin me kohën!`;
-                window.isCorrect = false;
-            }
+        ctx.fillStyle = '#ce93d8';
+        ctx.fillRect(-9, -14, 18, 28);
+        ctx.fillStyle = '#ba68c8';
+        ctx.fillRect(-5, -17, 10, 7);
+        ctx.fillStyle = '#4a148c';
+        ctx.fillRect(-11, -8, 5, 7);
+        ctx.fillRect(6, -8, 5, 7);
+        ctx.fillRect(-11, 5, 5, 7);
+        ctx.fillRect(6, 5, 5, 7);
+        ctx.restore();
+
+        // Radius line from center to car
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(carX, carY);
+        ctx.strokeStyle = 'rgba(122,31,162,0.25)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    function animate() {
+        const lvl = levels[idx];
+        const omega = lvl.answer;
+
+        // progress sweeps from 0 to 1, then resets - showing the angular displacement
+        progress += 0.005;
+        if (progress > 1) progress = 0;
+
+        const carAngle = progress * lvl.theta;
+        drawTrack(carAngle);
+        animFrame = requestAnimationFrame(animate);
+    }
+
+    function updateUI() {
+        const lvl = levels[idx];
+        document.getElementById('level-tag').innerText = 'Niveli ' + (idx + 1);
+        document.getElementById('th-val').innerText = lvl.theta.toFixed(2);
+        document.getElementById('t-val').innerText = lvl.t.toFixed(1);
+    }
+
+    function showOverlay(type, title, msg) {
+        const ov = document.getElementById('overlay');
+        const icon = document.getElementById('ov-icon');
+        icon.className = 'overlay-icon ' + type;
+        icon.innerHTML = type === 'ok'
+            ? '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.8"><polyline points="3,13 9,19 21,5"/></svg>'
+            : type === 'warn'
+            ? '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="16" r="0.8" fill="#ea580c"/></svg>'
+            : '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.8"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg>';
+        document.getElementById('res-title').innerText = title;
+        document.getElementById('res-title').style.color =
+            type === 'ok' ? '#16a34a' : type === 'warn' ? '#ea580c' : '#dc2626';
+        document.getElementById('res-msg').innerHTML = msg;
+        ov.style.display = 'flex';
+    }
+
+    function checkAnswer() {
+        const ans = parseFloat(document.getElementById('userAns').value);
+        const correct = levels[idx].answer;
+        const lvl = levels[idx];
+
+        if (isNaN(ans)) {
+            document.getElementById('msg').innerText = 'Shëno një vlerë!';
+            document.getElementById('msg').style.color = '#dc2626';
+            return;
         }
 
-        function vazhdo() {
-            if (window.isCorrect) {
-                idx = (idx + 1) % nivelet.length;
-                document.getElementById('val-theta').innerText = nivelet[idx].theta.toFixed(2);
-                document.getElementById('val-t').innerText = nivelet[idx].t.toFixed(1);
-                document.getElementById('user-omega').value = "";
-            }
-            document.getElementById('modal').style.display = "none";
+        const diff = Math.abs(ans - correct);
+
+        if (diff < 0.1) {
+            document.getElementById('msg').innerText = '';
+            showOverlay('ok', 'SAKTË!',
+                `ω = θ / t = ${lvl.theta.toFixed(2)} / ${lvl.t.toFixed(1)} = <b>${correct.toFixed(2)} rad/s</b><br>(${lvl.desc})`);
+            window.isOk = true;
+        } else if (diff < 0.3) {
+            showOverlay('warn', 'AFËR',
+                `ω = θ/t = <b>${correct.toFixed(2)} rad/s</b><br>Ti dhe: ${ans.toFixed(2)} rad/s`);
+            window.isOk = true;
+        } else {
+            showOverlay('fail', 'JO SAKTË',
+                `ω = θ / t = ${lvl.theta.toFixed(2)} / ${lvl.t.toFixed(1)} = <b>${correct.toFixed(2)} rad/s</b><br>(${lvl.desc})`);
+            window.isOk = false;
         }
-    </script>
+    }
+
+    function nextLevel() {
+        if (window.isOk) idx = (idx + 1) % levels.length;
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('userAns').value = '';
+        document.getElementById('msg').innerText = '';
+        progress = 0;
+        updateUI();
+    }
+
+    function startGame() {
+        idx = 0; progress = 0;
+        document.getElementById('userAns').value = '';
+        document.getElementById('msg').innerText = '';
+        updateUI();
+        if (animFrame) cancelAnimationFrame(animFrame);
+        animate();
+        document.getElementById('intro-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+    }
+
+    function goToIntro() {
+        if (animFrame) cancelAnimationFrame(animFrame);
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('intro-screen').classList.add('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (document.getElementById('overlay').style.display === 'flex') nextLevel();
+            else if (document.getElementById('game-screen').classList.contains('active')) checkAnswer();
+            else startGame();
+        }
+    });
+</script>
 </body>
 </html>
