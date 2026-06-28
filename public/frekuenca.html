@@ -1,210 +1,442 @@
 <!DOCTYPE html>
 <html lang="sq">
-<head>
+<head><base href="autoclaw-local-html://8348147a-e5cf-4d27-a157-cfbaadb0eaf8/C%3A/Users/User/.openclaw-autoclaw/workspace/frekuenca.html">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sfida e Frekuencës</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Frekuenca — f = 1/T</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #fdfbfb;
-            --card: #ffffff;
-            --mint: #c1e1c1;
-            --peach: #ffdac1;
-            --lavender: #e2f0cb;
-            --text: #5f6368;
+            --bg: #f5fdf7; --card: #ffffff;
+            --text: #0f172a; --dim: #475569; --muted: #94a3b8;
+            --emerald: #10b981; --emerald2: #059669; --mint: #34d399;
+            --wave-bg: #f0fdf6;
+            --shadow: 0 2px 4px rgba(0,0,0,0.02), 0 8px 24px rgba(0,0,0,0.05);
+            --shadow-hover: 0 4px 8px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(160deg, #f0fdf6 0%, #ecfeff 40%, #f5fdf7 100%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 15px;
         }
 
-        .game-card {
-            background: var(--card);
-            padding: 35px;
-            border-radius: 40px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.03);
-            width: 85%;
-            max-width: 360px;
-            text-align: center;
-            border: 1px solid #f1f1f1;
+        /* Decorative background */
+        .decor-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .decor-circle {
+            position: absolute; border-radius: 50%; opacity: 0.06;
+            animation: decorFloat 14s ease-in-out infinite;
+        }
+        .decor-circle.c1 { width: 300px; height: 300px; background: #10b981; top: -10%; left: -8%; animation-delay: 0s; }
+        .decor-circle.c2 { width: 220px; height: 220px; background: #06b6d4; bottom: -5%; right: -5%; animation-delay: -5s; }
+        .decor-circle.c3 { width: 160px; height: 160px; background: #8b5cf6; top: 50%; right: 10%; animation-delay: -9s; }
+        @keyframes decorFloat {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(30px,-20px) scale(1.06); }
+            66% { transform: translate(-15px,15px) scale(0.94); }
         }
 
-        .formula-display {
-            background: var(--lavender);
-            padding: 10px;
-            border-radius: 15px;
-            font-size: 1.3rem;
-            margin-bottom: 25px;
-            display: inline-block;
-            width: 100%;
-            box-sizing: border-box;
+        .container {
+            background: var(--card); border-radius: 26px; padding: 28px 22px;
+            box-shadow: var(--shadow); max-width: 430px; width: 100%;
+            position: relative; z-index: 1; border: 1px solid rgba(16,185,129,0.06);
         }
 
-        /* Laboratori i lëkundjes */
-        .wave-area {
-            height: 120px;
-            background: #fafafa;
-            border-radius: 25px;
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeSlide 0.4s cubic-bezier(0.22,1,0.36,1); }
+        @keyframes fadeSlide { 0%{opacity:0;transform:translateY(10px)} 100%{opacity:1;transform:translateY(0)} }
+
+        /* INTRO */
+        .intro-hero {
+            margin-bottom: 16px; position: relative;
+        }
+        .intro-icon-big {
+            width: 80px; height: 80px; margin: 0 auto 14px;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0, #6ee7b7);
+            border-radius: 22px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 24px rgba(16,185,129,0.15);
             position: relative;
-            margin-bottom: 25px;
-            border: 2px dashed #eee;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
+        }
+        .intro-icon-big::after {
+            content: ''; position: absolute; inset: -6px; border-radius: 26px;
+            border: 2px dashed rgba(16,185,129,0.2);
+            animation: iconSpin 20s linear infinite;
+        }
+        @keyframes iconSpin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+        .intro-icon-big svg { width: 36px; height: 36px; position: relative; z-index: 1; }
+        h1 { font-size: 1.6rem; font-weight: 900; color: var(--text); margin-bottom: 4px; letter-spacing: -0.5px; }
+        .subtitle { font-size: 0.9rem; color: var(--dim); line-height: 1.6; }
+        .objective {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-radius: 14px; padding: 14px 16px; margin: 14px 0;
+            font-size: 0.85rem; color: #065f46; font-weight: 600;
+            border: 1px solid #a7f3d0;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .objective .obj-icon {
+            flex-shrink: 0; width: 32px; height: 32px;
+            background: #a7f3d0; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-start {
+            font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700;
+            padding: 15px 44px; background: linear-gradient(135deg, #10b981, #059669);
+            color: white; border: none; border-radius: 16px; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(16,185,129,0.3);
+            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-start:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(16,185,129,0.4); }
+        .btn-start:active { transform: scale(0.96); }
+
+        /* GAME */
+        .game-header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+        }
+        .level-tag {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46; padding: 7px 16px; border-radius: 20px;
+            font-size: 0.76rem; font-weight: 700;
+        }
+        .freq-live {
+            background: #f0fdf6; border: 1px solid #a7f3d0;
+            border-radius: 10px; padding: 7px 14px; font-size: 0.7rem;
+            color: var(--dim); font-weight: 600;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .freq-live span { color: #059669; font-weight: 800; font-size: 0.85rem; }
+
+        .formula-hero {
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf6);
+            border-radius: 16px; padding: 14px; margin-bottom: 14px;
+            text-align: center; border: 1px solid #a7f3d0;
+            font-size: 1.3rem; font-weight: 800; color: #065f46;
+            letter-spacing: 1px; position: relative; overflow: hidden;
+        }
+        .formula-hero::after {
+            content: ''; position: absolute; top: -50%; right: -20%;
+            width: 100px; height: 100px; background: rgba(16,185,129,0.04);
+            border-radius: 50%;
         }
 
-        .pulsar {
-            width: 45px;
-            height: 45px;
-            background: var(--mint);
-            border-radius: 12px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 5px 15px rgba(193, 225, 193, 0.5);
+        /* Wave display */
+        .wave-stage {
+            background: linear-gradient(180deg, #f0fdf6, #ecfdf5);
+            border-radius: 18px; position: relative;
+            height: 200px; margin: 0 0 14px; overflow: hidden;
+            border: 1px solid #d1fae5;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
         }
+        canvas { display: block; width: 100%; height: 100%; }
 
-        .input-group {
-            margin: 20px 0;
+        /* T display */
+        .t-display {
+            display: flex; justify-content: center; align-items: center; gap: 12px;
+            margin-bottom: 14px;
         }
+        .t-card {
+            background: linear-gradient(135deg, #f0fdf6, #ecfdf5);
+            border: 2px solid #a7f3d0; border-radius: 16px;
+            padding: 14px 22px; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.06);
+        }
+        .t-card .t-icon-round {
+            width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .t-card .t-info { text-align: left; }
+        .t-card .t-label { font-size: 0.62rem; color: var(--dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+        .t-card .t-value { font-size: 1.5rem; font-weight: 900; color: #065f46; line-height: 1.1; }
 
-        input[type="number"] {
-            width: 100px;
-            padding: 12px;
-            border-radius: 12px;
-            border: 2px solid var(--mint);
-            text-align: center;
-            font-size: 1.1rem;
-            outline: none;
+        .input-group { margin-bottom: 10px; }
+        .input-group label {
+            display: block; font-size: 0.8rem; font-weight: 700;
+            color: var(--dim); margin-bottom: 6px;
         }
+        .input-row { display: flex; gap: 8px; }
+        .input-row input {
+            flex: 1; padding: 15px 16px; border-radius: 16px;
+            border: 2px solid #d1fae5; background: #fafdfb;
+            font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 700;
+            text-align: center; color: var(--text); outline: none;
+            transition: all 0.3s ease;
+        }
+        .input-row input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 5px rgba(16,185,129,0.08);
+        }
+        .input-row button {
+            font-family: 'Inter', sans-serif; padding: 15px 22px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white; border: none; border-radius: 16px;
+            font-size: 0.86rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 5px 16px rgba(16,185,129,0.25);
+            transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            white-space: nowrap; letter-spacing: 0.3px;
+        }
+        .input-row button:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(16,185,129,0.35); }
+        .input-row button:active { transform: scale(0.96); }
 
-        .btn-check {
-            background: var(--mint);
-            color: #444;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
+        #msg { font-size: 0.83rem; font-weight: 700; min-height: 1.3em; margin-top: 4px; text-align: center; }
 
-        .hint {
-            font-size: 0.85rem;
-            margin-top: 15px;
-            opacity: 0.7;
+        .btn-back {
+            font-family: 'Inter', sans-serif; width: 100%; padding: 10px;
+            background: none; color: var(--muted); border: 1px solid #e2e8f0;
+            border-radius: 14px; cursor: pointer; font-size: 0.78rem; font-weight: 600;
+            margin-top: 8px; transition: all 0.2s ease;
         }
+        .btn-back:hover { background: #f8fafc; color: var(--text); }
 
-        #modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.95);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: 20px;
-            text-align: center;
+        /* Overlay */
+        #overlay {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.35);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100; backdrop-filter: blur(3px);
         }
+        .overlay-card {
+            background: white; border-radius: 26px; padding: 34px 24px;
+            text-align: center; max-width: 350px; width: 90%;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+            animation: cardPop 0.45s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes cardPop {
+            0% { transform: scale(0.85) translateY(30px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .overlay-icon {
+            width: 64px; height: 64px; margin: 0 auto 14px;
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+        }
+        .overlay-icon.ok { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+        .overlay-icon.warn { background: linear-gradient(135deg, #fed7aa, #fdba74); }
+        .overlay-icon.fail { background: linear-gradient(135deg, #fecaca, #fca5a5); }
+        #overlay h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 8px; }
+        #overlay p { font-size: 0.86rem; color: var(--dim); line-height: 1.8; margin-bottom: 20px; }
+        .btn-overlay {
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700;
+            padding: 13px 34px; border: none; border-radius: 16px;
+            cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white; box-shadow: 0 5px 16px rgba(16,185,129,0.25);
+        }
+        .btn-overlay:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(16,185,129,0.35); }
     </style>
 </head>
 <body>
 
-    <div class="game-card">
-        <div class="formula-display">
-            $$f = \frac{1}{T}$$
+<div class="decor-bg">
+    <div class="decor-circle c1"></div>
+    <div class="decor-circle c2"></div>
+    <div class="decor-circle c3"></div>
+</div>
+
+<div class="container">
+    <div class="screen active" id="intro-screen">
+        <div class="intro-hero">
+            <div class="intro-icon-big">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="2.2">
+                    <path d="M2 12 Q6 1 12 12 Q18 23 22 12"/>
+                    <circle cx="6" cy="12" r="1.8" fill="#065f46"/>
+                    <circle cx="18" cy="12" r="1.8" fill="#065f46"/>
+                    <line x1="12" y1="5" x2="12" y2="19" stroke-width="1.5" stroke-dasharray="2 2"/>
+                </svg>
+            </div>
+            <h1>Frekuenca</h1>
+            <p class="subtitle">Vëzhgo formën valore dhe llogarit sa cikle ndodhin në sekondë.</p>
+        </div>
+        <div class="objective">
+            <div class="obj-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+            </div>
+            <span>f = 1 / T — Frekuenca është e anasjellta e periodës. Sa më e shkurtër perioda, aq më e lartë frekuenca.</span>
+        </div>
+        <button class="btn-start" onclick="startGame()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="5,3 19,12 5,21"/></svg>
+            Fillo Tani
+        </button>
+    </div>
+
+    <div class="screen" id="game-screen">
+        <div class="game-header">
+            <span class="level-tag" id="level-tag">Niveli 1</span>
+            <span class="freq-live">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="2,12 6,6 10,18 14,2 18,14 22,8"/></svg>
+                <span id="live-f">—</span>
+            </span>
         </div>
 
-        <p style="font-weight: bold;">Vëzhgo periodën (T) dhe llogarit frekuencën (f):</p>
-
-        <div class="wave-area">
-            <div class="pulsar" id="objekt"></div>
+        <div class="formula-hero">
+            <span><var>f</var> = 1 / <var>T</var></span>
         </div>
 
-        <div id="info-perioda" style="margin-bottom: 15px; color: #888;">
-            Perioda aktuale: <b>T = <span id="val-T">1.00</span>s</b>
+        <div class="wave-stage">
+            <canvas id="wave-canvas"></canvas>
+        </div>
+
+        <div class="t-display">
+            <div class="t-card">
+                <div class="t-icon-round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 15,15"/>
+                    </svg>
+                </div>
+                <div class="t-info">
+                    <div class="t-label">Perioda T</div>
+                    <div class="t-value" id="T-val">1.00 s</div>
+                </div>
+            </div>
         </div>
 
         <div class="input-group">
-            <input type="number" id="f-user" step="0.01" placeholder="f = ?">
-            <span style="font-weight: bold; margin-left: 5px;">Hz</span>
+            <label>Sa është frekuenca f? (Hz)</label>
+            <div class="input-row">
+                <input type="number" id="userAns" step="0.01" placeholder="f = ?">
+                <button onclick="checkAnswer()">Kontrollo</button>
+            </div>
         </div>
 
-        <button class="btn-check" onclick="verifiko()">KONTROLLO</button>
-        
-        <p class="hint">Nëse një lëkundje zgjat T sekonda, sa herë lëkundet objekti brenda 1 sekonde?</p>
+        <div id="msg"></div>
+        <button class="btn-back" onclick="goToIntro()">← Kthehu te Hyrja</button>
     </div>
+</div>
 
-    <div id="modal">
-        <h1 id="mod-titulli"></h1>
-        <p id="mod-teksti"></p>
-        <button class="btn-check" style="width: auto; background: var(--peach);" onclick="vazhdo()">Vazhdo</button>
+<div id="overlay">
+    <div class="overlay-card">
+        <div class="overlay-icon" id="ov-icon"></div>
+        <h2 id="res-title"></h2>
+        <p id="res-msg"></p>
+        <button class="btn-overlay" onclick="nextLevel()">Niveli Tjetër →</button>
     </div>
+</div>
 
-    <script>
-        const nivelet = [
-            { t: 1.00, f: 1.00 },
-            { t: 0.50, f: 2.00 },
-            { t: 2.00, f: 0.50 },
-            { t: 0.25, f: 4.00 },
-            { t: 0.80, f: 1.25 }
-        ];
+<script>
+    const levels = [{T:1,f:1},{T:0.5,f:2},{T:2,f:0.5},{T:0.25,f:4},{T:0.8,f:1.25}];
+    let idx=0,animFrame,particles=[],ripples=[];
+    const canvas=document.getElementById('wave-canvas');let ctx,W,H;
 
-        let idx = 0;
-        const objekt = document.getElementById('objekt');
+    function resize(){
+        const r=canvas.parentElement.getBoundingClientRect();
+        const dpr=window.devicePixelRatio||1;
+        canvas.width=r.width*dpr;canvas.height=r.height*dpr;
+        ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+        W=r.width;H=r.height;
+    }
 
-        function animo() {
-            let tani = Date.now();
-            let T = nivelet[idx].t;
-            // Lëkundje vertikale e bazuar në Periodë
-            // y = sin(2 * PI * (1/T) * koha)
-            let y = Math.sin(2 * Math.PI * (1 / T) * (tani / 1000)) * 35;
-            objekt.style.transform = `translate(-50%, ${y}px)`;
-            requestAnimationFrame(animo);
+    function draw(elapsed){
+        const lvl=levels[idx],f=lvl.f,T=lvl.T;
+        const midY=H*0.5,amp=H*0.28;
+        ctx.clearRect(0,0,W,H);
+
+        // Subtle grid
+        ctx.strokeStyle='rgba(16,185,129,0.04)';ctx.lineWidth=0.5;
+        for(let g=0;g<H;g+=30){ctx.beginPath();ctx.moveTo(0,g);ctx.lineTo(W,g);ctx.stroke();}
+        for(let g=0;g<W;g+=50){ctx.beginPath();ctx.moveTo(g,0);ctx.lineTo(g,H);ctx.stroke();}
+
+        // Center line
+        ctx.strokeStyle='rgba(16,185,129,0.1)';ctx.setLineDash([3,14]);ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(0,midY);ctx.lineTo(W,midY);ctx.stroke();ctx.setLineDash([]);
+
+        // Glow under wave
+        ctx.beginPath();ctx.moveTo(0,midY);
+        for(let x=0;x<=W;x+=1){
+            const t=elapsed+(x/W)*T*2.8,y=midY-amp*Math.sin(2*Math.PI*f*t);
+            ctx.lineTo(x,y);
         }
-        animo();
+        ctx.strokeStyle='rgba(16,185,129,0.1)';ctx.lineWidth=16;ctx.stroke();
 
-        function verifiko() {
-            const userF = parseFloat(document.getElementById('f-user').value);
-            const saktF = nivelet[idx].f;
-            const diff = Math.abs(userF - saktF);
-            
-            const modal = document.getElementById('modal');
-            modal.style.display = "flex";
+        // Main wave
+        ctx.beginPath();ctx.moveTo(0,midY);
+        for(let x=0;x<=W;x+=1){
+            const t=elapsed+(x/W)*T*2.8,y=midY-amp*Math.sin(2*Math.PI*f*t);
+            ctx.lineTo(x,y);
+        }
+        const grad=ctx.createLinearGradient(0,midY-amp,0,midY+amp);
+        grad.addColorStop(0,'#34d399');grad.addColorStop(0.5,'#10b981');grad.addColorStop(1,'#059669');
+        ctx.strokeStyle=grad;ctx.lineWidth=3.5;
+        ctx.shadowColor='rgba(16,185,129,0.25)';ctx.shadowBlur=18;
+        ctx.stroke();ctx.shadowBlur=0;
 
-            if (diff < 0.1) {
-                document.getElementById('mod-titulli').innerText = "Saktë!";
-                document.getElementById('mod-teksti').innerText = `Bravo! Kur perioda është ${nivelet[idx].t}s, frekuenca është fiks ${saktF}Hz.`;
-                window.isCorrect = true;
-            } else {
-                document.getElementById('mod-titulli').innerText = "Jo plotësisht...";
-                document.getElementById('mod-teksti').innerText = `Llogaritja doli pak jashtë. Provo të pjestosh 1 me ${nivelet[idx].t}.`;
-                window.isCorrect = false;
-            }
+        // Particles from wave peaks
+        const now=Date.now()/1000;
+        [0,0.25,0.5,0.75].forEach(ph=>{
+            const px=(ph*f*T*2.8*W/T/2.8+elapsed*f*W)%W;
+            const py=midY-amp*Math.sin(2*Math.PI*now*f+ph*2*Math.PI);
+            if(Math.random()>0.8)particles.push({x:px,y:py,life:1,vy:-0.6-Math.random(),vx:(Math.random()-0.5)*0.4,size:2+Math.random()*3});
+        });
+
+        // Ripples at troughs
+        if(Math.random()>0.92){
+            const rx=Math.random()*W,ry=midY+amp*0.7;
+            ripples.push({x:rx,y:ry,life:1,radius:2});
         }
 
-        function vazhdo() {
-            if (window.isCorrect) {
-                idx = (idx + 1) % nivelet.length;
-                document.getElementById('val-T').innerText = nivelet[idx].t.toFixed(2);
-                document.getElementById('f-user').value = "";
-            }
-            document.getElementById('modal').style.display = "none";
+        // Draw ripples
+        for(let i=ripples.length-1;i>=0;i--){
+            const r=ripples[i];r.life-=0.02;r.radius+=0.4;
+            if(r.life<=0){ripples.splice(i,1);continue;}
+            ctx.beginPath();ctx.arc(r.x,r.y,r.radius,0,Math.PI*2);
+            ctx.strokeStyle=`rgba(16,185,129,${r.life*0.3})`;ctx.lineWidth=1.5;ctx.stroke();
         }
-    </script>
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        // Draw particles
+        for(let i=particles.length-1;i>=0;i--){
+            const p=particles[i];p.y+=p.vy;p.x+=p.vx;p.life-=0.012;
+            if(p.life<=0){particles.splice(i,1);continue;}
+            ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+            ctx.fillStyle=`rgba(16,185,129,${p.life*0.6})`;ctx.fill();
+        }
+
+        // T bracket
+        const tStart=W*0.15,tEnd=tStart+(W*0.55)/f;
+        const bY=midY-amp-20;
+        ctx.strokeStyle='rgba(5,150,105,0.35)';ctx.lineWidth=1;ctx.setLineDash([2,3]);
+        ctx.beginPath();ctx.moveTo(tStart,bY-8);ctx.lineTo(tStart,bY+34);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(tEnd,bY-8);ctx.lineTo(tEnd,bY+34);ctx.stroke();ctx.setLineDash([]);
+        ctx.strokeStyle='#059669';ctx.lineWidth=1.8;
+        ctx.beginPath();ctx.moveTo(tStart,bY);ctx.lineTo(tEnd,bY);ctx.stroke();
+        // Cap ends
+        ctx.beginPath();ctx.moveTo(tStart,bY);ctx.lineTo(tStart+10,bY-5);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(tStart,bY);ctx.lineTo(tStart+10,bY+5);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(tEnd,bY);ctx.lineTo(tEnd-10,bY-5);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(tEnd,bY);ctx.lineTo(tEnd-10,bY+5);ctx.stroke();
+
+        ctx.fillStyle='#059669';ctx.font='bold 13px Inter,sans-serif';
+        ctx.fillText('T = '+T.toFixed(2)+' s',tStart+(tEnd-tStart)/2-32,bY-14);
+
+        document.getElementById('live-f').innerText=f.toFixed(2)+' Hz';
+    }
+
+    function animate(t){draw(t/1000);animFrame=requestAnimationFrame(animate);}
+
+    function upd(){const l=levels[idx];document.getElementById('level-tag').innerText='Niveli '+(idx+1);document.getElementById('T-val').innerText=l.T.toFixed(2)+' s';particles=[];ripples=[];}
+
+    function showOv(type,title,msg){
+        const o=document.getElementById('overlay'),ic=document.getElementById('ov-icon');
+        ic.className='overlay-icon '+type;
+        ic.innerHTML=type==='ok'?'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3"><polyline points="3,13 9,19 21,5"/></svg>':type==='warn'?'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="3"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="16" r="1" fill="#ea580c"/></svg>':'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg>';
+        document.getElementById('res-title').innerText=title;
+        document.getElementById('res-title').style.color=type==='ok'?'#059669':type==='warn'?'#ea580c':'#dc2626';
+        document.getElementById('res-msg').innerHTML=msg;o.style.display='flex';
+    }
+
+    function check(){
+        const a=parseFloat(document.getElementById('userAns').value),c=levels[idx].f;
+        if(isNaN(a)){document.getElementById('msg').innerText='Shëno një vlerë.';document.getElementById('msg').style.color='#dc2626';return;}
+        const d=Math.abs(a-c);
+        if(d<0.05){document.getElementById('msg').innerText='';showOv('ok','Perfekt!','f = 1/T = 1/'+levels[idx].T.toFixed(2)+' = <b style="color:#059669;">'+c.toFixed(2)+' Hz</b><br>'+c.toFixed(2)+' cikle të plota në sekondë.');window.isOk=true;}
+        else if(d<0.15){showOv('warn','Shumë afër','f = 1/'+levels[idx].T.toFixed(2)+' = <b>'+c.toFixed(2)+' Hz</b><br>Ti dhe: '+a.toFixed(2)+' Hz');window.isOk=true;}
+        else{showOv('fail','Jo saktë','f = 1/T = 1/'+levels[idx].T.toFixed(2)+' = <b>'+c.toFixed(2)+' Hz</b><br>Frekuenca = 1 ÷ perioda.');window.isOk=false;}
+    }
+
+    function next(){if(window.isOk)idx=(idx+1)%levels.length;document.getElementById('overlay').style.display='none';document.getElementById('userAns').value='';document.getElementById('msg').innerText='';upd();}
+    function startGame(){idx=0;document.getElementById('userAns').value='';document.getElementById('msg').innerText='';upd();resize();if(animFrame)cancelAnimationFrame(animFrame);animFrame=requestAnimationFrame(animate);document.getElementById('intro-screen').classList.remove('active');document.getElementById('game-screen').classList.add('active');}
+    function goToIntro(){if(animFrame)cancelAnimationFrame(animFrame);document.getElementById('game-screen').classList.remove('active');document.getElementById('intro-screen').classList.add('active');}
+    window.addEventListener('resize',()=>{if(document.getElementById('game-screen').classList.contains('active'))resize();});
+    document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(document.getElementById('overlay').style.display==='flex')next();else if(document.getElementById('game-screen').classList.contains('active'))check();else startGame();}});
+</script>
 </body>
 </html>
