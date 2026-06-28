@@ -1,173 +1,465 @@
 <!DOCTYPE html>
 <html lang="sq">
-<head>
+<head><base href="autoclaw-local-html://85ee41f0-a7db-4f50-abf0-f0e669b8c40f/C%3A/Users/User/.openclaw-autoclaw/workspace/akendore.html">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nxitimi Këndor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nxitimi Këndor — α = Δω/Δt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-purple: #c084fc;
-            --neon-emerald: #34d399;
-            --dark-panel: #1e1b4b;
-            --text-light: #f8fafc;
+            --bg: #f0f4ff; --panel: #ffffff;
+            --text: #1e293b; --dim: #64748b; --muted: #94a3b8;
+            --accent: #7c3aed; --accent2: #6d28d9;
+            --green: #16a34a; --red: #dc2626; --orange: #ea580c;
+            --bubble: #ede9fe; --bubble2: #ddd6fe;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow: 0 4px 20px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.07);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0; font-family: 'Monaco', monospace;
-            background-color: #020617; color: var(--text-light);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fdf2f8 100%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 15px;
+        }
+
+        /* Floating background bubbles */
+        .bg-bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bg-bubble {
+            position: absolute; border-radius: 50%;
+            animation: floatBubble 12s ease-in-out infinite;
+            opacity: 0.3;
+        }
+        .bg-bubble:nth-child(1) { width: 200px; height: 200px; background: #c4b5fd; top: -5%; left: -3%; animation-delay: 0s; }
+        .bg-bubble:nth-child(2) { width: 160px; height: 160px; background: #a5b4fc; bottom: -8%; right: -5%; animation-delay: -4s; }
+        .bg-bubble:nth-child(3) { width: 120px; height: 120px; background: #fbcfe8; top: 40%; left: 75%; animation-delay: -8s; }
+        @keyframes floatBubble {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(30px,-20px) scale(1.05); }
+            66% { transform: translate(-20px,10px) scale(0.95); }
+        }
+
+        .container {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 28px; padding: 24px 20px;
+            box-shadow: var(--shadow-lg);
+            max-width: 420px; width: 100%; text-align: center;
+            position: relative; z-index: 1;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeSlideIn 0.4s ease; }
+        @keyframes fadeSlideIn {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* INTRO */
+        .intro-icon {
+            width: 72px; height: 72px; margin: 0 auto 16px;
+            background: var(--bubble); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            min-height: 100vh;
+        }
+        .intro-icon svg { width: 36px; height: 36px; }
+        h1 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+        .subtitle { font-size: 0.9rem; color: var(--dim); margin-bottom: 4px; line-height: 1.6; }
+        .objective {
+            background: var(--bubble); border-radius: 16px; padding: 12px 16px;
+            margin: 16px 0; font-size: 0.85rem; color: var(--accent2); font-weight: 600;
+            line-height: 1.6;
+        }
+        .btn-primary {
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700;
+            padding: 12px 32px; background: var(--accent); color: white;
+            border: none; border-radius: 14px; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,58,237,0.3); }
+        .btn-primary:active { transform: scale(0.97); }
+
+        /* GAME */
+        .game-header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+        }
+        .level-tag {
+            background: var(--bubble); color: var(--accent);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
         }
 
-        .engine-panel {
-            background: var(--dark-panel);
-            border: 3px solid var(--neon-purple);
-            border-radius: 10px; padding: 25px;
-            width: 340px; box-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
-            position: relative;
+        /* Formula bubble */
+        .formula-bubble {
+            background: var(--bubble); border-radius: 18px; padding: 14px 18px;
+            margin-bottom: 14px; display: flex; align-items: center; justify-content: center;
+            gap: 8px;
         }
-
-        .formula {
-            color: var(--neon-emerald); font-size: 1.4rem;
-            text-align: center; margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
+        .formula-bubble .eq {
+            font-size: 1.15rem; font-weight: 700; color: var(--text);
         }
+        .formula-bubble .eq var { font-style: italic; color: var(--accent); }
 
-        /* Turbina */
-        .turbine-container {
-            width: 150px; height: 150px; margin: 0 auto 20px;
-            position: relative; display: flex; align-items: center; justify-content: center;
+        /* Turbine area */
+        .turbine-area {
+            position: relative; width: 180px; height: 180px;
+            margin: 0 auto 14px;
+            background: var(--bubble); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
         }
-
-        .propeller {
-            width: 120px; height: 120px;
-            border: 4px solid var(--neon-emerald);
-            border-radius: 50%; position: relative;
+        .turbine-hub {
+            width: 16px; height: 16px; background: var(--accent);
+            border-radius: 50%; z-index: 2;
+            box-shadow: 0 0 12px rgba(124,58,237,0.3);
+        }
+        .turbine-blade {
+            position: absolute; top: 50%; left: 50%;
+            width: 140px; height: 3px;
+            transform-origin: left center;
+            background: linear-gradient(90deg, var(--accent), #a78bfa);
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(124,58,237,0.15);
+        }
+        .turbine-spin {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
             transition: transform 0.1s linear;
         }
+        .turbine-reading {
+            font-size: 0.72rem; font-weight: 600; color: var(--dim);
+            margin-top: 2px;
+        }
+        .turbine-reading span { color: var(--accent); font-weight: 700; }
 
-        .propeller::before, .propeller::after {
-            content: ''; position: absolute; background: var(--neon-emerald);
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        /* Data cards */
+        .data-cards {
+            display: flex; gap: 8px; margin-bottom: 14px;
+        }
+        .data-card {
+            flex: 1; background: #f8fafc; border-radius: 14px;
+            padding: 12px 8px; text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .data-card .card-label { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+        .data-card .card-val { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-top: 4px; }
+        .data-card .card-unit { font-size: 0.65rem; color: var(--muted); }
+
+        /* Input */
+        .input-group { margin-bottom: 10px; }
+        .input-group label {
+            display: block; font-size: 0.8rem; font-weight: 600;
+            color: var(--dim); margin-bottom: 6px; text-align: left;
+        }
+        .input-row { display: flex; gap: 8px; }
+        .input-row input {
+            flex: 1; padding: 12px 14px; border-radius: 14px;
+            border: 2px solid var(--border); background: #f8fafc;
+            font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600;
+            text-align: center; color: var(--text); outline: none;
+            transition: all 0.2s ease;
+        }
+        .input-row input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+        }
+        .input-row button {
+            font-family: 'Inter', sans-serif; padding: 12px 18px;
+            background: var(--accent); color: white; border: none;
+            border-radius: 14px; font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            white-space: nowrap;
+        }
+        .input-row button:hover { background: var(--accent2); transform: translateY(-1px); }
+        .input-row button:active { transform: scale(0.97); }
+
+        .btn-back {
+            font-family: 'Inter', sans-serif; width: 100%; padding: 10px;
+            background: none; color: var(--muted); border: 1px solid var(--border);
+            border-radius: 14px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+            margin-top: 6px; transition: all 0.2s ease;
+        }
+        .btn-back:hover { background: #f8fafc; color: var(--text); }
+
+        #msg { font-size: 0.83rem; font-weight: 600; min-height: 1.2em; margin-top: 4px; }
+
+        /* Overlay */
+        #overlay {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.4);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100; backdrop-filter: blur(3px);
+        }
+        .overlay-card {
+            background: white; border-radius: 24px; padding: 28px 24px;
+            text-align: center; max-width: 360px; width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            animation: cardIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes cardIn {
+            0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .overlay-icon {
+            width: 56px; height: 56px; margin: 0 auto 12px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .overlay-icon.success { background: #f0fdf4; }
+        .overlay-icon.warn { background: #fff7ed; }
+        .overlay-icon.fail { background: #fef2f2; }
+        #overlay h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+        #overlay p { font-size: 0.85rem; color: var(--dim); line-height: 1.7; margin-bottom: 18px; }
+        .btn-overlay {
+            font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
+            padding: 12px 28px; border: none; border-radius: 14px;
+            cursor: pointer; transition: all 0.2s ease; background: var(--accent); color: white;
+        }
+        .btn-overlay:hover { background: var(--accent2); }
+
+        /* Rotation glow */
+        .turbine-glow {
+            position: absolute; width: 150px; height: 150px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(124,58,237,0.15);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%,100% { transform: scale(0.9); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.6; }
         }
 
-        .propeller::before { width: 100%; height: 4px; }
-        .propeller::after { width: 4px; height: 100%; }
-
-        /* Monitori i të dhënave */
-        .monitor {
-            background: rgba(0,0,0,0.5); padding: 15px;
-            border-radius: 5px; font-size: 0.85rem;
-            margin-bottom: 20px; border-left: 4px solid var(--neon-emerald);
-        }
-
-        .input-box {
-            display: flex; flex-direction: column; gap: 10px;
-        }
-
-        input {
-            background: transparent; border: 1px solid var(--neon-purple);
-            color: var(--neon-purple); padding: 10px; border-radius: 5px;
-            text-align: center; font-size: 1.2rem;
-        }
-
-        .btn {
-            background: var(--neon-purple); color: var(--dark-panel);
-            border: none; padding: 12px; font-weight: bold;
-            cursor: pointer; border-radius: 5px; transition: 0.2s;
-        }
-
-        .btn:hover { filter: brightness(1.2); }
-
-        #alert {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; text-align: center; padding: 20px;
+        /* Speed lines on turbine */
+        .speed-ring {
+            position: absolute; border-radius: 50%;
+            border: 1px dashed rgba(124,58,237,0.2);
+            transition: all 0.3s ease;
         }
     </style>
 </head>
 <body>
 
-    <div class="engine-panel">
-        <div class="formula">α = Δω / Δt</div>
+<div class="bg-bubbles">
+    <div class="bg-bubble"></div>
+    <div class="bg-bubble"></div>
+    <div class="bg-bubble"></div>
+</div>
 
-        <div class="turbine-container">
-            <div id="fan" class="propeller"></div>
+<div class="container">
+    <!-- INTRO -->
+    <div class="screen active" id="intro-screen">
+        <div class="intro-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.8">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/>
+                <polyline points="16,5 12,2 8,5"/>
+                <polyline points="16,19 12,22 8,19"/>
+            </svg>
         </div>
-
-        <div class="monitor" id="data-screen">
-            Shpejtësia nisi: <b>ω₀ = 0 rad/s</b><br>
-            Arriti në: <b>ω₁ = 20 rad/s</b><br>
-            Brenda kohës: <b>Δt = 4 s</b>
+        <h1>Nxitimi Këndor</h1>
+        <p class="subtitle">Llogarit nxitimin këndor <b>α</b> të turbinës duke përdorur ndryshimin e shpejtësisë.</p>
+        <div class="objective">
+            α = Δω / Δt &nbsp;·&nbsp; Nxitimi këndor = ndryshimi i shpejtësisë këndore për njësi kohe.
         </div>
-
-        <div class="input-box">
-            <input type="number" id="ans" step="0.1" placeholder="α (rad/s²)">
-            <button class="btn" onclick="kontrollo()">AKTIVIZO TURBINËN</button>
-        </div>
+        <button class="btn-primary" onclick="startGame()">Fillo</button>
     </div>
 
-    <div id="alert">
-        <h2 id="res-h"></h2>
-        <p id="res-p"></p>
-        <button class="btn" onclick="vazhdo()">Niveli Tjetër</button>
+    <!-- GAME -->
+    <div class="screen" id="game-screen">
+        <div class="game-header">
+            <span class="level-tag" id="level-tag">Niveli 1</span>
+        </div>
+
+        <div class="formula-bubble">
+            <span class="eq"><var>α</var> = Δ<var>ω</var> / Δ<var>t</var></span>
+        </div>
+
+        <div class="turbine-area" id="turbine-area">
+            <div class="turbine-glow"></div>
+            <div class="speed-ring" id="speed-ring" style="width:60px;height:60px;"></div>
+            <div class="turbine-spin" id="turbine-spin">
+                <div class="turbine-blade" style="transform:rotate(0deg);"></div>
+                <div class="turbine-blade" style="transform:rotate(60deg);"></div>
+                <div class="turbine-blade" style="transform:rotate(120deg);"></div>
+                <div class="turbine-blade" style="transform:rotate(180deg);"></div>
+                <div class="turbine-blade" style="transform:rotate(240deg);"></div>
+                <div class="turbine-blade" style="transform:rotate(300deg);"></div>
+            </div>
+            <div class="turbine-hub"></div>
+        </div>
+        <div class="turbine-reading">ω = <span id="omega-live">0.0</span> rad/s</div>
+
+        <div class="data-cards">
+            <div class="data-card">
+                <div class="card-label">ω₀ (fillestare)</div>
+                <div class="card-val" id="w0-val">0</div>
+                <div class="card-unit">rad/s</div>
+            </div>
+            <div class="data-card">
+                <div class="card-label">ω₁ (përfundimtare)</div>
+                <div class="card-val" id="w1-val">20</div>
+                <div class="card-unit">rad/s</div>
+            </div>
+            <div class="data-card">
+                <div class="card-label">Δt (koha)</div>
+                <div class="card-val" id="dt-val">4</div>
+                <div class="card-unit">s</div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Llogarit <var style="font-style:italic;">α</var> (rad/s²):</label>
+            <div class="input-row">
+                <input type="number" id="userAns" step="0.1" placeholder="α = ?">
+                <button onclick="checkAnswer()">Kontrollo</button>
+            </div>
+        </div>
+
+        <div id="msg"></div>
+        <button class="btn-back" onclick="goToIntro()">← Kthehu</button>
     </div>
+</div>
 
-    <script>
-        const nivelet = [
-            { w0: 0, w1: 20, t: 4, a: 5 },
-            { w0: 10, w1: 30, t: 5, a: 4 },
-            { w0: 50, w1: 20, t: 6, a: -5 } // Nxitim negativ (frenim)
-        ];
+<div id="overlay">
+    <div class="overlay-card">
+        <div class="overlay-icon" id="ov-icon"></div>
+        <h2 id="res-title"></h2>
+        <p id="res-msg"></p>
+        <button class="btn-overlay" onclick="nextLevel()">Niveli Tjetër</button>
+    </div>
+</div>
 
-        let idx = 0;
-        let rrotullimi = 0;
-        let shpejtesiaAktuale = 0;
+<script>
+    const levels = [
+        { w0: 0,  w1: 20, t: 4, a: 5  },
+        { w0: 10, w1: 30, t: 5, a: 4  },
+        { w0: 50, w1: 20, t: 6, a: -5 },
+        { w0: 0,  w1: 60, t: 3, a: 20 },
+        { w0: 15, w1: 45, t: 5, a: 6  }
+    ];
 
-        function animo() {
-            const lvl = nivelet[idx];
-            // Simulim i thjeshtë vizual i rrotullimit
-            rrotullimi += shpejtesiaAktuale;
-            document.getElementById('fan').style.transform = `rotate(${rrotullimi}deg)`;
-            
-            // Shpejtësia rritet gradualisht për efekt vizual
-            if (shpejtesiaAktuale < lvl.w1) shpejtesiaAktuale += 0.1;
+    let idx = 0;
+    let animFrame;
+    let omega = 0;
+    let spinAngle = 0;
 
-            requestAnimationFrame(animo);
+    const spin = document.getElementById('turbine-spin');
+    const omegaLive = document.getElementById('omega-live');
+    const speedRing = document.getElementById('speed-ring');
+
+    function animateTurbine() {
+        const lvl = levels[idx];
+        // omega ramps up/down toward target for visual
+        const targetOmega = lvl.w1;
+        const ramp = 0.3;
+        if (omega < targetOmega) omega = Math.min(targetOmega, omega + ramp);
+        else if (omega > targetOmega) omega = Math.max(targetOmega, omega - ramp);
+
+        spinAngle += omega * 0.02;
+        spin.style.transform = `rotate(${spinAngle}deg)`;
+        omegaLive.innerText = omega.toFixed(1);
+
+        // Speed ring scales with omega
+        const ringSize = 40 + (omega / Math.max(...levels.map(l=>Math.abs(l.w1)))) * 70;
+        speedRing.style.width = ringSize + 'px';
+        speedRing.style.height = ringSize + 'px';
+        speedRing.style.opacity = 0.2 + (Math.abs(omega) / 60) * 0.4;
+
+        animFrame = requestAnimationFrame(animateTurbine);
+    }
+
+    function updateDataCards() {
+        const lvl = levels[idx];
+        document.getElementById('w0-val').innerText = lvl.w0;
+        document.getElementById('w1-val').innerText = lvl.w1;
+        document.getElementById('dt-val').innerText = lvl.t;
+        document.getElementById('level-tag').innerText = 'Niveli ' + (idx + 1);
+    }
+
+    function showOverlay(iconType, title, msg) {
+        const ov = document.getElementById('overlay');
+        const icon = document.getElementById('ov-icon');
+        icon.className = 'overlay-icon ' + iconType;
+        icon.innerHTML = iconType === 'success'
+            ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="3,13 9,19 21,5"/></svg>'
+            : iconType === 'warn'
+            ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="16" r="0.8" fill="#ea580c"/></svg>'
+            : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg>';
+        document.getElementById('res-title').innerText = title;
+        document.getElementById('res-title').style.color =
+            iconType === 'success' ? '#16a34a' : iconType === 'warn' ? '#ea580c' : '#dc2626';
+        document.getElementById('res-msg').innerHTML = msg;
+        ov.style.display = 'flex';
+    }
+
+    function checkAnswer() {
+        const ans = parseFloat(document.getElementById('userAns').value);
+        const correct = levels[idx].a;
+        const lvl = levels[idx];
+
+        if (isNaN(ans)) {
+            document.getElementById('msg').innerText = 'Shëno një vlerë të vlefshme.';
+            document.getElementById('msg').style.color = '#dc2626';
+            return;
         }
-        animo();
 
-        function kontrollo() {
-            const val = parseFloat(document.getElementById('ans').value);
-            const sakt = nivelet[idx].a;
-            const modal = document.getElementById('alert');
-            
-            modal.style.display = "flex";
-            if (Math.abs(val - sakt) < 0.1) {
-                document.getElementById('res-h').innerText = "SISTEMI OK!";
-                document.getElementById('res-p').innerText = `Nxitimi kendor është ${sakt} rad/s². Turbina punon me efikasitet.`;
-                window.isOk = true;
-            } else {
-                document.getElementById('res-h').innerText = "AVARI!";
-                document.getElementById('res-p').innerText = `Llogaritja e gabuar! Sistemi u mbingarkua.`;
-                window.isOk = false;
-            }
-        }
+        const diff = Math.abs(ans - correct);
 
-        function vazhdo() {
-            if (window.isOk) {
-                idx = (idx + 1) % nivelet.length;
-                const L = nivelet[idx];
-                document.getElementById('data-screen').innerHTML = 
-                    `Shpejtësia nisi: <b>ω₀ = ${L.w0} rad/s</b><br>` +
-                    `Arriti në: <b>ω₁ = ${L.w1} rad/s</b><br>` +
-                    `Brenda kohës: <b>Δt = ${L.t} s</b>`;
-                document.getElementById('ans').value = "";
-                shpejtesiaAktuale = L.w0 / 10;
-            }
-            document.getElementById('alert').style.display = "none";
+        if (diff < 0.15) {
+            document.getElementById('msg').innerText = '';
+            showOverlay('success', 'Saktë!',
+                `α = (ω₁ − ω₀) / Δt = (${lvl.w1} − ${lvl.w0}) / ${lvl.t} = <b style="color:#16a34a;">${correct} rad/s²</b><br>Turbina funksionon me efikasitet optimal.`);
+            window.isOk = true;
+        } else if (diff < 1) {
+            showOverlay('warn', 'Shumë afër',
+                `α = (${lvl.w1} − ${lvl.w0}) / ${lvl.t} = <b>${correct} rad/s²</b><br>Vlera jote: ${ans}. Diferenca: ${diff.toFixed(1)} rad/s²`);
+            window.isOk = true;
+        } else {
+            showOverlay('fail', 'Jo saktë',
+                `α = (ω₁ − ω₀) / Δt = (${lvl.w1} − ${lvl.w0}) / ${lvl.t} = <b>${correct} rad/s²</b><br>Ti dhe ${ans} rad/s². Rishiko llogaritjen.`);
+            window.isOk = false;
         }
-    </script>
+    }
+
+    function nextLevel() {
+        if (window.isOk) {
+            idx = (idx + 1) % levels.length;
+            omega = levels[idx].w0;
+            updateDataCards();
+        }
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('userAns').value = '';
+        document.getElementById('msg').innerText = '';
+    }
+
+    function startGame() {
+        idx = 0;
+        omega = levels[0].w0;
+        spinAngle = 0;
+        document.getElementById('userAns').value = '';
+        document.getElementById('msg').innerText = '';
+        updateDataCards();
+        if (animFrame) cancelAnimationFrame(animFrame);
+        animateTurbine();
+        document.getElementById('intro-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+    }
+
+    function goToIntro() {
+        if (animFrame) cancelAnimationFrame(animFrame);
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('intro-screen').classList.add('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (document.getElementById('overlay').style.display === 'flex') nextLevel();
+            else if (document.getElementById('game-screen').classList.contains('active')) checkAnswer();
+            else startGame();
+        }
+    });
+</script>
 </body>
 </html>
