@@ -1,0 +1,445 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cr:#fde8e8;--cr-m:#f0a8a8;--cr-d:#c03838;
+  --co:#fef0dc;--co-m:#f8c878;--co-d:#c07820;
+  --ct:#d8f4f0;--ct-m:#80d8cc;--ct-d:#287870;
+  --cb:#dceefa;--cb-m:#88c0f0;--cb-d:#2858a8;
+  --cg:#e8f8dc;--cg-m:#a8e070;--cg-d:#4a8020;
+  --cp:#fce4f4;--cp-m:#f0a0d8;--cp-d:#a03080;
+  --white:#fefcfa;--stone:#f2ede4;
+  --txt:#2a2040;
+}
+body{background:#e8f4f0;font-family:'Nunito',sans-serif;display:flex;justify-content:center;min-height:100vh;padding:14px}
+
+.board{width:100%;max-width:440px;background:var(--white);border:3px solid var(--ct-d);box-shadow:7px 7px 0 var(--ct-m)}
+
+.top-bar{background:var(--ct-d);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.top-title{font-family:'Press Start 2P',monospace;font-size:0.62rem;color:#fff;line-height:1.7}
+.top-sym{font-family:'Press Start 2P',monospace;font-size:1.4rem;color:var(--co-m);text-shadow:2px 2px 0 var(--co-d)}
+
+.inner{padding:18px 18px 24px}
+.screen{display:none;animation:slideIn 0.38s ease both}
+.screen.active{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── INTRO ── */
+.hero-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;background:var(--ct);border:2px solid var(--ct-m);padding:12px 14px;box-shadow:4px 4px 0 var(--ct-m)}
+.hero-canvas-wrap{flex-shrink:0}
+.hero-info{flex:1}
+.hero-label{font-family:'Press Start 2P',monospace;font-size:0.48rem;color:var(--ct-d);line-height:1.8;margin-bottom:6px}
+.hero-val{font-size:0.85rem;font-weight:900;color:var(--txt);line-height:1.6}
+
+.chips-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font-family:'Press Start 2P',monospace;font-size:0.44rem;padding:5px 9px;border:2px solid;line-height:1.6}
+.chip.red{background:var(--cr);border-color:var(--cr-d);color:var(--cr-d);box-shadow:2px 2px 0 var(--cr-m)}
+.chip.orange{background:var(--co);border-color:var(--co-d);color:var(--co-d);box-shadow:2px 2px 0 var(--co-m)}
+.chip.blue{background:var(--cb);border-color:var(--cb-d);color:var(--cb-d);box-shadow:2px 2px 0 var(--cb-m)}
+.chip.green{background:var(--cg);border-color:var(--cg-d);color:var(--cg-d);box-shadow:2px 2px 0 var(--cg-m)}
+
+.formula-strip{background:var(--co);border-left:5px solid var(--co-d);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.f-big{font-family:'Press Start 2P',monospace;font-size:1rem;color:var(--co-d)}
+.f-sub{font-size:0.72rem;font-weight:800;color:var(--co-d);opacity:0.7;text-align:right;line-height:1.6}
+
+.meaning-strip{background:var(--cb);border-left:5px solid var(--cb-d);padding:10px 14px;margin-bottom:16px;font-size:0.78rem;font-weight:700;color:var(--cb-d);line-height:1.65}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.px-btn{font-family:'Press Start 2P',monospace;font-size:0.52rem;color:#fff;border:2px solid;padding:12px 10px;cursor:pointer;line-height:1.8;transition:transform 0.1s,box-shadow 0.1s;width:100%}
+.px-btn.teal{background:var(--ct-d);border-color:#1a5850;box-shadow:0 5px 0 #1a5850}
+.px-btn.teal:active{transform:translateY(4px);box-shadow:0 1px 0 #1a5850}
+.px-btn.orange{background:var(--co-d);border-color:#906010;box-shadow:0 5px 0 #906010}
+.px-btn.orange:active{transform:translateY(4px);box-shadow:0 1px 0 #906010}
+.px-btn.red{background:var(--cr-d);border-color:#902020;box-shadow:0 5px 0 #902020}
+.px-btn.red:active{transform:translateY(4px);box-shadow:0 1px 0 #902020}
+.px-btn.pink{background:var(--cp-d);border-color:#782060;box-shadow:0 5px 0 #782060}
+.px-btn.pink:active{transform:translateY(4px);box-shadow:0 1px 0 #782060}
+
+/* ── GAME ── */
+.game-top{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;margin-bottom:12px}
+.score-block{background:var(--co);border:2px solid var(--co-m);padding:8px 10px;box-shadow:3px 3px 0 var(--co-m)}
+.score-label{font-family:'Press Start 2P',monospace;font-size:0.42rem;color:var(--co-d);line-height:1.8;margin-bottom:2px}
+.score-num{font-family:'Press Start 2P',monospace;font-size:1.1rem;color:var(--co-d)}
+.dots-block{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.dots{display:flex;gap:4px}
+.dot{width:12px;height:12px;background:var(--ct);border:2px solid var(--ct-m);transition:all 0.25s}
+.dot.on{background:var(--cr-d);border-color:#902020;transform:scale(1.2)}
+.round-txt{font-family:'Press Start 2P',monospace;font-size:0.42rem;color:var(--ct-d);line-height:1.8}
+
+.canvas-side{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:12px;align-items:center}
+.side-vals{display:flex;flex-direction:column;gap:8px}
+.v-card{border:2px solid;padding:8px 10px;box-shadow:3px 3px 0}
+.v-card.teal{background:var(--ct);border-color:var(--ct-m);box-shadow-color:var(--ct-m)}
+.v-card.red{background:var(--cr);border-color:var(--cr-m)}
+.v-label{font-family:'Press Start 2P',monospace;font-size:0.42rem;color:var(--ct-d);line-height:1.8;margin-bottom:3px}
+.v-label.red{color:var(--cr-d)}
+.v-num{font-size:1.2rem;font-weight:900;color:var(--txt)}
+.v-unit{font-size:0.65rem;font-weight:800;opacity:0.6}
+
+.canvas-box{background:var(--stone);border:2px solid #d8d0c0;padding:6px;box-shadow:3px 3px 0 #d8d0c0}
+
+.input-strip{display:flex;gap:0;margin-bottom:10px;border:2px solid var(--ct-d);box-shadow:4px 4px 0 var(--ct-m)}
+.px-input{flex:1;font-family:'Press Start 2P',monospace;font-size:0.65rem;padding:12px 10px;border:none;background:var(--ct);color:var(--ct-d);outline:none;text-align:center}
+.px-input::placeholder{opacity:0.35;font-size:0.52rem}
+.go-strip{background:var(--ct-d);color:#fff;border:none;font-family:'Press Start 2P',monospace;font-size:0.55rem;padding:12px 14px;cursor:pointer;transition:filter 0.15s;white-space:nowrap}
+.go-strip:hover{filter:brightness(1.12)}
+
+.fb-box{min-height:42px;padding:9px 12px;font-family:'Press Start 2P',monospace;font-size:0.5rem;line-height:1.9;text-align:center;border:2px solid;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.fb-box.neutral{background:var(--stone);border-color:#d0c8b8;color:var(--txt)}
+.fb-box.ok{background:var(--cg);border-color:var(--cg-d);color:var(--cg-d);box-shadow:3px 3px 0 var(--cg-m);animation:bop 0.36s cubic-bezier(0.34,1.56,0.64,1)}
+.fb-box.err{background:var(--cr);border-color:var(--cr-d);color:var(--cr-d);box-shadow:3px 3px 0 var(--cr-m);animation:shk 0.36s ease}
+@keyframes bop{0%{transform:scale(0.86)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ── STEPS ── */
+.steps-header{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.steps-icon{width:44px;height:44px;background:var(--co);border:2px solid var(--co-d);display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 var(--co-m);flex-shrink:0}
+.steps-icon span{font-family:'Press Start 2P',monospace;font-size:1rem;color:var(--co-d)}
+.steps-title{font-family:'Press Start 2P',monospace;font-size:0.6rem;color:var(--co-d);line-height:1.8}
+
+.problem-box{background:var(--co);border:2px solid var(--co-m);padding:10px 12px;margin-bottom:14px;box-shadow:3px 3px 0 var(--co-m);display:flex;justify-content:space-between;align-items:center}
+.prob-val{font-family:'Press Start 2P',monospace;font-size:0.58rem;color:var(--co-d);line-height:1.9}
+.prob-q{font-family:'Press Start 2P',monospace;font-size:0.58rem;color:var(--cp-d);background:var(--cp);border:2px solid var(--cp-m);padding:5px 10px}
+
+.steps-list{margin-bottom:14px}
+.step-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;opacity:0;transform:translateX(-14px);transition:opacity 0.35s ease,transform 0.35s ease}
+.step-item.show{opacity:1;transform:translateX(0)}
+.step-num{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Press Start 2P',monospace;font-size:0.55rem;color:#fff;border:2px solid}
+.step-num.n1{background:var(--cb-d);border-color:#184888}
+.step-num.n2{background:var(--co-d);border-color:#906010}
+.step-num.n3{background:var(--cg-d);border-color:#3a6010}
+.step-body{flex:1;border:2px solid;padding:8px 10px;box-shadow:2px 2px 0}
+.step-body.b1{background:var(--cb);border-color:var(--cb-m);box-shadow-color:var(--cb-m)}
+.step-body.b2{background:var(--co);border-color:var(--co-m);box-shadow-color:var(--co-m)}
+.step-body.b3{background:var(--cg);border-color:var(--cg-m);box-shadow-color:var(--cg-m)}
+.step-lbl{font-family:'Press Start 2P',monospace;font-size:0.42rem;line-height:1.8;margin-bottom:3px;color:var(--cb-d)}
+.step-lbl.o{color:var(--co-d)}.step-lbl.g{color:var(--cg-d)}
+.step-eq{font-size:0.95rem;font-weight:900;color:var(--txt)}
+
+.step-canvas-wrap{background:var(--stone);border:2px solid #d0c8b8;padding:6px;box-shadow:3px 3px 0 #d0c8b8;margin-bottom:14px;display:flex;justify-content:center}
+
+/* ── WIN ── */
+.win-screen-inner{text-align:center}
+.trophy-wrap{width:100px;height:100px;background:var(--co);border:3px solid var(--co-d);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;box-shadow:5px 5px 0 var(--co-m);animation:winPop 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes winPop{0%{transform:scale(0)rotate(-20deg)}100%{transform:scale(1)rotate(0)}}
+.win-title{font-family:'Press Start 2P',monospace;font-size:0.72rem;color:var(--ct-d);line-height:1.9;margin-bottom:12px}
+.win-bar{background:var(--stone);border:2px solid #d0c8b8;padding:14px;margin-bottom:16px;box-shadow:3px 3px 0 #d0c8b8}
+.win-score-px{font-family:'Press Start 2P',monospace;font-size:2.2rem;color:var(--cr-d);text-shadow:3px 3px 0 var(--cr-m);display:block}
+.win-of{font-family:'Press Start 2P',monospace;font-size:0.5rem;color:var(--txt);opacity:0.5;display:block;margin-top:6px}
+.win-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.back-link{font-family:'Press Start 2P',monospace;font-size:0.44rem;color:var(--ct-d);opacity:0.5;background:none;border:none;cursor:pointer;display:block;text-align:center;margin-top:12px;text-decoration:underline}
+</style>
+
+<h2 class="sr-only">Këndi θ — lojë fizike pixel</h2>
+<div class="board">
+
+<div class="top-bar">
+  <div class="top-title">KËNDI<br>FIZIKA</div>
+  <div class="top-sym">θ</div>
+</div>
+<div class="inner">
+
+<!-- ══ INTRO ══ -->
+<div class="screen active" id="s-intro">
+
+  <div class="hero-row">
+    <div class="hero-canvas-wrap">
+      <canvas id="intro-cvs" width="90" height="90"></canvas>
+    </div>
+    <div class="hero-info">
+      <div class="hero-label">SIMBOLI</div>
+      <div class="hero-val">θ (theta)</div>
+      <div class="hero-label" style="margin-top:8px">NJËSIA SI</div>
+      <div class="hero-val">radian (rad)</div>
+      <div class="hero-label" style="margin-top:8px">NATYRA</div>
+      <div class="hero-val">Skalare</div>
+    </div>
+  </div>
+
+  <div class="chips-row">
+    <div class="chip red">θ = simboli</div>
+    <div class="chip orange">rad = njësia</div>
+    <div class="chip blue">s = harku</div>
+    <div class="chip green">r = rrezja</div>
+  </div>
+
+  <div class="formula-strip">
+    <div class="f-big">θ = s / r</div>
+    <div class="f-sub">hark (m)<br>÷ rreze (m)<br>= kënd (rad)</div>
+  </div>
+
+  <div class="meaning-strip">Hapësira midis dy rrezeve që nisin nga e njëjta pikë, e matur në radian.</div>
+
+  <div class="btn-row">
+    <button class="px-btn teal" onclick="showScreen('s-game')">▶ LUAJ</button>
+    <button class="px-btn orange" onclick="showScreen('s-steps')">📖 HAPAT</button>
+  </div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div class="screen" id="s-game">
+
+  <div class="game-top">
+    <div class="score-block">
+      <div class="score-label">PIKËT</div>
+      <div class="score-num" id="g-score">0 / 5</div>
+    </div>
+    <div class="dots-block">
+      <div class="round-txt" id="rundi-txt">RUNDI 1</div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+
+  <div class="canvas-side">
+    <div class="canvas-box">
+      <canvas id="arc-cvs" width="190" height="155"></canvas>
+    </div>
+    <div class="side-vals">
+      <div class="v-card teal">
+        <div class="v-label">HARKU s</div>
+        <div class="v-num"><span id="v-s">—</span><span class="v-unit"> m</span></div>
+      </div>
+      <div class="v-card red">
+        <div class="v-label red">RREZJA r</div>
+        <div class="v-num"><span id="v-r">—</span><span class="v-unit"> m</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-strip">
+    <input class="px-input" type="number" id="ans" placeholder="θ = ? rad" step="0.1"/>
+    <button class="go-strip" onclick="check()">SHKO!</button>
+  </div>
+
+  <div class="fb-box neutral" id="fb">Gjej këndin θ në radian!</div>
+  <button class="back-link" onclick="showScreen('s-intro')">← MENY</button>
+</div>
+
+<!-- ══ STEPS ══ -->
+<div class="screen" id="s-steps">
+
+  <div class="steps-header">
+    <div class="steps-icon"><span>?!</span></div>
+    <div class="steps-title">USHTRIM<br>HAP PAS HAPI</div>
+  </div>
+
+  <div class="problem-box">
+    <div class="prob-val">s = 10 m<br>r = 2 m</div>
+    <div class="prob-q">gjej θ</div>
+  </div>
+
+  <div class="steps-list">
+    <div class="step-item" id="st1">
+      <div class="step-num n1">1</div>
+      <div class="step-body b1">
+        <div class="step-lbl">ZGJIDH FORMULËN</div>
+        <div class="step-eq">θ = s / r</div>
+      </div>
+    </div>
+    <div class="step-item" id="st2">
+      <div class="step-num n2">2</div>
+      <div class="step-body b2">
+        <div class="step-lbl o">ZËVENDËSO VLERAT</div>
+        <div class="step-eq">θ = 10 / 2</div>
+      </div>
+    </div>
+    <div class="step-item" id="st3">
+      <div class="step-num n3">3</div>
+      <div class="step-body b3">
+        <div class="step-lbl g">LLOGARIT</div>
+        <div class="step-eq">θ = 5 rad ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-canvas-wrap">
+    <canvas id="step-cvs" width="240" height="160"></canvas>
+  </div>
+
+  <div class="btn-row">
+    <button class="px-btn teal" onclick="showScreen('s-game')">▶ PROVO</button>
+    <button class="px-btn red" onclick="showScreen('s-intro')">← KTHEHU</button>
+  </div>
+</div>
+
+<!-- ══ WIN ══ -->
+<div class="screen" id="s-win">
+  <div class="win-screen-inner">
+    <div class="trophy-wrap">
+      <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+        <rect x="20" y="44" width="20" height="6" fill="#c07820" rx="1"/>
+        <rect x="14" y="50" width="32" height="5" fill="#c07820" rx="1"/>
+        <path d="M10 8h40v22a20 20 0 01-40 0V8z" fill="#f8c878" stroke="#c07820" stroke-width="2"/>
+        <path d="M10 12H4a6 6 0 006 6v-6z" fill="#f8d8a0" stroke="#c07820" stroke-width="2"/>
+        <path d="M50 12h6a6 6 0 01-6 6v-6z" fill="#f8d8a0" stroke="#c07820" stroke-width="2"/>
+        <text x="30" y="26" text-anchor="middle" font-family="'Press Start 2P'" font-size="9" fill="#c07820">θ</text>
+      </svg>
+    </div>
+    <div class="win-title">BRAVO!<br>KAMPION!</div>
+    <div class="win-bar">
+      <span class="win-score-px" id="w-score">0</span>
+      <span class="win-of">pikë nga 5</span>
+    </div>
+    <div class="win-btns">
+      <button class="px-btn teal" onclick="startGame()">▶ PËRSËRI</button>
+      <button class="px-btn orange" onclick="showScreen('s-intro')">⌂ MENY</button>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='s-game') newRound();
+  if(id==='s-steps') runSteps();
+}
+
+/* ── intro canvas loop ── */
+(function(){
+  const cvs=document.getElementById('intro-cvs');
+  const ctx=cvs.getContext('2d');
+  const W=90,H=90,cx=45,cy=45,R=30;
+  let a=0;
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    /* dots */
+    ctx.fillStyle='rgba(128,216,204,0.3)';
+    for(let x=0;x<W;x+=8)for(let y=0;y<H;y+=8)ctx.fillRect(x,y,2,2);
+    /* circle */
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.strokeStyle='#80d8cc';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+    /* base radius */
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R,cy);
+    ctx.strokeStyle='#287870';ctx.lineWidth=3;ctx.stroke();
+    /* rotating radius */
+    a=(a+0.018)%(Math.PI*2);
+    const ex=cx+R*Math.cos(-a),ey=cy+R*Math.sin(-a);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);
+    ctx.strokeStyle='#c03838';ctx.lineWidth=3;ctx.stroke();
+    /* arc */
+    ctx.beginPath();ctx.arc(cx,cy,R,0,-a,true);
+    ctx.strokeStyle='#c07820';ctx.lineWidth=4;ctx.stroke();
+    /* θ label */
+    const mx=cx+(R*0.55)*Math.cos(-a/2),my=cy+(R*0.55)*Math.sin(-a/2);
+    ctx.fillStyle='#c07820';ctx.font="bold 11px Nunito";ctx.textAlign='center';
+    ctx.fillText('θ',mx,my+4);
+    /* center */
+    ctx.fillStyle='#f8c878';ctx.strokeStyle='#c07820';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);ctx.fill();ctx.stroke();
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ── game ── */
+let score=0,round=1,total=5;
+const rounds=[{s:10,r:2},{s:6,r:3},{s:15,r:5},{s:8,r:4},{s:21,r:7}];
+let curS,curR,curAns;
+
+function buildDots(){
+  const c=document.getElementById('dots');c.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i<score?' on':'');
+    c.appendChild(d);
+  }
+}
+
+function drawArc(cvs,sVal,rVal,prog){
+  const ctx=cvs.getContext('2d');
+  const W=cvs.width,H=cvs.height;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2+8,R=Math.min(W,H)*0.34;
+  /* pixel dots bg */
+  ctx.fillStyle='rgba(40,120,112,0.12)';
+  for(let x=0;x<W;x+=10)for(let y=0;y<H;y+=10)ctx.fillRect(x,y,3,3);
+  /* circle */
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.strokeStyle='#80d8cc';ctx.lineWidth=2.5;ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([]);
+  /* base radius */
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R,cy);
+  ctx.strokeStyle='#287870';ctx.lineWidth=4;ctx.stroke();
+  /* r label */
+  ctx.fillStyle='#287870';ctx.font="bold 11px Nunito";ctx.textAlign='center';
+  ctx.fillText('r='+rVal+'m',cx+R/2,cy+14);
+  /* animated angle */
+  const theta=(sVal/rVal)*prog;
+  const ex=cx+R*Math.cos(-theta),ey=cy+R*Math.sin(-theta);
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);
+  ctx.strokeStyle='#c03838';ctx.lineWidth=4;ctx.stroke();
+  /* arc */
+  ctx.beginPath();ctx.arc(cx,cy,R,0,-theta,true);
+  ctx.strokeStyle='#c07820';ctx.lineWidth=5;ctx.stroke();
+  /* s label along arc */
+  if(prog>0.2){
+    const mid=-theta/2;
+    ctx.fillStyle='#906010';ctx.font="bold 11px Nunito";ctx.textAlign='center';
+    ctx.fillText('s='+sVal+'m',cx+(R+15)*Math.cos(mid),cy+(R+15)*Math.sin(mid));
+  }
+  /* θ label */
+  if(prog>0.3){
+    ctx.fillStyle='#c07820';ctx.font="bold 13px Nunito";ctx.textAlign='left';
+    ctx.fillText('θ',cx+10,cy-6);
+  }
+  /* center dot */
+  ctx.fillStyle='#f8c878';ctx.strokeStyle='#c07820';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);ctx.fill();ctx.stroke();
+}
+
+function animArc(cvs,sVal,rVal,cb){
+  let t=0;
+  function f(){t=Math.min(t+0.03,1);drawArc(cvs,sVal,rVal,t);if(t<1)requestAnimationFrame(f);else if(cb)cb();}
+  f();
+}
+
+function newRound(){
+  const rd=rounds[(round-1)%total];
+  curS=rd.s;curR=rd.r;curAns=rd.s/rd.r;
+  document.getElementById('v-s').textContent=curS;
+  document.getElementById('v-r').textContent=curR;
+  document.getElementById('ans').value='';
+  document.getElementById('fb').className='fb-box neutral';
+  document.getElementById('fb').textContent='Gjej këndin θ në radian!';
+  document.getElementById('rundi-txt').textContent='RUNDI '+round;
+  document.getElementById('g-score').textContent=score+' / '+total;
+  buildDots();
+  animArc(document.getElementById('arc-cvs'),curS,curR,null);
+}
+
+function check(){
+  const u=parseFloat(document.getElementById('ans').value);
+  const fb=document.getElementById('fb');
+  if(isNaN(u)){fb.className='fb-box err';fb.textContent='Shkruaj një numër!';return;}
+  if(Math.abs(u-curAns)<0.01){
+    fb.className='fb-box ok';
+    fb.textContent='SAKTË! '+curS+' ÷ '+curR+' = '+curAns+' rad';
+    score++;
+    document.getElementById('g-score').textContent=score+' / '+total;
+    buildDots();
+    if(round<total){round++;setTimeout(newRound,1600);}
+    else{setTimeout(()=>{document.getElementById('w-score').textContent=score;showScreen('s-win');},1600);}
+  } else {
+    fb.className='fb-box err';
+    fb.textContent='JO! Provo: '+curS+' ÷ '+curR;
+  }
+}
+
+document.getElementById('ans').addEventListener('keydown',e=>{if(e.key==='Enter')check();});
+function startGame(){score=0;round=1;showScreen('s-game');}
+
+/* ── steps ── */
+function runSteps(){
+  ['st1','st2','st3'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  animArc(document.getElementById('step-cvs'),10,2,()=>{
+    setTimeout(()=>document.getElementById('st1').classList.add('show'),80);
+    setTimeout(()=>document.getElementById('st2').classList.add('show'),480);
+    setTimeout(()=>document.getElementById('st3').classList.add('show'),900);
+  });
+}
+</script>
