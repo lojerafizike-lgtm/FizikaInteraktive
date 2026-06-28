@@ -1,172 +1,498 @@
 <!DOCTYPE html>
 <html lang="sq">
-<head>
+<head><base href="autoclaw-local-html://939df840-6f30-4dd9-a23e-e5184179b9b6/C%3A/Users/User/.openclaw-autoclaw/workspace/aqs.html">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nxitimi Qëndersynues</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nxitimi Qëndërsynues — a_qs = v²/R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --pastel-blue: #d0e7ff;
-            --pastel-red: #ffccd5;
-            --pastel-green: #d1fae5;
-            --road: #f1f5f9;
-            --text: #334155;
+            --bg: #f0fdf4; --panel: #ffffff;
+            --text: #1e293b; --dim: #64748b; --muted: #94a3b8;
+            --accent: #059669; --accent2: #047857;
+            --green: #16a34a; --red: #dc2626; --orange: #ea580c;
+            --bubble: #d1fae5; --bubble2: #a7f3d0;
+            --track: #f1f5f9;
+            --border: #e2e8f0;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.07);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0; font-family: 'Segoe UI', sans-serif;
-            background-color: #f8fafc; color: var(--text);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 100vh;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0f9ff 100%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 15px;
         }
 
-        .card {
-            background: white; padding: 25px; border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            width: 90%; max-width: 400px; text-align: center;
+        .bg-bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bg-bubble {
+            position: absolute; border-radius: 50%;
+            animation: floatBubble 12s ease-in-out infinite;
+            opacity: 0.25;
+        }
+        .bg-bubble:nth-child(1) { width: 220px; height: 220px; background: #a7f3d0; top: -8%; right: -6%; animation-delay: 0s; }
+        .bg-bubble:nth-child(2) { width: 150px; height: 150px; background: #bae6fd; bottom: -5%; left: -4%; animation-delay: -5s; }
+        .bg-bubble:nth-child(3) { width: 180px; height: 180px; background: #fde68a; top: 50%; left: 60%; animation-delay: -9s; }
+        @keyframes floatBubble {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(-25px,15px) scale(1.06); }
+            66% { transform: translate(20px,-10px) scale(0.94); }
         }
 
-        .formula {
-            background: var(--pastel-blue); padding: 12px; border-radius: 15px;
-            font-weight: bold; font-size: 1.2rem; margin-bottom: 20px;
+        .container {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 28px; padding: 24px 20px;
+            box-shadow: var(--shadow-lg);
+            max-width: 430px; width: 100%; text-align: center;
+            position: relative; z-index: 1;
         }
 
-        /* Pista Rrethore */
-        .canvas-area {
-            width: 260px; height: 260px; background: var(--road);
-            border-radius: 50%; margin: 0 auto 20px;
-            position: relative; border: 8px solid white;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeSlideIn 0.4s ease; }
+        @keyframes fadeSlideIn {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* INTRO */
+        .intro-icon {
+            width: 72px; height: 72px; margin: 0 auto 16px;
+            background: var(--bubble); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
         }
+        .intro-icon svg { width: 36px; height: 36px; }
+        h1 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+        .subtitle { font-size: 0.9rem; color: var(--dim); margin-bottom: 4px; line-height: 1.6; }
+        .objective {
+            background: var(--bubble); border-radius: 16px; padding: 12px 16px;
+            margin: 16px 0; font-size: 0.85rem; color: var(--accent2); font-weight: 600;
+            line-height: 1.6;
+        }
+        .btn-primary {
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700;
+            padding: 12px 32px; background: var(--accent); color: white;
+            border: none; border-radius: 14px; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(5,150,105,0.3); }
+        .btn-primary:active { transform: scale(0.97); }
 
-        #car {
-            width: 35px; height: 20px; background: var(--pastel-red);
-            border-radius: 6px; position: absolute;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 2;
+        /* GAME */
+        .game-header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+        }
+        .level-tag {
+            background: var(--bubble); color: var(--accent);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
         }
 
-        /* Vektori i nxitimit a_qs */
-        #vector-aqs {
-            position: absolute; height: 3px; background: #ff4d6d;
-            transform-origin: right center; z-index: 1;
-            display: flex; align-items: center;
+        .formula-bubble {
+            background: var(--bubble); border-radius: 18px; padding: 14px 18px;
+            margin-bottom: 14px; display: flex; align-items: center; justify-content: center;
+            gap: 8px;
         }
-        
-        #vector-aqs::before {
-            content: '➤'; position: absolute; left: -5px; color: #ff4d6d; font-size: 12px;
+        .formula-bubble .eq {
+            font-size: 1.15rem; font-weight: 700; color: var(--text);
+        }
+        .formula-bubble .eq var { font-style: italic; color: var(--accent); }
+
+        /* Circular track */
+        .track-area {
+            width: 240px; height: 240px; margin: 0 auto 14px;
+            position: relative;
+        }
+        .track-bg {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: var(--track);
+            border: 6px solid white;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04);
+        }
+        .track-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(5,150,105,0.2);
+            inset: 12px;
+        }
+        .track-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            width: 12px; height: 12px; background: var(--muted);
+            border-radius: 50%; z-index: 3;
+            box-shadow: 0 0 8px rgba(148,163,184,0.3);
+        }
+        .track-center::after {
+            content: 'R'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            font-size: 0.65rem; font-weight: 700; color: var(--muted); font-style: italic;
         }
 
-        .data-box {
-            background: #f8fafc; padding: 15px; border-radius: 15px;
-            margin-bottom: 20px; font-size: 0.95rem; border: 1px solid #e2e8f0;
+        /* Car on track */
+        .car-on-track {
+            position: absolute; z-index: 4;
+            width: 44px; height: 22px;
+            transform-origin: center center;
+        }
+        .car-on-track .car-shape {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            border-radius: 5px 5px 3px 3px;
+            box-shadow: 0 2px 8px rgba(239,68,68,0.25);
+            position: relative;
+        }
+        .car-on-track .car-shape::after {
+            content: ''; position: absolute; top: -6px; left: 8px;
+            width: 16px; height: 8px; background: #fca5a5;
+            border-radius: 3px 3px 0 0;
         }
 
-        input[type="number"] {
-            width: 100px; padding: 12px; border-radius: 12px;
-            border: 2px solid var(--pastel-blue); text-align: center; font-size: 1.1rem;
+        /* Acceleration vector */
+        .accel-vector {
+            position: absolute; z-index: 2; pointer-events: none;
+            height: 3px; background: var(--accent);
+            transform-origin: right center;
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(5,150,105,0.3);
+            transition: width 0.3s ease;
+        }
+        .accel-vector::after {
+            content: '';
+            position: absolute; left: -8px; top: -5px;
+            width: 0; height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-right: 8px solid var(--accent);
+        }
+        .accel-label {
+            position: absolute; z-index: 5; pointer-events: none;
+            font-size: 0.6rem; font-weight: 700; color: var(--accent);
+            white-space: nowrap;
         }
 
-        .btn {
-            background: var(--pastel-green); color: #065f46; border: none;
-            padding: 15px 30px; border-radius: 15px; font-weight: bold;
-            cursor: pointer; width: 100%; margin-top: 15px;
+        /* Data */
+        .data-cards {
+            display: flex; gap: 8px; margin-bottom: 14px;
         }
+        .data-card {
+            flex: 1; background: #f8fafc; border-radius: 14px;
+            padding: 12px 8px; text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .data-card .card-label { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+        .data-card .card-val { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-top: 4px; }
+        .data-card .card-unit { font-size: 0.65rem; color: var(--muted); }
 
+        .input-group { margin-bottom: 10px; }
+        .input-group label {
+            display: block; font-size: 0.8rem; font-weight: 600;
+            color: var(--dim); margin-bottom: 6px; text-align: left;
+        }
+        .input-row { display: flex; gap: 8px; }
+        .input-row input {
+            flex: 1; padding: 12px 14px; border-radius: 14px;
+            border: 2px solid var(--border); background: #f8fafc;
+            font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600;
+            text-align: center; color: var(--text); outline: none;
+            transition: all 0.2s ease;
+        }
+        .input-row input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(5,150,105,0.08);
+        }
+        .input-row button {
+            font-family: 'Inter', sans-serif; padding: 12px 18px;
+            background: var(--accent); color: white; border: none;
+            border-radius: 14px; font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            white-space: nowrap;
+        }
+        .input-row button:hover { background: var(--accent2); transform: translateY(-1px); }
+        .input-row button:active { transform: scale(0.97); }
+
+        .btn-back {
+            font-family: 'Inter', sans-serif; width: 100%; padding: 10px;
+            background: none; color: var(--muted); border: 1px solid var(--border);
+            border-radius: 14px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+            margin-top: 6px; transition: all 0.2s ease;
+        }
+        .btn-back:hover { background: #f8fafc; color: var(--text); }
+
+        /* Overlay */
         #overlay {
-            position: fixed; inset: 0; background: rgba(255,255,255,0.98);
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; z-index: 100; text-align: center; padding: 20px;
+            position: fixed; inset: 0; background: rgba(15,23,42,0.4);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100; backdrop-filter: blur(3px);
+        }
+        .overlay-card {
+            background: white; border-radius: 24px; padding: 28px 24px;
+            text-align: center; max-width: 360px; width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            animation: cardIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes cardIn {
+            0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .overlay-icon {
+            width: 56px; height: 56px; margin: 0 auto 12px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .overlay-icon.success { background: #f0fdf4; }
+        .overlay-icon.warn { background: #fff7ed; }
+        .overlay-icon.fail { background: #fef2f2; }
+        #overlay h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+        #overlay p { font-size: 0.85rem; color: var(--dim); line-height: 1.7; margin-bottom: 18px; }
+        .btn-overlay {
+            font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
+            padding: 12px 28px; border: none; border-radius: 14px;
+            cursor: pointer; transition: all 0.2s ease; background: var(--accent); color: white;
+        }
+        .btn-overlay:hover { background: var(--accent2); }
+
+        /* Track decoration */
+        .track-marker {
+            position: absolute; width: 6px; height: 6px;
+            background: var(--accent); border-radius: 50%; z-index: 1;
+            opacity: 0.5;
+        }
+
+        /* Velocity indicator */
+        .vel-indicator {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 0.7rem; color: var(--dim); font-weight: 500;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="formula">a_qs = v² / R</div>
+<div class="bg-bubbles">
+    <div class="bg-bubble"></div>
+    <div class="bg-bubble"></div>
+    <div class="bg-bubble"></div>
+</div>
 
-        <div class="canvas-area">
-            <div id="vector-aqs"></div>
-            <div id="car"></div>
-            <div style="width: 10px; height: 10px; background: #94a3b8; border-radius: 50%; z-index: 3;"></div>
+<div class="container">
+    <!-- INTRO -->
+    <div class="screen active" id="intro-screen">
+        <div class="intro-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.8">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="2"/>
+                <line x1="12" y1="2" x2="12" y2="6"/>
+                <polygon points="10,4 12,2 14,4" fill="#059669"/>
+            </svg>
         </div>
-
-        <div class="data-box" id="level-data">
-            Shpejtësia: <b>v = 8 m/s</b> | Rrezja: <b>R = 4 m</b>
+        <h1>Nxitimi Qëndërsynues</h1>
+        <p class="subtitle">Llogarit nxitimin që mban makinën në pistën rrethore.</p>
+        <div class="objective">
+            a<sub>qs</sub> = v² / R &nbsp;·&nbsp; Nxitimi drejt qendrës që mban trupin në trajektoren rrethore.
         </div>
-
-        <input type="number" id="user-ans" placeholder="a_qs = ?">
-        <button class="btn" onclick="kontrollo()">KONTROLLO</button>
+        <button class="btn-primary" onclick="startGame()">Fillo</button>
     </div>
 
-    <div id="overlay">
-        <h1 id="res-title"></h1>
+    <!-- GAME -->
+    <div class="screen" id="game-screen">
+        <div class="game-header">
+            <span class="level-tag" id="level-tag">Niveli 1</span>
+        </div>
+
+        <div class="formula-bubble">
+            <span class="eq"><var>a<sub>qs</sub></var> = <var>v</var>² / <var>R</var></span>
+        </div>
+
+        <!-- Circular Track -->
+        <div class="track-area" id="track-area">
+            <div class="track-bg"></div>
+            <div class="track-ring"></div>
+            <div class="track-center"></div>
+            <!-- Track markers -->
+            <div class="track-marker" style="top:8px;left:50%;transform:translateX(-50%);"></div>
+            <div class="track-marker" style="bottom:8px;left:50%;transform:translateX(-50%);"></div>
+            <div class="track-marker" style="left:8px;top:50%;transform:translateY(-50%);"></div>
+            <div class="track-marker" style="right:8px;top:50%;transform:translateY(-50%);"></div>
+
+            <div class="accel-vector" id="accel-vector" style="top:118px;left:90px;width:30px;"></div>
+            <div class="accel-label" id="accel-label" style="top:120px;left:60px;">a<sub>qs</sub></div>
+
+            <div class="car-on-track" id="car">
+                <div class="car-shape"></div>
+            </div>
+        </div>
+
+        <div class="data-cards">
+            <div class="data-card">
+                <div class="card-label">Shpejtësia v</div>
+                <div class="card-val" id="v-val">8</div>
+                <div class="card-unit">m/s</div>
+            </div>
+            <div class="data-card">
+                <div class="card-label">Rrezja R</div>
+                <div class="card-val" id="r-val">4</div>
+                <div class="card-unit">m</div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Llogarit <var style="font-style:italic;">a<sub>qs</sub></var> (m/s²):</label>
+            <div class="input-row">
+                <input type="number" id="userAns" step="0.1" placeholder="a_qs = ?">
+                <button onclick="checkAnswer()">Kontrollo</button>
+            </div>
+        </div>
+
+        <div id="msg" style="font-size:0.83rem;font-weight:600;min-height:1.2em;margin-top:4px;"></div>
+        <button class="btn-back" onclick="goToIntro()">← Kthehu</button>
+    </div>
+</div>
+
+<div id="overlay">
+    <div class="overlay-card">
+        <div class="overlay-icon" id="ov-icon"></div>
+        <h2 id="res-title"></h2>
         <p id="res-msg"></p>
-        <button class="btn" style="width: auto;" onclick="vazhdo()">Vazhdo</button>
+        <button class="btn-overlay" onclick="nextLevel()">Niveli Tjetër</button>
     </div>
+</div>
 
-    <script>
-        const nivelet = [
-            { v: 8, r: 4, a: 16 },
-            { v: 10, r: 2, a: 50 },
-            { v: 6, r: 3, a: 12 }
-        ];
+<script>
+    const levels = [
+        { v: 8,  r: 4, a: 16 },
+        { v: 10, r: 2, a: 50 },
+        { v: 6,  r: 3, a: 12 },
+        { v: 12, r: 6, a: 24 },
+        { v: 5,  r: 5, a: 5  }
+    ];
 
-        let idx = 0;
-        let koha = 0;
-        const car = document.getElementById('car');
-        const vector = document.getElementById('vector-aqs');
+    let idx = 0;
+    let animFrame;
+    let angle = 0;
 
-        function animo() {
-            const lvl = nivelet[idx];
-            const w = lvl.v / lvl.r; // Shpejtësia kendore
-            koha += 0.02;
-            
-            const radiusVizual = 100; 
-            const x = Math.cos(w * koha) * radiusVizual;
-            const y = Math.sin(w * koha) * radiusVizual;
-            
-            // Lëvizja e makinës
-            car.style.left = (130 + x - 17.5) + "px";
-            car.style.top = (130 + y - 10) + "px";
-            car.style.transform = `rotate(${w * koha + Math.PI/2}rad)`;
+    const carEl = document.getElementById('car');
+    const trackArea = document.getElementById('track-area');
+    const accelVec = document.getElementById('accel-vector');
+    const accelLabel = document.getElementById('accel-label');
+    const trackW = 240, trackH = 240;
+    const cx = trackW / 2, cy = trackH / 2;
+    const radius = 92;
 
-            // Pozicionimi i vektorit (shigjeta drejt qendrës)
-            vector.style.width = (lvl.a * 2) + "px"; // Madhësia sipas nxitimit
-            vector.style.left = (130 + x - (lvl.a * 2)) + "px";
-            vector.style.top = (130 + y - 1.5) + "px";
-            vector.style.transform = `rotate(${w * koha}rad)`;
+    function animateTrack() {
+        const lvl = levels[idx];
+        const omega = lvl.v / lvl.r;
+        angle += omega * 0.02;
 
-            requestAnimationFrame(animo);
+        const carX = cx + radius * Math.cos(angle);
+        const carY = cy + radius * Math.sin(angle);
+
+        carEl.style.left = (carX - 22) + 'px';
+        carEl.style.top = (carY - 11) + 'px';
+        carEl.style.transform = `rotate(${angle + Math.PI/2}rad)`;
+
+        // Acceleration vector: points toward center, length proportional to a_qs
+        const vecLen = Math.min(60, lvl.a * 2);
+        const vecX = carX - Math.cos(angle) * vecLen;
+        const vecY = carY - Math.sin(angle) * vecLen;
+
+        accelVec.style.width = vecLen + 'px';
+        accelVec.style.left = vecX + 'px';
+        accelVec.style.top = (carY - 1.5) + 'px';
+        accelVec.style.transform = `rotate(${angle + Math.PI}rad)`;
+
+        accelLabel.style.left = (vecX - 25) + 'px';
+        accelLabel.style.top = (carY - 14) + 'px';
+
+        animFrame = requestAnimationFrame(animateTrack);
+    }
+
+    function updateDataCards() {
+        const lvl = levels[idx];
+        document.getElementById('v-val').innerText = lvl.v;
+        document.getElementById('r-val').innerText = lvl.r;
+        document.getElementById('level-tag').innerText = 'Niveli ' + (idx + 1);
+    }
+
+    function showOverlay(iconType, title, msg) {
+        const ov = document.getElementById('overlay');
+        const icon = document.getElementById('ov-icon');
+        icon.className = 'overlay-icon ' + iconType;
+        icon.innerHTML = iconType === 'success'
+            ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="3,13 9,19 21,5"/></svg>'
+            : iconType === 'warn'
+            ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="16" r="0.8" fill="#ea580c"/></svg>'
+            : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg>';
+        document.getElementById('res-title').innerText = title;
+        document.getElementById('res-title').style.color =
+            iconType === 'success' ? '#16a34a' : iconType === 'warn' ? '#ea580c' : '#dc2626';
+        document.getElementById('res-msg').innerHTML = msg;
+        ov.style.display = 'flex';
+    }
+
+    function checkAnswer() {
+        const ans = parseFloat(document.getElementById('userAns').value);
+        const correct = levels[idx].a;
+        const lvl = levels[idx];
+
+        if (isNaN(ans)) {
+            document.getElementById('msg').innerText = 'Shëno një vlerë të vlefshme.';
+            document.getElementById('msg').style.color = '#dc2626';
+            return;
         }
-        animo();
 
-        function kontrollo() {
-            const pergjigja = parseFloat(document.getElementById('user-ans').value);
-            const sakt = nivelet[idx].a;
-            const modal = document.getElementById('overlay');
-            
-            modal.style.display = "flex";
-            if (Math.abs(pergjigja - sakt) < 0.1) {
-                document.getElementById('res-title').innerText = "Saktë! 🎉";
-                document.getElementById('res-msg').innerText = `Nxitimi qëndersynues a_qs është ${sakt} m/s². Forca e mban makinën në rrugë!`;
-                window.isCorrect = true;
-            } else {
-                document.getElementById('res-title').innerText = "Gabim! ❌";
-                document.getElementById('res-msg').innerText = `Llogaritja doli ${pergjigja}, por duhej ${sakt}. Makina do të dilte jashtë piste!`;
-                window.isCorrect = false;
-            }
-        }
+        const diff = Math.abs(ans - correct);
 
-        function vazhdo() {
-            if (window.isCorrect) {
-                idx = (idx + 1) % nivelet.length;
-                document.getElementById('level-data').innerHTML = `Shpejtësia: <b>v = ${nivelet[idx].v} m/s</b> | Rrezja: <b>R = ${nivelet[idx].r} m</b>`;
-                document.getElementById('user-ans').value = "";
-            }
-            document.getElementById('overlay').style.display = "none";
+        if (diff < 0.5) {
+            document.getElementById('msg').innerText = '';
+            showOverlay('success', 'Saktë!',
+                `a<sub>qs</sub> = v² / R = ${lvl.v}² / ${lvl.r} = <b style="color:#16a34a;">${correct} m/s²</b><br>Kjo forcë e mban makinën në pistë.`);
+            window.isOk = true;
+        } else if (diff < 3) {
+            showOverlay('warn', 'Shumë afër',
+                `a<sub>qs</sub> = ${lvl.v}² / ${lvl.r} = <b>${correct} m/s²</b><br>Vlera jote: ${ans}. Diferenca: ${diff.toFixed(1)} m/s²`);
+            window.isOk = true;
+        } else {
+            showOverlay('fail', 'Jo saktë',
+                `a<sub>qs</sub> = v² / R = ${lvl.v}² / ${lvl.r} = <b>${correct} m/s²</b><br>Ti dhe ${ans} m/s². Pa këtë forcë makina del jashtë piste!`);
+            window.isOk = false;
         }
-    </script>
+    }
+
+    function nextLevel() {
+        if (window.isOk) {
+            idx = (idx + 1) % levels.length;
+            updateDataCards();
+        }
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('userAns').value = '';
+        document.getElementById('msg').innerText = '';
+    }
+
+    function startGame() {
+        idx = 0;
+        angle = 0;
+        document.getElementById('userAns').value = '';
+        document.getElementById('msg').innerText = '';
+        updateDataCards();
+        if (animFrame) cancelAnimationFrame(animFrame);
+        animateTrack();
+        document.getElementById('intro-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+    }
+
+    function goToIntro() {
+        if (animFrame) cancelAnimationFrame(animFrame);
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('intro-screen').classList.add('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (document.getElementById('overlay').style.display === 'flex') nextLevel();
+            else if (document.getElementById('game-screen').classList.contains('active')) checkAnswer();
+            else startGame();
+        }
+    });
+</script>
 </body>
 </html>
