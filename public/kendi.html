@@ -12,9 +12,9 @@
   --white:#fefcfa;--stone:#f2ede4;
   --txt:#2a2040;
 }
-body{background:#e8f4f0;font-family:'Nunito',sans-serif;display:flex;justify-content:center;min-height:100vh;padding:14px}
+body{margin:0;background:#e8f4f0;font-family:'Nunito',sans-serif;width:100vw;height:100vh;overflow:hidden}
 
-.board{width:100%;max-width:440px;background:var(--white);border:3px solid var(--ct-d);box-shadow:7px 7px 0 var(--ct-m)}
+.board{width:100vw;height:100vh;background:var(--white);border:none;box-shadow:none;overflow:auto}
 
 .top-bar{background:var(--ct-d);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
 .top-title{font-family:'Press Start 2P',monospace;font-size:0.62rem;color:#fff;line-height:1.7}
@@ -132,8 +132,7 @@ body{background:#e8f4f0;font-family:'Nunito',sans-serif;display:flex;justify-con
 .back-link{font-family:'Press Start 2P',monospace;font-size:0.44rem;color:var(--ct-d);opacity:0.5;background:none;border:none;cursor:pointer;display:block;text-align:center;margin-top:12px;text-decoration:underline}
 </style>
 
-<h2 class="sr-only">Këndi θ — lojë fizike pixel</h2>
-<div class="board">
+
 
 <div class="top-bar">
   <div class="top-title">KËNDI<br>FIZIKA</div>
