@@ -3,106 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gara e Fizikës: Intervali Kohor</title>
+    <title>Gara e Intervalit Kohor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #222; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        #race-track { width: 600px; background: #333; border-bottom: 5px dashed white; border-top: 5px dashed white; position: relative; height: 150px; overflow: hidden; }
-        .car { position: absolute; font-size: 2.5rem; left: 0; bottom: 20px; transition: left linear; }
-        .finish-line { position: absolute; right: 50px; top: 0; bottom: 0; width: 10px; background: repeating-linear-gradient(0deg, black, black 10px, white 10px, white 20px); }
-        .info-panel { background: #111; padding: 20px; border-radius: 10px; border: 2px solid #f1c40f; margin-bottom: 20px; width: 560px; }
-        .formula-box { color: #f1c40f; font-weight: bold; font-family: 'Times New Roman', serif; font-size: 1.2rem; }
-        .inputs { display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 15px; }
-        input { padding: 10px; border-radius: 5px; border: none; width: 150px; font-size: 1rem; }
-        button { padding: 10px 20px; background: #f1c40f; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        #timer-display { font-size: 2rem; color: #e74c3c; font-family: monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #FAF5FF;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .cloud {
+            position: fixed;
+            background: white;
+            border-radius: 60px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
+        .c1 { width: 90px; height: 35px; top: 6%; animation: drift 28s linear infinite; }
+        .c1::before { width: 45px; height: 45px; top: -22px; left: 14px; }
+        .c1::after { width: 30px; height: 30px; top: -12px; left: 48px; }
+        .c2 { width: 70px; height: 28px; top: 13%; animation: drift 35s linear infinite 10s; }
+        .c2::before { width: 35px; height: 35px; top: -18px; left: 10px; }
+        .c2::after { width: 25px; height: 25px; top: -10px; left: 38px; }
+        @keyframes drift { 0% { left: -120px; } 100% { left: calc(100vw + 20px); } }
+
+        .container {
+            background: white;
+            border-radius: 28px;
+            padding: 28px 22px 22px;
+            box-shadow: 0 8px 36px rgba(139,92,246,0.08);
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            border: 2px solid #EDE9FE;
+        }
+
+        .title-section { text-align: center; margin-bottom: 14px; }
+        h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: #C4B5FD; margin-bottom: 2px; }
+        .subtitle { font-size: 0.82rem; color: #A1A1AA; font-weight: 700; }
+
+        .scene {
+            position: relative; width: 100%; height: 170px;
+            background: #F5F0FF;
+            border-radius: 20px; overflow: hidden;
+            margin-bottom: 16px; border: 2px solid #EDE9FE;
+        }
+
+        .scene-sun {
+            position: absolute; width: 32px; height: 32px;
+            background: #FDE68A; border-radius: 50%;
+            top: 12px; right: 16px;
+            box-shadow: 0 0 20px rgba(253,230,138,0.4);
+            animation: sunGlow 3s ease-in-out infinite;
+        }
+        @keyframes sunGlow { 0%,100%{box-shadow:0 0 20px rgba(253,230,138,0.4)} 50%{box-shadow:0 0 35px rgba(253,230,138,0.6)} }
+
+        .scene-cloud { position: absolute; background: white; border-radius: 20px; opacity: 0.7; }
+        .sc1 { width: 48px; height: 18px; top: 20px; left: 20px; animation: scD 9s ease-in-out infinite; }
+        .sc2 { width: 38px; height: 14px; top: 30px; left: 110px; animation: scD 12s ease-in-out infinite reverse; }
+        @keyframes scD { 0%,100%{transform:translateX(0)} 50%{transform:translateX(12px)} }
+
+        .scene-ground { position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: #ECFDF5; }
+
+        .scene-road {
+            position: absolute; bottom: 14px; left: 0; right: 0; height: 36px;
+            background: #FEF9C3; border-top: 3px dashed rgba(255,255,255,0.8);
+        }
+        .road-dash {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            height: 3px; width: 18px; background: white; border-radius: 2px; opacity: 0.7;
+        }
+        .road-dash:nth-child(1){left:20px;animation:dm .8s linear infinite}
+        .road-dash:nth-child(2){left:60px;animation:dm .8s linear infinite .2s}
+        .road-dash:nth-child(3){left:100px;animation:dm .8s linear infinite .4s}
+        .road-dash:nth-child(4){left:140px;animation:dm .8s linear infinite .6s}
+        .road-dash:nth-child(5){left:180px;animation:dm .8s linear infinite .8s}
+        .road-dash:nth-child(6){left:220px;animation:dm .8s linear infinite 1s}
+        .road-dash:nth-child(7){left:260px;animation:dm .8s linear infinite 1.2s}
+        .road-dash:nth-child(8){left:300px;animation:dm .8s linear infinite 1.4s}
+        @keyframes dm { 0%{opacity:.7;transform:translateY(-50%) translateX(0)} 100%{opacity:0;transform:translateY(-50%) translateX(-30px)} }
+
+        .tree { position: absolute; bottom: 48px; }
+        .tree-trunk { width: 8px; height: 22px; background: #D1D5DB; border-radius: 2px; margin: 0 auto; }
+        .tree-top { width: 28px; height: 28px; background: #BBF7D0; border-radius: 50%; margin-bottom: -4px; }
+        .tree-1 { left: 15px; }
+        .tree-2 { right: 12px; transform: scale(0.8); }
+
+        .fl { position: absolute; bottom: 48px; }
+        .fl-stem { width: 2px; height: 14px; background: #86EFAC; margin: 0 auto; }
+        .fl-head { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto; background: #EDE9FE; }
+        .fl-1 { left: 55px; }
+        .fl-2 { left: 72px; transform: scale(0.8); }
+        .fl-3 { right: 55px; }
+        .fl-4 { right: 72px; transform: scale(0.7); }
+
+        .car-wrap {
+            position: absolute; bottom: 22px; left: 16px;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .car-svg { width: 80px; height: 48px; }
+        .car-driving .wheel { animation: wspin 0.4s linear infinite; }
+        @keyframes wspin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
+        .exh {
+            position: absolute; width: 7px; height: 7px;
+            background: rgba(200,200,210,0.4); border-radius: 50%;
+            pointer-events: none; animation: exhF .5s ease-out forwards;
+        }
+        @keyframes exhF { 0%{transform:scale(1) translate(0,0);opacity:.4} 100%{transform:scale(2.5) translate(-18px,-4px);opacity:0} }
+
+        .tl { position: absolute; bottom: 52px; right: 35px; z-index: 3; }
+        .tl-pole { width: 5px; height: 18px; background: #D1D5DB; margin: 0 auto; border-radius: 2px; }
+        .tl-box {
+            width: 18px; height: 44px; background: #E5E7EB; border-radius: 6px;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; padding: 4px 0;
+        }
+        .tl-dot { width: 11px; height: 11px; border-radius: 50%; transition: all 0.3s; }
+        .tl-r { background: #FECACA; }
+        .tl-y { background: #FEF08A; }
+        .tl-g { background: #BBF7D0; }
+        .tl-r.on { background: #FCA5A5; box-shadow: 0 0 8px rgba(252,165,165,0.5); }
+        .tl-y.on { background: #FDE047; box-shadow: 0 0 8px rgba(253,224,71,0.5); }
+        .tl-g.on { background: #86EFAC; box-shadow: 0 0 8px rgba(134,239,172,0.5); }
+
+        .spec { position: absolute; bottom: 50px; left: 180px; z-index: 2; }
+        .spec-head { width: 14px; height: 14px; background: #FED7AA; border-radius: 50%; margin: 0 auto; position: relative; }
+        .spec-hair { position: absolute; top: -3px; left: -1px; width: 16px; height: 8px; background: #D1D5DB; border-radius: 8px 8px 0 0; }
+        .spec-eye-l, .spec-eye-r { position: absolute; top: 5px; width: 3px; height: 3px; background: #A1A1AA; border-radius: 50%; }
+        .spec-eye-l { left: 3px; }
+        .spec-eye-r { right: 3px; }
+        .spec-body { width: 16px; height: 16px; border-radius: 6px 6px 3px 3px; margin: 0 auto; position: relative; background: #EDE9FE; }
+        .spec-arm { position: absolute; top: 2px; width: 5px; height: 12px; border-radius: 3px; transform-origin: top center; background: #EDE9FE; }
+        .spec-al { left: -4px; animation: sw .7s ease-in-out infinite; }
+        .spec-ar { right: -4px; animation: sw .7s ease-in-out infinite .35s; }
+        @keyframes sw { 0%,100%{transform:rotate(-15deg)} 50%{transform:rotate(-55deg)} }
+
+        .cd-overlay {
+            position: absolute; inset: 0; background: rgba(255,255,255,0.75);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10; border-radius: 18px; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        }
+        .cd-overlay.on { opacity: 1; pointer-events: all; }
+        .cd-num { font-family: 'Fredoka One', cursive; font-size: 3.5rem; color: #C4B5FD; text-shadow: 2px 2px 0 white; animation: cdP .45s ease; }
+        .cd-go { color: #86EFAC; font-size: 2.8rem; }
+        @keyframes cdP { 0%{transform:scale(.4);opacity:0} 60%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+
+        .res-overlay {
+            position: absolute; inset: 0; background: rgba(255,255,255,0.92);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 20; border-radius: 18px; opacity: 0; pointer-events: none; transition: all 0.35s;
+        }
+        .res-overlay.on { opacity: 1; pointer-events: all; }
+        .res-emoji { font-size: 2.8rem; margin-bottom: 6px; animation: rB .6s ease; }
+        .res-text { font-family: 'Fredoka One', cursive; font-size: 1.15rem; color: #6B7280; }
+        .res-calc { font-size: 0.85rem; color: #A1A1AA; margin-top: 6px; font-weight: 700; }
+        @keyframes rB { 0%{transform:scale(0) rotate(-15deg)} 60%{transform:scale(1.2) rotate(5deg)} 100%{transform:scale(1) rotate(0)} }
+
+        .formula-bar {
+            background: #F5F0FF; border-radius: 14px; padding: 10px 16px;
+            margin-bottom: 14px; text-align: center; border: 2px solid #EDE9FE;
+        }
+        .formula { font-family: 'Fredoka One', cursive; font-size: 1.25rem; color: #6B7280; }
+        .f-dt { color: #C4B5FD; font-size: 1.4rem; }
+        .f-t { color: #A1A1AA; }
+        .f-t0 { color: #86EFAC; }
+
+        .info { display: flex; gap: 10px; margin-bottom: 14px; }
+        .info-card { flex: 1; border-radius: 14px; padding: 12px 10px; text-align: center; border: 2px solid #EDE9FE; background: #F5F0FF; }
+        .ic-label { font-size: 0.72rem; color: #A1A1AA; font-weight: 800; margin-bottom: 3px; }
+        .ic-val { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: #6B7280; }
+
+        .inp-wrap { margin-bottom: 14px; }
+        .inp-label { display: block; font-weight: 800; color: #6B7280; margin-bottom: 7px; font-size: 0.9rem; }
+        input {
+            width: 100%; padding: 13px 14px; background: white;
+            border: 2px solid #EDE9FE; border-radius: 14px;
+            font-family: 'Fredoka One', cursive; font-size: 1.3rem;
+            color: #6B7280; text-align: center; outline: none; transition: all 0.25s;
+        }
+        input:focus { border-color: #C4B5FD; box-shadow: 0 0 0 4px rgba(196,181,253,0.15); }
+        input::placeholder { color: #D4D4D8; font-size: 1rem; }
+
+        .btn {
+            font-family: 'Fredoka One', cursive; width: 100%; padding: 13px;
+            background: #DDD6FE; color: white; border: none; border-radius: 14px;
+            cursor: pointer; font-size: 1.05rem;
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 4px 0 #C4B5FD, 0 6px 16px rgba(196,181,253,0.2); margin-bottom: 14px;
+        }
+        .btn:hover { background: #EDE9FE; color: #C4B5FD; transform: translateY(-2px); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #C4B5FD; }
+
+        #fb { text-align: center; font-family: 'Fredoka One', cursive; font-size: 0.95rem; min-height: 26px; margin-bottom: 10px; }
+        .fb-ok { color: #86EFAC; animation: fbP .45s ease; }
+        .fb-err { color: #FCA5A5; animation: fbS .45s ease; }
+        @keyframes fbP { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+        @keyframes fbS { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 50%{transform:translateX(7px)} 75%{transform:translateX(-5px)} }
+
+        .stats { display: flex; gap: 8px; }
+        .st { flex: 1; border-radius: 12px; padding: 9px 8px; text-align: center; background: #F5F0FF; }
+        .st-l { font-size: 0.68rem; color: #A1A1AA; font-weight: 800; }
+        .st-v { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: #6B7280; }
+
+        .cft { position: fixed; pointer-events: none; z-index: 100; animation: cftF linear forwards; }
+        @keyframes cftF { 0%{transform:translateY(-15px) rotate(0deg) scale(1);opacity:1} 100%{transform:translateY(100vh) rotate(600deg) scale(.2);opacity:0} }
     </style>
 </head>
 <body>
 
-<div>
-    <div class="info-panel">
-        <div style="display: flex; justify-content: space-between;">
-            <div class="formula-box">Formula: Δt = L / v &nbsp; | &nbsp; t = Δt + t₀</div>
-            <div id="timer-display">0.0s</div>
+<div class="cloud c1"></div>
+<div class="cloud c2"></div>
+
+<div class="container">
+    <div class="title-section">
+        <h2>Gara e Intervalit Kohor</h2>
+        <p class="subtitle">Llogarit sa kohë ka kaluar!</p>
+    </div>
+
+    <div class="scene" id="scene">
+        <div class="scene-sun"></div>
+        <div class="scene-cloud sc1"></div>
+        <div class="scene-cloud sc2"></div>
+        <div class="scene-ground"></div>
+
+        <div class="tree tree-1"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+        <div class="tree tree-2"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+        <div class="fl fl-1"><div class="fl-head"></div><div class="fl-stem"></div></div>
+        <div class="fl fl-2"><div class="fl-head"></div><div class="fl-stem"></div></div>
+        <div class="fl fl-3"><div class="fl-head"></div><div class="fl-stem"></div></div>
+        <div class="fl fl-4"><div class="fl-head"></div><div class="fl-stem"></div></div>
+
+        <div class="scene-road">
+            <div class="road-dash"></div><div class="road-dash"></div><div class="road-dash"></div>
+            <div class="road-dash"></div><div class="road-dash"></div><div class="road-dash"></div>
+            <div class="road-dash"></div><div class="road-dash"></div>
         </div>
-        <hr>
-        <div id="data-text">Duke u përgatitur...</div>
+
+        <div class="car-wrap" id="carWrap">
+            <svg class="car-svg" viewBox="0 0 80 48" fill="none">
+                <ellipse cx="40" cy="44" rx="32" ry="4" fill="rgba(0,0,0,0.05)"/>
+                <rect x="6" y="24" width="64" height="16" rx="8" fill="#DDD6FE"/>
+                <path d="M22 24 L28 10 Q30 8 34 8 L48 8 Q52 8 54 10 L58 24 Z" fill="#DDD6FE"/>
+                <path d="M30 22 L34 12 Q35 11 37 11 L45 11 Q47 11 48 12 L52 22 Z" fill="#EDE9FE"/>
+                <path d="M32 20 L35 13 L39 13 L36 20 Z" fill="white" opacity="0.6"/>
+                <circle cx="68" cy="30" r="4" fill="#FDE68A"/>
+                <circle cx="68" cy="30" r="2" fill="white" opacity="0.5"/>
+                <rect x="5" y="28" width="4" height="6" rx="2" fill="#FECACA"/>
+                <circle cx="40" cy="14" r="5" fill="#FED7AA"/>
+                <path d="M35 12 Q36 7 40 7 Q44 7 45 12" fill="#D1D5DB"/>
+                <circle cx="42" cy="13" r="1" fill="#A1A1AA"/>
+                <g class="wheel" style="transform-origin:22px 40px">
+                    <circle cx="22" cy="40" r="7" fill="#D1D5DB"/>
+                    <circle cx="22" cy="40" r="3.5" fill="#E5E7EB"/>
+                    <circle cx="22" cy="40" r="1.5" fill="#D1D5DB"/>
+                </g>
+                <g class="wheel" style="transform-origin:58px 40px">
+                    <circle cx="58" cy="40" r="7" fill="#D1D5DB"/>
+                    <circle cx="58" cy="40" r="3.5" fill="#E5E7EB"/>
+                    <circle cx="58" cy="40" r="1.5" fill="#D1D5DB"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="tl">
+            <div class="tl-box">
+                <div class="tl-dot tl-r on" id="tlr"></div>
+                <div class="tl-dot tl-y" id="tly"></div>
+                <div class="tl-dot tl-g" id="tlg"></div>
+            </div>
+            <div class="tl-pole"></div>
+        </div>
+
+        <div class="spec">
+            <div class="spec-head"><div class="spec-hair"></div><div class="spec-eye-l"></div><div class="spec-eye-r"></div></div>
+            <div class="spec-body" id="specBody"><div class="spec-arm spec-al"></div><div class="spec-arm spec-ar"></div></div>
+        </div>
+
+        <div class="cd-overlay" id="cdOv"><div class="cd-num" id="cdNum">3</div></div>
+        <div class="res-overlay" id="resOv">
+            <div class="res-emoji" id="resE">⭐</div>
+            <div class="res-text" id="resT">Bravo!</div>
+            <div class="res-calc" id="resC"></div>
+        </div>
     </div>
 
-    <div id="race-track">
-        <div class="finish-line"></div>
-        <div id="car" class="car">🏎️</div>
+    <div class="formula-bar">
+        <span class="formula"><span class="f-dt">Δt</span> = <span class="f-t">t</span> − <span class="f-t0">t₀</span></span>
     </div>
 
-    <div class="inputs">
-        <label>Parashiko t (sekonda):</label>
-        <input type="number" id="userT" step="0.1" placeholder="Sekonda t">
-        <button onclick="startRace()">NIS GARËN</button>
+    <div class="info">
+        <div class="info-card"><div class="ic-label">Fillimi (t₀)</div><div class="ic-val" id="sT">0 s</div></div>
+        <div class="info-card"><div class="ic-label">Fundi (t)</div><div class="ic-val" id="eT">5 s</div></div>
     </div>
-    <p id="msg" style="text-align: center; margin-top: 10px; font-weight: bold;"></p>
+
+    <div id="fb"></div>
+
+    <div class="inp-wrap">
+        <label class="inp-label">Sa sekonda ka kaluar (Δt)?</label>
+        <input type="number" id="ans" placeholder="?" autocomplete="off">
+    </div>
+
+    <button class="btn" onclick="check()">Kontrollo</button>
+
+    <div class="stats">
+        <div class="st"><div class="st-l">Raundi</div><div class="st-v" id="dRnd">1</div></div>
+        <div class="st"><div class="st-l">Pikë</div><div class="st-v" id="dScr">0</div></div>
+        <div class="st"><div class="st-l">Seri</div><div class="st-v" id="dStr">0</div></div>
+    </div>
 </div>
 
 <script>
-    let L, v, t0, deltaT, tFinal;
-    let timerInterval;
-
-    function initLevel() {
-        L = Math.floor(Math.random() * 100) + 50; // Rruga 50-150m
-        v = Math.floor(Math.random() * 15) + 5;  // Shpejtësia 5-20m/s
-        t0 = Math.floor(Math.random() * 5) + 1; // Koha fillestare 1-5s
-        
-        deltaT = L / v;
-        tFinal = t0 + deltaT;
-
-        document.getElementById('data-text').innerHTML = 
-            `Rruga (L): <b>${L}m</b> | Shpejtësia (v): <b>${v}m/s</b> | Koha e nisjes (t₀): <b>${t0}s</b>`;
-        
-        document.getElementById('car').style.left = "0px";
-        document.getElementById('car').style.transition = "none";
-        document.getElementById('timer-display').innerText = "0.0s";
-        document.getElementById('msg').innerText = "Llogarit sekondën 't' kur makina prek vijën!";
+    let rnd=1,scr=0,strk=0,t0=0,t1=0,ans=0,busy=false;
+    function gen(){
+        if(rnd<=5){t0=~~(Math.random()*5);t1=t0+~~(Math.random()*8)+2;}
+        else if(rnd<=10){t0=~~(Math.random()*10);t1=t0+~~(Math.random()*15)+5;}
+        else{t0=Math.round((~~(Math.random()*10)+Math.random()*.9)*10)/10;t1=Math.round((t0+~~(Math.random()*10)+3+Math.random()*.9)*10)/10;}
+        ans=Math.round((t1-t0)*100)/100;
+        document.getElementById('sT').textContent=t0+' s';
+        document.getElementById('eT').textContent=t1+' s';
+        document.getElementById('ans').value='';
+        document.getElementById('fb').textContent='';
+        document.getElementById('fb').className='';
+        document.getElementById('resOv').classList.remove('on');
+        document.getElementById('carWrap').style.transform='translateX(0px)';
+        document.getElementById('carWrap').querySelector('.car-svg').classList.remove('car-driving');
     }
-
-    function startRace() {
-        const userT = parseFloat(document.getElementById('userT').value);
-        if (isNaN(userT)) return;
-
-        let currentTime = 0;
-        const car = document.getElementById('car');
-        const timerDisplay = document.getElementById('timer-display');
-        
-        // Animacioni fillon pas t0 sekondash
-        timerInterval = setInterval(() => {
-            currentTime += 0.1;
-            timerDisplay.innerText = currentTime.toFixed(1) + "s";
-
-            if (currentTime.toFixed(1) == t0.toFixed(1)) {
-                car.style.transition = `left ${deltaT}s linear`;
-                car.style.left = "510px"; // Arrin te vija
-            }
-
-            if (currentTime >= tFinal + 2) {
-                clearInterval(timerInterval);
-                checkWin(userT);
-            }
-        }, 100);
+    function countdown(cb){
+        busy=true;const ov=document.getElementById('cdOv'),nm=document.getElementById('cdNum');
+        const r=document.getElementById('tlr'),y=document.getElementById('tly'),g=document.getElementById('tlg');
+        ov.classList.add('on');r.classList.add('on');y.classList.remove('on');g.classList.remove('on');
+        let c=3;nm.textContent=c;nm.className='cd-num';nm.style.color='#C4B5FD';
+        const iv=setInterval(()=>{
+            c--;
+            if(c>0){nm.textContent=c;nm.style.animation='none';void nm.offsetWidth;nm.style.animation='cdP .45s ease';nm.style.color='#FDE68A';}
+            else if(c===0){r.classList.remove('on');y.classList.add('on');nm.textContent='GATI';nm.style.color='#FDE68A';nm.style.animation='none';void nm.offsetWidth;nm.style.animation='cdP .45s ease';}
+            else{clearInterval(iv);y.classList.remove('on');g.classList.add('on');nm.textContent='SHKO!';nm.className='cd-num cd-go';nm.style.color='#86EFAC';nm.style.animation='none';void nm.offsetWidth;nm.style.animation='cdP .45s ease';
+            setTimeout(()=>{ov.classList.remove('on');g.classList.remove('on');r.classList.add('on');busy=false;if(cb)cb();},550);}
+        },650);
     }
-
-    function checkWin(userT) {
-        const msg = document.getElementById('msg');
-        // Lejojmë një gabim të vogël prej 0.1s për rrumbullakim
-        if (Math.abs(userT - tFinal) < 0.2) {
-            msg.innerHTML = `BRAVO! Saktësi perfekte. t = ${tFinal.toFixed(1)}s`;
-            msg.style.color = "#2ecc71";
-        } else {
-            msg.innerHTML = `GABIM! Makina kaloi në sekondën ${tFinal.toFixed(1)}s. Ti the ${userT}s.`;
-            msg.style.color = "#e74c3c";
-        }
-        setTimeout(initLevel, 4000);
+    function driveCar(){
+        const svg=document.getElementById('carWrap').querySelector('.car-svg');svg.classList.add('car-driving');
+        const dist=Math.min(ans/20*230,230);document.getElementById('carWrap').style.transform=`translateX(${dist}px)`;
+        let ec=0;const ei=setInterval(()=>{if(ec>7){clearInterval(ei);return;}mkExh();ec++;},80);
     }
-
-    initLevel();
+    function mkExh(){
+        const s=document.getElementById('scene'),cw=document.getElementById('carWrap');
+        const sr=s.getBoundingClientRect(),cr=cw.getBoundingClientRect();
+        const e=document.createElement('div');e.className='exh';
+        e.style.left=(cr.left-sr.left+2)+'px';e.style.top=(cr.top-sr.top+34)+'px';
+        s.appendChild(e);setTimeout(()=>e.remove(),500);
+    }
+    function confetti(){
+        const cs=['#DDD6FE','#EDE9FE','#C4B5FD','#BBF7D0','#FDE68A','#FECACA'];
+        for(let i=0;i<25;i++){const c=document.createElement('div');c.className='cft';c.style.left=Math.random()*100+'%';c.style.top='-10px';
+        c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.background=cs[~~(Math.random()*cs.length)];
+        c.style.borderRadius=Math.random()>.5?'50%':'3px';c.style.animationDuration=(1.5+Math.random()*2)+'s';c.style.animationDelay=Math.random()*.4+'s';
+        document.body.appendChild(c);setTimeout(()=>c.remove(),4000);}
+    }
+    function showRes(ok){
+        document.getElementById('resE').textContent=ok?'⭐':'🔄';
+        document.getElementById('resT').textContent=ok?'Perfekt!':'Provo perseri!';
+        document.getElementById('resT').style.color=ok?'#86EFAC':'#FCA5A5';
+        document.getElementById('resC').textContent=`Δt = ${t1} − ${t0} = ${ans} s`;
+        setTimeout(()=>document.getElementById('resOv').classList.add('on'),250);
+    }
+    function check(){
+        if(busy)return;const v=parseFloat(document.getElementById('ans').value);const fb=document.getElementById('fb');
+        if(isNaN(v)){fb.textContent='Shkruaj nje numer!';fb.className='fb-err';return;}
+        countdown(()=>{driveCar();setTimeout(()=>{
+            if(Math.abs(v-ans)<.01){fb.textContent='SAKTE!';fb.className='fb-ok';scr+=10+strk*2;strk++;confetti();showRes(true);
+            setTimeout(()=>{rnd++;document.getElementById('dRnd').textContent=rnd;document.getElementById('dScr').textContent=scr;document.getElementById('dStr').textContent=strk;gen();},1800);}
+            else{fb.textContent='Gabim!';fb.className='fb-err';strk=0;document.getElementById('dStr').textContent=strk;showRes(false);
+            setTimeout(()=>{document.getElementById('resOv').classList.remove('on');document.getElementById('ans').value='';document.getElementById('ans').focus();
+            document.getElementById('carWrap').style.transform='translateX(0px)';document.getElementById('carWrap').querySelector('.car-svg').classList.remove('car-driving');},1800);}
+        },700);});
+    }
+    document.addEventListener('keydown',e=>{if(e.key==='Enter')check();});gen();
 </script>
-
 </body>
 </html>
