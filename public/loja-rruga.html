@@ -1,193 +1,717 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misioni: Rruga e Përshkuar</title>
-    <style>
-        :root {
-            --robot: #34495e;
-            --path: #3498db;
-            --target: #e67e22;
-            --bg: #f5f6fa;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rruga e Robotit</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FEF6EC;--bg2:#FFF9F2;
+  --card:rgba(255,255,255,0.85);--card-h:rgba(255,255,255,0.97);
+  --t1:#2E2A25;--t2:#6B635A;--t3:#A89F96;
+  --sage:#6A9E82;--sage-l:#A0D4B8;--sage-d:#4E7E62;
+  --blue:#8BACC8;--blue-l:#B8D0E2;--blue-d:#6A8EAA;
+  --pink:#CC9494;--pink-l:#E4C0C0;
+  --lav:#A894C4;--lav-l:#CFC0E0;
+  --peach:#EABC8C;--peach-l:#F5D8B8;
+  --gold:#D4B04C;--gold-l:#E8CC72;
+  --red-s:#C48080;
+  --border:rgba(106,158,130,0.22);--border-s:rgba(106,158,130,0.45);
+  --sh-s:0 2px 10px rgba(46,42,37,0.07);
+  --sh-m:0 6px 20px rgba(46,42,37,0.09);
+  --sh-l:0 10px 36px rgba(46,42,37,0.13);
+  --sh-xl:0 16px 56px rgba(46,42,37,0.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;min-height:100dvh;overflow:hidden;position:relative}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+/* ===== FONDI ===== */
+#pCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bgG{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 15% 10%,rgba(160,212,184,0.2) 0%,transparent 50%),
+    radial-gradient(ellipse at 85% 85%,rgba(168,148,196,0.15) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,rgba(234,188,140,0.1) 0%,transparent 55%),
+    linear-gradient(180deg,#FEF6EC 0%,#FDF0E0 100%);
+}
+.bgD{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bgD svg{position:absolute;opacity:0.1;animation:flt 22s ease-in-out infinite}
+.bgD svg:nth-child(1){top:5%;left:3%;animation-delay:0s;animation-duration:24s}
+.bgD svg:nth-child(2){top:55%;right:5%;animation-delay:-6s;animation-duration:19s}
+.bgD svg:nth-child(3){bottom:10%;left:12%;animation-delay:-11s;animation-duration:26s}
+.bgD svg:nth-child(4){top:25%;right:15%;animation-delay:-4s;animation-duration:21s;opacity:0.07}
+.bgD svg:nth-child(5){bottom:25%;right:3%;animation-delay:-9s;animation-duration:23s;opacity:0.08}
+@keyframes flt{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-14px) rotate(2deg)}50%{transform:translateY(-7px) rotate(-1.5deg)}75%{transform:translateY(-16px) rotate(1deg)}}
 
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 90%;
-            width: 400px;
-        }
+/* ===== APLIKACIONI ===== */
+#app{position:relative;z-index:1;width:100%;max-width:500px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden}
+.scr{position:absolute;inset:0;opacity:0;transform:translateY(18px) scale(0.97);pointer-events:none;transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);overflow-y:auto;overflow-x:hidden;padding:20px 16px 36px;-webkit-overflow-scrolling:touch}
+.scr.on{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.scr::-webkit-scrollbar{width:4px}.scr::-webkit-scrollbar-thumb{background:var(--sage-l);border-radius:4px}
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(6, 1fr);
-            gap: 2px;
-            background: #dcdde1;
-            padding: 5px;
-            border-radius: 8px;
-            margin: 15px auto;
-            width: 100%;
-            max-width: 300px;
-            aspect-ratio: 1;
-        }
+/* ===== TIPOGRAFIA ===== */
+h1{font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(1.5rem,5.5vw,2.1rem);line-height:1.2;color:var(--t1);margin-bottom:4px}
+h2{font-family:'Fredoka',sans-serif;font-weight:600;font-size:clamp(1.15rem,4vw,1.45rem);color:var(--t1)}
+p{color:var(--t2);line-height:1.65;font-size:.93rem}
+.sm{font-size:.8rem;color:var(--t3)}.ts{color:var(--sage-d)}.tg{color:#B8942C}.tc{text-align:center}
 
-        .cell {
-            width: 100%;
-            height: 100%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(1rem, 5vw, 1.5rem);
-            border-radius: 4px;
-        }
+/* ===== KARTA ===== */
+.cd{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:2px solid var(--border);border-radius:22px;padding:20px;box-shadow:var(--sh-m);position:relative;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.cd::before{content:'';position:absolute;inset:-5px;border:2px solid rgba(106,158,130,0.08);border-radius:26px;pointer-events:none}
+.cd::after{content:'';position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,0.25),transparent);border-radius:20px 20px 0 0;pointer-events:none}
+.cdH:hover{transform:translateY(-4px);box-shadow:var(--sh-l);border-color:var(--border-s)}
+.cdS{padding:14px 16px;border-radius:17px}
 
-        .path-active { background: #dff9fb; border: 1px solid var(--path); }
-        .robot { font-size: 1.8rem; }
-        .target { background: #ffeaa7; border: 2px solid var(--target); }
+/* ===== BUTONAT ===== */
+.bt{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;border:none;border-radius:15px;padding:14px 26px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;-webkit-user-select:none;user-select:none;letter-spacing:.01em}
+.bt::after{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.18),transparent);pointer-events:none;border-radius:15px 15px 0 0}
+.bt:active{transform:scale(0.95)!important}
+.btS{background:linear-gradient(135deg,var(--sage),var(--sage-d));color:#fff;box-shadow:0 5px 16px rgba(106,158,130,0.35)}
+.btS:hover{background:linear-gradient(135deg,var(--sage-d),#3E6E50);transform:translateY(-2px);box-shadow:0 8px 24px rgba(106,158,130,0.4)}
+.btP{background:linear-gradient(135deg,var(--peach),#D4A86C);color:var(--t1);box-shadow:0 5px 16px rgba(234,188,140,0.35)}
+.btP:hover{background:linear-gradient(135deg,#D4A86C,#C49860);transform:translateY(-2px)}
+.btL{background:linear-gradient(135deg,var(--lav),#8E7CB0);color:#fff;box-shadow:0 5px 16px rgba(168,148,196,0.3)}
+.btL:hover{background:linear-gradient(135deg,#8E7CB0,#7A6AA0);transform:translateY(-2px)}
+.btG{background:transparent;color:var(--t2);border:2px solid var(--border);box-shadow:none}
+.btG:hover{border-color:var(--border-s);background:rgba(106,158,130,0.05)}
+.btF{width:100%}
+.bt:disabled{opacity:0.45;pointer-events:none;filter:saturate(0.5)}
 
-        .controls { margin-top: 20px; }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
+/* ===== XP BAR ===== */
+.xpW{width:100%;height:11px;background:rgba(106,158,130,0.12);border-radius:11px;overflow:hidden;position:relative}
+.xpF{height:100%;border-radius:11px;background:linear-gradient(90deg,var(--sage-l),var(--sage),var(--sage-d));transition:width .9s cubic-bezier(.4,0,.2,1);position:relative}
+.xpF::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.35) 50%,transparent 100%);animation:shm 2.2s ease-in-out infinite}
+@keyframes shm{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
 
-        button {
-            background: var(--path);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-        }
+/* ===== YLLIZET ===== */
+.sts{display:flex;gap:5px;justify-content:center}
+.st{width:30px;height:30px;transition:transform .3s ease}
+.st.f svg{fill:var(--gold);filter:drop-shadow(0 0 6px rgba(212,176,76,0.5))}
+.st.e svg{fill:var(--peach-l);opacity:0.4}
+.st.f{animation:stP .45s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes stP{0%{transform:scale(0) rotate(-30deg)}100%{transform:scale(1) rotate(0)}}
 
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #7f8c8d;
-        }
-    </style>
+/* ===== MENU ===== */
+.mHd{tc;margin-bottom:18px;padding-top:6px}
+.mTt{font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(1.7rem,6.5vw,2.3rem);background:linear-gradient(135deg,var(--sage-d),var(--sage));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px;animation:tF 4.5s ease-in-out infinite}
+@keyframes tF{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.mSb{color:var(--t3);font-size:.85rem;font-weight:600}
+.pC{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.pAv{width:54px;height:54px;flex-shrink:0;background:linear-gradient(145deg,var(--sage-l),var(--lav-l));border-radius:17px;border:2px solid var(--border-s);display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-s);animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.pI{flex:1;min-width:0}
+.pN{font-weight:800;font-size:1.02rem;color:var(--t1)}
+.pL{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;font-weight:700;background:linear-gradient(135deg,var(--sage),var(--sage-d));color:#fff;padding:2px 11px;border-radius:20px;margin-top:2px}
+.pX{margin-top:6px}
+.pXt{font-size:.68rem;color:var(--t3);margin-bottom:3px;font-weight:600}
+.stkB{display:inline-flex;align-items:center;gap:4px;font-size:.73rem;font-weight:700;background:linear-gradient(135deg,var(--peach),#D4A86C);color:var(--t1);padding:3px 10px;border-radius:20px;animation:br 2.2s ease-in-out infinite}
+.gC{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+.gCd{display:flex;align-items:center;gap:16px;cursor:pointer}
+.gCi{width:76px;height:76px;flex-shrink:0;border-radius:20px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.gCi::after{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.22),transparent);pointer-events:none}
+.gCi svg{width:44px;height:44px;position:relative;z-index:1}
+.gcR{background:linear-gradient(145deg,var(--sage-l),#88CCA8)}
+.gcT{background:linear-gradient(145deg,var(--peach),var(--gold-l))}
+.gCf{flex:1;min-width:0}
+.gCt{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.08rem;color:var(--t1);margin-bottom:2px}
+.gCdsc{font-size:.78rem;color:var(--t3);line-height:1.4}
+.gCa{color:var(--t3);flex-shrink:0;transition:transform .3s ease,color .3s ease}
+.gCd:hover .gCa{transform:translateX(5px);color:var(--sage)}
+
+/* ===== G1 NIVELLET ===== */
+.lP{padding:10px 0 24px}
+.lR{display:flex;align-items:center;justify-content:center;gap:0}
+.lN{width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative}
+.lN.lk{background:rgba(168,159,150,0.1);color:var(--t3);cursor:default}
+.lN.ul{background:var(--card-h);color:var(--t1);border:2px solid var(--border-s);box-shadow:var(--sh-s)}
+.lN.ul:hover{transform:scale(1.1);box-shadow:var(--sh-m);border-color:var(--sage)}
+.lN.cr{background:linear-gradient(145deg,var(--sage-l),var(--sage));color:#fff;border:2px solid var(--sage-d);box-shadow:0 5px 18px rgba(106,158,130,0.4);animation:nP 2.2s ease-in-out infinite}
+@keyframes nP{0%,100%{box-shadow:0 5px 18px rgba(106,158,130,0.4)}50%{box-shadow:0 5px 28px rgba(106,158,130,0.6)}}
+.lN.dn{background:linear-gradient(145deg,var(--gold-l),var(--gold));color:#fff;border:2px solid #B8942C;box-shadow:0 3px 12px rgba(212,176,76,0.3)}
+.lC{width:22px;height:3px;background:var(--border);flex-shrink:0;border-radius:2px}
+.lC.ok{background:var(--gold-l)}
+.lSt{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);display:flex;gap:1px}
+.lSt .ms{width:10px;height:10px}
+.lRv{flex-direction:row-reverse}.lCrv{order:-1}
+
+/* ===== PRAPA ===== */
+.bkR{margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.bkB{width:38px;height:38px;border-radius:13px;background:var(--card);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;flex-shrink:0}
+.bkB:hover{border-color:var(--sage);background:var(--card-h);transform:translateX(-2px)}
+.bkB svg{width:18px;height:18px;color:var(--t2)}
+
+/* ===== G1 LOJA ===== */
+.g1W{position:relative;width:100%;max-width:330px;margin:16px auto;aspect-ratio:1}
+.g1G{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);gap:3px;width:100%;height:100%;background:rgba(106,158,130,0.06);padding:5px;border-radius:18px;border:2px solid var(--border);box-shadow:inset 0 1px 4px rgba(0,0,0,0.03)}
+.c1{background:var(--card-h);border-radius:9px;display:flex;align-items:center;justify-content:center;position:relative;transition:background .3s ease,transform .3s ease,box-shadow .3s ease}
+.c1.ph{background:rgba(160,212,184,0.18)}
+.c1.ph::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--sage-l);opacity:0.45;animation:pD 2.2s ease-in-out infinite}
+@keyframes pD{0%,100%{opacity:0.25;transform:scale(0.75)}50%{opacity:0.55;transform:scale(1.15)}}
+.c1 .ci{width:72%;height:72%;position:relative;z-index:2}
+.c1.rb{animation:rI 2.2s ease-in-out infinite}
+@keyframes rI{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.c1.tg{background:rgba(234,188,140,0.2);box-shadow:inset 0 0 0 2px var(--peach)}
+.c1.tg .ci{animation:tG 2.2s ease-in-out infinite}
+@keyframes tG{0%,100%{filter:drop-shadow(0 0 3px rgba(234,188,140,0.35))}50%{filter:drop-shadow(0 0 10px rgba(234,188,140,0.7))}}
+.c1.av{background:rgba(160,212,184,0.3)!important;transform:scale(1.06);box-shadow:0 0 14px rgba(106,158,130,0.3)}
+.g1I{margin-top:16px}
+.g1In{width:100%;padding:15px 20px;border:2px solid var(--border);border-radius:15px;font-family:'Nunito',sans-serif;font-size:1.15rem;font-weight:700;color:var(--t1);background:var(--card-h);outline:none;text-align:center;transition:border-color .3s ease,box-shadow .3s ease;-moz-appearance:textfield}
+.g1In::-webkit-inner-spin-button,.g1In::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.g1In:focus{border-color:var(--sage);box-shadow:0 0 0 4px rgba(106,158,130,0.14)}
+.g1Lb{font-weight:700;font-size:.9rem;color:var(--t2);margin-bottom:8px;display:block;text-align:center}
+.g1Fb{margin-top:12px;padding:12px 16px;border-radius:13px;font-weight:700;font-size:.9rem;text-align:center;transition:all .3s ease;min-height:46px;display:flex;align-items:center;justify-content:center;gap:6px}
+.g1Fb.ok{background:rgba(106,158,130,0.1);color:var(--sage-d)}
+.g1Fb.no{background:rgba(196,128,128,0.1);color:var(--red-s);animation:shk .5s ease}
+.g1Fb.nt{background:rgba(168,159,150,0.07);color:var(--t3)}
+@keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.g1Bg{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--sage-l),var(--sage));color:#fff;padding:5px 14px;border-radius:20px;font-weight:700;font-size:.8rem}
+
+/* ===== REZULTATET ===== */
+.rIc{width:84px;height:84px;margin:0 auto 14px;animation:rB .65s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes rB{0%{transform:scale(0) rotate(-12deg)}100%{transform:scale(1) rotate(0)}}
+.rTt{font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.65rem;text-align:center;margin-bottom:5px}
+.rSb{tc;font-size:.9rem;color:var(--t3);margin-bottom:16px}
+.rRw{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.rBx{tc;padding:13px 8px;background:rgba(106,158,130,0.05);border-radius:15px}
+.rVl{font-weight:900;font-size:1.35rem;color:var(--t1)}
+.rLb{font-size:.67rem;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.rSt{margin:12px 0 18px}
+.rBt{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+
+/* ===== ARRITJET ===== */
+.aG{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.aC{padding:14px 12px;text-align:center;background:var(--card);border:2px solid var(--border);border-radius:17px;transition:all .3s ease;position:relative;overflow:hidden}
+.aC.u{border-color:var(--gold-l);background:rgba(232,204,114,0.06)}
+.aC.u::after{content:'';position:absolute;top:-50%;right:-50%;width:100%;height:100%;background:radial-gradient(circle,rgba(212,176,76,0.07),transparent 70%);pointer-events:none}
+.aC.lk{opacity:0.45}
+.aIc{width:38px;height:38px;margin:0 auto 6px}
+.aNm{font-weight:800;font-size:.78rem;color:var(--t1);margin-bottom:2px}
+.aDs{font-size:.67rem;color:var(--t3);line-height:1.3}
+.aCt{margin-top:14px;tc;font-size:.83rem;color:var(--t3);font-weight:600}
+.aCt span{color:var(--gold);font-weight:800}
+
+/* ===== OVERLAY ===== */
+.ov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(46,42,37,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .4s ease;padding:20px}
+.ov.on{opacity:1;pointer-events:auto}
+.ovC{background:var(--bg2);border:2px solid var(--border-s);border-radius:26px;padding:34px 26px;max-width:370px;width:100%;text-align:center;box-shadow:var(--sh-xl);transform:scale(0.88);transition:transform .45s cubic-bezier(.175,.885,.32,1.275)}
+.ov.on .ovC{transform:scale(1)}
+.luN{font-family:'Fredoka',sans-serif;font-weight:700;font-size:3.8rem;background:linear-gradient(135deg,var(--sage),var(--sage-d));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;animation:luP .65s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes luP{0%{transform:scale(0) rotate(-18deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.apI{width:58px;height:58px;margin:0 auto 10px;animation:apS .55s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes apS{0%{transform:translateY(34px) scale(0);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+
+/* ===== KONFETI ===== */
+#cf{position:fixed;inset:0;z-index:200;pointer-events:none;overflow:hidden}
+.cfP{position:absolute;top:-12px;border-radius:3px;animation:cfF linear forwards}
+@keyframes cfF{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}75%{opacity:1}100%{transform:translateY(108vh) rotate(800deg) scale(0.4);opacity:0}}
+
+/* ===== TOAST ===== */
+#ts{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:150;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:92%;max-width:420px}
+.tst{padding:12px 18px;border-radius:15px;background:var(--bg2);border:2px solid var(--border-s);box-shadow:var(--sh-l);font-weight:700;font-size:.85rem;color:var(--t1);display:flex;align-items:center;gap:10px;animation:tsI .4s cubic-bezier(.175,.885,.32,1.275) both;pointer-events:auto}
+.tst.ou{animation:tsO .3s ease both}
+.tstI{width:24px;height:24px;flex-shrink:0}
+@keyframes tsI{0%{transform:translateY(-22px) scale(0.88);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes tsO{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-22px);opacity:0}}
+
+/* ===== FLY ===== */
+.xf{position:fixed;z-index:160;font-weight:900;font-size:1.05rem;color:var(--sage-d);pointer-events:none;animation:xfU 1.3s ease-out both}
+@keyframes xfU{0%{transform:translateY(0) scale(0.5);opacity:0}18%{transform:translateY(-12px) scale(1.15);opacity:1}100%{transform:translateY(-65px) scale(0.75);opacity:0}}
+.cf2{position:fixed;z-index:160;pointer-events:none;animation:cf2F .85s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes cf2F{0%{transform:scale(0.5);opacity:0}35%{transform:scale(1.25);opacity:1}100%{transform:scale(0.8) translateY(-32px);opacity:0}}
+.cmb{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:90;pointer-events:none;font-family:'Fredoka',sans-serif;font-weight:700;font-size:2.2rem;color:var(--gold);text-shadow:0 3px 14px rgba(212,176,76,0.5);animation:cmF .85s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes cmF{0%{transform:translate(-50%,-50%) scale(0.25) rotate(-12deg);opacity:0}28%{transform:translate(-50%,-50%) scale(1.35) rotate(3deg);opacity:1}100%{transform:translate(-50%,-50%) scale(0.85) rotate(0);opacity:0}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:380px){.scr{padding:14px 12px 24px}.cd{padding:14px}.g1W{max-width:280px}.lN{width:40px;height:40px;font-size:.8rem}.lC{width:16px}.gCi{width:64px;height:64px}.gCi svg{width:36px;height:36px}}
+@media(min-width:520px){.scr{padding:30px 26px 44px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+</style>
 </head>
 <body>
+<canvas id="pCanvas"></canvas>
+<div class="bgG"></div>
+<div class="bgD" id="bgD"></div>
 
-<div class="container">
-    <h2>🤖 Rruga e Robotit</h2>
-    <p id="instruction">Llogarit rrugën totale që duhet të përshkojë roboti për te karikuesi (në njësi).</p>
-    
-    <div class="grid" id="gameGrid"></div>
-
-    <div class="controls">
-        <label>Sa njësi është rruga totale?</label>
-        <input type="number" id="userAnswer" placeholder="Shëno rrugën (p.sh. 7)">
-        <button onclick="checkAnswer()">KONTROLLO RRUGËN</button>
+<div id="app">
+  <!-- MENU -->
+  <section id="s-menu" class="scr on">
+    <div class="mHd">
+      <div class="mTt">Rruga e Robotit</div>
+      <div class="mSb">Ndihmo robotin të arrinë te karikuesi</div>
     </div>
-
-    <div class="stats">
-        <span>Niveli: <strong id="lvlDisplay">1</strong></span>
-        <span id="feedback">Gati?</span>
+    <div class="cd cdS pC" id="pCard"></div>
+    <div class="gC">
+      <div class="cd cdH gCd" onclick="go('s-g1lv')" role="button" tabindex="0" aria-label="Fillo lojën">
+        <div class="gCi gcR" id="gcR"></div>
+        <div class="gCf">
+          <div class="gCt">Nivelet e Rrugës</div>
+          <div class="gCdsc">Llogarit distancën në rrjetë</div>
+        </div>
+        <div class="gCa" id="a1"></div>
+      </div>
     </div>
+    <button class="bt btG btF" onclick="go('s-ach')" aria-label="Arritjet" id="abt">
+      <span id="abi"></span> Arritjet
+    </button>
+  </section>
+
+  <!-- G1 NIVELLET -->
+  <section id="s-g1lv" class="scr">
+    <div class="bkR"><div class="bkB" onclick="go('s-menu');rMenu()" role="button" tabindex="0" aria-label="Kthehu" id="b1"></div><h2>Nivelet</h2></div>
+    <p class="sm" style="margin-bottom:6px">Zgjidh nivelin dhe llogarit sa njësi duhet të përshkojë roboti.</p>
+    <div class="cd" style="margin-top:10px"><div class="lP" id="lPath"></div></div>
+  </section>
+
+  <!-- G1 LOJA -->
+  <section id="s-g1pl" class="scr">
+    <div class="bkR"><div class="bkB" onclick="go('s-g1lv');rLv()" role="button" tabindex="0" aria-label="Kthehu" id="b2"></div><div class="g1Bg" id="g1Bg">Niveli 1</div></div>
+    <div class="g1W"><div class="g1G" id="g1G"></div></div>
+    <div class="g1I">
+      <label class="g1Lb">Sa njësi është rruga totale?</label>
+      <input type="number" class="g1In" id="g1A" placeholder="Shkruaj numrin këtu..." aria-label="Përgjigja">
+      <button class="bt btS btF" style="margin-top:12px" onclick="g1Ck()" id="g1Bt">KONTROLLO RRUGËN</button>
+    </div>
+    <div class="g1Fb nt" id="g1Fb">Vërejtuni rrugën dhe llogaritni gjatësinë</div>
+  </section>
+
+  <!-- REZULTATET -->
+  <section id="s-res" class="scr"><div id="resC"></div></section>
+
+  <!-- ARRITJET -->
+  <section id="s-ach" class="scr">
+    <div class="bkR"><div class="bkB" onclick="go('s-menu');rMenu()" role="button" tabindex="0" aria-label="Kthehu" id="b3"></div><h2>Arritjet</h2></div>
+    <div class="aCt" id="aCt"></div>
+    <div class="aG" id="aG"></div>
+  </section>
 </div>
 
+<!-- OVERLAY: NIVEL I RI -->
+<div class="ov" id="ovL">
+  <div class="ovC">
+    <div style="font-size:.87rem;font-weight:700;color:var(--sage-d);margin-bottom:4px">NIVEL I RI</div>
+    <div class="luN" id="luN">2</div>
+    <div style="font-size:.92rem;color:var(--t2);margin:8px 0 20px">Po bëhen më i fortë çdo ditë</div>
+    <button class="bt btS btF" onclick="cOv('ovL')">VAZHDONI</button>
+  </div>
+</div>
+
+<!-- OVERLAY: ARRITJE -->
+<div class="ov" id="ovA">
+  <div class="ovC">
+    <div class="apI" id="apI"></div>
+    <div style="font-size:.82rem;font-weight:700;color:var(--gold);margin-bottom:2px">ARRITJE E RE</div>
+    <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.22rem;color:var(--t1);margin-bottom:4px" id="apN"></div>
+    <div style="font-size:.84rem;color:var(--t3);margin-bottom:20px" id="apD"></div>
+    <button class="bt btL btF" onclick="cOv('ovA')">MIRË</button>
+  </div>
+</div>
+
+<div id="cf"></div>
+<div id="ts"></div>
+
 <script>
-    let currentLevel = 1;
-    let correctAnswer = 0;
+/* ============================================================
+   SVG IKONAT - Stil Cartoon Realistik
+   ============================================================ */
+const I={
+robot:`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="rg1" x1="14" y1="18" x2="50" y2="44"><stop offset="0%" stop-color="#8CC8A4"/><stop offset="100%" stop-color="#5A9E72"/></linearGradient>
+  <linearGradient id="rg2" x1="18" y1="46" x2="46" y2="60"><stop offset="0%" stop-color="#4E8662"/><stop offset="100%" stop-color="#3A6E4E"/></linearGradient></defs>
+  <line x1="32" y1="4" x2="32" y2="17" stroke="#6A8E7A" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="32" cy="3.5" r="4.5" fill="#8BACC8"/><circle cx="30.5" cy="2.5" r="1.8" fill="#B8D0E2" opacity="0.7"/>
+  <rect x="13" y="17" width="38" height="28" rx="12" fill="url(#rg1)"/>
+  <rect x="13" y="17" width="38" height="14" rx="12" fill="rgba(255,255,255,0.12)"/>
+  <ellipse cx="24" cy="29" rx="6" ry="6.5" fill="#fff"/><ellipse cx="24" cy="29" rx="4.5" ry="5" fill="#2E2A25"/>
+  <circle cx="22.5" cy="27.5" r="1.5" fill="#fff" opacity="0.8"/>
+  <ellipse cx="40" cy="29" rx="6" ry="6.5" fill="#fff"/><ellipse cx="40" cy="29" rx="4.5" ry="5" fill="#2E2A25"/>
+  <circle cx="38.5" cy="27.5" r="1.5" fill="#fff" opacity="0.8"/>
+  <rect x="26" y="38" width="12" height="2.8" rx="1.4" fill="#4E8662"/>
+  <rect x="17" y="46" width="30" height="14" rx="7" fill="url(#rg2)"/>
+  <rect x="17" y="46" width="30" height="7" rx="7" fill="rgba(255,255,255,0.08)"/>
+  <rect x="7" y="48" width="8" height="6" rx="3" fill="#6A9E82"/><rect x="7" y="48" width="8" height="3" rx="3" fill="rgba(255,255,255,0.15)"/>
+  <rect x="49" y="48" width="8" height="6" rx="3" fill="#6A9E82"/><rect x="49" y="48" width="8" height="3" rx="3" fill="rgba(255,255,255,0.15)"/>
+</svg>`,
+charger:`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="cg1" x1="16" y1="14" x2="48" y2="54"><stop offset="0%" stop-color="#F5D8B8"/><stop offset="100%" stop-color="#D4A86C"/></linearGradient>
+  <linearGradient id="cg2" x1="22" y1="20" x2="42" y2="44"><stop offset="0%" stop-color="#FFF5E8"/><stop offset="100%" stop-color="#FAE4D0"/></linearGradient></defs>
+  <rect x="14" y="12" width="36" height="42" rx="8" fill="url(#cg1)" stroke="#C49860" stroke-width="1.5"/>
+  <rect x="14" y="12" width="36" height="20" rx="8" fill="rgba(255,255,255,0.15)"/>
+  <rect x="21" y="19" width="22" height="26" rx="4" fill="url(#cg2)"/>
+  <rect x="27" y="21" width="10" height="20" rx="3" fill="#E8CC72" opacity="0.6"/>
+  <polygon points="29,33 33,25 33,29 38,29 34,37 34,33" fill="#B8942C"/>
+  <circle cx="36" cy="24" r="1.5" fill="#FFEEBB" opacity="0.8"/>
+  <rect x="25" y="48" width="14" height="4" rx="2" fill="#C49860"/>
+  <rect x="25" y="48" width="14" height="2" rx="2" fill="rgba(255,255,255,0.2)"/>
+</svg>`,
+star:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="sg1" x1="15" y1="2" x2="15" y2="28"><stop offset="0%" stop-color="#E8CC72"/><stop offset="100%" stop-color="#B8942C"/></linearGradient></defs>
+  <polygon points="15,2 18.8,10.5 28,11.8 21,18 22.8,27 15,22.5 7.2,27 9,18 2,11.8 11.2,10.5" fill="url(#sg1)"/>
+  <polygon points="15,6 17.5,12 24,12.8 19,17.5 20.2,24 15,20.5 9.8,24 11,17.5 6,12.8 12.5,12" fill="rgba(255,255,255,0.15)"/>
+</svg>`,
+coin:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="cog1" x1="15" y1="3" x2="15" y2="27"><stop offset="0%" stop-color="#E8CC72"/><stop offset="100%" stop-color="#B8942C"/></linearGradient></defs>
+  <circle cx="15" cy="15" r="13" fill="url(#cog1)" stroke="#9A7A2C" stroke-width="1.5"/>
+  <circle cx="15" cy="15" r="9" fill="none" stroke="#9A7A2C" stroke-width="0.8" opacity="0.4"/>
+  <text x="15" y="19.5" text-anchor="middle" font-size="13" font-weight="bold" fill="#9A7A2C" font-family="Fredoka">M</text>
+  <circle cx="11" cy="10" r="2" fill="rgba(255,255,255,0.2)"/>
+</svg>`,
+flame:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="fg1" x1="15" y1="2" x2="15" y2="28"><stop offset="0%" stop-color="#F5D8B8"/><stop offset="50%" stop-color="#EABC8C"/><stop offset="100%" stop-color="#C49860"/></linearGradient></defs>
+  <path d="M15 1C15 1 22 10 22 17C22 21.4 18.9 25 15 25C11.1 25 8 21.4 8 17C8 10 15 1 15 1Z" fill="url(#fg1)"/>
+  <path d="M15 9C15 9 19 14 19 17.5C19 19.7 17.2 21.5 15 21.5C12.8 21.5 11 19.7 11 17.5C11 14 15 9 15 9Z" fill="#D4A86C"/>
+  <path d="M15 14C15 14 17 16.5 17 18C17 19.1 16.1 20 15 20C13.9 20 13 19.1 13 18C13 16.5 15 14 15 14Z" fill="#C49860" opacity="0.6"/>
+</svg>`,
+trophy:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="tg1" x1="15" y1="4" x2="15" y2="18"><stop offset="0%" stop-color="#E8CC72"/><stop offset="100%" stop-color="#B8942C"/></linearGradient></defs>
+  <path d="M8 4h14v11c0 3.9-3.1 7-7 7s-7-3.1-7-7V4z" fill="url(#tg1)" stroke="#9A7A2C" stroke-width="1.2"/>
+  <path d="M8 7H5c-1.7 0-3 1.3-3 3v1c0 2.8 2.2 5 5 5h1" fill="none" stroke="#9A7A2C" stroke-width="1.3"/>
+  <path d="M22 7h3c1.7 0 3 1.3 3 3v1c0 2.8-2.2 5-5 5h-1" fill="none" stroke="#9A7A2C" stroke-width="1.3"/>
+  <rect x="12" y="22" width="6" height="4" rx="1.5" fill="#9A7A2C"/>
+  <rect x="8" y="26" width="14" height="2.5" rx="1.2" fill="#B8942C"/>
+</svg>`,
+crown:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="crg1" x1="15" y1="6" x2="15" y2="22"><stop offset="0%" stop-color="#E8CC72"/><stop offset="100%" stop-color="#B8942C"/></linearGradient></defs>
+  <path d="M3 21L6 7l6 6 3-9 3 9 6-6 3 14H3z" fill="url(#crg1)" stroke="#9A7A2C" stroke-width="1"/>
+  <path d="M3 21L6 7l6 6 3-9 3 9 6-6 3 14H3z" fill="rgba(255,255,255,0.12)"/>
+  <rect x="3" y="21" width="24" height="3.5" rx="1.8" fill="#9A7A2C"/>
+  <circle cx="9" cy="11" r="1.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="21" cy="11" r="1.5" fill="rgba(255,255,255,0.3)"/>
+</svg>`,
+medal:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="mg1" x1="15" y1="9" x2="15" y2="25"><stop offset="0%" stop-color="#E8CC72"/><stop offset="100%" stop-color="#B8942C"/></linearGradient></defs>
+  <path d="M9 3l6 8 6-8" fill="none" stroke="#B8942C" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="15" cy="18" r="9" fill="url(#mg1)" stroke="#9A7A2C" stroke-width="1.2"/>
+  <circle cx="15" cy="18" r="6" fill="none" stroke="#9A7A2C" stroke-width="0.8" opacity="0.35"/>
+  <text x="15" y="21" text-anchor="middle" font-size="7" font-weight="bold" fill="#9A7A2C" font-family="Fredoka">1</text>
+</svg>`,
+compass:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="cpg1" x1="15" y1="3" x2="15" y2="27"><stop offset="0%" stop-color="#FFF5E8"/><stop offset="100%" stop-color="#FAE4D0"/></linearGradient></defs>
+  <circle cx="15" cy="15" r="12" fill="url(#cpg1)" stroke="#C49860" stroke-width="1.3"/>
+  <circle cx="15" cy="15" r="1.8" fill="#9A7A2C"/>
+  <polygon points="15,4 16.5,12 15,11 13.5,12" fill="#CC9494"/>
+  <polygon points="15,26 13.5,18 15,19 16.5,18" fill="#6A9E82"/>
+  <polygon points="4,15 12,13.5 11,15 12,16.5" fill="#B8D0E2" opacity="0.5"/>
+  <polygon points="26,15 18,13.5 19,15 18,16.5" fill="#B8D0E2" opacity="0.5"/>
+  <text x="15" y="4" text-anchor="middle" font-size="3.8" fill="#9A7A2C" font-weight="bold" font-family="Nunito">N</text>
+</svg>`,
+check:`<svg viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" fill="#A0D4B8"/><circle cx="15" cy="15" r="13" fill="rgba(255,255,255,0.15)"/>
+  <path d="M9 15l4 4 8-8" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+x:`<svg viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="13" fill="#E4C0C0"/><circle cx="15" cy="15" r="13" fill="rgba(255,255,255,0.1)"/>
+  <path d="M10 10l10 10M20 10l-10 10" stroke="#C48080" stroke-width="2.8" stroke-linecap="round"/></svg>`,
+lock:`<svg viewBox="0 0 30 30" fill="none"><rect x="6" y="13" width="18" height="14" rx="4" fill="#A89F96"/>
+  <rect x="6" y="13" width="18" height="7" rx="4" fill="rgba(255,255,255,0.1)"/>
+  <path d="M10 13V8c0-2.8 2.2-5 5-5s5 2.2 5 5v5" fill="none" stroke="#A89F96" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="15" cy="20" r="2.2" fill="#FAE4D0"/></svg>`,
+arrowR:`<svg viewBox="0 0 20 20" fill="none"><path d="M7 3l7 7-7 7" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+arrowL:`<svg viewBox="0 0 20 20" fill="none"><path d="M13 3l-7 7 7 7" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+cloud:`<svg viewBox="0 0 90 56" fill="none"><path d="M22 42c-6.6 0-12-5.4-12-12s5.4-12 12-12c0-9.4 7.6-17 17-17 7.2 0 13.4 4.6 15.7 11C47.5 11.2 49.2 10.8 51 10.8c8 0 14.5 6.5 14.5 14.5 0 .4 0 .8-.1 1.2C70.5 28.5 74 32.4 74 37c0 5.2-4.2 9.5-9.5 9.5H22z" fill="currentColor"/></svg>`,
+leaf:`<svg viewBox="0 0 44 44" fill="none"><path d="M8 36C8 36 6 14 36 8c0 0 4 22-28 28z" fill="currentColor" opacity="0.6"/>
+  <path d="M8 36C14 26 24 16 36 8" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.35"/>
+  <path d="M14 30C18 24 24 18 30 13" fill="none" stroke="currentColor" stroke-width="1" opacity="0.2"/></svg>`,
+gem:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="gg1" x1="15" y1="2" x2="15" y2="28"><stop offset="0%" stop-color="#CFC0E0"/><stop offset="100%" stop-color="#8E7CB0"/></linearGradient></defs>
+  <polygon points="15,2 26,11 24,28 6,28 4,11" fill="url(#gg1)" stroke="#7A6AA0" stroke-width="1"/>
+  <line x1="4" y1="11" x2="26" y2="11" stroke="#7A6AA0" stroke-width="0.8" opacity="0.4"/>
+  <line x1="15" y1="2" x2="11" y2="11" stroke="#7A6AA0" stroke-width="0.6" opacity="0.25"/>
+  <line x1="15" y1="2" x2="19" y2="11" stroke="#7A6AA0" stroke-width="0.6" opacity="0.25"/>
+  <polygon points="15,2 26,11 15,11" fill="rgba(255,255,255,0.12)"/>
+</svg>`,
+book:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="bg1" x1="15" y1="4" x2="15" y2="26"><stop offset="0%" stop-color="#A0D4B8"/><stop offset="100%" stop-color="#6A9E82"/></linearGradient></defs>
+  <rect x="4" y="4" width="22" height="22" rx="3" fill="url(#bg1)" stroke="#4E7E62" stroke-width="1.2"/>
+  <line x1="15" y1="4" x2="15" y2="26" stroke="#4E7E62" stroke-width="0.9" opacity="0.45"/>
+  <line x1="7" y1="10" x2="13" y2="10" stroke="#4E7E62" stroke-width="0.8" opacity="0.35"/>
+  <line x1="7" y1="13" x2="12" y2="13" stroke="#4E7E62" stroke-width="0.7" opacity="0.25"/>
+  <line x1="17" y1="10" x2="23" y2="10" stroke="#4E7E62" stroke-width="0.8" opacity="0.35"/>
+  <line x1="17" y1="13" x2="22" y2="13" stroke="#4E7E62" stroke-width="0.7" opacity="0.25"/>
+  <rect x="4" y="4" width="22" height="11" rx="3" fill="rgba(255,255,255,0.1)"/>
+</svg>`,
+shield:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="sg2" x1="15" y1="3" x2="15" y2="27"><stop offset="0%" stop-color="#CFC0E0"/><stop offset="100%" stop-color="#A894C4"/></linearGradient></defs>
+  <path d="M15 3L4 8.5v7.5c0 7.2 4.7 13.9 11 15.5 6.3-1.6 11-8.3 11-15.5V8.5L15 3z" fill="url(#sg2)" stroke="#8E7CB0" stroke-width="1.2"/>
+  <path d="M15 3L4 8.5v7.5c0 7.2 4.7 13.9 11 15.5V3z" fill="rgba(255,255,255,0.08)"/>
+  <path d="M11 15l2.8 2.8L20 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+wizard:`<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="wg1" x1="25" y1="2" x2="25" y2="20"><stop offset="0%" stop-color="#A0D4B8"/><stop offset="100%" stop-color="#6A9E82"/></linearGradient>
+  <linearGradient id="wg2" x1="25" y1="20" x2="25" y2="40"><stop offset="0%" stop-color="#4E8662"/><stop offset="100%" stop-color="#3A6E4E"/></linearGradient></defs>
+  <path d="M25 2L15 20h20L25 2z" fill="url(#wg1)"/>
+  <path d="M25 2L15 20h10V2z" fill="rgba(255,255,255,0.12)"/>
+  <rect x="18" y="20" width="14" height="20" rx="4" fill="url(#wg2)"/>
+  <rect x="18" y="20" width="14" height="10" rx="4" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="22" cy="29" r="2" fill="#A0D4B8"/><circle cx="28" cy="29" r="2" fill="#A0D4B8"/>
+  <circle cx="21.5" cy="28" r="0.7" fill="#fff" opacity="0.5"/>
+  <circle cx="27.5" cy="28" r="0.7" fill="#fff" opacity="0.5"/>
+  <path d="M23 35h4" stroke="#A0D4B8" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="25" cy="2" r="2.5" fill="#E8CC72"/>
+  <circle cx="24" cy="1.2" r="1" fill="#FFF5E8" opacity="0.6"/>
+  <path d="M13 23l-5-2.5M37 23l5-2.5" stroke="#4E8662" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`,
+sun:`<svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="9" fill="#E8CC72"/>
+  <circle cx="22" cy="22" r="9" fill="rgba(255,255,255,0.15)"/>
+  <g stroke="#B8942C" stroke-width="2.2" stroke-linecap="round">
+  <line x1="22" y1="4" x2="22" y2="10"/><line x1="22" y1="34" x2="22" y2="40"/>
+  <line x1="4" y1="22" x2="10" y2="22"/><line x1="34" y1="22" x2="40" y2="22"/>
+  <line x1="9" y1="9" x2="13.2" y2="13.2"/><line x1="30.8" y1="30.8" x2="35" y2="35"/>
+  <line x1="9" y1="35" x2="13.2" y2="30.8"/><line x1="30.8" y1="13.2" x2="35" y2="9"/></g></svg>`,
+scroll:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="scg1" x1="15" y1="4" x2="15" y2="26"><stop offset="0%" stop-color="#FFF5E8"/><stop offset="100%" stop-color="#FAE4D0"/></linearGradient></defs>
+  <path d="M6 4h16a3 3 0 013 3v14a3 3 0 01-3 3H10a3 3 0 00-3 3v0a3 3 0 01-3-3V4z" fill="url(#scg1)" stroke="#C49860" stroke-width="1.2"/>
+  <path d="M6 4h16a3 3 0 013 3v7H6V4z" fill="rgba(255,255,255,0.12)"/>
+  <line x1="10" y1="10" x2="20" y2="10" stroke="#C49860" stroke-width="1" opacity="0.4"/>
+  <line x1="10" y1="14" x2="19" y2="14" stroke="#C49860" stroke-width="0.9" opacity="0.3"/>
+  <line x1="10" y1="18" x2="17" y2="18" stroke="#C49860" stroke-width="0.8" opacity="0.2"/></svg>`,
+mapPin:`<svg viewBox="0 0 30 30" fill="none"><defs><linearGradient id="mpg1" x1="15" y1="2" x2="15" y2="22"><stop offset="0%" stop-color="#F5D8B8"/><stop offset="100%" stop-color="#D4A86C"/></linearGradient></defs>
+  <path d="M15 2C9.5 2 5 6.5 5 12c0 8 10 18 10 18s10-10 10-18c0-5.5-4.5-10-10-10z" fill="url(#mpg1)" stroke="#C49860" stroke-width="1.2"/>
+  <path d="M15 2C9.5 2 5 6.5 5 12c0 4 4 9 7 13V12h6v13c3-4 7-9 7-13 0-5.5-4.5-10-10-10z" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="15" cy="11" r="3.5" fill="#C49860"/>
+  <circle cx="15" cy="11" r="2" fill="#FAE4D0"/></svg>`,
+sparkle:`<svg viewBox="0 0 22 22" fill="none"><path d="M11 1l2.5 7h7.5l-6 4.5 2.5 7L11 15l-6.5 4.5 2.5-7L1 8h7.5z" fill="#E8CC72" opacity="0.65"/>
+  <path d="M11 4l1.5 4.5h5l-4 3 1.5 4.5L11 13l-4 3 1.5-4.5-4-3h5z" fill="rgba(255,255,255,0.2)"/></svg>`,
+};
 
-    function generateLevel() {
-        const grid = document.getElementById('gameGrid');
-        grid.innerHTML = '';
-        const size = 6;
-        let start = {x: 0, y: 0};
-        let end = {x: 0, y: 0};
+/* ============================================================
+   DEKORACIONET E FONDIS
+   ============================================================ */
+(function(){
+  const d=document.getElementById('bgD');
+  d.innerHTML=`
+    <svg width="130" height="86" style="color:var(--sage-l)">${I.cloud}</svg>
+    <svg width="100" height="66" style="color:var(--lav-l)">${I.cloud}</svg>
+    <svg width="54" height="54" style="color:var(--sage)">${I.leaf}</svg>
+    <svg width="44" height="44" style="color:var(--gold-l)">${I.sun}</svg>
+    <svg width="64" height="64" style="color:var(--mint)">${I.leaf}</svg>
+    <svg width="32" height="32" style="color:var(--lav)">${I.sparkle}</svg>`;
+})();
 
-        if(currentLevel === 1) {
-            start = {x: 1, y: 4};
-            end = {x: 4, y: 4};
-            // Rruga: Vetëm horizontale (4-1 = 3 hapa)
-            correctAnswer = 3;
-        } else if(currentLevel === 2) {
-            start = {x: 1, y: 1};
-            end = {x: 3, y: 4};
-            // Rruga: 2 hapa djathtas + 3 hapa poshtë = 5 hapa
-            correctAnswer = 5;
-        } else {
-            start = {x: 0, y: 5};
-            end = {x: 5, y: 0};
-            // Rruga: 5 djathtas + 5 lart = 10 hapa
-            correctAnswer = 10;
-        }
+/* ============================================================
+   AUDIO
+   ============================================================ */
+const Au={
+  c:null,i(){if(!this.c)this.c=new(window.AudioContext||window.webkitAudioContext)()},
+  p(f,d,t,v){try{this.i();const o=this.c.createOscillator(),g=this.c.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.value=v||0.06;g.gain.exponentialRampToValueAtTime(0.001,this.c.currentTime+d);o.connect(g);g.connect(this.c.destination);o.start();o.stop(this.c.currentTime+d)}catch(e){}},
+  ok(){this.p(523,.14);setTimeout(()=>this.p(659,.14),90);setTimeout(()=>this.p(784,.24),180)},
+  no(){this.p(200,.24,'triangle',0.04)},
+  ck(){this.p(840,.05,'sine',0.025)},
+  lv(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.p(f,.18),i*110))},
+  ac(){[784,988,1175].forEach((f,i)=>setTimeout(()=>this.p(f,.16,'sine',0.05),i*90))},
+};
 
-        for (let y = 0; y < size; y++) {
-            for (let x = 0; x < size; x++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                
-                if(x === start.x && y === start.y) {
-                    cell.innerHTML = '🤖';
-                } else if(x === end.x && y === end.y) {
-                    cell.className = 'cell target';
-                    cell.innerHTML = '⚡';
-                }
-                
-                // Vizualizimi i rrugës (për t'i ndihmuar)
-                if ((x >= Math.min(start.x, end.x) && x <= Math.max(start.x, end.x) && y === start.y) ||
-                    (y >= Math.min(start.y, end.y) && y <= Math.max(start.y, end.y) && x === end.x)) {
-                    if(!(x === start.x && y === start.y)) cell.classList.add('path-active');
-                }
+/* ============================================================
+   PARTIKULA
+   ============================================================ */
+const Pt={
+  cv:null,cx:null,ls:[],
+  init(){
+    this.cv=document.getElementById('pCanvas');this.cx=this.cv.getContext('2d');this.rs();
+    window.addEventListener('resize',()=>this.rs());
+    for(let i=0;i<30;i++)this.sp();this.lp();
+  },
+  rs(){this.cv.width=window.innerWidth;this.cv.height=window.innerHeight},
+  sp(){this.ls.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*2.2+0.4,vx:(Math.random()-0.5)*0.28,vy:-Math.random()*0.18-0.04,o:Math.random()*0.28+0.04,c:['#A0D4B8','#CFC0E0','#E8CC72','#B8D0E2','#E4C0C0'][Math.floor(Math.random()*5)]})},
+  lp(){
+    const{cx:ctx,cv:can,ls}=this;ctx.clearRect(0,0,can.width,can.height);
+    ls.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-10){p.y=can.height+10;p.x=Math.random()*can.width}if(p.x<-10)p.x=can.width+10;if(p.x>can.width+10)p.x=-10;
+    ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.4,p.r),0,Math.PI*2);ctx.fillStyle=p.c;ctx.globalAlpha=p.o;ctx.fill()});
+    ctx.globalAlpha=1;requestAnimationFrame(()=>this.lp());
+  }
+};
 
-                grid.appendChild(cell);
-            }
-        }
+/* ============================================================
+   GJENDEJA
+   ============================================================ */
+const DF={level:1,xp:0,xpNext:100,coins:0,combo:0,maxCombo:0,totalCorrect:0,totalPlayed:0,g1:{current:1,stars:{},best:{}},achievements:{}};
+let S;
+function save(){try{localStorage.setItem('rruga_robotit',JSON.stringify(S))}catch(e){}}
+function load(){
+  try{const d=JSON.parse(localStorage.getItem('rruga_robotit'));
+  if(d){S={...DF,...d};S.g1={...DF.g1,...(d.g1||{})};S.g1.stars={...(d.g1?.stars||{})};S.g1.best={...(d.g1?.best||{})};S.achievements={...(d.achievements||{})}}
+  else S=JSON.parse(JSON.stringify(DF))}catch(e){S=JSON.parse(JSON.stringify(DF))}
+}
+
+/* ============================================================
+   ARRITJET
+   ============================================================ */
+const ACHS=[
+  {id:'first',n:'Hapi i Parë',d:'Përgjigje e saktë e parë',ic:'star'},
+  {id:'streak5',n:'Në Zjarr',d:'5 përgjigje të saktë radhazi',ic:'flame'},
+  {id:'streak10',n:'I Papërmbajtur',d:'10 përgjigje të saktë radhazi',ic:'flame'},
+  {id:'combo3',n:'Kombues',d:'Arrit 3 kombo',ic:'gem'},
+  {id:'perfect',n:'Perfekt',d:'Nivel i përfunduar pa gabime',ic:'crown'},
+  {id:'c50',n:'Koleksionist',d:'Mblidh 50 monedha',ic:'coin'},
+  {id:'c200',n:'I Pasur',d:'Mblidh 200 monedha',ic:'coin'},
+  {id:'l3',n:'Nxënës i Mirë',d:'Arrit nivelin 3',ic:'book'},
+  {id:'l5',n:'I Ditur',d:'Arrit nivelin 5',ic:'trophy'},
+  {id:'g15',n:'Navigator',d:'Përfundo 5 nivele',ic:'compass'},
+  {id:'g1a',n:'Rrugë i Plotë',d:'Përfundo 10 nivele',ic:'scroll'},
+  {id:'all3',n:'Tri Yllëza',d:'Merr 3 yllëza në 3 nivele',ic:'medal'},
+];
+function chAch(){
+  ACHS.forEach(a=>{if(S.achievements[a.id])return;let e=false;
+  switch(a.id){
+    case'first':e=S.totalCorrect>=1;break;case'streak5':e=S.combo>=5;break;
+    case'streak10':e=S.combo>=10;break;case'combo3':e=S.maxCombo>=3;break;
+    case'perfect':e=Object.values(S.g1.stars).some(v=>v===3);break;
+    case'c50':e=S.coins>=50;break;case'c200':e=S.coins>=200;break;
+    case'l3':e=S.level>=3;break;case'l5':e=S.level>=5;break;
+    case'g15':e=Object.keys(S.g1.stars).length>=5;break;
+    case'g1a':e=Object.keys(S.g1.stars).length>=10;break;
+    case'all3':e=Object.values(S.g1.stars).filter(v=>v===3).length>=3;break;
+  }
+  if(e){S.achievements[a.id]=true;shAchPop(a);Au.ac()}});save();
+}
+function shAchPop(a){
+  document.getElementById('apI').innerHTML=`<div style="width:58px;height:58px">${I[a.ic]}</div>`;
+  document.getElementById('apN').textContent=a.n;document.getElementById('apD').textContent=a.d;
+  document.getElementById('ovA').classList.add('on');
+}
+
+/* ============================================================
+   GAMIFIKIMI
+   ============================================================ */
+function xpF(l){return Math.floor(80*Math.pow(1.4,l-1))}
+function addXP(n,el){S.xp+=n;if(el)shXP(el,`+${n} XP`);
+  while(S.xp>=S.xpNext){S.xp-=S.xpNext;S.level++;S.xpNext=xpF(S.level);setTimeout(()=>shLvl(S.level),600);Au.lv()}chAch();save();}
+function addCo(n,el){S.coins+=n;if(el&&n>0)shCo(el,`+${n}`);chAch();save();}
+function addCmb(){S.combo++;if(S.combo>S.maxCombo)S.maxCombo=S.combo;if(S.combo>=2)shCmb(S.combo);chAch();}
+function rstCmb(){S.combo=0;save();}
+function shLvl(l){document.getElementById('luN').textContent=l;document.getElementById('ovL').classList.add('on');rMenu();chAch();}
+function cOv(id){document.getElementById(id).classList.remove('on');Au.ck();}
+
+/* ============================================================
+   FLY ANIMACIONE
+   ============================================================ */
+function shXP(el,t){const r=el.getBoundingClientRect(),d=document.createElement('div');d.className='xf';d.textContent=t;d.style.left=(r.left+r.width/2-30)+'px';d.style.top=(r.top-12)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1400);}
+function shCo(el,t){const r=el.getBoundingClientRect(),d=document.createElement('div');d.className='cf2';d.innerHTML=`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:18px;height:18px">${I.coin}</span><span style="font-weight:900;font-size:.92rem;color:#B8942C">${t}</span></span>`;d.style.left=(r.left+r.width/2-30)+'px';d.style.top=(r.top)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),950);}
+function shCmb(n){const d=document.createElement('div');d.className='cmb';d.textContent=`${n}x KOMBO`;document.body.appendChild(d);setTimeout(()=>d.remove(),950);}
+
+/* ============================================================
+   KONFETI & TOAST
+   ============================================================ */
+function cnft(n){
+  const c=document.getElementById('cf'),cols=['#A0D4B8','#CFC0E0','#E8CC72','#B8D0E2','#E4C0C0','#F5D8B8','#A894C4'];
+  for(let i=0;i<(n||60);i++){const p=document.createElement('div');p.className='cfP';
+  p.style.left=Math.random()*100+'%';p.style.background=cols[Math.floor(Math.random()*cols.length)];
+  p.style.width=(Math.random()*7+4)+'px';p.style.height=(Math.random()*7+4)+'px';
+  p.style.borderRadius=Math.random()>0.5?'50%':'3px';
+  p.style.animationDuration=(Math.random()*2.2+1.4)+'s';p.style.animationDelay=(Math.random()*0.6)+'s';
+  c.appendChild(p);setTimeout(()=>p.remove(),4500);}
+}
+function tst(t,ic){const d=document.createElement('div');d.className='tst';d.innerHTML=`<span class="tstI">${I[ic||'check']}</span><span>${t}</span>`;document.getElementById('ts').appendChild(d);setTimeout(()=>{d.classList.add('ou');setTimeout(()=>d.remove(),400)},2600);}
+
+/* ============================================================
+   NAVIGIMI
+   ============================================================ */
+function go(id){Au.ck();const p=document.querySelector('.scr.on');if(p)p.classList.remove('on');setTimeout(()=>{const n=document.getElementById(id);if(n){n.scrollTop=0;n.classList.add('on')}},90);}
+
+/* ============================================================
+   MENU
+   ============================================================ */
+function rMenu(){
+  const pc=document.getElementById('pCard');
+  const done=Object.keys(S.g1.stars).length;
+  const totalStars=Object.values(S.g1.stars).reduce((a,b)=>a+b,0);
+  pc.innerHTML=`
+    <div class="pAv"><div style="width:34px;height:34px">${I.wizard}</div></div>
+    <div class="pI">
+      <div class="pN">Nxënësi</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:2px">
+        <div class="pL"><span style="width:14px;height:14px;display:inline-flex">${I.star}</span> Niveli ${S.level}</div>
+        ${S.combo>=2?`<div class="stkB"><span style="width:12px;height:12px;display:inline-flex">${I.flame}</span>${S.combo}</div>`:''}
+      </div>
+      <div class="pX"><div class="pXt">${S.xp} / ${S.xpNext} XP</div><div class="xpW"><div class="xpF" style="width:${(S.xp/S.xpNext)*100}%"></div></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+      <div class="sm">${done} / 15 nivele</div>
+      <div class="sts">${[0,1,2].map(i=>`<div class="st ${i<Math.floor(totalStars/done)||0?'f':'e'}" style="width:16px;height:16px"><span style="width:16px;height:16px;display:block">${I.star}</span></div>`).join('')}<span class="sm" style="margin-left:4px">${totalStars} yllëza</span></div>
+    </div>`;
+  document.getElementById('gcR').innerHTML=I.robot;
+  document.getElementById('a1').innerHTML=I.arrowR;
+  document.getElementById('abi').innerHTML=`<span style="width:18px;height:18px;display:inline-flex">${I.shield}</span>`;
+  ['b1','b2','b3'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=I.arrowL});
+}
+
+/* ============================================================
+   GAME 1: NIVELLET
+   ============================================================ */
+const GN=15;
+let g1D=null,g1T=0,g1Lv=1;
+
+function g1Gen(lv){
+  const sz=6;let sx,sy,ex,ey,ans;
+  if(lv===1){sx=1;sy=4;ex=4;ey=4;ans=3}
+  else if(lv===2){sx=1;sy=1;ex=3;ey=4;ans=5}
+  else if(lv===3){sx=0;sy=5;ex=5;ey=0;ans=10}
+  else if(lv===4){sx=0;sy=0;ex=5;ey=5;ans=10}
+  else if(lv===5){sx=2;sy=0;ex=2;ey=5;ans=5}
+  else{
+    sx=Math.floor(Math.random()*sz);sy=Math.floor(Math.random()*sz);
+    ex=Math.floor(Math.random()*sz);ey=Math.floor(Math.random()*sz);
+    while(Math.abs(ex-sx)+Math.abs(ey-sy)<Math.min(lv,11)||((sx===ex)&&(sy===ey))){
+      ex=Math.floor(Math.random()*sz);ey=Math.floor(Math.random()*sz);
     }
+    ans=Math.abs(ex-sx)+Math.abs(ey-sy);
+  }
+  return{sz,sx,sy,ex,ey,ans,sp:lv<=5};
+}
 
-    function checkAnswer() {
-        const val = parseInt(document.getElementById('userAnswer').value);
-        const feedback = document.getElementById('feedback');
+function g1Path(d){
+  const p=[];let cx=d.sx,cy=d.sy;
+  /* Rrugë L-forme: së pari horizontale, pastaj vertikale */
+  while(cx!==d.ex){p.push({x:cx,y:cy});cx+=cx<d.ex?1:-1}
+  while(cy!==d.ey){p.push({x:cx,y:cy});cy+=cy<d.ey?1:-1}
+  p.push({x:d.ex,y:d.ey});return p;
+}
 
-        if(val === correctAnswer) {
-            feedback.innerText = "Saktë! 🌟";
-            feedback.style.color = "green";
-            setTimeout(() => {
-                if(currentLevel < 3) {
-                    currentLevel++;
-                    document.getElementById('lvlDisplay').innerText = currentLevel;
-                    document.getElementById('userAnswer').value = '';
-                    generateLevel();
-                } else {
-                    alert("Kampion! I kalove të gjitha sfidat e rrugës!");
-                }
-            }, 1000);
-        } else {
-            feedback.innerText = "Gabim! Provo sërish.";
-            feedback.style.color = "red";
-        }
+function rLv(){
+  const w=document.getElementById('lPath');let h='';
+  const pr=5,rows=Math.ceil(GN/pr);
+  for(let r=0;r<rows;r++){
+    const rev=r%2===1;
+    h+=`<div class="lR${rev?' lRv':''}">`;
+    for(let c=0;c<pr;c++){
+      const lv=r*pr+c+1;if(lv>GN)break;
+      const dn=S.g1.stars[lv]!==undefined;
+      const op=lv<=S.g1.current;
+      const cr=lv===S.g1.current&&!dn;
+      let cls='lk';if(dn)cls='dn';else if(cr)cls='cr';else if(op)cls='ul';
+      let stH='';
+      if(dn){const s=S.g1.stars[lv];stH='<div class="lSt">';
+      for(let i=0;i<3;i++)stH+=`<span class="ms" style="color:${i<s?'#E8CC72':'#F5D8B8'};opacity:${i<s?1:0.35}">${I.star}</span>`;
+      stH+='</div>';}
+      const conn=c<pr-1&&lv<GN?`<div class="lC${rev?' lCrv':''}${dn&&S.g1.stars[lv+1]!==undefined?' ok':''}"></div>`:'';
+      if(rev)h+=conn;
+      h+=`<div class="lN ${cls}" ${cls!=='lk'?`onclick="g1St(${lv})" role="button" tabindex="0"`:''} aria-label="Niveli ${lv}">${cr?I.lock:lv}${stH}</div>`;
+      if(!rev)h+=conn;
     }
+    h+='</div>';
+  }
+  w.innerHTML=h;
+}
 
-    generateLevel();
-</script>
+function g1St(lv){
+  Au.ck();g1Lv=lv;g1D=g1Gen(lv);g1T=0;
+  document.getElementById('g1Bg').textContent=`Niveli ${lv}`;
+  document.getElementById('g1A').value='';
+  document.getElementById('g1Fb').className='g1Fb nt';
+  document.getElementById('g1Fb').textContent='Vërejtuni rrugën dhe llogaritni gjatësinë';
+  document.getElementById('g1Bt').disabled=false;
+  g1Rg();go('s-g1pl');
+}
 
-</body>
-</html>
+function g1Rg(){
+  const g=document.getElementById('g1G'),d=g1D;
+  const path=d.sp?g1Path(d):[];
+  const ps=new Set(path.map(p=>`${p.x},${p.y}`));
+  let h='';
+  for(let y=0;y<d.sz;y++)for(let x=0;x<d.sz;x++){
+    let cls='c1',ct='';
+    if(x===d.sx&&y===d.sy){cls+=' rb';ct=`<span class="ci" id="robI">${I.robot}</span>`}
+    else if(x===d.ex&&y===d.ey){cls+=' tg';ct=`<span class="ci">${I.charger}</span>`}
+    else if(ps.has(`${x},${y}`))cls+=' ph';
+    h+=`<div class="${cls}" data-x="${x}" data-y="${y}">${ct}</div>`;
+  }
+  g.innerHTML=h;
+}
+
+function g1Ck(){
+  const inp=document.getElementById('g1A'),v=parseInt(inp.value),fb=document.getElementById('g1Fb'),btn=document.getElementById('g1Bt');
+  if(isNaN(v)){fb.className='g1Fb no';fb.textContent='Shkruaj një numër të vlefshëm';return}
+  g1T++;S.totalPlayed++;
+  if(v===g1D.ans){
+    Au.ok();fb.className='g1Fb ok';
+    fb.innerHTML=`<span style="width:18px;height:18px;display:inline-flex">${I.check}</span> Saktë! Rruga ka ${g1D.ans} njësi`;
+    btn.disabled=true;S.totalCorrect++;addCmb();
+    const stars=g1T===1?3:g1T===2?2:1;
+    if((S.g1.stars[g1Lv]||0)<stars)S.g1.stars[g1Lv]=stars;
+    if(!S.g1.best[g
