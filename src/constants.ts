@@ -65,7 +65,7 @@ export const ALL_PHYSICS_DATA: PhysicsData = {
             form: "g = GM / R²\nG = 6.67×10⁻¹¹ Nm²/kg²",
             unit: "N/kg", otherUnits: "m/s²",
             teTjera: "Afër tokës g = 9.8 m/s².\nNë pol g rritet pak.\nNë lartësi h nga planeti → g = GM / (R+h)²",
-            nature: "Vektoriale", desc: "Nxitimi me të cilin bien trupat në afërsi të sipërfaqes së Tokës nën veprimin e gravitetit.", phetUrl: "https://phet.colorado.edu/en/simulation/projectile-motion", img: "https://upload.wikimedia.org/wikipedia/commons/7/7d/Levizja_e_projektilit.jpg", vid: "https://www.youtube.com/embed/Mr-KXDD6-5g", gameUrl:"/nxitimi i renies se lire",
+            nature: "Vektoriale", desc: "Nxitimi me të cilin bien trupat në afërsi të sipërfaqes së Tokës nën veprimin e gravitetit.", phetUrl: "https://phet.colorado.edu/en/simulation/projectile-motion", img: "https://upload.wikimedia.org/wikipedia/commons/7/7d/Levizja_e_projektilit.jpg", vid: "https://www.youtube.com/embed/Mr-KXDD6-5g", gameUrl:"/nxitimi i renies se lire.html",
             ushtrime: `<div class="space-y-4 text-slate-600 text-left"><div class="bg-blue-50 p-4 rounded-xl border border-blue-100"><p class="font-bold text-blue-800 mb-2">Ushtrim:</p><p>Sa eshte vlera e nxitimit te renies se lire afer siperfaqes se Tokes? (Jep vleren me nje shifer pas presjes)</p></div></div>`,
             ushtrimInteraktiv: { pyetja: "Sa eshte vlera e nxitimit te renies se lire afer siperfaqes se Tokes? (Jep vleren me nje shifer pas presjes)", zgjidhja: "9.8", hapi1: "Kujto vleren konstante per g", hapi2: "Zevendeso vleren e njohur", hapi3: "Pergjigja eshte 9.8" }
         },
