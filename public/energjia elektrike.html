@@ -2,294 +2,107 @@
 <html lang="sq">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratori i Fizikës: Energjia Elektrike</title>
+    <title>Energjia Elektrike</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primare: #2980b9;
-            --sekondare: #3498db;
-            --sukses: #27ae60;
-            --gabim: #c0392b;
-            --sfondi: #f4f7f6;
-            --teksti: #2c3e50;
-            --llamba-off: #7f8c8d;
-            --llamba-on: #f1c40f;
-        }
+        :root { --bg: #e3f2fd; --card: #ffffff; --primary: #29b6f6; --dark: #0288d1; --text: #01579b; --success: #66bb6a; --error: #ff7043; }
+        body { margin: 0; background: var(--bg); font-family: 'Nunito', sans-serif; display: flex; justify-content: center; padding: 40px 20px; color: var(--text); }
+        .karta { background: var(--card); padding: 40px; border-radius: 32px; box-shadow: 0 15px 35px rgba(41, 182, 246, 0.2); max-width: 600px; width: 100%; text-align: center; }
+        h1 { font-family: 'Fredoka', sans-serif; color: var(--dark); margin: 0 0 10px; font-size: 28px; }
+        .formula { background: #e1f5fe; color: var(--dark); padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 18px; display: inline-block; margin: 10px 0 30px; }
+        p { margin: 0 0 20px; opacity: 0.7; }
+        .parametrat { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .kutia { background: #f1f8e9; padding: 15px 25px; border-radius: 20px; border-bottom: 4px solid #dcedc8; }
+        .kutia span { display: block; font-size: 12px; text-transform: uppercase; opacity: 0.6; font-weight: 700; }
+        .kutia b { font-size: 20px; font-family: 'Fredoka'; color: var(--dark); }
 
-        body {
-            margin: 0;
-            background-color: var(--sfondi);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--teksti);
-        }
-
-        .karta {
-            background: white;
-            width: 850px;
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            text-align: center;
-            border-top: 10px solid var(--primare);
-        }
-
-        h1 { margin-top: 0; color: var(--primare); }
+        .skena { height: 320px; background: linear-gradient(135deg, #fffde7 0%, #fff9c4 100%); border-radius: 24px; position: relative; overflow: hidden; margin-bottom: 30px; border: 4px solid #fff59d; display: flex; justify-content: center; align-items: center; }
         
-        .shfaqja-formules {
-            background: #e1f5fe;
-            color: var(--primare);
-            display: inline-block;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            border: 2px solid var(--sekondare);
-        }
+        /* Bateria e bukur pastel */
+        .bateria { width: 80px; height: 140px; background: linear-gradient(90deg, #fafafa, #e0e0e0); border-radius: 12px; position: relative; z-index: 2; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; padding: 15px 0; border: 3px solid #bdbdbd; }
+        .bateria::before { content: ''; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 30px; height: 12px; background: #bdbdbd; border-radius: 4px 4px 0 0; }
+        .bateria .plus { color: #ef5350; font-weight: 900; font-size: 24px; text-align: center; }
+        .bateria .minus { color: #42a5f5; font-weight: 900; font-size: 24px; text-align: center; }
 
-        .parametrat {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
+        /* Llamba e qelqit e bukur */
+        .llamba-container { position: relative; width: 100px; height: 150px; z-index: 2; }
+        .llamba-glass { width: 80px; height: 80px; background: rgba(255, 255, 255, 0.5); border-radius: 50% 50% 40% 40%; border: 3px solid #b0bec5; position: absolute; top: 0; left: 10px; transition: all 0.3s; box-shadow: inset 0 0 20px rgba(176, 190, 197, 0.3); backdrop-filter: blur(2px); }
+        .llamba-base { width: 40px; height: 40px; background: linear-gradient(90deg, #b0bec5 0%, #eceff1 50%, #b0bec5 100%); position: absolute; bottom: 10px; left: 30px; border-radius: 4px; }
+        .llamba-base::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(0,0,0,0.2) 4px, rgba(0,0,0,0.2) 8px); }
+        .filament { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); width: 30px; height: 40px; border: 3px solid #b0bec5; border-bottom: none; border-radius: 50% 50% 0 0; opacity: 0.5; transition: all 0.3s; clip-path: polygon(0 100%, 10% 0, 30% 80%, 50% 0, 70% 80%, 90% 0, 100% 100%); }
 
-        .kutia-param {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 16px;
-            border-bottom: 4px solid var(--sekondare);
-        }
+        .llamba-container.ndezur .llamba-glass { background: radial-gradient(circle at 30% 30%, #ffffff, #fff176 60%, #ffd54f 100%); border-color: #fff; box-shadow: 0 0 40px 10px #fff176, 0 0 80px 20px #ffd54f; }
+        .llamba-container.ndezur .filament { border-color: #fff; opacity: 1; box-shadow: 0 0 15px #fff; }
 
-        .kutia-param span { font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase; font-weight: bold; }
-        .kutia-param b { font-size: 1.2rem; display: block; margin-top: 5px; color: var(--teksti); }
+        /* Telat */
+        .wire { position: absolute; height: 6px; background: #78909c; border-radius: 3px; z-index: 1; }
+        .wire::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, #29b6f6, transparent); background-size: 20px 100%; opacity: 0; border-radius: 3px; }
+        .wire.aktiv::after { opacity: 1; animation: flow 0.5s linear infinite; }
+        @keyframes flow { from { background-position: 0 0; } to { background-position: 20px 0; } }
+        .w1 { width: 150px; top: 45%; left: 15%; transform: rotate(15deg); }
+        .w2 { width: 150px; top: 55%; right: 15%; transform: rotate(-15deg); }
 
-        /* Skena Elektrike */
-        .skena-elektrike {
-            height: 300px;
-            background: #2d3436;
-            border-radius: 20px;
-            position: relative;
-            margin-bottom: 30px;
-            border: 3px solid #636e72;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .qarku {
-            display: flex;
-            align-items: center;
-            gap: 50px;
-            z-index: 2;
-        }
-
-        .bateria {
-            width: 80px;
-            height: 120px;
-            background: #dcdde1;
-            border: 4px solid #718093;
-            border-radius: 10px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .bateria::before {
-            content: '';
-            position: absolute;
-            top: -15px;
-            width: 30px;
-            height: 15px;
-            background: #718093;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-
-        .llamba-container {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .llamba {
-            width: 80px;
-            height: 80px;
-            background: var(--llamba-off);
-            border-radius: 50%;
-            border: 4px solid #7f8c8d;
-            transition: all 0.5s;
-            position: relative;
-        }
-
-        .llamba.ndezur {
-            background: var(--llamba-on);
-            border-color: #f39c12;
-            box-shadow: 0 0 50px #f1c40f;
-        }
-
-        .teli {
-            height: 4px;
-            background: #7f8c8d;
-            width: 100px;
-            position: absolute;
-            transition: background 0.5s;
-        }
-
-        .teli.ndezur {
-            background: #f1c40f;
-        }
-
-        /* Kontrollet */
-        .kontrollet {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        input {
-            padding: 15px;
-            border: 2px solid #ced4da;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            width: 250px;
-            text-align: center;
-            outline: none;
-        }
-
-        input:focus { border-color: var(--primare); }
-
-        button {
-            padding: 15px 35px;
-            background-color: var(--primare);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        button:hover { background-color: #1a5276; transform: scale(1.05); }
-        
-        #mesazhi { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 30px; }
-        .butoni-reset { background: var(--sukses); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; display: none; margin: 15px auto; font-weight: bold;}
+        input { padding: 15px; border: 2px solid #b3e5fc; border-radius: 16px; font-size: 18px; width: 200px; text-align: center; font-family: 'Nunito'; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(41, 182, 246, 0.2); }
+        button { padding: 15px 30px; background: var(--primary); color: white; border: none; border-radius: 16px; font-family: 'Fredoka'; font-weight: 600; font-size: 16px; cursor: pointer; box-shadow: 0 4px 0 var(--dark); transition: 0.1s; }
+        button:active { transform: translateY(4px); box-shadow: 0 0 0 var(--dark); }
+        .btn-reset { background: var(--success); box-shadow: 0 4px 0 #2e7d32; display: none; margin-top: 15px; }
+        #mesazhi { margin-top: 20px; font-weight: 700; font-size: 18px; min-height: 25px; }
     </style>
 </head>
 <body>
-
-<div class="karta">
-    <h1>Laboratori i Energjisë Elektrike ⚡</h1>
-    <div class="shfaqja-formules">E = U · I · t</div>
-    <p style="margin-top: -20px; font-size: 0.9rem; color: #7f8c8d;">Llogarit energjinë totale të konsumuar në <b>Joule (J)</b></p>
-
-    <div class="parametrat">
-        <div class="kutia-param">
-            <span>Tensioni (U)</span>
-            <b id="u-vlera">0 V</b>
+    <div class="karta">
+        <h1>Laboratori i Energjisë Elektrike</h1>
+        <div class="formula">E = U · I · t</div>
+        <p>Llogarit energjinë totale të konsumuar në <b>Joule (J)</b></p>
+        <div class="parametrat">
+            <div class="kutia"><span>Tensioni (U)</span><b id="el-u">0 V</b></div>
+            <div class="kutia"><span>Rryma (I)</span><b id="el-i">0 A</b></div>
+            <div class="kutia"><span>Koha (t)</span><b id="el-t">0 s</b></div>
         </div>
-        <div class="kutia-param">
-            <span>Rryma (I)</span>
-            <b id="i-vlera">0 A</b>
-        </div>
-        <div class="kutia-param">
-            <span>Koha (t)</span>
-            <b id="t-vlera">0 s</b>
-        </div>
-    </div>
-
-    <div class="skena-elektrike">
-        <div class="qarku">
+        <div class="skena">
+            <div class="wire w1" id="el-w1"></div>
+            <div class="wire w2" id="el-w2"></div>
             <div class="bateria">
-                <span>+</span>
-                <span>BATERIA</span>
-                <span>-</span>
+                <div class="plus">+</div>
+                <div style="writing-mode: vertical-rl; color: #757575; font-weight: bold; letter-spacing: 5px; font-size: 12px;">BATERIA</div>
+                <div class="minus">-</div>
             </div>
-            <div class="llamba-container">
-                <div id="llamba" class="llamba"></div>
-                <div style="color: white; margin-top: 10px; font-weight: bold;">KONSUMATORI</div>
+            <div class="llamba-container" id="el-llamba-cont">
+                <div class="llamba-glass"></div>
+                <div class="filament"></div>
+                <div class="llamba-base"></div>
             </div>
         </div>
+        <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+            <input type="number" id="el-input" placeholder="Energjia (J)">
+            <button onclick="el_ndiz()">NDIZ QARKUN</button>
+        </div>
+        <div id="el-mesazhi"></div>
+        <button class="btn-reset" id="el-reset" onclick="el_init()">EKSPERIMENT I RI</button>
     </div>
 
-    <div class="kontrollet">
-        <input type="number" id="inputE" placeholder="Shëno Energjinë (J)">
-        <button onclick="ndizQarkun()">NDIZ QARKUN 💡</button>
-    </div>
-
-    <div id="mesazhi"></div>
-    <button id="reset" class="butoni-reset" onclick="init()">EKSPERIMENT I RI</button>
-</div>
-
-<script>
-    let u, i, t, targetE;
-
-    function init() {
-        // Gjenerojmë të dhëna të rastësishme
-        u = Math.floor(Math.random() * 12) + 12; // 12V deri 24V
-        i = parseFloat((Math.random() * 2 + 0.5).toFixed(1)); // 0.5A deri 2.5A
-        t = Math.floor(Math.random() * 50) + 10; // 10s deri 60s
-        
-        // Formula: E = U * I * t
-        targetE = Math.round(u * i * t);
-
-        document.getElementById('u-vlera').innerText = u + " V";
-        document.getElementById('i-vlera').innerText = i + " A";
-        document.getElementById('t-val-hidden'); // Not used, keep IDs consistent
-        document.getElementById('t-vlera').innerText = t + " s";
-        
-        document.getElementById('inputE').value = "";
-        document.getElementById('mesazhi').innerText = "";
-        document.getElementById('reset').style.display = "none";
-        
-        const llamba = document.getElementById('llamba');
-        llamba.classList.remove('ndezur');
-    }
-
-    function ndizQarkun() {
-        const vleraUser = parseFloat(document.getElementById('inputE').value);
-        const llamba = document.getElementById('llamba');
-        const mesazhi = document.getElementById('mesazhi');
-        const resetBtn = document.getElementById('reset');
-
-        if(isNaN(vleraUser)) {
-            mesazhi.innerText = "Ju lutem vendosni një vlerë!";
-            mesazhi.style.color = "var(--gabim)";
-            return;
+    <script>
+        let u, i, t, tE;
+        function el_init() {
+            u = Math.floor(Math.random()*12)+12; i = parseFloat((Math.random()*2+0.5).toFixed(1)); t = Math.floor(Math.random()*50)+10;
+            tE = Math.round(u*i*t);
+            document.getElementById('el-u').innerText = u + " V"; document.getElementById('el-i').innerText = i + " A"; document.getElementById('el-t').innerText = t + " s";
+            document.getElementById('el-input').value = ""; document.getElementById('el-mesazhi').innerText = ""; document.getElementById('el-reset').style.display = "none";
+            document.getElementById('el-llamba-cont').classList.remove('ndezur'); document.getElementById('el-w1').classList.remove('aktiv'); document.getElementById('el-w2').classList.remove('aktiv');
         }
-
-        // Kontrollojmë saktësinë
-        if(Math.abs(vleraUser - targetE) <= 2) {
-            llamba.classList.add('ndezur');
-            
-            mesazhi.innerText = "✅ SAKTË! Qarku u mbyll dhe energjia e konsumuar është llogaritur drejt.";
-            mesazhi.style.color = "var(--sukses)";
-            resetBtn.style.display = "block";
-        } else {
-            mesazhi.innerText = "❌ GABIM! Llogaritja nuk doli saktë. Duheshin " + formatNr(targetE) + " Joule.";
-            mesazhi.style.color = "var(--gabim)";
-            resetBtn.style.display = "block";
+        function el_ndiz() {
+            let v = parseFloat(document.getElementById('el-input').value); let msg = document.getElementById('el-mesazhi');
+            if(isNaN(v)) { msg.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Plotëso fushën!'; msg.style.color="#fbc02d"; return; }
+            if(Math.abs(v - tE) <= 2) {
+                document.getElementById('el-llamba-cont').classList.add('ndezur'); document.getElementById('el-w1').classList.add('aktiv'); document.getElementById('el-w2').classList.add('aktiv');
+                msg.innerHTML = '<i class="fa-solid fa-circle-check"></i> SAKTË! Qarku u mbyll.'; msg.style.color = "var(--success)"; document.getElementById('el-reset').style.display = "inline-block";
+            } else {
+                msg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> GABIM! Duheshin ' + tE + ' J.'; msg.style.color = "var(--error)"; document.getElementById('el-reset').style.display = "inline-block";
+            }
         }
-    }
-
-    function formatNr(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
-    // Nisja
-    init();
-</script>
-
+        el_init();
+    </script>
 </body>
 </html>
