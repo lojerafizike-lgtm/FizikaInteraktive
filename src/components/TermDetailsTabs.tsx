@@ -310,12 +310,12 @@ ${JSON.stringify(mindmapJson, null, 2)}
   );
 
   const availableTabs = [
-    ...(matchedInstrument ? [{ id: 'mjet', icon: '📏', label: 'Mjet Matës', color: 'bg-[#ffc8dd] text-slate-800' }] : []),
-    { id: 'video', icon: '🎥', label: 'Video', color: 'bg-[#ffafcc] text-white' },
-    { id: 'foto', icon: '🖼️', label: 'Foto', color: 'bg-[#cdb4db] text-white' },
-    { id: 'ushtrime', icon: '🧠', label: 'Ushtrime', color: 'bg-[#a2d2ff] text-slate-800' },
-    ...(term.kuic ? [{ id: 'kuic', icon: '📝', label: 'Kuice', color: 'bg-[#ffb703] text-white' }] : []),
-    ...(term.catName === 'Dinamika' || term.catName === 'Kinematika' || term.gameUrl || term.digitalGameId ? [{ id: 'loje', icon: '🎮', label: 'Lojë', color: 'bg-[#4a4e69] text-white' }] : [])
+    ...(matchedInstrument ? [{ id: 'mjet', icon: <i className="fas fa-ruler"></i>, label: 'Mjet Matës', color: 'bg-[#ffc8dd] text-slate-800' }] : []),
+    { id: 'video', icon: <i className="fas fa-video"></i>, label: 'Video', color: 'bg-[#ffafcc] text-white' },
+    { id: 'foto', icon: <i className="fas fa-image"></i>, label: 'Foto', color: 'bg-[#cdb4db] text-white' },
+    { id: 'ushtrime', icon: <i className="fas fa-brain"></i>, label: 'Ushtrime', color: 'bg-[#a2d2ff] text-slate-800' },
+    ...(term.kuic ? [{ id: 'kuic', icon: <i className="fas fa-clipboard-list"></i>, label: 'Kuice', color: 'bg-[#ffb703] text-white' }] : []),
+    ...(term.catName === 'Dinamika' || term.catName === 'Kinematika' || term.gameUrl || term.digitalGameId ? [{ id: 'loje', icon: <i className="fas fa-gamepad"></i>, label: 'Lojë', color: 'bg-[#4a4e69] text-white' }] : [])
   ];
 
   if (term.name !== currentTermName) {
@@ -845,9 +845,7 @@ ${JSON.stringify(mindmapJson, null, 2)}
                   <i className="fas fa-play"></i> Fillo Lojën
                 </button>
               </div>
-            ) : term.catName === 'Dinamika' && term.id !== undefined && term.id >= 1 && term.id <= 15 ? (
-              <DinamikaGameContainer termId={term.id} termName={term.name} formula={term.form} />
-            ) : term.catName === 'Kinematika' && term.id !== undefined && [9, 10, 11, 12, 13, 14, 15, 16].includes(term.id) ? (
+            ) : term.catName === 'Kinematika' && term.id !== undefined && [3, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16].includes(term.id) ? (
               <KinematikaGameContainer termId={term.id} termName={term.name} />
             ) : term.gameUrl ? (
                 <GameWrapper>
