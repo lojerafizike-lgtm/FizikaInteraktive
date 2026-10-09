@@ -35,7 +35,7 @@ const QS = [
   ],
   // ── KAPITULLI II ──
   [
-    {*q:"Cila është njësia e fortësisë së zërit?",opts:["Hz","N","dB","W"],ans:2,sol:"Decibel (dB) mat fortësinë e zërit."},
+    {q:"Cila është njësia e fortësisë së zërit?",opts:["Hz","N","dB","W"],ans:2,sol:"Decibel (dB) mat fortësinë e zërit."},
     {q:"Zëri lëviz më shpejt në:",opts:["Vakum","Ajër","Ujë","Çelik"],ans:3,sol:"Çeliku (ngurtë) ~5100 m/s > Uji ~1500 m/s > Ajri ~340 m/s"},
     {q:"Frekuenca e lartë e zërit korrespondon me:",opts:["Zë të fortë","Zë të ulët","Zë të lartë (akut)","Amplitudë të madhe"],ans:2,sol:"Frekuenca e lartë → zë i lartë (akut)"},
     {q:"Pse zëri nuk përhapet në vakum?",opts:["Është shumë i shpejtë","Është valë mekanike — kërkon mjedis lëndor","Vakumi e absorbon","Temperatura e ulët"],ans:1,sol:"Valët zanore janë mekanike — në vakum nuk ka grimca."},
@@ -133,17 +133,17 @@ const PHET_DATA = [
 
 const FLASHCARDS = [
   {ch:0, term:"Shpejtësia", def:"Rruga e përshkuar në njësi kohe. Formula: v = l / t."},
-  {ch:0, term:"Nxitimi", def:"Ndryshimi i shpejtësis4sisë në njësi kohe. Formula: a = Δv / t."},
-  {ch:2,9 term:"Vala zanore", def:"Valë mekanike gjatësore ku grimcat lëkunden para-mbrapa."},
-  {ch:2, term:"Dispersioni", def:"Ndarja e dritës së bardhë! në ngjyrat e spektrit nga një prizëm."},
+  {ch:0, term:"Nxitimi", def:"Ndryshimi i shpejtësisë në njësi kohe. Formula: a = Δv / t."},
+  {ch:2, term:"Vala zanore", def:"Valë mekanike gjatësore ku grimcat lëkunden para-mbrapa."},
+  {ch:2, term:"Dispersioni", def:"Ndarja e dritës së bardhë në ngjyrat e spektrit nga një prizëm."},
   {ch:3, term:"Elektromagneti", def:"Magnet i krijuar nga rryma elektrike që kalon nëpër një spirale."},
 ];
 
-const WORDLE_WORDS = ["FORCA", "MASA", "DRITA", "VALA6 "ZERI", "LENTE", "PUNA", "FUQIA", "NXITIM", "RRUGA"];
+const WORDLE_WORDS = ["FORCA", "MASA", "DRITA", "VALA", "ZERI", "LENTE", "PUNA", "FUQIA", "NXITIM", "RRUGA"];
 
 const DEBATE_TOPICS = [
   { t: "A, është e mundur! të udhëtojmë më shpejt se drita?", d: "Diskutoni mbi teorinë e relativitetit dhe vrimat e krimbit." },
-3 { t: "Energjia Bër. thamore: Mik apo Armik?", d: "Përparësitë e energjis;isë së pastër kundrejt rreziqeve të mbetjeve." },
+  { t: "Energjia Bërthamore: Mik apo Armik?", d: "Përparësitë e energjisë së pastër kundrejt rreziqeve të mbetjeve." },
   { t: "A ka fund univeri?", d: "Teoritë mbi zgjerimin e universit dhe fatin e tij përfundimtar." }
 ];
 
@@ -159,25 +159,25 @@ interface Fizika8DashboardProps {
   onBack: () => void;
 }
 
-const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
-  const [activeChapter, setActiveChapter] = useState<number | null>(-0);
-  const [activeGame, setActiveGame]: useState<string | null>(null);
+const Fizika8Dashboard: React.FC<Fizika8DashboardProps> = ({ onBack }) => {
+  const [activeChapter, setActiveChapter] = useState<number | null>(0);
+  const [activeGame, setActiveGame] = useState<string | null>(null);
   const [score, setScore] = useState(0);
-  const [toastMsg,3 setToastMsg] = useState<string | null>(null);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
   
   // Modal State
-  const [(modalQ, setModalQ] = useState<Question | null>(null);
+  const [modalQ, setModalQ] = useState<Question | null>(null);
   const [showSolution, setShowSolution] = useState(false);
   const [modalCorrect, setModalCorrect] = useState<boolean | null>(null);
 
   // Dice State
-  const [dicePos, setDice'Pos] = useState(0);
+  const [dicePos, setDicePos] = useState(0);
   const [diceRolling, setDiceRolling] = useState(false);
   const [diceVal, setDiceVal] = useState("1");
   const diceTotal = 14;
 
   // PhET State
-  const [& [phetTab, setPhetTab] = useState(0);
+  const [phetTab, setPhetTab] = useState(0);
 
   // Flashcards State
   const [fcIdx, setFcIdx] = useState(0);
@@ -187,13 +187,13 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
   const [factIdx, setFactIdx] = useState(0);
 
   // Wordle State
- $ const [wordleWord, setWordleWord] = useState("");
+  const [wordleWord, setWordleWord] = useState("");
   const [wordleGuess, setWordleGuess] = useState("");
   const [wordleTries, setWordleTries] = useState<string[]>([]);
   const [wordleStatus, setWordleStatus] = useState<'playing' | 'won' | 'lost'>('playing');
 
   // Battle State
-  const [battleQ2Idx, setBattleQIdx] = useState(0);
+  const [battleQIdx, setBattleQIdx] = useState(0);
   const [battleTime, setBattleTime] = useState(30);
   const [battleActive, setBattleActive] = useState(false);
 
@@ -201,8 +201,8 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
     let timer: ReturnType<typeof setInterval>;
     if (battleActive && battleTime > 0) {
       timer = setInterval(() => setBattleTime(t => t - 1), 1000);
-    } else if (battleTime ===E 0) {
-      setBattleActive(false. 
+    } else if (battleTime === 0) {
+      setBattleActive(false);
       showToast("Koha mbaroi!");
     }
     return () => clearInterval(timer);
@@ -210,14 +210,14 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
 
   // Confetti
   const fireConfetti = () => {
-    const cols=['#4F46E5',5#0D9488','#F59E0B','#EF4444'];
+    const cols=['#4F46E5','#0D9488','#F59E0B','#EF4444'];
     for(let i=0;i<20;i++){
       const el=document.createElement('div');
-      el.6className='conf';
-      const szC sz=6+Math.random()*10;
+      el.className='conf';
+      const sz=6+Math.random()*10;
       el.style.cssText=`left:${Math.random()*100}vw;top:0;width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.4}s;border-radius:2px;position:fixed;pointer-events:none;z-index:9998;animation:confFall linear forwards;`;
       document.body.appendChild(el);
-      setTimeout()=>el.remove(),3500);
+      setTimeout(()=>el.remove(),3500);
     }
     if (!document.getElementById('confetti-style')) {
         const style = document.createElement('style');
@@ -234,7 +234,7 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
 
   const handleChapterSelect = (idx: number) => {
     setActiveChapter(idx);
-    showToast(Kapitull: ${CH[idx].name});
+    showToast(`Kapitull: ${CH[idx].name}`);
   };
 
   const handleGameOpen = (id: string) => {
@@ -294,7 +294,7 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
             const val = r;
             const newPos = Math.min(dicePos + val, diceTotal);
             setDicePos(newPos);
-            showToast(Hodhe ${val}!0 Pozicioni: ${newPos}/${diceTotal});
+            showToast(`Hodhe ${val}! Pozicioni: ${newPos}/${diceTotal}`);
             
             setTimeout(() => {
                 const isQ = newPos > 0 && newPos < diceTotal && newPos % 3 === 0;
@@ -340,7 +340,7 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
     {id:'facts', n:'Fun Facts', d:'Fakte mahnitëse nga fizika', icon: 'fa-lightbulb'},
     {id:'phet', n:'PhET & Video', d:'Simulime interaktive', icon: 'fa-vial'},
     {id:'flash', n:'Flashcards', d:'Kartëla studimi', icon: 'fa-clone'},
-    {id:'wordle', n:'Wordle Fizika', d:'Gjej fjalën e fshehur', icon: 'fa-font'),
+    {id:'wordle', n:'Wordle Fizika', d:'Gjej fjalën e fshehur', icon: 'fa-font'},
     {id:'battle', n:'Squad Battle', d:'Sfido veten në formula', icon: 'fa-shield-halved'},
     {id:'debate', n:'Debat Fizik', d:'Diskuto mbi teoritë', icon: 'fa-comments'},
     {id:'worksheet', n:'Fletë Pune', d:'Ushtrime për printim', icon: 'fa-file-pdf'},
@@ -629,7 +629,7 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
                                     <div className="f8-fact-actions">
                                         <button className="f8-btn f8-btn-ghost" onClick={() => setFactIdx((factIdx - 1 + FACTS.length) % FACTS.length)}>Para</button>
                                         <button className="f8-btn" style={{ background: '#4F46E5', color: '#fff' }} onClick={() => { setScore(s => s + 2); showToast('+2 pikë!'); fireConfetti(); }}>Interesante!</button>
-                                        <button className="f8-btn f8-btn-ghost" onClick={() => setFactIdx((!+ 1) % FACTS.length)}>Tjetri</button>
+                                        <button className="f8-btn f8-btn-ghost" onClick={() => setFactIdx((factIdx + 1) % FACTS.length)}>Tjetri</button>
                                     </div>
                                 </div>
                                 <div className="f8-fact-dots">
@@ -656,7 +656,7 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
                                     </div>
                                 </div>
                                 <div className="f8-flash-actions">
-                                    <button className="f8-btn f8-btn-ghost" onClick={() => { setFcIdx((fcIdx - 1B + FLASHCARDS.length) % FLASHCARDS.length); setFcFlipped(false); }}>Para</button>
+                                    <button className="f8-btn f8-btn-ghost" onClick={() => { setFcIdx((fcIdx - 1 + FLASHCARDS.length) % FLASHCARDS.length); setFcFlipped(false); }}>Para</button>
                                     <button className="f8-btn" style={{ background: '#0D9488', color: '#fff' }} onClick={() => { setScore(s => s + 5); showToast('+5 pikë!'); fireConfetti(); }}>E di</button>
                                     <button className="f8-btn f8-btn-ghost" onClick={() => { setFcIdx((fcIdx + 1) % FLASHCARDS.length); setFcFlipped(false); }}>Tjetri</button>
                                 </div>
@@ -665,7 +665,7 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
 
                         {activeGame === 'phet' && (
                             <div className="f8-phet-game">
-                                <div className="f8-phet-tabs? ">
+                                <div className="f8-phet-tabs">
                                     {PHET_DATA.map((d, i) => (
                                         <button
                                             key={i}
@@ -680,8 +680,8 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
                                     {/* PhET Card */}
                                     <div className="f8-phet-card">
                                         <div className="f8-phet-card-header">
-                                            <h3><i className="fas fa-flask"></i> {" "}{PHET_DATA[phetTab].) phet.title}</h3>
-                                            <a href={PHET_DATA[phetTab].phet.url} target="_blank" rel="noreferrer" className="f8-phet-open-btn" style={{ background: PHET_DATA[phetTab].phet.color }}>Hap</+ </a>
+                                            <h3><i className="fas fa-flask"></i> {" "}{PHET_DATA[phetTab].phet.title}</h3>
+                                            <a href={PHET_DATA[phetTab].phet.url} target="_blank" rel="noreferrer" className="f8-phet-open-btn" style={{ background: PHET_DATA[phetTab].phet.color }}>Hap</a>
                                         </div>
                                         <div className="f8-phet-card-content">
                                             <p>{PHET_DATA[phetTab].phet.desc}</p>
@@ -692,13 +692,13 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
                                     </div>
                                     {/* Video Card */}
                                     <div className="f8-phet-card">
-                                        <div className="f8D-phet-card-header">
+                                        <div className="f8-phet-card-header">
                                             <h3><i className="fas fa-play-circle"></i>{" "}{PHET_DATA[phetTab].video.title}</h3>
                                             <a href={`https://www.youtube.com/watch?v=${PHET_DATA[phetTab].video.ytId}`} target="_blank" rel="noreferrer" className="f8-phet-open-btn" style={{ background: PHET_DATA[phetTab].video.color }}>YouTube</a>
                                         </div>
                                         <div className="f8-phet-card-content">
-                                            <p>{) PHET_DATA[phetTab].video.desc}</p>
-                                            <div className="f8-iframe-wrap; ">
+                                            <p>{PHET_DATA[phetTab].video.desc}</p>
+                                            <div className="f8-iframe-wrap">
                                                 <iframe src={`https://www.youtube.com/embed/${PHET_DATA[phetTab].video.ytId}`} title="Video" />
                                             </div>
                                         </div>
@@ -715,7 +715,7 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
       {/* MODAL */}
       {modalQ && (
           <div className="f8-modal" onClick={() => setModalQ(null)}>
-              <div className="f8.8-modal-box" onClick={e => e.stopPropagation()}>
+              <div className="f8-modal-box" onClick={e => e.stopPropagation()}>
                   <div className="f8-modal-header">
                       <span className="f8-modal-tag" style={{ background: PILCOLORS[activeChapter ?? 0] }}>Ushtrimi</span>
                       <button className="f8-modal-close" onClick={() => setModalQ(null)}><i className="fas fa-times"></i></button>
@@ -728,13 +728,13 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
                           <button
                               key={i}
                               className={`f8-qopt ${showSolution ? (i === modalQ.ans ? 'correct' : (modalCorrect === false && i !== modalQ.ans && 'wrong')) : ''}`}
-                              onClick={() => !showSolution && checkAnswer(i7 }
+                              onClick={() => !showSolution && checkAnswer(i)}
                           >
                               <div className="f8-qopt-letter">
                                   {['A', 'B', 'C', 'D'][i]}
                               </div>
                               {o}
-                         F </5-button>
+                          </button>
                       ))}
                   </div>
                   {showSolution && (
@@ -756,4 +756,4 @@ const Fizika8Dashboard: React.FC<F4izika8DashboardProps> = ({ onBack }) => {
   );
 };
 
-export* default Fizika8Dashboard;
+export default Fizika8Dashboard;
